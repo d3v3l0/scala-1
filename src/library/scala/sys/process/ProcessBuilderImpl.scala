@@ -28,7 +28,7 @@ private[process] trait ProcessBuilderImpl {
     override def canPipeTo = true
   }
 
-  private[process] class URLInput(url: URL) extends IStreamBuilder(url.openStream, url.toString)
+  private[process] class URLInput(url: URL) extends IStreamBuilder(url.openStream(), url.toString)
   private[process] class FileInput(file: File) extends IStreamBuilder(new FileInputStream(file), file.getAbsolutePath)
   private[process] class FileOutput(file: File, append: Boolean) extends OStreamBuilder(new FileOutputStream(file, append), file.getAbsolutePath)
 
@@ -70,11 +70,11 @@ private[process] trait ProcessBuilderImpl {
       import io._
 
       // spawn threads that process the input, output, and error streams using the functions defined in `io`
-      val inThread  = Spawn(writeInput(process.getOutputStream), daemon = true)
-      val outThread = Spawn(processOutput(process.getInputStream), daemonizeThreads)
+      val inThread  = Spawn(writeInput(process.getOutputStream()), daemon = true)
+      val outThread = Spawn(processOutput(process.getInputStream()), daemonizeThreads)
       val errorThread =
         if (p.redirectErrorStream) Nil
-        else List(Spawn(processError(process.getErrorStream), daemonizeThreads))
+        else List(Spawn(processError(process.getErrorStream()), daemonizeThreads))
 
       new SimpleProcess(process, inThread, outThread :: errorThread)
     }

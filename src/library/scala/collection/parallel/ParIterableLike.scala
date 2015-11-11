@@ -338,7 +338,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     def asCombiner = cb.asInstanceOf[Combiner[Elem, To]]
   }
 
-  protected[this] def bf2seq[S, That](bf: CanBuildFrom[Repr, S, That]) = new CanBuildFrom[Sequential, S, That] {
+  protected[this] def bf2seq[S, That](bf: CanBuildFrom[Repr, S, That]): CanBuildFrom[Sequential, S, That] = new CanBuildFrom[Sequential, S, That] {
     def apply(from: Sequential) = bf.apply(from.par.asInstanceOf[Repr]) // !!! we only use this on `this.seq`, and know that `this.seq.par.getClass == this.getClass`
     def apply() = bf.apply()
   }
