@@ -37,7 +37,8 @@ abstract class ScalaBeanInfo(clazz: java.lang.Class[_],
   private def init() {
     var i = 0
     while (i < props.length) {
-      pd(i/3) = new PropertyDescriptor(props(i), clazz, props(i+1), props(i+2))
+      pd(i/3) = ESC.NO(new PropertyDescriptor(props(i), clazz, props(i+1), props(i+2)))
+      //ESC: re-throw as RuntimeException
       i = i + 3
     }
   }
