@@ -344,7 +344,7 @@ abstract class EscLocal extends PluginComponent with Transform with
         println(s"don't know how to handle ${tree.getClass}")
     }
 
-
+    // TODO: need to check ClassDefs that are not in Defs!
     override def transform(tree: Tree): Tree = tree match {
       case DefDef(mods, name, tparams, vparamss, tpt, rhs) if !tree.symbol.isConstructor =>
         //if (name.toString contains "test") {
