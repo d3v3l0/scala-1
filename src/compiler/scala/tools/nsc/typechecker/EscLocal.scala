@@ -135,6 +135,16 @@ abstract class EscLocal extends PluginComponent with Transform with
             (fun.symbol.name.toString == "NO" || fun.symbol.name.toString == "THROW") &&
             fun.symbol.owner.name.toString == "ESC") {
           // escape hatch: args not checked
+          // but still need to check 2nd class args!
+          val modes = fun.tpe match {
+            case mt @ MethodType(params,restpe) => params.map(symMode)
+            case _ => Nil
+          }
+          // check argument expressions according to mode
+          // for varargs, assume 1st class (pad to args.length)
+          map2(args,modes.padTo(args.length,1))((a,m) => if (m == 2) traverse(a,m,boundary))
+
+
         } else {
 
           traverse(fun,2,boundary) // function is always 2nd class
