@@ -654,7 +654,9 @@ extends scala.collection.concurrent.Map[K, V]
 
   /* internal methods */
 
+  // ESC: method has Java checked exception
   private def writeObject(out: java.io.ObjectOutputStream) {
+  ESC.NO{
     out.writeObject(hashingobj)
     out.writeObject(equalityobj)
 
@@ -665,9 +667,10 @@ extends scala.collection.concurrent.Map[K, V]
       out.writeObject(v)
     }
     out.writeObject(TrieMapSerializationEnd)
-  }
+  }}
 
   private def readObject(in: java.io.ObjectInputStream) {
+  ESC.NO{
     root = INode.newRootNode
     rootupdater = AtomicReferenceFieldUpdater.newUpdater(classOf[TrieMap[K, V]], classOf[AnyRef], "root")
 
@@ -683,7 +686,7 @@ extends scala.collection.concurrent.Map[K, V]
         update(k, v)
       }
     } while (obj != TrieMapSerializationEnd)
-  }
+  }}
 
   def CAS_ROOT(ov: AnyRef, nv: AnyRef) = rootupdater.compareAndSet(this, ov, nv)
 

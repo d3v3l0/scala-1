@@ -568,15 +568,17 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
   @SerialVersionUID(2L)
   private class SerializationProxy[A,B](@transient private var orig: HashMap[A, B]) extends Serializable {
     private def writeObject(out: java.io.ObjectOutputStream) {
+    ESC.NO {
       val s = orig.size
       out.writeInt(s)
       for ((k,v) <- orig) {
         out.writeObject(k)
         out.writeObject(v)
       }
-    }
+    }}
 
     private def readObject(in: java.io.ObjectInputStream) {
+    ESC.NO{
       orig = empty
       val s = in.readInt()
       for (i <- 0 until s) {
@@ -584,7 +586,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
         val value = in.readObject().asInstanceOf[B]
         orig = orig.updated(key, value)
       }
-    }
+    }}
 
     private def readResolve(): AnyRef = orig
   }
