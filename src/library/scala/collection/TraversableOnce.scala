@@ -62,7 +62,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
   self =>
 
   /** Self-documenting abstract methods. */
-  def foreach[U](f: A => U): Unit
+  def foreach[U](@local f: A => U): Unit
   def isEmpty: Boolean
   def hasDefiniteSize: Boolean
 
@@ -88,9 +88,9 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
   // Presently these are abstract because the Traversable versions use
   // breakable/break, and I wasn't sure enough of how that's supposed to
   // function to consolidate them with the Iterator versions.
-  def forall(p: A => Boolean): Boolean
-  def exists(p: A => Boolean): Boolean
-  def find(p: A => Boolean): Option[A]
+  def forall(@local p: A => Boolean): Boolean
+  def exists(@local p: A => Boolean): Boolean
+  def find(@local p: A => Boolean): Option[A]
   def copyToArray[B >: A](xs: Array[B], start: Int, len: Int): Unit
 
   // for internal use
@@ -108,7 +108,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   def nonEmpty: Boolean = !isEmpty
 
-  def count(p: A => Boolean): Int = {
+  def count(@local p: A => Boolean): Int = {
     var cnt = 0
     for (x <- this)
       if (p(x)) cnt += 1
@@ -127,7 +127,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
    *              value for which it is defined, or `None` if none exists.
    *  @example    `Seq("a", 1, 5L).collectFirst({ case x: Int => x*10 }) = Some(10)`
    */
-  def collectFirst[B](pf: PartialFunction[A, B]): Option[B] = {
+  def collectFirst[B](@local pf: PartialFunction[A, B]): Option[B] = {
     // TODO 2.12 -- move out alternate implementations into child classes
     val i: Iterator[A] = self match {
       case it: Iterator[A] => it
@@ -146,17 +146,17 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
     None
   }
 
-  def /:[B](z: B)(op: (B, A) => B): B = foldLeft(z)(op)
+  def /:[B](z: B)(@local op: (B, A) => B): B = foldLeft(z)(op)
 
-  def :\[B](z: B)(op: (A, B) => B): B = foldRight(z)(op)
+  def :\[B](z: B)(@local op: (A, B) => B): B = foldRight(z)(op)
 
-  def foldLeft[B](z: B)(op: (B, A) => B): B = {
+  def foldLeft[B](z: B)(@local op: (B, A) => B): B = {
     var result = z
     this foreach (x => result = op(result, x))
     result
   }
 
-  def foldRight[B](z: B)(op: (A, B) => B): B =
+  def foldRight[B](z: B)(@local op: (A, B) => B): B =
     reversed.foldLeft(z)((x, y) => op(y, x))
 
   /** Applies a binary operator to all elements of this $coll,
@@ -173,7 +173,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
    *           }}}
    *           where `x,,1,,, ..., x,,n,,` are the elements of this $coll.
    *  @throws UnsupportedOperationException if this $coll is empty.   */
-  def reduceLeft[B >: A](op: (B, A) => B): B = {
+  def reduceLeft[B >: A](@local op: (B, A) => B): B = {
     if (isEmpty)
       throw new UnsupportedOperationException("empty.reduceLeft")
 
@@ -190,26 +190,26 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
     acc
   }
 
-  def reduceRight[B >: A](op: (A, B) => B): B = {
+  def reduceRight[B >: A](@local op: (A, B) => B): B = {
     if (isEmpty)
       throw new UnsupportedOperationException("empty.reduceRight")
 
     reversed.reduceLeft[B]((x, y) => op(y, x))
   }
 
-  def reduceLeftOption[B >: A](op: (B, A) => B): Option[B] =
+  def reduceLeftOption[B >: A](@local op: (B, A) => B): Option[B] =
     if (isEmpty) None else Some(reduceLeft(op))
 
-  def reduceRightOption[B >: A](op: (A, B) => B): Option[B] =
+  def reduceRightOption[B >: A](@local op: (A, B) => B): Option[B] =
     if (isEmpty) None else Some(reduceRight(op))
 
-  def reduce[A1 >: A](op: (A1, A1) => A1): A1 = reduceLeft(op)
+  def reduce[A1 >: A](@local op: (A1, A1) => A1): A1 = reduceLeft(op)
 
-  def reduceOption[A1 >: A](op: (A1, A1) => A1): Option[A1] = reduceLeftOption(op)
+  def reduceOption[A1 >: A](@local op: (A1, A1) => A1): Option[A1] = reduceLeftOption(op)
 
-  def fold[A1 >: A](z: A1)(op: (A1, A1) => A1): A1 = foldLeft(z)(op)
+  def fold[A1 >: A](z: A1)(@local op: (A1, A1) => A1): A1 = foldLeft(z)(op)
 
-  def aggregate[B](z: =>B)(seqop: (B, A) => B, combop: (B, B) => B): B = foldLeft(z)(seqop)
+  def aggregate[B](z: =>B)(@local seqop: (B, A) => B, combop: (B, B) => B): B = foldLeft(z)(seqop)
 
   def sum[B >: A](implicit num: Numeric[B]): B = foldLeft(num.zero)(num.plus)
 
@@ -229,7 +229,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
     reduceLeft((x, y) => if (cmp.gteq(x, y)) x else y)
   }
 
-  def maxBy[B](f: A => B)(implicit cmp: Ordering[B]): A = {
+  def maxBy[B](@local f: A => B)(implicit cmp: Ordering[B]): A = {
     if (isEmpty)
       throw new UnsupportedOperationException("empty.maxBy")
 
@@ -247,7 +247,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
     }
     maxElem
   }
-  def minBy[B](f: A => B)(implicit cmp: Ordering[B]): A = {
+  def minBy[B](@local f: A => B)(implicit cmp: Ordering[B]): A = {
     if (isEmpty)
       throw new UnsupportedOperationException("empty.minBy")
 

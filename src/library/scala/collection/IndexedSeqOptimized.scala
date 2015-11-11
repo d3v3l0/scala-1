@@ -27,7 +27,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def isEmpty: Boolean = { length == 0 }
 
   override /*IterableLike*/
-  def foreach[U](f: A => U): Unit = {
+  def foreach[U](@local f: A => U): Unit = {
     var i = 0
     val len = length
     while (i < len) { f(this(i)); i += 1 }
@@ -52,7 +52,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   @tailrec
-  private def foldl[B](start: Int, end: Int, z: B, op: (B, A) => B): B =
+  private def foldl[B](start: Int, end: Int, z: B, @local op: (B, A) => B): B =
     if (start == end) z
     else foldl(start + 1, end, op(z, this(start)), op)
 
@@ -62,7 +62,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
     else foldr(start, end - 1, op(this(end - 1), z), op)
 
   override /*TraversableLike*/
-  def foldLeft[B](z: B)(op: (B, A) => B): B =
+  def foldLeft[B](z: B)(@local op: (B, A) => B): B =
     foldl(0, length, z, op)
 
   override /*IterableLike*/
@@ -70,7 +70,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
     foldr(0, length, z, op)
 
   override /*TraversableLike*/
-  def reduceLeft[B >: A](op: (B, A) => B): B =
+  def reduceLeft[B >: A](@local op: (B, A) => B): B =
     if (length > 0) foldl(1, length, this(0), op) else super.reduceLeft(op)
 
   override /*IterableLike*/

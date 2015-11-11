@@ -142,7 +142,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *  @see flatMap
    *  @see foreach
    */
-  @inline final def map[B](f: A => B): Option[B] =
+  @inline final def map[B](@local f: A => B): Option[B] =
     if (isEmpty) None else Some(f(this.get))
 
   /** Returns the result of applying $f to this $option's
@@ -154,7 +154,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *  @param  ifEmpty the expression to evaluate if empty.
    *  @param  f       the function to apply if nonempty.
    */
-  @inline final def fold[B](ifEmpty: => B)(f: A => B): B =
+  @inline final def fold[B](ifEmpty: => B)(@local f: A => B): B =
     if (isEmpty) ifEmpty else f(this.get)
 
   /** Returns the result of applying $f to this $option's value if
@@ -167,7 +167,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *  @see map
    *  @see foreach
    */
-  @inline final def flatMap[B](f: A => Option[B]): Option[B] =
+  @inline final def flatMap[B](@local f: A => Option[B]): Option[B] =
     if (isEmpty) None else f(this.get)
 
   def flatten[B](implicit ev: A <:< Option[B]): Option[B] =
@@ -178,7 +178,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *
    *  @param  p   the predicate used for testing.
    */
-  @inline final def filter(p: A => Boolean): Option[A] =
+  @inline final def filter(@local p: A => Boolean): Option[A] =
     if (isEmpty || p(this.get)) this else None
 
   /** Returns this $option if it is nonempty '''and''' applying the predicate $p to
@@ -186,7 +186,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *
    *  @param  p   the predicate used for testing.
    */
-  @inline final def filterNot(p: A => Boolean): Option[A] =
+  @inline final def filterNot(@local p: A => Boolean): Option[A] =
     if (isEmpty || !p(this.get)) this else None
 
   /** Returns false if the option is $none, true otherwise.
@@ -204,9 +204,9 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *  collection with max size 1.
    */
   class WithFilter(p: A => Boolean) {
-    def map[B](f: A => B): Option[B] = self filter p map f
-    def flatMap[B](f: A => Option[B]): Option[B] = self filter p flatMap f
-    def foreach[U](f: A => U): Unit = self filter p foreach f
+    def map[B](@local f: A => B): Option[B] = self filter p map f
+    def flatMap[B](@local f: A => Option[B]): Option[B] = self filter p flatMap f
+    def foreach[U](@local f: A => U): Unit = self filter p foreach f
     def withFilter(q: A => Boolean): WithFilter = new WithFilter(x => p(x) && q(x))
   }
 
@@ -236,7 +236,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *
    *  @param  p   the predicate to test
    */
-  @inline final def exists(p: A => Boolean): Boolean =
+  @inline final def exists(@local p: A => Boolean): Boolean =
     !isEmpty && p(this.get)
 
   /** Returns true if this option is empty '''or''' the predicate
@@ -244,7 +244,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *
    *  @param  p   the predicate to test
    */
-  @inline final def forall(p: A => Boolean): Boolean = isEmpty || p(this.get)
+  @inline final def forall(@local p: A => Boolean): Boolean = isEmpty || p(this.get)
 
   /** Apply the given procedure $f to the option's value,
    *  if it is nonempty. Otherwise, do nothing.
@@ -253,7 +253,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *  @see map
    *  @see flatMap
    */
-  @inline final def foreach[U](f: A => U) {
+  @inline final def foreach[U](@local f: A => U) {
     if (!isEmpty) f(this.get)
   }
 
@@ -278,7 +278,7 @@ sealed abstract class Option[+A] extends Product with Serializable {
    *  @return the result of applying `pf` to this $option's
    *  value (if possible), or $none.
    */
-  @inline final def collect[B](pf: PartialFunction[A, B]): Option[B] =
+  @inline final def collect[B](@local pf: PartialFunction[A, B]): Option[B] =
     if (!isEmpty) pf.lift(this.get) else None
 
   /** Returns this $option if it is nonempty,

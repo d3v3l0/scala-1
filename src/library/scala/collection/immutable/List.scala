@@ -159,10 +159,11 @@ sealed abstract class List[+A] extends AbstractSeq[A]
    *  @usecase def mapConserve(f: A => A): List[A]
    *    @inheritdoc
    */
-  @inline final def mapConserve[B >: A <: AnyRef](f: A => B): List[B] = {
+  @inline final def mapConserve[B >: A <: AnyRef](@local f: A => B): List[B] = {
     // Note to developers: there exists a duplication between this function and `reflect.internal.util.Collections#map2Conserve`.
     // If any successful optimization attempts or other changes are made, please rehash them there too.
     @tailrec
+    @local
     def loop(mapped: ListBuffer[B], unchanged: List[A], pending: List[A]): List[B] =
       if (pending.isEmpty) {
         if (mapped eq null) unchanged
@@ -267,7 +268,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
   }
   
   @noinline // TODO - fix optimizer bug that requires noinline (see SI-8334)
-  final override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def map[B, That](@local f: A => B)(implicit bf: CanBuildFrom[List[A], B, That]): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         val h = new ::[B](f(head), Nil)
@@ -286,7 +287,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
   }
   
   @noinline // TODO - fix optimizer bug that requires noinline for map; applied here to be safe (see SI-8334)
-  final override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def collect[B, That](@local pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[List[A], B, That]): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         var rest = this
@@ -316,7 +317,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
   }
   
   @noinline // TODO - fix optimizer bug that requires noinline for map; applied here to be safe (see SI-8334)
-  final override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def flatMap[B, That](@local f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[List[A], B, That]): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         var rest = this
@@ -344,7 +345,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     else super.flatMap(f)
   }
 
-  @inline final override def takeWhile(p: A => Boolean): List[A] = {
+  @inline final override def takeWhile(@local p: A => Boolean): List[A] = {
     val b = new ListBuffer[A]
     var these = this
     while (!these.isEmpty && p(these.head)) {
@@ -354,8 +355,8 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     b.toList
   }
 
-  @inline final override def dropWhile(p: A => Boolean): List[A] = {
-    @tailrec
+  @inline final override def dropWhile(@local p: A => Boolean): List[A] = {
+    @tailrec @local
     def loop(xs: List[A]): List[A] =
       if (xs.isEmpty || !p(xs.head)) xs
       else loop(xs.tail)
@@ -363,7 +364,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     loop(this)
   }
 
-  @inline final override def span(p: A => Boolean): (List[A], List[A]) = {
+  @inline final override def span(@local p: A => Boolean): (List[A], List[A]) = {
     val b = new ListBuffer[A]
     var these = this
     while (!these.isEmpty && p(these.head)) {
@@ -375,7 +376,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
 
   // Overridden with an implementation identical to the inherited one (at this time)
   // solely so it can be finalized and thus inlinable.
-  @inline final override def foreach[U](f: A => U) {
+  @inline final override def foreach[U](@local f: A => U) {
     var these = this
     while (!these.isEmpty) {
       f(these.head)
@@ -393,7 +394,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     result
   }
 
-  override def foldRight[B](z: B)(op: (A, B) => B): B =
+  override def foldRight[B](z: B)(@local op: (A, B) => B): B =
     reverse.foldLeft(z)((right, left) => op(left, right))
 
   override def stringPrefix = "List"
