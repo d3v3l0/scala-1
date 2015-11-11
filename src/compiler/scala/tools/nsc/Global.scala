@@ -486,6 +486,13 @@ class Global(var currentSettings: Settings, var reporter: Reporter)
     val runsRightAfter = None
   } with ExtensionMethods
 
+//TR
+  object escPhase extends {
+    val global: Global.this.type = Global.this
+    val runsAfter = List("typer")
+    override val runsBefore = List("pickler")
+  } with EscLocal
+
   // phaseName = "pickler"
   object pickler extends {
     val global: Global.this.type = Global.this
@@ -699,6 +706,8 @@ class Global(var currentSettings: Settings, var reporter: Reporter)
       patmat                  -> "translate match expressions",
       superAccessors          -> "add super accessors in traits and nested classes",
       extensionMethods        -> "add extension methods for inline classes",
+//TR
+      escPhase                -> "check escape behavior of @local variables",
       pickler                 -> "serialize symbol tables",
       refChecks               -> "reference/override checking, translate nested objects",
       uncurry                 -> "uncurry, translate function values to anonymous classes",
