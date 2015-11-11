@@ -104,15 +104,20 @@ self =>
   }
 
   private def writeObject(out: java.io.ObjectOutputStream) {
+  ESC.TRY{cc=>
     serializeTo(out, { entry =>
-      out.writeObject(entry.key)
-      out.writeObject(entry.value)
-    })
-  }
+      ESC.THROW{
+        out.writeObject(entry.key)
+        out.writeObject(entry.value)
+      }(cc)
+    })(cc)
+  }}
 
   private def readObject(in: java.io.ObjectInputStream) {
-    init(in, createNewEntry(in.readObject().asInstanceOf[K], in.readObject()))
-  }
+  ESC.TRY{cc=>
+    init(in, 
+      ESC.THROW{createNewEntry(in.readObject().asInstanceOf[K], in.readObject())}(cc))(cc)
+  }}
 
   private[parallel] override def brokenInvariants = {
     // bucket by bucket, count elements

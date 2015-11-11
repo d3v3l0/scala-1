@@ -133,15 +133,20 @@ extends AbstractMap[A, B]
   }
 
   private def writeObject(out: java.io.ObjectOutputStream) {
+  ESC.TRY{cc=>
     serializeTo(out, { entry =>
+      ESC.THROW{
       out.writeObject(entry.key)
       out.writeObject(entry.value)
-    })
-  }
+      }(cc)
+    })(cc)
+  }}
 
   private def readObject(in: java.io.ObjectInputStream) {
-    init(in, createNewEntry(in.readObject().asInstanceOf[A], in.readObject()))
-  }
+  ESC.TRY{cc=>
+    init(in,
+      ESC.THROW{createNewEntry(in.readObject().asInstanceOf[A], in.readObject())}(cc))(cc)
+  }}
 
 }
 
