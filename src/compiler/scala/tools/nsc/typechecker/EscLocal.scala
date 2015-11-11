@@ -308,6 +308,11 @@ abstract class EscLocal extends PluginComponent with Transform with
           // member 2, other 1 is OK, but not vice versa
           val memberM = argModes(member.tpe)
           val otherM = argModes(other.tpe)
+
+          // if (memberM.contains(2) || otherM.contains(2)) {
+          //   println("checkk overriding " + pair.high.fullLocationString + " with " + pair.low.fullLocationString)
+          // }
+
           val allOK = memberM.length == otherM.length && map2(memberM,otherM)(_ >= _).forall(x=>x)
           if (!allOK) {
             val fullmsg = "overriding " + pair.high.fullLocationString + " with " + pair.low.fullLocationString + ":\n" +
@@ -324,7 +329,7 @@ abstract class EscLocal extends PluginComponent with Transform with
           }
         }
 
-        val opc = new overridingPairs.Cursor(tree.symbol)
+        val opc = new overridingPairs.Cursor(tree.symbol.owner)
         while (opc.hasNext) {
           if (!opc.high.isClass) checkOverride(opc.currentPair)
           opc.next()
@@ -337,7 +342,8 @@ abstract class EscLocal extends PluginComponent with Transform with
       case ModuleDef(mods, name, impl) =>
         traverse(impl,1,boundary)
 
-      //case PackageDef(mods, name, impl) =>
+      case PackageDef(pid, stats) =>
+        stats.foreach(s => traverse(s,2,boundary))
 
 
       case _ =>
@@ -346,15 +352,15 @@ abstract class EscLocal extends PluginComponent with Transform with
 
     // TODO: need to check ClassDefs that are not in Defs!
     override def transform(tree: Tree): Tree = tree match {
-      case DefDef(mods, name, tparams, vparamss, tpt, rhs) if !tree.symbol.isConstructor =>
+      case _ => //DefDef(mods, name, tparams, vparamss, tpt, rhs) if !tree.symbol.isConstructor =>
         //if (name.toString contains "test") {
         //println(s"start def: ${tree.symbol}")
         traverse(tree,0,NoSymbol)
         tree
         //} else
         //super.transform(tree)
-      case _ =>
-        super.transform(tree)
+      /*case _ =>
+        super.transform(tree)*/
     }
   }
 
