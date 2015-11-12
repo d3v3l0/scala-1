@@ -861,7 +861,7 @@ private[scala] trait JavaMirrors extends internal.SymbolTable with api.JavaUnive
      * The Scala owner of the Scala type parameter corresponding to the Java type variable `jtvar`
      */
     private def sOwner(jtvar: jTypeVariable[_ <: GenericDeclaration]): Symbol =
-      genericDeclarationToScala(jtvar.getGenericDeclaration)
+      genericDeclarationToScala(jtvar.getGenericDeclaration())
 
     /**
      * Find declarations or definition in class `clazz` that maps to a Java
@@ -1034,7 +1034,7 @@ private[scala] trait JavaMirrors extends internal.SymbolTable with api.JavaUnive
       toScala(tparamCache, jparam)(_ typeParamToScala1 _)
 
     private def typeParamToScala1(jparam: jTypeVariable[_ <: GenericDeclaration]): TypeSymbol = {
-      val owner = genericDeclarationToScala(jparam.getGenericDeclaration)
+      val owner = genericDeclarationToScala(jparam.getGenericDeclaration())
       owner.info match {
         case PolyType(tparams, _) => tparams.find(_.name string_== jparam.getName).get.asType
       }
