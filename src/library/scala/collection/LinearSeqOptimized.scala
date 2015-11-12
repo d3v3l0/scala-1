@@ -117,7 +117,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*TraversableLike*/
-  def foldLeft[B](z: B)(@local f: (B, A) => B): B = {
+  def foldLeft[B](z: B)(@plocal f: (B, A) => B): B = {
     var acc = z
     var these = this
     while (!these.isEmpty) {
@@ -133,7 +133,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
     else f(head, tail.foldRight(z)(f))
 
   override /*TraversableLike*/
-  def reduceLeft[B >: A](@local f: (B, A) => B): B =
+  def reduceLeft[B >: A](@plocal f: (B, A) => B): B =
     if (isEmpty) throw new UnsupportedOperationException("empty.reduceLeft")
     else tail.foldLeft[B](head)(f)
 

@@ -44,6 +44,7 @@ self =>
   initWithContents(contents)
 
   type Entry = scala.collection.mutable.DefaultEntry[K, V]
+  override protected type plocal = local[LT]
 
   def this() = this(null)
 
@@ -115,7 +116,7 @@ self =>
 
   private def readObject(in: java.io.ObjectInputStream) {
   ESC.TRY{cc=>
-    init(in, 
+    init(in,
       ESC.THROW{createNewEntry(in.readObject().asInstanceOf[K], in.readObject())}(cc))(cc)
   }}
 

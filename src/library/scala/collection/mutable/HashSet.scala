@@ -48,6 +48,8 @@ extends AbstractSet[A]
 {
   initWithContents(contents)
 
+  override protected type plocal = local[LT]
+
   def this() = this(null)
 
   override def companion: GenericCompanion[HashSet] = HashSet
@@ -106,4 +108,3 @@ object HashSet extends MutableSetFactory[HashSet] {
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, HashSet[A]] = setCanBuildFrom[A]
   override def empty[A]: HashSet[A] = new HashSet[A]
 }
-

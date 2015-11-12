@@ -442,7 +442,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     tasksupport.executeAndWaitResult(new Aggregate(() => z, seqop, combop, splitter))
   }
 
-  def foldLeft[S](z: S)(@local op: (S, T) => S): S = seq.foldLeft(z)(op)
+  def foldLeft[S](z: S)(@plocal op: (S, T) => S): S = seq.foldLeft(z)(op)
 
   def foldRight[S](z: S)(op: (T, S) => S): S = seq.foldRight(z)(op)
 

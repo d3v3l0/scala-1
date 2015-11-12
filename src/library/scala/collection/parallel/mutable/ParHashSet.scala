@@ -46,6 +46,9 @@ extends ParSet[T]
   // java.lang.Thread.dumpStack
   // println(debugInformation)
 
+  override protected type LT = Any
+  override protected type plocal = local[LT]
+
   def this() = this(null)
 
   override def companion = ParHashSet
@@ -328,4 +331,3 @@ private[parallel] object ParHashSetCombiner {
 
   def apply[T] = new ParHashSetCombiner[T](FlatHashTable.defaultLoadFactor) {} //with EnvironmentPassingCombiner[T, ParHashSet[T]]
 }
-
