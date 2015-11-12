@@ -1,6 +1,6 @@
 package scala
 
-class local extends scala.annotation.StaticAnnotation
+class local[-T] extends scala.annotation.StaticAnnotation
 
 trait `->`[-A,+B] extends Function1[A,B] {
   def apply(@local y: A): B

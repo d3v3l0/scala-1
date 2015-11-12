@@ -27,6 +27,7 @@ trait EscUtils {
 
   protected def newSafeMarker() = newMarker(MarkerSafe)
   protected def newLocalMarker() = newMarker(MarkerLocal)
+  protected def newLocalMarker(tpe: Type) = newMarker(appliedType(MarkerLocal, tpe))
   protected def newMarker(tpe: Type): AnnotationInfo = AnnotationInfo marker tpe
   protected def newMarker(sym: Symbol): AnnotationInfo = AnnotationInfo marker sym.tpe
 
@@ -88,15 +89,20 @@ abstract class EscLocal extends PluginComponent with Transform with
 
     // FIXME: proper sym lookup
     def isSndFun(tpe: Type) = tpe.toString.startsWith("scala.->") || tpe.toString.startsWith("->")
-    def isSndSym(s: Symbol) = (s != null) && s.hasAnnotation(MarkerLocal)
-    def symMode(s:Symbol) = if (isSndSym(s)) 2 else 1
+    def isFstSym(s: Symbol): Boolean = symMode(s) <:< FstMode
+    def symMode(s:Symbol) = 
+      s.getAnnotation(MarkerLocal) match { 
+        case None => FstMode 
+        case Some(s) => s.atp.typeArgs(0)
+      }
 
+    lazy val FstMode = NothingTpe
+    lazy val SndMode = AnyTpe
 /*
     TODO:
 
-      - inheritance:
-          - subclasses may only add @local annotations, not remove them
-          - (TODO: implement check)
+      + check inheritance
+      + abstract over mode
       - objects:
           - what is the story for @local this?
           - can one call methods on @local objects?
@@ -104,22 +110,26 @@ abstract class EscLocal extends PluginComponent with Transform with
 */
 
     // in general: 1st class is more specific than 2nd class
-    def traverse(tree: Tree, m: Int, boundary: Symbol): Unit = tree match {
+    def traverse(tree: Tree, m: Type, boundary: List[Symbol]): Unit = tree match {
       case Literal(x) =>
       case Ident(x) =>
-        if (isSndSym(tree.symbol)) {
-          if (m == 1) {
+        if (!isFstSym(tree.symbol)) {
+          if (!(symMode(tree.symbol) <:< m)) {
             // 2nd class vars are not 1st class
-            reporter.error(tree.pos, tree.symbol + " cannot be used as 1st class value")
-          } else if (!tree.symbol.hasTransOwner(boundary)) {
-            // cannot reach beyond 1st class boundary            
-            reporter.error(tree.pos, tree.symbol + s" cannot be used inside $boundary")
+            reporter.error(tree.pos, tree.symbol + " cannot be used as 1st class value @local["+m+"]")
+          } else {
+            // cannot reach beyond 1st class boundary
+            for (b <- boundary) {
+              if (!tree.symbol.hasTransOwner(b))
+                if (!(symMode(tree.symbol) <:< symMode(b)))
+                  reporter.error(tree.pos, tree.symbol + s" cannot be used inside $b")
+            }
           }
         }
 
       case Select(qual, name) =>
         // TODO: is 2nd class ok here?
-        traverse(qual,2,boundary)
+        traverse(qual,SndMode,boundary)
 
       case Apply(fun, args) =>
         //println(s"--- apply ")
@@ -137,17 +147,18 @@ abstract class EscLocal extends PluginComponent with Transform with
           // escape hatch: args not checked
           // but still need to check 2nd class args!
           val modes = fun.tpe match {
-            case mt @ MethodType(params,restpe) => params.map(symMode)
+            case mt @ MethodType(params,restpe) =>
+              params.map(symMode)
             case _ => Nil
           }
           // check argument expressions according to mode
           // for varargs, assume 1st class (pad to args.length)
-          map2(args,modes.padTo(args.length,1))((a,m) => if (m == 2) traverse(a,m,boundary))
+          map2(args,modes.padTo(args.length,FstMode))((a,m) => if (!(m <:< FstMode)) traverse(a,m,boundary))
 
 
         } else {
 
-          traverse(fun,2,boundary) // function is always 2nd class
+          traverse(fun,SndMode,boundary) // function is always 2nd class
 
           // find out mode to use for each argument (1st or 2nd)
           val modes = fun.tpe match {
@@ -157,18 +168,19 @@ abstract class EscLocal extends PluginComponent with Transform with
           }
           // check argument expressions according to mode
           // for varargs, assume 1st class (pad to args.length)
-          map2(args,modes.padTo(args.length,1))((a,m) => traverse(a,m,boundary))
+          map2(args,modes.padTo(args.length,FstMode))((a,m) => traverse(a,m,boundary))
         }
 
       case TypeApply(fun, args) => 
-        traverse(fun,2,boundary) // function is always 2nd class
+        traverse(fun,SndMode,boundary) // function is always 2nd class
 
       case Assign(lhs, rhs) =>
         // TODO: what if var is @local?
-        traverse(rhs,symMode(tree.symbol),boundary)
+        //traverse(rhs,symMode(tree.symbol),boundary)
+        traverse(rhs,FstMode,boundary)
 
       case If(cond, thenp, elsep) =>
-        traverse(cond,2,boundary)
+        traverse(cond,SndMode,boundary)
         traverse(thenp,m,boundary)
         traverse(elsep,m,boundary)
 
@@ -176,7 +188,7 @@ abstract class EscLocal extends PluginComponent with Transform with
         traverse(rhs,m,boundary)
 
       case TypeDef(mods, name, tparams, rhs) =>
-        traverse(rhs,1,boundary) // 1?
+        traverse(rhs,FstMode,boundary) // 1?
 
       case ValDef(mods, name, tpt, rhs) =>
         //println(s"--- recurse $m val: ${tree.symbol}")
@@ -189,17 +201,18 @@ abstract class EscLocal extends PluginComponent with Transform with
         //println(s"--- recurse $m def: ${tree.symbol}")
 
         // if this def is 1st class, take it as new boundary
-        val boundary1 = if (symMode(tree.symbol) == 1) tree.symbol else boundary
+        val boundary1 = tree.symbol::boundary
         // function bodies are always 1st class
-        traverse(rhs,1,boundary1)
+        traverse(rhs,FstMode,boundary1)
 
       case Function(vparams, body) =>
         //println(s"--- recurse $m func: ${tree.tpe}")
 
         // if this def is 1st class, take it as new boundary
-        val boundary1 = if (m == 1) tree.symbol else boundary
+        tree.symbol.addAnnotation(newLocalMarker(m))
+        val boundary1 = tree.symbol::boundary
         // function bodies are always 1st class
-        traverse(body,1,boundary1)
+        traverse(body,FstMode,boundary1)
 
 
       // Look for SAM closure corresponding to `->`
@@ -231,17 +244,18 @@ abstract class EscLocal extends PluginComponent with Transform with
           
           // add @local annotation to closure parameter
           val List(List(bvparam)) = bvparamss
-          bvparam.symbol.addAnnotation(newLocalMarker)
+          bvparam.symbol.addAnnotation(newLocalMarker(SndMode)) // TODO: more precise type?
 
           // if this def is 1st class, take it as new boundary
-          val boundary1 = if (m == 1) bd.symbol else boundary
+          bd.symbol.addAnnotation(newLocalMarker(m))
+          val boundary1 = bd.symbol::boundary
 
           // go and check body
-          traverse(brhs,1,boundary)
+          traverse(brhs,FstMode,boundary)
 
 
       case Block(stats, expr) =>
-        stats.foreach(s => traverse(s,2,boundary))
+        stats.foreach(s => traverse(s,SndMode,boundary))
         traverse(expr,m,boundary)
 
       case This(qual) => // TODO: ok?
@@ -256,24 +270,24 @@ abstract class EscLocal extends PluginComponent with Transform with
       case EmptyTree =>
 
       case Super(qual, mix) =>
-        traverse(qual,1,boundary) // 1?
+        traverse(qual,FstMode,boundary) // 1?
 
       case Throw(expr) =>
 
         if (isCheckedException(expr.tpe))
           reporter.warning(expr.pos, "checked exception")
 
-        traverse(expr,1,boundary) // escapes
+        traverse(expr,FstMode,boundary) // escapes
 
       case Return(expr) =>
-        traverse(expr,1,boundary) // escapes
+        traverse(expr,FstMode,boundary) // escapes
 
       case Import(expr, selectors) =>
-        traverse(expr,1,boundary) // 1?
+        traverse(expr,FstMode,boundary) // 1?
 
 
       case Match(selector, cases) =>        
-        traverse(selector,1,boundary)
+        traverse(selector,FstMode,boundary)
         cases foreach { case cd @ CaseDef(pat, guard, body) =>
           traverse(body,m,boundary)
         }
@@ -288,7 +302,7 @@ abstract class EscLocal extends PluginComponent with Transform with
 
       case ClassDef(mods, name, params, impl) =>
         //println(s"--- recurse $m class: ${tree.symbol}")
-        traverse(impl,1,boundary)
+        traverse(impl,FstMode,boundary)
        
       case Template(parents, self, body) =>
         // perform a crude RefChecks run:
@@ -309,15 +323,19 @@ abstract class EscLocal extends PluginComponent with Transform with
           val memberM = argModes(member.tpe)
           val otherM = argModes(other.tpe)
 
-          // if (memberM.contains(2) || otherM.contains(2)) {
-          //   println("checkk overriding " + pair.high.fullLocationString + " with " + pair.low.fullLocationString)
-          // }
+          def compare(a: Type, b: Type) = {
+            val a1 = a.asSeenFrom(pair.rootType,a.typeSymbol.owner)
+            val b1 = b.asSeenFrom(pair.rootType,b.typeSymbol.owner)
+            val res = a1 <:< b1
+            //println(s"$a1 <:<: $b1 = $res")
+            res
+          }
 
-          val allOK = memberM.length == otherM.length && map2(memberM,otherM)(_ >= _).forall(x=>x)
+          val allOK = memberM.length == otherM.length && map2(otherM,memberM)(compare).forall(x=>x)
           if (!allOK) {
             val fullmsg = "overriding " + pair.high.fullLocationString + " with " + pair.low.fullLocationString + ":\n" +
             s"some @local annotations on arguments have been dropped" + "\n" +
-            member.tpe + "/" + memberM + "..." + other.tpe + "/" + otherM
+            s"member: ${memberM.mkString(",")} parent: ${otherM.mkString(",")}"
             reporter.error(member.pos, fullmsg)
           }
           // require that either both have @local annotation on member or none
@@ -336,14 +354,14 @@ abstract class EscLocal extends PluginComponent with Transform with
         }
 
         // now check body (TODO: 2? 1?)
-        body.foreach(s => traverse(s,2,boundary))
+        body.foreach(s => traverse(s,SndMode,boundary))
 
 
       case ModuleDef(mods, name, impl) =>
-        traverse(impl,1,boundary)
+        traverse(impl,FstMode,boundary)
 
       case PackageDef(pid, stats) =>
-        stats.foreach(s => traverse(s,2,boundary))
+        stats.foreach(s => traverse(s,SndMode,boundary))
 
 
       case _ =>
@@ -355,7 +373,7 @@ abstract class EscLocal extends PluginComponent with Transform with
       case _ => //DefDef(mods, name, tparams, vparamss, tpt, rhs) if !tree.symbol.isConstructor =>
         //if (name.toString contains "test") {
         //println(s"start def: ${tree.symbol}")
-        traverse(tree,0,NoSymbol)
+        traverse(tree,FstMode,Nil)
         tree
         //} else
         //super.transform(tree)
