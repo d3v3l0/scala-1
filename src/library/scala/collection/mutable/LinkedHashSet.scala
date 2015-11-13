@@ -46,6 +46,9 @@ class LinkedHashSet[A] extends AbstractSet[A]
                           with HashTable[A, LinkedHashSet.Entry[A]]
                           with Serializable
 {
+  override protected type LT = Any
+  override protected type plocal = local[LT]
+
   override def companion: GenericCompanion[LinkedHashSet] = LinkedHashSet
 
   type Entry = LinkedHashSet.Entry[A]
@@ -144,4 +147,3 @@ object LinkedHashSet extends MutableSetFactory[LinkedHashSet] {
     var later: Entry[A] = null
   }
 }
-

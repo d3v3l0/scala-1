@@ -71,13 +71,13 @@ extends scala.collection.mutable.AbstractBuffer[T]
   // The below would allow more flexible behavior without requiring inheritance
   // that is risky because all the important internals are private.
   // private var myLengthPolicy: Int => Int = x => x
-  // 
+  //
   // /** Specifies how the array lengths should vary.
-  //   * 
+  //   *
   //   *  By default,  `UnrolledBuffer` uses arrays of a fixed size.  A length
   //   *  policy can be given that changes this scheme to, for instance, an
   //   *  exponential growth.
-  //   * 
+  //   *
   //   *  @param nextLength   computes the length of the next array from the length of the latest one
   //   */
   // def setLengthPolicy(nextLength: Int => Int): Unit = { myLengthPolicy = nextLength }
@@ -142,7 +142,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
   }
 
   // this should be faster than the iterator
-  override def foreach[U](@local f: T => U) = headptr.foreach(f)
+  override def foreach[U](@plocal f: T => U) = headptr.foreach(f)
 
   def result = this
 
@@ -232,7 +232,7 @@ object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
       next = new Unrolled[T](0, new Array[T](nextlength), null, buff)
       next append elem
     }
-    def foreach[U](@local f: T => U) {
+    def foreach[U](@local[Any] f: T => U) {
       var unrolled = this
       var i = 0
       while (unrolled ne null) {

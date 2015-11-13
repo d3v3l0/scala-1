@@ -48,6 +48,7 @@ extends AbstractMap[A, B]
   initWithContents(contents)
 
   type Entry = DefaultEntry[A, B]
+  override protected type plocal = local[LT]
 
   override def empty: HashMap[A, B] = HashMap.empty[A, B]
   override def clear() { clearTable() }
@@ -144,7 +145,7 @@ extends AbstractMap[A, B]
 
   private def readObject(in: java.io.ObjectInputStream) {
   ESC.TRY{cc=>
-    init(in, 
+    init(in,
       ESC.THROW{createNewEntry(in.readObject().asInstanceOf[A], in.readObject())}(cc))(cc)
   }}
 

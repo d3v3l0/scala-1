@@ -49,7 +49,10 @@ import scala.language.higherKinds
  */
 trait GenTraversableOnce[+A] extends Any {
 
-  def foreach[U](@local f: A => U): Unit
+  protected type LT
+  protected type plocal = local[LT]
+
+  def foreach[U](@plocal f: A => U): Unit
 
   def hasDefiniteSize: Boolean
 
@@ -92,7 +95,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @throws UnsupportedOperationException
    *  if this $coll is empty.
    */
-  def reduce[A1 >: A](@local op: (A1, A1) => A1): A1
+  def reduce[A1 >: A](@plocal op: (A1, A1) => A1): A1
 
   /** Reduces the elements of this $coll, if any, using the specified
    *  associative binary operator.
@@ -104,7 +107,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @return        An option value containing result of applying reduce operator `op` between all
    *                 the elements if the collection is nonempty, and `None` otherwise.
    */
-  def reduceOption[A1 >: A](@local op: (A1, A1) => A1): Option[A1]
+  def reduceOption[A1 >: A](@plocal op: (A1, A1) => A1): Option[A1]
 
   /** Folds the elements of this $coll using the specified associative
    *  binary operator.
@@ -118,7 +121,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @param op      a binary operator that must be associative
    *  @return        the result of applying fold operator `op` between all the elements and `z`
    */
-  def fold[A1 >: A](z: A1)(@local op: (A1, A1) => A1): A1
+  def fold[A1 >: A](z: A1)(@plocal op: (A1, A1) => A1): A1
 
   /** Applies a binary operator to a start value and all elements of this $coll,
    *  going left to right.
@@ -153,7 +156,7 @@ trait GenTraversableOnce[+A] extends Any {
    *           }}}
    *           where `x,,1,,, ..., x,,n,,` are the elements of this $coll.
    */
-  def /:[B](z: B)(@local op: (B, A) => B): B
+  def /:[B](z: B)(@plocal op: (B, A) => B): B
 
   /** Applies a binary operator to all elements of this $coll and a start value,
    *  going right to left.
@@ -188,7 +191,7 @@ trait GenTraversableOnce[+A] extends Any {
    *           }}}
    *           where `x,,1,,, ..., x,,n,,` are the elements of this $coll.
    */
-  def :\[B](z: B)(@local op: (A, B) => B): B
+  def :\[B](z: B)(@plocal op: (A, B) => B): B
 
   /** Applies a binary operator to a start value and all elements of this $coll,
    *  going left to right.
@@ -206,7 +209,7 @@ trait GenTraversableOnce[+A] extends Any {
    *           }}}
    *           where `x,,1,,, ..., x,,n,,` are the elements of this $coll.
    */
-  def foldLeft[B](z: B)(@local op: (B, A) => B): B
+  def foldLeft[B](z: B)(@plocal op: (B, A) => B): B
 
   /** Applies a binary operator to all elements of this $coll and a start value,
    *  going right to left.
@@ -223,7 +226,7 @@ trait GenTraversableOnce[+A] extends Any {
    *           }}}
    *           where `x,,1,,, ..., x,,n,,` are the elements of this $coll.
    */
-  def foldRight[B](z: B)(@local op: (A, B) => B): B
+  def foldRight[B](z: B)(@plocal op: (A, B) => B): B
 
   /** Aggregates the results of applying an operator to subsequent elements.
    *
@@ -254,7 +257,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @param seqop     an operator used to accumulate results within a partition
    *  @param combop    an associative operator used to combine results from different partitions
    */
-  def aggregate[B](z: =>B)(@local seqop: (B, A) => B, @local combop: (B, B) => B): B
+  def aggregate[B](z: =>B)(@plocal seqop: (B, A) => B, @plocal combop: (B, B) => B): B
 
   /** Applies a binary operator to all elements of this $coll, going right to left.
    *  $willNotTerminateInf
@@ -270,7 +273,7 @@ trait GenTraversableOnce[+A] extends Any {
    *           where `x,,1,,, ..., x,,n,,` are the elements of this $coll.
    *  @throws UnsupportedOperationException if this $coll is empty.
    */
-  def reduceRight[B >: A](@local op: (A, B) => B): B
+  def reduceRight[B >: A](@plocal op: (A, B) => B): B
 
   /** Optionally applies a binary operator to all elements of this $coll, going left to right.
    *  $willNotTerminateInf
@@ -281,7 +284,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @return  an option value containing the result of `reduceLeft(op)` if this $coll is nonempty,
    *           `None` otherwise.
    */
-  def reduceLeftOption[B >: A](@local op: (B, A) => B): Option[B]
+  def reduceLeftOption[B >: A](@plocal op: (B, A) => B): Option[B]
 
   /** Optionally applies a binary operator to all elements of this $coll, going
    *  right to left.
@@ -293,7 +296,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @return  an option value containing the result of `reduceRight(op)` if this $coll is nonempty,
    *           `None` otherwise.
    */
-  def reduceRightOption[B >: A](@local op: (A, B) => B): Option[B]
+  def reduceRightOption[B >: A](@plocal op: (A, B) => B): Option[B]
 
   /** Counts the number of elements in the $coll which satisfy a predicate.
    *
@@ -376,7 +379,7 @@ trait GenTraversableOnce[+A] extends Any {
    *
    *    @return   the first element of this $coll with the largest value measured by function f.
    */
-  def maxBy[B](@local f: A => B)(implicit cmp: Ordering[B]): A
+  def maxBy[B](@plocal f: A => B)(implicit cmp: Ordering[B]): A
 
   /** Finds the first element which yields the smallest value measured by function f.
    *
@@ -391,7 +394,7 @@ trait GenTraversableOnce[+A] extends Any {
    *
    *    @return   the first element of this $coll with the smallest value measured by function f.
    */
-  def minBy[B](@local f: A => B)(implicit cmp: Ordering[B]): A
+  def minBy[B](@plocal f: A => B)(implicit cmp: Ordering[B]): A
 
   def forall(pred: A => Boolean): Boolean
 
@@ -406,7 +409,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @return        an option value containing the first element in the $coll
    *                 that satisfies `p`, or `None` if none exists.
    */
-  def find(@local pred: A => Boolean): Option[A]
+  def find(@plocal pred: A => Boolean): Option[A]
 
   /** Copies values of this $coll to an array.
    *  Fills the given array `xs` with values of this $coll.

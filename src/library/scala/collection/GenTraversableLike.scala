@@ -156,7 +156,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return        collection with intermediate results
    */
   @migration("The behavior of `scanRight` has changed. The previous behavior can be reproduced with scanRight.reverse.", "2.9.0")
-  def scanRight[B, That](z: B)(@local @local op: (A, B) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def scanRight[B, That](z: B)(@plocal @plocal op: (A, B) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
 
   /** Applies a function `f` to all elements of this $coll.
    *
@@ -170,7 +170,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @usecase def foreach(f: A => Unit): Unit
    *    @inheritdoc
    */
-  def foreach[U](@local f: A => U): Unit
+  def foreach[U](@plocal f: A => U): Unit
 
   /** Builds a new collection by applying a function to all elements of this $coll.
    *
@@ -186,7 +186,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *    @return       a new $coll resulting from applying the given function
    *                  `f` to each element of this $coll and collecting the results.
    */
-  def map[B, That](@local f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
 
   /** Builds a new collection by applying a partial function to all elements of this $coll
    *  on which the function is defined.
@@ -269,16 +269,16 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *    {{{
    *      scala> val a = List(1)
    *      a: List[Int] = List(1)
-   *      
+   *
    *      scala> val b = List(2)
    *      b: List[Int] = List(2)
-   *      
+   *
    *      scala> val c = a ++ b
    *      c: List[Int] = List(1, 2)
-   *      
+   *
    *      scala> val d = List('a')
    *      d: List[Char] = List(a)
-   *      
+   *
    *      scala> val e = c ++ d
    *      e: List[AnyVal] = List(1, 2, a)
    *    }}}

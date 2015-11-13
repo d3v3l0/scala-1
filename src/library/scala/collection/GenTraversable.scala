@@ -23,6 +23,7 @@ extends GenTraversableLike[A, GenTraversable[A]]
    with GenTraversableOnce[A]
    with GenericTraversableTemplate[A, GenTraversable]
 {
+
   def seq: Traversable[A]
   def companion: GenericCompanion[GenTraversable] = GenTraversable
 }

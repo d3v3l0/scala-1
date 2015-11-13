@@ -52,6 +52,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
                              with HashTable[A, LinkedEntry[A, B]]
                              with Serializable
 {
+  override protected type plocal = local[LT]
 
   override def empty = LinkedHashMap.empty[A, B]
   override def size = tableSize
@@ -176,7 +177,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
     firstEntry = null
     lastEntry = null
     init(in, createNewEntry(
-      ESC.THROW(in.readObject().asInstanceOf[A])(cc), 
+      ESC.THROW(in.readObject().asInstanceOf[A])(cc),
       ESC.THROW(in.readObject())(cc)))(cc)
   }}
 }
