@@ -77,7 +77,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
 
 
   override /*IterableLike*/
-  def forall(p: A => Boolean): Boolean = {
+  def forall(@plocal p: A => Boolean): Boolean = {
     var these = this
     while (!these.isEmpty) {
       if (!p(these.head)) return false
@@ -87,7 +87,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def exists(p: A => Boolean): Boolean = {
+  def exists(@plocal p: A => Boolean): Boolean = {
     var these = this
     while (!these.isEmpty) {
       if (p(these.head)) return true
@@ -107,7 +107,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def find(p: A => Boolean): Option[A] = {
+  def find(@plocal p: A => Boolean): Option[A] = {
     var these = this
     while (!these.isEmpty) {
       if (p(these.head)) return Some(these.head)
@@ -225,7 +225,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def takeWhile(p: A => Boolean): Repr = {
+  def takeWhile(@plocal p: A => Boolean): Repr = {
     val b = newBuilder
     var these = this
     while (!these.isEmpty && p(these.head)) {
@@ -236,7 +236,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*TraversableLike*/
-  def span(p: A => Boolean): (Repr, Repr) = {
+  def span(@plocal p: A => Boolean): (Repr, Repr) = {
     var these: Repr = repr
     val b = newBuilder
     while (!these.isEmpty && p(these.head)) {

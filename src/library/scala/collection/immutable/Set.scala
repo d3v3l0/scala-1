@@ -78,13 +78,13 @@ object Set extends ImmutableSetFactory[Set] {
     override def foreach[U](f: A =>  U): Unit = {
       f(elem1)
     }
-    override def exists(f: A => Boolean): Boolean = {
+    override def exists(@plocal f: A => Boolean): Boolean = {
       f(elem1)
     }
-    override def forall(f: A => Boolean): Boolean = {
+    override def forall(@plocal f: A => Boolean): Boolean = {
       f(elem1)
     }
-    override def find(f: A => Boolean): Option[A] = {
+    override def find(@plocal f: A => Boolean): Option[A] = {
       if (f(elem1)) Some(elem1)
       else None
     }
@@ -110,13 +110,13 @@ object Set extends ImmutableSetFactory[Set] {
     override def foreach[U](f: A =>  U): Unit = {
       f(elem1); f(elem2)
     }
-    override def exists(f: A => Boolean): Boolean = {
+    override def exists(@plocal f: A => Boolean): Boolean = {
       f(elem1) || f(elem2)
     }
-    override def forall(f: A => Boolean): Boolean = {
+    override def forall(@plocal f: A => Boolean): Boolean = {
       f(elem1) && f(elem2)
     }
-    override def find(f: A => Boolean): Option[A] = {
+    override def find(@plocal f: A => Boolean): Option[A] = {
       if (f(elem1)) Some(elem1)
       else if (f(elem2)) Some(elem2)
       else None
@@ -144,13 +144,13 @@ object Set extends ImmutableSetFactory[Set] {
     override def foreach[U](f: A =>  U): Unit = {
       f(elem1); f(elem2); f(elem3)
     }
-    override def exists(f: A => Boolean): Boolean = {
+    override def exists(@plocal f: A => Boolean): Boolean = {
       f(elem1) || f(elem2) || f(elem3)
     }
-    override def forall(f: A => Boolean): Boolean = {
+    override def forall(@plocal f: A => Boolean): Boolean = {
       f(elem1) && f(elem2) && f(elem3)
     }
-    override def find(f: A => Boolean): Option[A] = {
+    override def find(@plocal f: A => Boolean): Option[A] = {
       if (f(elem1)) Some(elem1)
       else if (f(elem2)) Some(elem2)
       else if (f(elem3)) Some(elem3)
@@ -180,13 +180,13 @@ object Set extends ImmutableSetFactory[Set] {
     override def foreach[U](f: A =>  U): Unit = {
       f(elem1); f(elem2); f(elem3); f(elem4)
     }
-    override def exists(f: A => Boolean): Boolean = {
+    override def exists(@plocal f: A => Boolean): Boolean = {
       f(elem1) || f(elem2) || f(elem3) || f(elem4)
     }
-    override def forall(f: A => Boolean): Boolean = {
+    override def forall(@plocal f: A => Boolean): Boolean = {
       f(elem1) && f(elem2) && f(elem3) && f(elem4)
     }
-    override def find(f: A => Boolean): Option[A] = {
+    override def find(@plocal f: A => Boolean): Option[A] = {
       if (f(elem1)) Some(elem1)
       else if (f(elem2)) Some(elem2)
       else if (f(elem3)) Some(elem3)

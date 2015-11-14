@@ -37,10 +37,10 @@ trait TraversableForwarder[+A] extends Traversable[A] {
   override def nonEmpty: Boolean = underlying.nonEmpty
   override def size: Int = underlying.size
   override def hasDefiniteSize = underlying.hasDefiniteSize
-  override def forall(p: A => Boolean): Boolean = underlying forall p
-  override def exists(p: A => Boolean): Boolean = underlying exists p
-  override def count(p: A => Boolean): Int = underlying count p
-  override def find(p: A => Boolean): Option[A] = underlying find p
+  override def forall(@plocal p: A => Boolean): Boolean = underlying forall p
+  override def exists(@plocal p: A => Boolean): Boolean = underlying exists p
+  override def count(@plocal p: A => Boolean): Int = underlying count p
+  override def find(@plocal p: A => Boolean): Option[A] = underlying find p
   override def foldLeft[B](z: B)(@plocal op: (B, A) => B): B = underlying.foldLeft(z)(op)
   override def /: [B](z: B)(op: (B, A) => B): B = underlying./:(z)(op)
   override def foldRight[B](z: B)(op: (A, B) => B): B = underlying.foldRight(z)(op)
