@@ -40,13 +40,13 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*IterableLike*/
-  def forall(p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = true) == length
+  def forall(@plocal p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = true) == length
 
   override /*IterableLike*/
-  def exists(p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = false) != length
+  def exists(@plocal p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = false) != length
 
   override /*IterableLike*/
-  def find(p: A => Boolean): Option[A] = {
+  def find(@plocal p: A => Boolean): Option[A] = {
     val i = prefixLength(!p(_))
     if (i < length) Some(this(i)) else None
   }
@@ -150,13 +150,13 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def splitAt(n: Int): (Repr, Repr) = (take(n), drop(n))
 
   override /*IterableLike*/
-  def takeWhile(p: A => Boolean): Repr = take(prefixLength(p))
+  def takeWhile(@plocal p: A => Boolean): Repr = take(prefixLength(p))
 
   override /*TraversableLike*/
-  def dropWhile(p: A => Boolean): Repr = drop(prefixLength(p))
+  def dropWhile(@plocal p: A => Boolean): Repr = drop(prefixLength(p))
 
   override /*TraversableLike*/
-  def span(p: A => Boolean): (Repr, Repr) = splitAt(prefixLength(p))
+  def span(@plocal p: A => Boolean): (Repr, Repr) = splitAt(prefixLength(p))
 
   override /*IterableLike*/
   def sameElements[B >: A](that: GenIterable[B]): Boolean = that match {

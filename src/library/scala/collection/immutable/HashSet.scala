@@ -169,12 +169,12 @@ class HashSet[A] extends AbstractSet[A]
   @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
   override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
 
-  override def filter(p: A => Boolean) = {
+  override def filter(@plocal p: A => Boolean) = {
     val buffer = new Array[HashSet[A]](bufferSize(size))
     nullToEmpty(filter0(p, false, 0, buffer, 0))
   }
 
-  override def filterNot(p: A => Boolean) = {
+  override def filterNot(@plocal p: A => Boolean) = {
     val buffer = new Array[HashSet[A]](bufferSize(size))
     nullToEmpty(filter0(p, true, 0, buffer, 0))
   }

@@ -250,7 +250,7 @@ extends scala.collection.AbstractSeq[Int]
   // based on the given value.
   private def newEmptyRange(value: Int) = new Range(value, value, step)
 
-  final override def takeWhile(p: Int => Boolean): Range = {
+  final override def takeWhile(@plocal p: Int => Boolean): Range = {
     val stop = argTakeWhile(p)
     if (stop==start) newEmptyRange(start)
     else {
@@ -259,7 +259,7 @@ extends scala.collection.AbstractSeq[Int]
       else new Range.Inclusive(start, x, step)
     }
   }
-  final override def dropWhile(p: Int => Boolean): Range = {
+  final override def dropWhile(@plocal p: Int => Boolean): Range = {
     val stop = argTakeWhile(p)
     if (stop == start) this
     else {
@@ -268,7 +268,7 @@ extends scala.collection.AbstractSeq[Int]
       else new Range.Inclusive(x + step, last, step)
     }
   }
-  final override def span(p: Int => Boolean): (Range, Range) = {
+  final override def span(@plocal p: Int => Boolean): (Range, Range) = {
     val border = argTakeWhile(p)
     if (border == start) (newEmptyRange(start), this)
     else {

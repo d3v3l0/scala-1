@@ -512,7 +512,7 @@ self =>
    * // produces
    * }}}
    */
-  override def filter(p: A => Boolean): Stream[A] = {
+  override def filter(@plocal p: A => Boolean): Stream[A] = {
     // optimization: drop leading prefix of elems for which f returns false
     // var rest = this dropWhile (!p(_)) - forget DRY principle - GC can't collect otherwise
     var rest = this
@@ -522,7 +522,7 @@ self =>
     else Stream.Empty
   }
 
-  override final def withFilter(p: A => Boolean): StreamWithFilter = new StreamWithFilter(p)
+  override final def withFilter(@plocal p: A => Boolean): StreamWithFilter = new StreamWithFilter(p)
 
   /** A lazier implementation of WithFilter than TraversableLike's.
    */
@@ -570,7 +570,7 @@ self =>
       for (x <- self)
         if (p(x)) f(x)
 
-    override def withFilter(q: A => Boolean): StreamWithFilter =
+    override def withFilter(@plocal q: A => Boolean): StreamWithFilter =
       new StreamWithFilter(x => p(x) && q(x))
   }
 
@@ -647,7 +647,7 @@ self =>
    * }}}
    *
    */
-  override def partition(p: A => Boolean): (Stream[A], Stream[A]) = (filter(p(_)), filterNot(p(_)))
+  override def partition(@plocal p: A => Boolean): (Stream[A], Stream[A]) = (filter(p(_)), filterNot(p(_)))
 
   /** Returns a stream formed from this stream and the specified stream `that`
    * by associating each element of the former with the element at the same
@@ -937,7 +937,7 @@ self =>
    * produces: "0, 1, 2, 3, 4"
    * }}}
    */
-  override def takeWhile(p: A => Boolean): Stream[A] =
+  override def takeWhile(@plocal p: A => Boolean): Stream[A] =
     if (!isEmpty && p(head)) cons(head, tail takeWhile p)
     else Stream.Empty
 
@@ -958,7 +958,7 @@ self =>
    * // produces: "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20"
    * }}}
    */
-  override def dropWhile(p: A => Boolean): Stream[A] = {
+  override def dropWhile(@plocal p: A => Boolean): Stream[A] = {
     var these: Stream[A] = this
     while (!these.isEmpty && p(these.head)) these = these.tail
     these

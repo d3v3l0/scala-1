@@ -34,7 +34,7 @@ extends AbstractSet[A]
 
   override def foreach[U](f: A =>  U): Unit = set.foreach(f)
 
-  override def exists(p: A => Boolean): Boolean = set.exists(p)
+  override def exists(@plocal p: A => Boolean): Boolean = set.exists(p)
 
   override def toList: List[A] = set.toList
 

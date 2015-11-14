@@ -549,7 +549,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param pred     predicate used to test the elements
    *  @return         an option value with the element if such an element exists, or `None` otherwise
    */
-  def find(pred: T => Boolean): Option[T] = {
+  def find(@plocal pred: T => Boolean): Option[T] = {
     tasksupport.executeAndWaitResult(new Find(pred, splitter assign new DefaultSignalling with VolatileAbort))
   }
 

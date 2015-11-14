@@ -111,9 +111,9 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
     while (it.hasNext && p(it.next())) result += 1
     result
   }
-  override def dropWhile(p: ((A, B)) => Boolean) = drop(countWhile(p))
-  override def takeWhile(p: ((A, B)) => Boolean) = take(countWhile(p))
-  override def span(p: ((A, B)) => Boolean) = splitAt(countWhile(p))
+  override def dropWhile(@plocal p: ((A, B)) => Boolean) = drop(countWhile(p))
+  override def takeWhile(@plocal p: ((A, B)) => Boolean) = take(countWhile(p))
+  override def span(@plocal p: ((A, B)) => Boolean) = splitAt(countWhile(p))
 
   /** A factory to create empty maps of the same type of keys.
    */

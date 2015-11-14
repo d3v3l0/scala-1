@@ -263,16 +263,16 @@ trait TraversableViewLike[+A,
   protected def newTaken(n: Int): Transformed[A] = newSliced(SliceInterval(0, n))
   protected def newDropped(n: Int): Transformed[A] = newSliced(SliceInterval(n, Int.MaxValue))
 
-  override def filter(p: A => Boolean): This = newFiltered(p)
-  override def withFilter(p: A => Boolean): This = newFiltered(p)
-  override def partition(p: A => Boolean): (This, This) = (newFiltered(p), newFiltered(!p(_)))
+  override def filter(@plocal p: A => Boolean): This = newFiltered(p)
+  override def withFilter(@plocal p: A => Boolean): This = newFiltered(p)
+  override def partition(@plocal p: A => Boolean): (This, This) = (newFiltered(p), newFiltered(!p(_)))
   override def init: This = newSliced(SliceInterval(0, size - 1)) // !!! can't call size here.
   override def drop(n: Int): This = newDropped(n)
   override def take(n: Int): This = newTaken(n)
   override def slice(from: Int, until: Int): This = newSliced(SliceInterval(from, until))
-  override def dropWhile(p: A => Boolean): This = newDroppedWhile(p)
-  override def takeWhile(p: A => Boolean): This = newTakenWhile(p)
-  override def span(p: A => Boolean): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
+  override def dropWhile(@plocal p: A => Boolean): This = newDroppedWhile(p)
+  override def takeWhile(@plocal p: A => Boolean): This = newTakenWhile(p)
+  override def span(@plocal p: A => Boolean): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
   override def splitAt(n: Int): (This, This) = (newTaken(n), newDropped(n))
 
   override def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[This, B, That]): That =
@@ -291,7 +291,7 @@ trait TraversableViewLike[+A,
   override def unzip3[A1, A2, A3](implicit asTriple: A => (A1, A2, A3)) =
     (newMapped(x => asTriple(x)._1), newMapped(x => asTriple(x)._2), newMapped(x => asTriple(x)._3))  // TODO - Performance improvements.
 
-  override def filterNot(p: (A) => Boolean): This =
+  override def filterNot(@plocal p: (A) => Boolean): This =
     newFiltered(a => !(p(a)))
 
   override def inits: Iterator[This] =
