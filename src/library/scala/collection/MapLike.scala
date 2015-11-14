@@ -63,6 +63,8 @@ trait MapLike[A, +B, +This <: MapLike[A, B, This] with Map[A, B]]
 {
 self =>
 
+  type LT
+
   /** The empty map of the same type as this map
    *   @return   an empty map of type `This`.
    */

@@ -51,6 +51,8 @@ import scala.annotation.unchecked.uncheckedVariance
 trait IterableLike[+A, +Repr] extends Any with Equals with TraversableLike[A, Repr] with GenIterableLike[A, Repr] {
 self =>
 
+  type LT
+
   override protected[this] def thisCollection: Iterable[A] = this.asInstanceOf[Iterable[A]]
   override protected[this] def toCollection(repr: Repr): Iterable[A] = repr.asInstanceOf[Iterable[A]]
 
@@ -83,8 +85,8 @@ self =>
     iterator.foldRight(z)(op)
   override /*TraversableLike*/ def reduceRight[B >: A](op: (A, B) => B): B =
     iterator.reduceRight(op)
-    
-  
+
+
   /** Returns this $coll as an iterable collection.
    *
    *  A new collection will not be built; lazy collections will stay lazy.
@@ -94,7 +96,7 @@ self =>
    */
   override /*TraversableLike*/ def toIterable: Iterable[A] =
     thisCollection
-  
+
   /** Returns an Iterator over the elements in this $coll.  Produces the same
    *  result as `iterator`.
    *  $willNotTerminateInf
@@ -102,7 +104,7 @@ self =>
    */
   @deprecatedOverriding("toIterator should stay consistent with iterator for all Iterables: override iterator instead.", "2.11.0")
   override def toIterator: Iterator[A] = iterator
-  
+
   override /*TraversableLike*/ def head: A =
     iterator.next()
 
