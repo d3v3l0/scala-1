@@ -28,6 +28,7 @@ import scala.language.higherKinds
  *  @define Coll  Traversable
  */
 trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
+  type LT
 
   /** Applies a function `f` to all elements of this $coll.
    *
@@ -229,4 +230,3 @@ trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[X]] extends HasNew
     bb.result()
   }
 }
-
