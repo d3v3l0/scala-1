@@ -283,7 +283,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   def isDefinedAt(x: Int): Boolean = x >= 0 && lengthCompare(x) > 0
 
   override /*SeqLike*/
-  def segmentLength(p: A => Boolean, from: Int): Int = {
+  def segmentLength(@plocal p: A => Boolean, from: Int): Int = {
     var i = 0
     var these = this drop from
     while (!these.isEmpty && p(these.head)) {
