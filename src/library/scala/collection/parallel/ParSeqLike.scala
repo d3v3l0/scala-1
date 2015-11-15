@@ -104,7 +104,7 @@ self =>
    *  @return      the length of the longest segment of elements starting at `from` and
    *               satisfying the predicate
    */
-  def segmentLength(p: T => Boolean, from: Int): Int = if (from >= length) 0 else {
+  def segmentLength(@plocal p: T => Boolean, from: Int): Int = if (from >= length) 0 else {
     val realfrom = if (from < 0) 0 else from
     val ctx = new DefaultSignalling with AtomicIndexFlag
     ctx.setIndexFlag(Int.MaxValue)

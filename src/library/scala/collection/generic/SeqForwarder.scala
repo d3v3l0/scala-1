@@ -34,8 +34,8 @@ trait SeqForwarder[+A] extends Seq[A] with IterableForwarder[A] {
   override def apply(idx: Int): A = underlying.apply(idx)
   override def lengthCompare(len: Int): Int = underlying lengthCompare len
   override def isDefinedAt(x: Int): Boolean = underlying isDefinedAt x
-  override def segmentLength(p: A => Boolean, from: Int): Int = underlying.segmentLength(p, from)
-  override def prefixLength(p: A => Boolean) = underlying prefixLength p
+  override def segmentLength(@plocal p: A => Boolean, from: Int): Int = underlying.segmentLength(p, from)
+  override def prefixLength(@plocal p: A => Boolean) = underlying prefixLength p
   override def indexWhere(p: A => Boolean): Int = underlying indexWhere p
   override def indexWhere(p: A => Boolean, from: Int): Int = underlying.indexWhere(p, from)
   override def indexOf[B >: A](elem: B): Int = underlying indexOf elem

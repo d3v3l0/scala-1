@@ -151,7 +151,7 @@ self =>
       c
     }
 
-    private def count_quick(p: T => Boolean, a: Array[Any], ntil: Int, from: Int) = {
+    private def count_quick(@plocal p: T => Boolean, a: Array[Any], ntil: Int, from: Int) = {
       var cnt = 0
       var j = from
       while (j < ntil) {
@@ -233,7 +233,7 @@ self =>
     }
 
     // it's faster to use a separate small method
-    private def forall_quick(p: T => Boolean, a: Array[Any], nextuntil: Int, start: Int): Boolean = {
+    private def forall_quick(@plocal p: T => Boolean, a: Array[Any], nextuntil: Int, start: Int): Boolean = {
       var j = start
       while (j < nextuntil) {
         if (p(a(j).asInstanceOf[T])) j += 1
@@ -261,7 +261,7 @@ self =>
     }
 
     // faster to use separate small method
-    private def exists_quick(p: T => Boolean, a: Array[Any], nextuntil: Int, start: Int): Boolean = {
+    private def exists_quick(@plocal p: T => Boolean, a: Array[Any], nextuntil: Int, start: Int): Boolean = {
       var j = start
       while (j < nextuntil) {
         if (p(a(j).asInstanceOf[T])) return true
@@ -289,7 +289,7 @@ self =>
       r
     }
 
-    private def find_quick(p: T => Boolean, a: Array[Any], nextuntil: Int, start: Int): Option[T] = {
+    private def find_quick(@plocal p: T => Boolean, a: Array[Any], nextuntil: Int, start: Int): Option[T] = {
       var j = start
       while (j < nextuntil) {
         val elem = a(j).asInstanceOf[T]
@@ -310,13 +310,13 @@ self =>
       i += totallen
     }
 
-    override def prefixLength(pred: T => Boolean): Int = {
+    override def prefixLength(@plocal pred: T => Boolean): Int = {
       val r = prefixLength_quick(pred, arr, until, i)
       i += r + 1
       r
     }
 
-    private def prefixLength_quick(pred: T => Boolean, a: Array[Any], ntil: Int, startpos: Int): Int = {
+    private def prefixLength_quick(@plocal pred: T => Boolean, a: Array[Any], ntil: Int, startpos: Int): Int = {
       var j = startpos
       var endpos = ntil
       while (j < endpos) {
@@ -333,7 +333,7 @@ self =>
       ret
     }
 
-    private def indexWhere_quick(pred: T => Boolean, a: Array[Any], ntil: Int, from: Int): Int = {
+    private def indexWhere_quick(@plocal pred: T => Boolean, a: Array[Any], ntil: Int, from: Int): Int = {
       var j = from
       var pos = -1
       while (j < ntil) {

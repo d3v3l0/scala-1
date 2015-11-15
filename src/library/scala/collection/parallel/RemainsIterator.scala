@@ -294,7 +294,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
 
   /* accessors */
 
-  def prefixLength(pred: T => Boolean): Int = {
+  def prefixLength(@plocal pred: T => Boolean): Int = {
     var total = 0
     var loop = true
     while (hasNext && loop) {

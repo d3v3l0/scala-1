@@ -35,7 +35,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
     while (i < len) { f(this(i)); i += 1 }
   }
 
-  private def prefixLengthImpl(p: A => Boolean, expectTrue: Boolean): Int = {
+  private def prefixLengthImpl(@plocal p: A => Boolean, expectTrue: Boolean): Int = {
     var i = 0
     while (i < length && p(apply(i)) == expectTrue) i += 1
     i
@@ -191,7 +191,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def lengthCompare(len: Int): Int = length - len
 
   override /*SeqLike*/
-  def segmentLength(p: A => Boolean, from: Int): Int = {
+  def segmentLength(@plocal p: A => Boolean, from: Int): Int = {
     val len = length
     var i = from
     while (i < len && p(this(i))) i += 1

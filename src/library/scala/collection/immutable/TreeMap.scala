@@ -105,7 +105,7 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
   override def takeRight(n: Int) = drop(size - math.max(n, 0))
   override def splitAt(n: Int) = (take(n), drop(n))
 
-  private[this] def countWhile(p: ((A, B)) => Boolean): Int = {
+  private[this] def countWhile(@plocal p: ((A, B)) => Boolean): Int = {
     var result = 0
     val it = iterator
     while (it.hasNext && p(it.next())) result += 1

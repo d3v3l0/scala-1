@@ -396,7 +396,7 @@ trait GenTraversableOnce[+A] extends Any {
    */
   def minBy[B](@plocal f: A => B)(implicit cmp: Ordering[B]): A
 
-  def forall(pred: A => Boolean): Boolean
+  def forall(@plocal pred: A => Boolean): Boolean
 
   def exists(pred: A => Boolean): Boolean
 

@@ -31,6 +31,8 @@ import generic._
  *  Unlike iterables, sequences always have a defined order of elements.
  */
 trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equals with Parallelizable[A, parallel.ParSeq[A]] {
+  type LT
+
   def seq: Seq[A]
 
   /** Selects an element by its index in the $coll.
@@ -80,7 +82,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the length of the longest segment of this $coll starting from index `from`
    *           such that every element of the segment satisfies the predicate `p`.
    */
-  def segmentLength(p: A => Boolean, from: Int): Int
+  def segmentLength(@plocal p: A => Boolean, from: Int): Int
 
   /** Returns the length of the longest prefix whose elements all satisfy some predicate.
    *
@@ -90,7 +92,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the length of the longest prefix of this $coll
    *           such that every element of the segment satisfies the predicate `p`.
    */
-  def prefixLength(p: A => Boolean): Int = segmentLength(p, 0)
+  def prefixLength(@plocal p: A => Boolean): Int = segmentLength(p, 0)
 
   /** Finds index of the first element satisfying some predicate after or at some start index.
    *
@@ -338,10 +340,10 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    {{{
    *       scala> val a = List(1)
    *       a: List[Int] = List(1)
-   *       
+   *
    *       scala> val b = a :+ 2
    *       b: List[Int] = List(1, 2)
-   *       
+   *
    *       scala> println(a)
    *       List(1)
    *    }}}

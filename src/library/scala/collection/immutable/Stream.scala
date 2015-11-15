@@ -176,9 +176,9 @@ import scala.language.implicitConversions
  *    loop(1, 1)
  *  }
  *  }}}
- * 
+ *
  *  Note that `mkString` forces evaluation of a `Stream`, but `addString` does
- *  not.  In both cases, a `Stream` that is or ends in a cycle 
+ *  not.  In both cases, a `Stream` that is or ends in a cycle
  *  (e.g. `lazy val s: Stream[Int] = 0 #:: s`) will convert additional trips
  *  through the cycle to `...`.  Additionally, `addString` will display an
  *  un-memoized tail as `?`.
@@ -205,6 +205,8 @@ abstract class Stream[+A] extends AbstractSeq[A]
                              with LinearSeqOptimized[A, Stream[A]]
                              with Serializable {
 self =>
+  override type LT = Nothing
+
   override def companion: GenericCompanion[Stream] = Stream
 
   import scala.collection.{Traversable, Iterable, Seq, IndexedSeq}
@@ -1303,5 +1305,3 @@ object Stream extends SeqFactory[Stream] {
     cons(head, stream.tail.collect(pf)(bf).asInstanceOf[Stream[B]])
   }
 }
-
-
