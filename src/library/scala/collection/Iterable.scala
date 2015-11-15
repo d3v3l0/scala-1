@@ -21,6 +21,8 @@ trait Iterable[+A] extends Traversable[A]
                       with GenIterable[A]
                       with GenericTraversableTemplate[A, Iterable]
                       with IterableLike[A, Iterable[A]] {
+  type LT
+
   override def companion: GenericCompanion[Iterable] = Iterable
 
   override def seq = this

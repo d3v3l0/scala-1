@@ -38,6 +38,8 @@ private[collection] trait RemainsIterator[+T] extends Iterator[T] {
  */
 private[collection] trait AugmentedIterableIterator[+T] extends RemainsIterator[T] {
 
+  type LT
+
   /* accessors */
 
   override def count(@plocal p: T => Boolean): Int = {
@@ -282,6 +284,8 @@ private[collection] trait AugmentedIterableIterator[+T] extends RemainsIterator[
 
 
 private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIterator[T] {
+
+  type LT
 
   /** The exact number of elements this iterator has yet to iterate.
    *  This method doesn't change the state of the iterator.

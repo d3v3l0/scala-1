@@ -265,6 +265,8 @@ import Iterator.empty
 trait Iterator[+A] extends TraversableOnce[A] {
   self =>
 
+  type LT
+
   def seq: Iterator[A] = this
 
   /** Tests whether this iterator can provide another element.
