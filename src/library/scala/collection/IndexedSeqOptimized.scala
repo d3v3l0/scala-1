@@ -23,6 +23,8 @@ import scala.annotation.tailrec
  */
 trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { self =>
 
+  type LT
+
   override /*IterableLike*/
   def isEmpty: Boolean = { length == 0 }
 
@@ -278,4 +280,3 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
       super.endsWith(that)
   }
 }
-
