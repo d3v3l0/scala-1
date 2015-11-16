@@ -23,7 +23,7 @@ import generic._
  *  @define Coll `mutable.Set`
  *  @define coll mutable set
  */
-trait Set[A] extends Iterable[A]
+trait Set[A] extends Iterable[L, A]
 //                with GenSet[A]
                 with scala.collection.Set[A]
                 with GenericSetTemplate[A, Set]

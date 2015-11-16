@@ -27,7 +27,7 @@ import scala.collection.parallel.mutable.ParArrayCombiner
 trait ParIterable[+T]
 extends GenIterable[T]
    with GenericParTemplate[T, ParIterable]
-   with ParIterableLike[T, ParIterable[T], Iterable[T]] {
+   with ParIterableLike[T, ParIterable[T], Iterable[L, T]] {
   override def companion: GenericCompanion[ParIterable] with GenericParCompanion[ParIterable] = ParIterable
   //protected[this] override def newBuilder = ParIterable.newBuilder[T]
 

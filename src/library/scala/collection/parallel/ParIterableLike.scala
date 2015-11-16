@@ -153,7 +153,7 @@ import scala.collection.parallel.ParallelCollectionImplicits._
  *  @define Coll `ParIterable`
  *  @define coll parallel iterable
  */
-trait ParIterableLike[+T, +Repr <: ParIterable[T], +Sequential <: Iterable[T] with IterableLike[T, Sequential]]
+trait ParIterableLike[+T, +Repr <: ParIterable[T], +Sequential <: Iterable[L, T] with IterableLike[L, T, Sequential]]
 extends GenIterableLike[T, Repr]
    with CustomParallelizable[T, Repr]
    with Parallel

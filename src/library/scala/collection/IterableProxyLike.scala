@@ -24,8 +24,8 @@ import mutable.Buffer
  *  @since   2.8
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait IterableProxyLike[L, +A, +Repr <: IterableLike[A, Repr] with Iterable[A]]
-    extends IterableLike[A, Repr]
+trait IterableProxyLike[L, +A, +Repr <: IterableLike[L, A, Repr] with Iterable[L, A]]
+    extends IterableLike[L, A, Repr]
     with TraversableProxyLike[L, A, Repr] {
   type LT = L
   override def iterator: Iterator[A] = self.iterator

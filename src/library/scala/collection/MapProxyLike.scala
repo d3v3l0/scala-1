@@ -35,8 +35,8 @@ trait MapProxyLike[L, A, +B, +This <: MapLike[A, B, This] with Map[A, B]]
   override def isDefinedAt(key: A) = self.isDefinedAt(key)
   override def keySet: Set[A] = self.keySet
   override def keysIterator: Iterator[A] = self.keysIterator
-  override def keys: Iterable[A] = self.keys
-  override def values: Iterable[B] = self.values
+  override def keys: Iterable[L, A] = self.keys
+  override def values: Iterable[L, B] = self.values
   override def valuesIterator: Iterator[B] = self.valuesIterator
   override def default(key: A): B = self.default(key)
   override def filterKeys(p: A => Boolean) = self.filterKeys(p)

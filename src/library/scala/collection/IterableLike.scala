@@ -13,7 +13,7 @@ import generic._
 import immutable.{ List, Stream }
 import scala.annotation.unchecked.uncheckedVariance
 
-/** A template trait for iterable collections of type `Iterable[A]`.
+/** A template trait for iterable collections of type `Iterable[L, A]`.
  *  $iterableInfo
  *  @define iterableInfo
  *    This is a base trait for all $mutability Scala collections that define an `iterator`
@@ -53,8 +53,8 @@ self =>
 
   type LT
 
-  override protected[this] def thisCollection: Iterable[A] = this.asInstanceOf[Iterable[A]]
-  override protected[this] def toCollection(repr: Repr): Iterable[A] = repr.asInstanceOf[Iterable[A]]
+  override protected[this] def thisCollection: Iterable[L, A] = this.asInstanceOf[Iterable[L, A]]
+  override protected[this] def toCollection(repr: Repr): Iterable[L, A] = repr.asInstanceOf[Iterable[L, A]]
 
   /** Creates a new iterator over all elements contained in this iterable object.
    *
@@ -94,7 +94,7 @@ self =>
    *  $willNotTerminateInf
    *  @return an `Iterable` containing all elements of this $coll.
    */
-  override /*TraversableLike*/ def toIterable: Iterable[A] =
+  override /*TraversableLike*/ def toIterable: Iterable[L, A] =
     thisCollection
 
   /** Returns an Iterator over the elements in this $coll.  Produces the same

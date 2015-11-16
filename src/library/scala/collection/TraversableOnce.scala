@@ -73,7 +73,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
   // not all `Repr` are a subtype `TraversableOnce[A]`.
   // The alternative is redefining it for maps, sets and seqs. For concrete implementations
   // we don't have to do this anyway, since they are leaves in the inheritance hierarchy.
-  // Note 2: This is implemented in all collections _not_ inheriting `Traversable[A]`
+  // Note 2: This is implemented in all collections _not_ inheriting `Traversable[L, A]`
   //         at least indirectly. Currently, these are `ArrayOps` and `StringOps`.
   //         It is also implemented in `TraversableOnce[A]`.
   /** A version of this collection with all
@@ -289,11 +289,11 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
     else toBuffer.toArray
   }
 
-  def toTraversable: Traversable[A]
+  def toTraversable: Traversable[L, A]
 
   def toList: List[A] = to[List]
 
-  def toIterable: Iterable[A] = toStream
+  def toIterable: Iterable[L, A] = toStream
 
   def toSeq: Seq[A] = toStream
 
@@ -433,7 +433,7 @@ object TraversableOnce {
      *  @return the result of invoking the `genericBuilder` method on `from`.
      */
     def apply(from: CC[_]): Builder[A, CC[A]] = from match {
-      case xs: generic.GenericTraversableTemplate[_, _] => xs.genericBuilder.asInstanceOf[Builder[A, Traversable[A]]] mapResult {
+      case xs: generic.GenericTraversableTemplate[_, _] => xs.genericBuilder.asInstanceOf[Builder[A, Traversable[L, A]]] mapResult {
         case res => traversableToColl(res.asInstanceOf[GenTraversable[A]])
       }
       case _ => newIterator

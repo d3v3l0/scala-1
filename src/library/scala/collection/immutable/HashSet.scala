@@ -968,7 +968,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
       }
     }
 
-    override def iterator = new TrieIterator[A](elems.asInstanceOf[Array[Iterable[A]]]) {
+    override def iterator = new TrieIterator[A](elems.asInstanceOf[Array[Iterable[L, A]]]) {
       final override def getElem(cc: AnyRef): A = cc.asInstanceOf[HashSet1[A]].key
     }
 

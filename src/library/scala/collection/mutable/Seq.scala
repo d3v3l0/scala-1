@@ -25,7 +25,7 @@ import generic._
  *  @define Coll `mutable.Seq`
  *  @define coll mutable sequence
  */
-trait Seq[A] extends Iterable[A]
+trait Seq[A] extends Iterable[L, A]
 //                with GenSeq[A]
                 with scala.collection.Seq[A]
                 with GenericTraversableTemplate[A, Seq]

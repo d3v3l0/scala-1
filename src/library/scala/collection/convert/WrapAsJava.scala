@@ -65,8 +65,8 @@ trait WrapAsJava {
    * @param i The Iterable to be converted.
    * @return A Java Iterable view of the argument.
    */
-  implicit def asJavaIterable[A](i: Iterable[A]): jl.Iterable[A] = i match {
-    case JIterableWrapper(wrapped) => wrapped.asInstanceOf[jl.Iterable[A]]
+  implicit def asJavaIterable[A](i: Iterable[L, A]): jl.Iterable[L, A] = i match {
+    case JIterableWrapper(wrapped) => wrapped.asInstanceOf[jl.Iterable[L, A]]
     case _ => IterableWrapper(i)
   }
 
@@ -81,7 +81,7 @@ trait WrapAsJava {
    * @param it The SizedIterable to be converted.
    * @return   A Java Collection view of the argument.
    */
-  implicit def asJavaCollection[A](it: Iterable[A]): ju.Collection[A] = it match {
+  implicit def asJavaCollection[A](it: Iterable[L, A]): ju.Collection[A] = it match {
     case JCollectionWrapper(wrapped) => wrapped.asInstanceOf[ju.Collection[A]]
     case _ => new IterableWrapper(it)
   }

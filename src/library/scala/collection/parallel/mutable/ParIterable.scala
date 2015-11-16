@@ -27,7 +27,7 @@ import scala.collection.parallel.{ ParIterableLike, Combiner }
 trait ParIterable[T] extends scala.collection.GenIterable[T]
                         with scala.collection.parallel.ParIterable[T]
                         with GenericParTemplate[T, ParIterable]
-                        with ParIterableLike[T, ParIterable[T], Iterable[T]]
+                        with ParIterableLike[T, ParIterable[T], Iterable[L, T]]
                         with Mutable {
   override def companion: GenericCompanion[ParIterable] with GenericParCompanion[ParIterable] = ParIterable
   //protected[this] override def newBuilder = ParIterable.newBuilder[T]
@@ -37,7 +37,7 @@ trait ParIterable[T] extends scala.collection.GenIterable[T]
 
   override def toSeq: ParSeq[T] = toParCollection[T, ParSeq[T]](() => ParSeq.newCombiner[T])
 
-  def seq: scala.collection.mutable.Iterable[T]
+  def seq: scala.collection.mutable.Iterable[L, T]
 }
 
 /** $factoryInfo

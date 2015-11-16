@@ -15,7 +15,7 @@ import mutable.Builder
 /** A base trait for non-strict views of traversable collections.
  *  $traversableViewInfo
  */
-trait TraversableView[+A, +Coll] extends TraversableViewLike[A, Coll, TraversableView[A, Coll]] { }
+trait TraversableView[+A, +Coll] extends TraversableViewLike[L, A, Coll, TraversableView[A, Coll]] { }
 
 /** An object containing the necessary implicit definitions to make
  *  `TraversableView`s work. Its definitions are generally not accessed directly by clients.
@@ -27,9 +27,9 @@ object TraversableView {
     def result() = throw new UnsupportedOperationException("TraversableView.Builder.result")
     def clear() {}
   }
-  type Coll = TraversableView[_, C] forSome {type C <: Traversable[_]}
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, TraversableView[A, Traversable[_]]] =
-    new CanBuildFrom[Coll, A, TraversableView[A, Traversable[_]]] {
+  type Coll = TraversableView[_, C] forSome {type C <: Traversable[L, _]}
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, TraversableView[A, Traversable[L, _]]] =
+    new CanBuildFrom[Coll, A, TraversableView[A, Traversable[L, _]]] {
       def apply(from: Coll) = new NoBuilder
       def apply() = new NoBuilder
     }

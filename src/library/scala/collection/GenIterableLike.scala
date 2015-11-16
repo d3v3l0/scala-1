@@ -125,7 +125,7 @@ trait GenIterableLike[+A, +Repr] extends Any with GenTraversableLike[A, Repr] {
    *                 If this $coll is shorter than `that`, `thisElem` values are used to pad the result.
    *                 If `that` is shorter than this $coll, `thatElem` values are used to pad the result.
    *
-   *  @usecase def zipAll[B](that: Iterable[B], thisElem: A, thatElem: B): $Coll[(A, B)]
+   *  @usecase def zipAll[B](that: Iterable[L, B], thisElem: A, thatElem: B): $Coll[(A, B)]
    *    @inheritdoc
    *
    *    $orderDependent

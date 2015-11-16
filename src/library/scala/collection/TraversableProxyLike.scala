@@ -25,7 +25,7 @@ import scala.reflect.ClassTag
  *  @since   2.8
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Traversable[A] /*{ type LT }*/] extends TraversableLike[L, A, Repr] with Proxy {
+trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Traversable[L, A] /*{ type LT }*/] extends TraversableLike[L, A, Repr] with Proxy {
   type LT = L
 
   def self: Repr
@@ -80,14 +80,14 @@ trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Trav
   override def copyToArray[B >: A](xs: Array[B]) = self.copyToArray(xs)
   override def toArray[B >: A: ClassTag]: Array[B] = self.toArray
   override def toList: List[A] = self.toList
-  override def toIterable: Iterable[A] = self.toIterable
+  override def toIterable: Iterable[L, A] = self.toIterable
   override def toSeq: Seq[A] = self.toSeq
   override def toIndexedSeq: immutable.IndexedSeq[A] = self.toIndexedSeq
   override def toBuffer[B >: A] = self.toBuffer
   override def toStream: Stream[A] = self.toStream
   override def toSet[B >: A]: immutable.Set[B] = self.toSet
   override def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[T, U] = self.toMap(ev)
-  override def toTraversable: Traversable[A] = self.toTraversable
+  override def toTraversable: Traversable[L, A] = self.toTraversable
   override def toIterator: Iterator[A] = self.toIterator
   override def mkString(start: String, sep: String, end: String): String = self.mkString(start, sep, end)
   override def mkString(sep: String): String = self.mkString(sep)

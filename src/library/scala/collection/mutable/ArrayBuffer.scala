@@ -135,7 +135,7 @@ class ArrayBuffer[A](override protected val initialSize: Int)
    *  @param seq   the traversable object providing all elements to insert.
    *  @throws IndexOutOfBoundsException if `n` is out of bounds.
    */
-  def insertAll(n: Int, seq: Traversable[A]) {
+  def insertAll(n: Int, seq: Traversable[L, A]) {
     if (n < 0 || n > size0) throw new IndexOutOfBoundsException(n.toString)
     val len = seq.size
     val newSize = size0 + len

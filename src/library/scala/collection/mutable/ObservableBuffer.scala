@@ -73,7 +73,7 @@ trait ObservableBuffer[A] extends Buffer[A] with Publisher[Message[A] with Undoa
     })
   }
 
-  abstract override def insertAll(n: Int, elems: scala.collection.Traversable[A]) {
+  abstract override def insertAll(n: Int, elems: scala.collection.Traversable[L, A]) {
     super.insertAll(n, elems)
     var curr = n - 1
     val msg = elems.foldLeft(new Script[A]() with Undoable {

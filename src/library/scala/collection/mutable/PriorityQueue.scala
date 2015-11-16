@@ -38,9 +38,9 @@ import generic._
 @deprecatedInheritance("PriorityQueue is not intended to be subclassed due to extensive private implementation details.", "2.11.0")
 class PriorityQueue[A](implicit val ord: Ordering[A])
    extends AbstractIterable[A]
-      with Iterable[A]
+      with Iterable[L, A]
       with GenericOrderedTraversableTemplate[A, PriorityQueue]
-      with IterableLike[A, PriorityQueue[A]]
+      with IterableLike[L, A, PriorityQueue[A]]
       with Growable[A]
       with Builder[A, PriorityQueue[A]]
       with Serializable

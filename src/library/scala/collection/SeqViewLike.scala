@@ -30,7 +30,7 @@ import Seq.fill
 trait SeqViewLike[+A,
                   +Coll,
                   +This <: SeqView[A, Coll] with SeqViewLike[A, Coll, This]]
-  extends Seq[A] with SeqLike[A, This] with IterableView[A, Coll] with IterableViewLike[A, Coll, This]
+  extends Seq[A] with SeqLike[A, This] with IterableView[A, Coll] with IterableViewLike[L, A, Coll, This]
 { self =>
 
   /** Explicit instantiation of the `Transformed` trait to reduce class file size in subclasses. */

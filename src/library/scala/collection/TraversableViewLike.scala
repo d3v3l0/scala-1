@@ -15,7 +15,7 @@ import scala.annotation.migration
 import scala.language.implicitConversions
 
 trait ViewMkString[+A] {
-  self: Traversable[A] =>
+  self: Traversable[L, A] =>
 
   // It is necessary to use thisSeq rather than toSeq to avoid cycles in the
   // eager evaluation of vals in transformed view subclasses, see #4558.
@@ -69,8 +69,8 @@ trait ViewMkString[+A] {
  */
 trait TraversableViewLike[L, +A,
                           +Coll,
-                          +This <: TraversableView[A, Coll] with TraversableViewLike[A, Coll, This]]
-  extends Traversable[A] with TraversableLike[L, A, This] with ViewMkString[A]
+                          +This <: TraversableView[A, Coll] with TraversableViewLike[L, A, Coll, This]]
+  extends Traversable[L, A] with TraversableLike[L, A, This] with ViewMkString[A]
 {
   self =>
 
@@ -92,7 +92,7 @@ trait TraversableViewLike[L, +A,
   }
 
   /** Explicit instantiation of the `Transformed` trait to reduce class file size in subclasses. */
-  private[collection] abstract class AbstractTransformed[+B] extends Traversable[B] with Transformed[B]
+  private[collection] abstract class AbstractTransformed[+B] extends Traversable[L, B] with Transformed[B]
 
 
   /** The implementation base trait of this view.

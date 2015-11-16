@@ -108,7 +108,7 @@ trait DecorateAsJava {
    * @return An object with an `asJavaCollection` method that returns a Java
    *         `Iterable` view of the argument.
    */
-  implicit def asJavaIterableConverter[A](i : Iterable[A]): AsJava[jl.Iterable[A]] =
+  implicit def asJavaIterableConverter[A](i : Iterable[L, A]): AsJava[jl.Iterable[L, A]] =
     new AsJava(asJavaIterable(i))
 
   /**
@@ -123,7 +123,7 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java
    *         `Collection` view of the argument.
    */
-  implicit def asJavaCollectionConverter[A](i : Iterable[A]): AsJavaCollection[A] =
+  implicit def asJavaCollectionConverter[A](i : Iterable[L, A]): AsJavaCollection[A] =
     new AsJavaCollection(i)
 
   /**

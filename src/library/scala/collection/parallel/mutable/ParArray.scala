@@ -415,7 +415,7 @@ self =>
       //val cb = pbf(self.repr)
       while (i < until) {
         val traversable = f(arr(i).asInstanceOf[T])
-        if (traversable.isInstanceOf[Iterable[_]]) cb ++= traversable.asInstanceOf[Iterable[S]].iterator
+        if (traversable.isInstanceOf[Iterable[L, _]]) cb ++= traversable.asInstanceOf[Iterable[L, S]].iterator
         else cb ++= traversable.seq
         i += 1
       }

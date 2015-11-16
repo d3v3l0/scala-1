@@ -38,7 +38,7 @@ object PagedSeq {
     })
 
   /** Constructs a paged sequence from an iterable */
-  def fromIterable[T: ClassTag](source: Iterable[T]): PagedSeq[T] =
+  def fromIterable[T: ClassTag](source: Iterable[L, T]): PagedSeq[T] =
     fromIterator(source.iterator)
 
   /** Constructs a paged character sequence from a string iterator */
@@ -59,7 +59,7 @@ object PagedSeq {
   }
 
   /** Constructs a paged character sequence from a string iterable */
-  def fromStrings(source: Iterable[String]): PagedSeq[Char] =
+  def fromStrings(source: Iterable[L, String]): PagedSeq[Char] =
     fromStrings(source.iterator)
 
   /** Constructs a paged character sequence from a line iterator
@@ -80,7 +80,7 @@ object PagedSeq {
    *  Lines do not contain trailing `\n` characters; The method inserts
    *  a line separator `\n` between any two lines in the sequence.
    */
-  def fromLines(source: Iterable[String]): PagedSeq[Char] =
+  def fromLines(source: Iterable[L, String]): PagedSeq[Char] =
     fromLines(source.iterator)
 
   /** Constructs a paged character sequence from an input reader

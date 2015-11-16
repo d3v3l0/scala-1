@@ -22,7 +22,7 @@ import generic._
  * @author Matthias Zenger
  */
 trait Set[A] extends (A => Boolean)
-                with Iterable[A]
+                with Iterable[L, A]
                 with GenSet[A]
                 with GenericSetTemplate[A, Set]
                 with SetLike[A, Set[A]] {

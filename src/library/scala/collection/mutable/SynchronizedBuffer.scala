@@ -135,7 +135,7 @@ trait SynchronizedBuffer[A] extends Buffer[A] {
    *  @param n     the index where a new element will be inserted.
    *  @param xs    the traversable object providing all elements to insert.
    */
-  abstract override def insertAll(n: Int, xs: Traversable[A]): Unit = synchronized {
+  abstract override def insertAll(n: Int, xs: Traversable[L, A]): Unit = synchronized {
      super.insertAll(n, xs)
   }
 

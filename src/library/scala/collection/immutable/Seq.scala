@@ -23,7 +23,7 @@ import parallel.immutable.ParSeq
  *  @define Coll `immutable.Seq`
  *  @define coll immutable sequence
  */
-trait Seq[+A] extends Iterable[A]
+trait Seq[+A] extends Iterable[L, A]
 //                      with GenSeq[A]
                       with scala.collection.Seq[A]
                       with GenericTraversableTemplate[A, Seq]

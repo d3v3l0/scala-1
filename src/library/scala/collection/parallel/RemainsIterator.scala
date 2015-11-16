@@ -132,7 +132,7 @@ private[collection] trait AugmentedIterableIterator[+T] extends RemainsIterator[
     //val cb = pbf(repr)
     while (hasNext) {
       val traversable = f(next()).seq
-      if (traversable.isInstanceOf[Iterable[_]]) cb ++= traversable.asInstanceOf[Iterable[S]].iterator
+      if (traversable.isInstanceOf[Iterable[L, _]]) cb ++= traversable.asInstanceOf[Iterable[L, S]].iterator
       else cb ++= traversable
     }
     cb

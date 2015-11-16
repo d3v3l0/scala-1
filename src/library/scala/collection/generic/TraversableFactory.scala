@@ -36,6 +36,6 @@ import scala.language.higherKinds
  *    @see CanBuildFrom
  *    @see GenericCanBuildFrom
  */
-trait TraversableFactory[CC[X] <: Traversable[X] with GenericTraversableTemplate[X, CC]]
+trait TraversableFactory[CC[X] <: Traversable[L, X] with GenericTraversableTemplate[X, CC]]
   extends GenTraversableFactory[CC] with GenericSeqCompanion[CC]
 

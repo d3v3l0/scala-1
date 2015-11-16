@@ -29,7 +29,7 @@ trait ParIterable[+T]
 extends scala.collection.GenIterable[T]
    with scala.collection.parallel.ParIterable[T]
    with GenericParTemplate[T, ParIterable]
-   with ParIterableLike[T, ParIterable[T], scala.collection.immutable.Iterable[T]]
+   with ParIterableLike[T, ParIterable[T], scala.collection.immutable.Iterable[L, T]]
    with Immutable
 {
   override def companion: GenericCompanion[ParIterable] with GenericParCompanion[ParIterable] = ParIterable

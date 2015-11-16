@@ -221,7 +221,7 @@ final class ListBuffer[A]
    *  @param  seq   the iterable object providing all elements to insert.
    *  @throws IndexOutOfBoundsException if `n` is out of bounds.
    */
-  def insertAll(n: Int, seq: Traversable[A]) {
+  def insertAll(n: Int, seq: Traversable[L, A]) {
     // We check the bounds early, so that we don't trigger copying.
     if (n < 0 || n > len) throw new IndexOutOfBoundsException(n.toString)
     if (exported) copy()

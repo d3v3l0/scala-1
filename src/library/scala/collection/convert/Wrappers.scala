@@ -20,7 +20,7 @@ import WrapAsJava._
  */
 private[collection] trait Wrappers {
   trait IterableWrapperTrait[A] extends ju.AbstractCollection[A] {
-    val underlying: Iterable[A]
+    val underlying: Iterable[L, A]
     def size = underlying.size
     override def iterator = IteratorWrapper(underlying.iterator)
     override def isEmpty = underlying.isEmpty
@@ -48,14 +48,14 @@ private[collection] trait Wrappers {
     def next() = underlying.nextElement
   }
 
-  case class IterableWrapper[A](underlying: Iterable[A]) extends ju.AbstractCollection[A] with IterableWrapperTrait[A] { }
+  case class IterableWrapper[A](underlying: Iterable[L, A]) extends ju.AbstractCollection[A] with IterableWrapperTrait[A] { }
 
-  case class JIterableWrapper[A](underlying: jl.Iterable[A]) extends AbstractIterable[A] with Iterable[A] {
+  case class JIterableWrapper[A](underlying: jl.Iterable[L, A]) extends AbstractIterable[A] with Iterable[L, A] {
     def iterator = underlying.iterator
     def newBuilder[B] = new mutable.ArrayBuffer[B]
   }
 
-  case class JCollectionWrapper[A](underlying: ju.Collection[A]) extends AbstractIterable[A] with Iterable[A] {
+  case class JCollectionWrapper[A](underlying: ju.Collection[A]) extends AbstractIterable[A] with Iterable[L, A] {
     def iterator = underlying.iterator
     override def size = underlying.size
     override def isEmpty = underlying.isEmpty
@@ -90,7 +90,7 @@ private[collection] trait Wrappers {
     def update(i: Int, elem: A) = underlying.set(i, elem)
     def +=:(elem: A) = { underlying.subList(0, 0) add elem; this }
     def +=(elem: A): this.type = { underlying add elem; this }
-    def insertAll(i: Int, elems: Traversable[A]) = {
+    def insertAll(i: Int, elems: Traversable[L, A]) = {
       val ins = underlying.subList(0, i)
       elems.seq.foreach(ins.add(_))
     }

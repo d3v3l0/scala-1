@@ -103,11 +103,11 @@ trait BufferProxy[L, A] extends Buffer[A] with Proxy {
    *  @param n     the index where a new element will be inserted.
    *  @param iter  the iterable object providing all elements to insert.
    */
-  def insertAll(n: Int, iter: scala.collection.Iterable[A]) {
+  def insertAll(n: Int, iter: scala.collection.Iterable[L, A]) {
     self.insertAll(n, iter)
   }
 
-  override def insertAll(n: Int, iter: scala.collection.Traversable[A]) {
+  override def insertAll(n: Int, iter: scala.collection.Traversable[L, A]) {
     self.insertAll(n, iter)
   }
 

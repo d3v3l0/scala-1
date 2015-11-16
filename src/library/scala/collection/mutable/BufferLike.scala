@@ -45,7 +45,7 @@ import scala.annotation.{migration, bridge}
  *       def clear()
  *       def +=(elem: A): this.type
  *       def +=:(elem: A): this.type
- *       def insertAll(n: Int, iter: Traversable[A])
+ *       def insertAll(n: Int, iter: Traversable[L, A])
  *       def remove(n: Int): A
  *    }}}
  *  @define coll buffer
@@ -94,7 +94,7 @@ trait BufferLike[A, +This <: BufferLike[A, This] with Buffer[A]]
    *  @throws   IndexOutOfBoundsException if the index `n` is not in the valid range
    *            `0 <= n <= length`.
    */
-  def insertAll(n: Int, elems: scala.collection.Traversable[A])
+  def insertAll(n: Int, elems: scala.collection.Traversable[L, A])
 
    /** Removes the element at a given index from this buffer.
     *

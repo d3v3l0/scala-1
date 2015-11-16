@@ -1176,7 +1176,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
     !hasNext && !that.hasNext
   }
 
-  def toTraversable: Traversable[A] = toStream
+  def toTraversable: Traversable[L, A] = toStream
   def toIterator: Iterator[A] = self
   def toStream: Stream[A] =
     if (self.hasNext) Stream.cons(self.next(), self.toStream)

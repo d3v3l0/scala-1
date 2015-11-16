@@ -27,10 +27,10 @@ import scala.collection._
  *  @since   2.8
  */
 @deprecated("Forwarding is inherently unreliable since it is not automated and methods can be forgotten.", "2.11.0")
-trait IterableForwarder[+A] extends Iterable[A] with TraversableForwarder[A] {
+trait IterableForwarder[+A] extends Iterable[L, A] with TraversableForwarder[A] {
 
   /** The iterable object to which calls are forwarded */
-  protected def underlying: Iterable[A]
+  protected def underlying: Iterable[L, A]
 
   // Iterable delegates
   // Iterable methods could be printed by  cat IterableLike.scala | sed -n '/trait Iterable/,$ p' | egrep '^  (override )?def'
