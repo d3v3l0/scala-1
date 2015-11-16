@@ -47,7 +47,7 @@ package object parallel {
 
   def setTaskSupport[Coll](c: Coll, t: TaskSupport): Coll = {
     c match {
-      case pc: ParIterableLike[_, _, _] => pc.tasksupport = t
+      case pc: ParIterableLike[L, _, _, _] => pc.tasksupport = t
       case _ => // do nothing
     }
     c
@@ -81,8 +81,8 @@ package parallel {
     }
     implicit def traversable2ops[T](t: scala.collection.GenTraversableOnce[T]) = new TraversableOps[T] {
       def isParallel = t.isInstanceOf[Parallel]
-      def isParIterable = t.isInstanceOf[ParIterable[_]]
-      def asParIterable = t.asInstanceOf[ParIterable[T]]
+      def isParIterable = t.isInstanceOf[ParIterable[L, _]]
+      def asParIterable = t.asInstanceOf[ParIterable[L, T]]
       def isParSeq = t.isInstanceOf[ParSeq[_]]
       def asParSeq = t.asInstanceOf[ParSeq[T]]
       def ifParSeq[R](isbody: ParSeq[T] => R) = new Otherwise[R] {
@@ -116,7 +116,7 @@ package parallel {
 
     def isParallel: Boolean
     def isParIterable: Boolean
-    def asParIterable: ParIterable[T]
+    def asParIterable: ParIterable[L, T]
     def isParSeq: Boolean
     def asParSeq: ParSeq[T]
     def ifParSeq[R](isbody: ParSeq[T] => R): Otherwise[R]
@@ -144,7 +144,7 @@ package parallel {
 
   /** Composite throwable - thrown when multiple exceptions are thrown at the same time. */
   @deprecated("This class will be removed.", "2.11.0")
-  final case class CompositeThrowable(throwables: Set[Throwable]) extends Exception(
+  final case class CompositeThrowable(throwables: Set[L, Throwable]) extends Exception(
     "Multiple exceptions thrown during a parallel computation: " +
       throwables.map(t => t + "\n" + t.getStackTrace.take(10).++("...").mkString("\n")).mkString("\n\n")
   )
@@ -165,7 +165,7 @@ package parallel {
     }
     def remaining = until - index
     def dup = new BufferSplitter(buffer, index, until, signalDelegate)
-    def split: Seq[IterableSplitter[T]] = if (remaining > 1) {
+    def split: Seq[L, IterableSplitter[T]] = if (remaining > 1) {
       val divsz = (until - index) / 2
       Seq(
         new BufferSplitter(buffer, index, index + divsz, signalDelegate),

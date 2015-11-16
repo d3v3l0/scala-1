@@ -37,7 +37,7 @@ import generic._
  */
 @deprecatedInheritance("PriorityQueue is not intended to be subclassed due to extensive private implementation details.", "2.11.0")
 class PriorityQueue[A](implicit val ord: Ordering[A])
-   extends AbstractIterable[A]
+   extends AbstractIterable[L, A]
       with Iterable[L, A]
       with GenericOrderedTraversableTemplate[A, PriorityQueue]
       with IterableLike[L, A, PriorityQueue[A]]
@@ -48,7 +48,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
 {
   import ord._
 
-  private class ResizableArrayAccess[A] extends AbstractSeq[A] with ResizableArray[A] with Serializable {
+  private class ResizableArrayAccess[A] extends AbstractSeq[L, A] with ResizableArray[A] with Serializable {
     def p_size0 = size0
     def p_size0_=(s: Int) = size0 = s
     def p_array = array

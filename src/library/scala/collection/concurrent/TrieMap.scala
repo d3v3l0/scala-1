@@ -569,7 +569,7 @@ private[collection] final class CNode[K, V](val bitmap: Int, val array: Array[Ba
   private[concurrent] def string(lev: Int): String = "CNode %x\n%s".format(bitmap, array.map(_.string(lev + 1)).mkString("\n"))
 
   /* quiescently consistent - don't call concurrently to anything involving a GCAS!! */
-  private def collectElems: Seq[(K, V)] = array flatMap {
+  private def collectElems: Seq[L, (K, V)] = array flatMap {
     case sn: SNode[K, V] => Some(sn.kvPair)
     case in: INode[K, V] => in.mainnode match {
       case tn: TNode[K, V] => Some(tn.kvPair)
@@ -578,7 +578,7 @@ private[collection] final class CNode[K, V](val bitmap: Int, val array: Array[Ba
     }
   }
 
-  private def collectLocalElems: Seq[String] = array flatMap {
+  private def collectLocalElems: Seq[L, String] = array flatMap {
     case sn: SNode[K, V] => Some(sn.kvPair._2.toString)
     case in: INode[K, V] => Some(in.toString.drop(14) + "(" + in.gen + ")")
   }
@@ -631,8 +631,8 @@ private[concurrent] case class RDCSS_Descriptor[K, V](old: INode[K, V], expected
  */
 @SerialVersionUID(0L - 6402774413839597105L)
 final class TrieMap[K, V] private (r: AnyRef, rtupd: AtomicReferenceFieldUpdater[TrieMap[K, V], AnyRef], hashf: Hashing[K], ef: Equiv[K])
-extends scala.collection.concurrent.Map[K, V]
-   with scala.collection.mutable.MapLike[K, V, TrieMap[K, V]]
+extends scala.collection.concurrent.Map[L, K, V]
+   with scala.collection.mutable.MapLike[L, K, V, TrieMap[K, V]]
    with CustomParallelizable[(K, V), ParTrieMap[K, V]]
    with Serializable
 {
@@ -814,7 +814,7 @@ extends scala.collection.concurrent.Map[K, V]
    *
    *  This method is used by other methods such as `size` and `iterator`.
    */
-  @tailrec def readOnlySnapshot(): scala.collection.Map[K, V] = {
+  @tailrec def readOnlySnapshot(): scala.collection.Map[L, K, V] = {
     val r = RDCSS_READ_ROOT()
     val expmain = r.gcasRead(this)
     if (RDCSS_ROOT(r, expmain, r.copyToGen(new Gen, this))) new TrieMap(r, null, hashing, equality)
@@ -1051,7 +1051,7 @@ private[collection] class TrieMapIterator[K, V](var level: Int, private var ct: 
   /** Returns a sequence of iterators over subsets of this iterator.
    *  It's used to ease the implementation of splitters for a parallel version of the TrieMap.
    */
-  protected def subdivide(): Seq[Iterator[(K, V)]] = if (subiter ne null) {
+  protected def subdivide(): Seq[L, Iterator[(K, V)]] = if (subiter ne null) {
     // the case where an LNode is being iterated
     val it = newIterator(level + 1, ct, _mustInit = false)
     it.depth = -1

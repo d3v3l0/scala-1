@@ -26,7 +26,7 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
   def default(key: A): B
   def get(key: A): Option[B]
   def apply(key: A): B
-  def seq: Map[A, B]
+  def seq: Map[L, A, B]
   def +[B1 >: B](kv: (A, B1)): GenMap[A, B1]
   def - (key: A): Repr
 
@@ -68,13 +68,13 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
    *
    *  @return the keys of this map as an iterable.
    */
-  def keys: GenIterable[A]
+  def keys: GenIterable[L, A]
 
   /** Collects all values of this map in an iterable collection.
    *
    *  @return the values of this map as an iterable.
    */
-  def values: GenIterable[B]
+  def values: GenIterable[L, B]
 
   /** Creates an iterator for all keys.
    *

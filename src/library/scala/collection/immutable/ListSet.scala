@@ -67,9 +67,9 @@ object ListSet extends ImmutableSetFactory[ListSet] {
  */
 @deprecatedInheritance("The semantics of immutable collections makes inheriting from ListSet error-prone.", "2.11.0")
 class ListSet[A] extends AbstractSet[A]
-                    with Set[A]
+                    with Set[L, A]
                     with GenericSetTemplate[A, ListSet]
-                    with SetLike[A, ListSet[A]]
+                    with SetLike[L, A, ListSet[A]]
                     with Serializable{ self =>
   override def companion: GenericCompanion[ListSet] = ListSet
 
@@ -143,7 +143,7 @@ class ListSet[A] extends AbstractSet[A]
    *  A new set will not be built; lazy collections will stay lazy.
    */
   @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-  override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+  override def toSet[B >: A]: Set[L, B] = this.asInstanceOf[Set[L, B]]
 
   /** Represents an entry in the `ListSet`.
    */

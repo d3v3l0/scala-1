@@ -20,7 +20,7 @@ import scala.language.higherKinds
  * @author Lucien Pereira
  *
  */
-abstract class MutableSortedSetFactory[CC[A] <: mutable.SortedSet[A] with SortedSetLike[A, CC[A]] with mutable.Set[A] with mutable.SetLike[A, CC[A]]] extends SortedSetFactory[CC] {
+abstract class MutableSortedSetFactory[CC[A] <: mutable.SortedSet[A] with SortedSetLike[A, CC[A]] with mutable.Set[L, A] with mutable.SetLike[L, A, CC[A]]] extends SortedSetFactory[CC] {
 
   /**
    * mutable.SetBuilder uses '+' which is not a primitive for anything extending mutable.SetLike,

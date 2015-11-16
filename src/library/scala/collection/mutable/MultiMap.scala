@@ -16,7 +16,7 @@ package mutable
 /** A trait for mutable maps with multiple values assigned to a key.
  *
  *  This class is typically used as a mixin. It turns maps which map `A`
- *  to `Set[B]` objects into multimaps that map `A` to `B` objects.
+ *  to `Set[L, B]` objects into multimaps that map `A` to `B` objects.
  *
  *  @example {{{
  *  // first import all necessary types from package `collection.mutable`
@@ -24,7 +24,7 @@ package mutable
  *
  *  // to create a `MultiMap` the easiest way is to mixin it into a normal
  *  // `Map` instance
- *  val mm = new HashMap[Int, Set[String]] with MultiMap[Int, String]
+ *  val mm = new HashMap[Int, Set[L, String]] with MultiMap[Int, String]
  *
  *  // to add key-value pairs to a multimap it is important to use
  *  // the method `addBinding` because standard methods like `+` will
@@ -54,7 +54,7 @@ package mutable
  *  @version 2.8
  *  @since   1
  */
-trait MultiMap[A, B] extends Map[A, Set[B]] {
+trait MultiMap[A, B] extends Map[L, A, Set[L, B]] {
   /** Creates a new set.
    *
    *  Classes that use this trait as a mixin can override this method
@@ -63,7 +63,7 @@ trait MultiMap[A, B] extends Map[A, Set[B]] {
    *
    *  @return An empty set of values of type `B`.
    */
-  protected def makeSet: Set[B] = new HashSet[B]
+  protected def makeSet: Set[L, B] = new HashSet[B]
 
   /** Assigns the specified `value` to a specified `key`.  If the key
    *  already has a binding to equal to `value`, nothing is changed;

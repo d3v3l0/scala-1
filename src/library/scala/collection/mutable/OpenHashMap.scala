@@ -49,8 +49,8 @@ object OpenHashMap {
  */
 class OpenHashMap[Key, Value](initialSize : Int)
 extends AbstractMap[Key, Value]
-   with Map[Key, Value]
-   with MapLike[Key, Value, OpenHashMap[Key, Value]] {
+   with Map[L, Key, Value]
+   with MapLike[L, Key, Value, OpenHashMap[Key, Value]] {
 
   import OpenHashMap.OpenEntry
   private type Entry = OpenEntry[Key, Value]

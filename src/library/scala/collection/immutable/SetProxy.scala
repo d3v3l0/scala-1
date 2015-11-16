@@ -23,9 +23,9 @@ package immutable
  *  @since 2.8
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait SetProxy[L, A] extends Set[A] with SetProxyLike[L, A, Set[A]] {
+trait SetProxy[L, A] extends Set[L, A] with SetProxyLike[L, A, Set[L, A]] {
   override def repr = this
-  private def newProxy[B >: A](newSelf: Set[B]): SetProxy[L, B] =
+  private def newProxy[B >: A](newSelf: Set[L, B]): SetProxy[L, B] =
     new AbstractSet[B] with SetProxy[L, B] { val self = newSelf }
 
   override def empty = newProxy(self.empty)

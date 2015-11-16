@@ -29,8 +29,8 @@ import generic.CanBuildFrom
  */
 final class AnyRefMap[K <: AnyRef, V] private[collection] (defaultEntry: K => V, initialBufferSize: Int, initBlank: Boolean)
 extends AbstractMap[K, V]
-   with Map[K, V]
-   with MapLike[K, V, AnyRefMap[K, V]]
+   with Map[L, K, V]
+   with MapLike[L, K, V, AnyRefMap[K, V]]
 {
   import AnyRefMap._
   def this() = this(AnyRefMap.exceptionDefault, 16, true)

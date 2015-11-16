@@ -54,7 +54,7 @@ import scala.annotation.migration
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with Parallelizable[A, parallel.ParIterable[A]] {
+trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with Parallelizable[A, parallel.ParIterable[L, A]] {
 
   def repr: Repr
 
@@ -226,23 +226,23 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *    For example:
    *
    *    {{{
-   *      def getWords(lines: Seq[String]): Seq[String] = lines flatMap (line => line split "\\W+")
+   *      def getWords(lines: Seq[L, String]): Seq[L, String] = lines flatMap (line => line split "\\W+")
    *    }}}
    *
    *    The type of the resulting collection is guided by the static type of $coll. This might
    *    cause unexpected results sometimes. For example:
    *
    *    {{{
-   *      // lettersOf will return a Seq[Char] of likely repeated letters, instead of a Set
-   *      def lettersOf(words: Seq[String]) = words flatMap (word => word.toSet)
+   *      // lettersOf will return a Seq[L, Char] of likely repeated letters, instead of a Set
+   *      def lettersOf(words: Seq[L, String]) = words flatMap (word => word.toSet)
    *
-   *      // lettersOf will return a Set[Char], not a Seq
-   *      def lettersOf(words: Seq[String]) = words.toSet flatMap (word => word.toSeq)
+   *      // lettersOf will return a Set[L, Char], not a Seq
+   *      def lettersOf(words: Seq[L, String]) = words.toSet flatMap (word => word.toSeq)
    *
    *      // xs will be an Iterable[L, Int]
    *      val xs = Map("a" -> List(11,111), "b" -> List(22,222)).flatMap(_._2)
    *
-   *      // ys will be a Map[Int, Int]
+   *      // ys will be a Map[L, Int, Int]
    *      val ys = Map("a" -> List(1 -> 11,1 -> 111), "b" -> List(2 -> 22,2 -> 222)).flatMap(_._2)
    *    }}}
    *

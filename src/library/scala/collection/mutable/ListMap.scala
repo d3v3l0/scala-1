@@ -38,8 +38,8 @@ import annotation.tailrec
  */
 class ListMap[A, B]
 extends AbstractMap[A, B]
-   with Map[A, B]
-   with MapLike[A, B, ListMap[A, B]]
+   with Map[L, A, B]
+   with MapLike[L, A, B, ListMap[A, B]]
    with Serializable {
 
   override def empty = ListMap.empty[A, B]

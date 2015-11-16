@@ -39,9 +39,9 @@ import scala.collection.parallel.mutable.ParHashSet
 @SerialVersionUID(1L)
 class HashSet[A] private[collection] (contents: FlatHashTable.Contents[A])
 extends AbstractSet[A]
-   with Set[A]
+   with Set[L, A]
    with GenericSetTemplate[A, HashSet]
-   with SetLike[A, HashSet[A]]
+   with SetLike[L, A, HashSet[A]]
    with FlatHashTable[A]
    with CustomParallelizable[A, ParHashSet[A]]
    with Serializable

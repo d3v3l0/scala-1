@@ -28,7 +28,7 @@ import scala.reflect.ClassTag
  *  @since   2.8
  */
 @deprecated("Forwarding is inherently unreliable since it is not automated and new methods can be forgotten.", "2.11.0")
-trait TraversableForwarder[+A] extends Traversable[L, A] {
+trait TraversableForwarder[L, +A] extends Traversable[L, A] {
   type LT
 
   /** The traversable object to which calls are forwarded. */
@@ -59,19 +59,19 @@ trait TraversableForwarder[+A] extends Traversable[L, A] {
   override def headOption: Option[A] = underlying.headOption
   override def last: A = underlying.last
   override def lastOption: Option[A] = underlying.lastOption
-  override def copyToBuffer[B >: A](dest: Buffer[B]) = underlying.copyToBuffer(dest)
+  override def copyToBuffer[B >: A](dest: Buffer[L, B]) = underlying.copyToBuffer(dest)
   override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int) = underlying.copyToArray(xs, start, len)
   override def copyToArray[B >: A](xs: Array[B], start: Int) = underlying.copyToArray(xs, start)
   override def copyToArray[B >: A](xs: Array[B]) = underlying.copyToArray(xs)
   override def toArray[B >: A: ClassTag]: Array[B] = underlying.toArray
   override def toList: List[A] = underlying.toList
   override def toIterable: Iterable[L, A] = underlying.toIterable
-  override def toSeq: Seq[A] = underlying.toSeq
+  override def toSeq: Seq[L, A] = underlying.toSeq
   override def toIndexedSeq = underlying.toIndexedSeq
   override def toBuffer[B >: A] = underlying.toBuffer
   override def toStream: Stream[A] = underlying.toStream
-  override def toSet[B >: A]: immutable.Set[B] = underlying.toSet
-  override def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[T, U] = underlying.toMap(ev)
+  override def toSet[B >: A]: immutable.Set[L, B] = underlying.toSet
+  override def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[L, T, U] = underlying.toMap(ev)
   override def mkString(start: String, sep: String, end: String): String = underlying.mkString(start, sep, end)
   override def mkString(sep: String): String = underlying.mkString(sep)
   override def mkString: String = underlying.mkString

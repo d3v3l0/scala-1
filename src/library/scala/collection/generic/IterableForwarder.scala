@@ -27,7 +27,7 @@ import scala.collection._
  *  @since   2.8
  */
 @deprecated("Forwarding is inherently unreliable since it is not automated and methods can be forgotten.", "2.11.0")
-trait IterableForwarder[+A] extends Iterable[L, A] with TraversableForwarder[A] {
+trait IterableForwarder[L, +A] extends Iterable[L, A] with TraversableForwarder[L, A] {
 
   /** The iterable object to which calls are forwarded */
   protected def underlying: Iterable[L, A]
@@ -36,5 +36,5 @@ trait IterableForwarder[+A] extends Iterable[L, A] with TraversableForwarder[A] 
   // Iterable methods could be printed by  cat IterableLike.scala | sed -n '/trait Iterable/,$ p' | egrep '^  (override )?def'
 
   override def iterator: Iterator[A] = underlying.iterator
-  override def sameElements[B >: A](that: GenIterable[B]): Boolean = underlying.sameElements(that)
+  override def sameElements[B >: A](that: GenIterable[L, B]): Boolean = underlying.sameElements(that)
 }

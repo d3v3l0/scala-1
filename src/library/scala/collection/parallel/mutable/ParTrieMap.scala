@@ -125,7 +125,7 @@ extends TrieMapIterator[K, V](lev, ct, mustInit)
 
   protected override def newIterator(_lev: Int, _ct: TrieMap[K, V], _mustInit: Boolean) = new ParTrieMapSplitter[K, V](_lev, _ct, _mustInit)
 
-  override def shouldSplitFurther[S](coll: scala.collection.parallel.ParIterable[S], parallelismLevel: Int) = {
+  override def shouldSplitFurther[S](coll: scala.collection.parallel.ParIterable[L, S], parallelismLevel: Int) = {
     val maxsplits = 3 + Integer.highestOneBit(parallelismLevel)
     level < maxsplits
   }
@@ -142,7 +142,7 @@ extends TrieMapIterator[K, V](lev, ct, mustInit)
     super.next()
   }
 
-  def split: Seq[IterableSplitter[(K, V)]] = subdivide().asInstanceOf[Seq[IterableSplitter[(K, V)]]]
+  def split: Seq[L, IterableSplitter[(K, V)]] = subdivide().asInstanceOf[Seq[L, IterableSplitter[(K, V)]]]
 
   override def isRemainingCheap = false
 

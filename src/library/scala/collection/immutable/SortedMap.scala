@@ -28,9 +28,9 @@ import scala.annotation.unchecked.uncheckedVariance
  *  @define Coll immutable.SortedMap
  *  @define coll immutable sorted map
  */
-trait SortedMap[A, +B] extends Map[A, B]
+trait SortedMap[A, +B] extends Map[L, A, B]
                          with scala.collection.SortedMap[A, B]
-                         with MapLike[A, B, SortedMap[A, B]]
+                         with MapLike[L, A, B, SortedMap[A, B]]
                          with SortedMapLike[A, B, SortedMap[A, B]]
 {
 self =>

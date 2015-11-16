@@ -32,7 +32,7 @@ package collection.concurrent
  *  @define atomicop
  *  This is an atomic operation.
  */
-trait Map[A, B] extends scala.collection.mutable.Map[A, B] {
+trait Map[L, A, B] extends scala.collection.mutable.Map[L, A, B] {
 
   /**
    * Associates the given key with a given value, unless the key was already

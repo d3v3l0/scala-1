@@ -37,7 +37,7 @@ import scala.annotation.tailrec
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[A, Repr] {
+trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[L, A, Repr] {
   self =>
 
   type LT
@@ -92,7 +92,7 @@ trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[A, Repr] {
   def iterator: Iterator[A] = new Elements(0, length)
 
   /* Overridden for efficiency */
-  override def toBuffer[A1 >: A]: mutable.Buffer[A1] = {
+  override def toBuffer[A1 >: A]: mutable.Buffer[L, A1] = {
     val result = new mutable.ArrayBuffer[A1](size)
     copyToBuffer(result)
     result

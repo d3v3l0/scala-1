@@ -23,8 +23,8 @@ trait ParSet[T]
 extends scala.collection/*.immutable*/.GenSet[T]
    with GenericParTemplate[T, ParSet]
    with parallel.ParSet[T]
-   with ParIterable[T]
-   with ParSetLike[T, ParSet[T], scala.collection.immutable.Set[T]]
+   with ParIterable[L, T]
+   with ParSetLike[T, ParSet[T], scala.collection.immutable.Set[L, T]]
 {
 self =>
   override def empty: ParSet[T] = ParHashSet[T]()

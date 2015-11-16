@@ -258,7 +258,7 @@ self =>
     }
   }
 
-  def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = {
+  def zip[A1 >: A, B, That](that: GenIterable[L, B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = {
     val b = bf(repr)
     val these = this.iterator
     val those = that.iterator
@@ -267,7 +267,7 @@ self =>
     b.result()
   }
 
-  def zipAll[B, A1 >: A, That](that: GenIterable[B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = {
+  def zipAll[B, A1 >: A, That](that: GenIterable[L, B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = {
     val b = bf(repr)
     val these = this.iterator
     val those = that.iterator
@@ -290,7 +290,7 @@ self =>
     b.result()
   }
 
-  def sameElements[B >: A](that: GenIterable[B]): Boolean = {
+  def sameElements[B >: A](that: GenIterable[L, B]): Boolean = {
     val these = this.iterator
     val those = that.iterator
     while (these.hasNext && those.hasNext)
@@ -310,7 +310,7 @@ self =>
    */
   override /*TraversableLike*/ def canEqual(that: Any) = true
 
-  override /*TraversableLike*/ def view = new IterableView[A, Repr] {
+  override /*TraversableLike*/ def view = new IterableView[L, A, Repr] {
     protected lazy val underlying = self.repr
     override def iterator = self.iterator
   }

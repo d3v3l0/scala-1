@@ -24,8 +24,8 @@ import scala.collection.generic._
 trait ParSet[T]
    extends GenSet[T]
    with GenericParTemplate[T, ParSet]
-   with ParIterable[T]
-   with ParSetLike[T, ParSet[T], Set[T]]
+   with ParIterable[L, T]
+   with ParSetLike[T, ParSet[T], Set[L, T]]
 { self =>
 
   override def empty: ParSet[T] = mutable.ParHashSet[T]()

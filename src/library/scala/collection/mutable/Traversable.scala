@@ -19,7 +19,7 @@ import generic._
  *  @define mutability mutable
  */
 trait Traversable[L, A] extends scala.collection.Traversable[L, A]
-//                        with GenTraversable[A]
+//                        with GenTraversable[L, A]
                         with GenericTraversableTemplate[A, Traversable]
                         with TraversableLike[L, A, Traversable[L, A]]
                         with Mutable {

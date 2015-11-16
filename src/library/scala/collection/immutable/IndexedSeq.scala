@@ -18,7 +18,7 @@ import mutable.{ArrayBuffer, Builder}
  *  that are guaranteed immutable.
  *  $indexedSeqInfo
  */
-trait IndexedSeq[+A] extends Seq[A]
+trait IndexedSeq[+A] extends Seq[L, A]
                     with scala.collection.IndexedSeq[A]
                     with GenericTraversableTemplate[A, IndexedSeq]
                     with IndexedSeqLike[A, IndexedSeq[A]] {
@@ -39,7 +39,7 @@ trait IndexedSeq[+A] extends Seq[A]
  *  @define Coll `IndexedSeq`
  */
 object IndexedSeq extends IndexedSeqFactory[IndexedSeq] {
-  class Impl[A](buf: ArrayBuffer[A]) extends AbstractSeq[A] with IndexedSeq[A] with Serializable {
+  class Impl[A](buf: ArrayBuffer[A]) extends AbstractSeq[L, A] with IndexedSeq[A] with Serializable {
     def length = buf.length
     def apply(idx: Int) = buf.apply(idx)
   }

@@ -18,7 +18,7 @@ import generic._
  *  @version 2.8
  *  @since   2.8
  */
-trait SortedSetLike[A, +This <: SortedSet[A] with SortedSetLike[A, This]] extends Sorted[A, This] with SetLike[A, This] {
+trait SortedSetLike[A, +This <: SortedSet[A] with SortedSetLike[A, This]] extends Sorted[A, This] with SetLike[L, A, This] {
 self =>
 
   implicit def ordering: Ordering[A]

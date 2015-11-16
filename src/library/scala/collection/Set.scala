@@ -21,16 +21,16 @@ import generic._
  * @since 1.0
  * @author Matthias Zenger
  */
-trait Set[A] extends (A => Boolean)
+trait Set[L, A] extends (A => Boolean)
                 with Iterable[L, A]
                 with GenSet[A]
                 with GenericSetTemplate[A, Set]
-                with SetLike[A, Set[A]] {
+                with SetLike[L, A, Set[L, A]] {
   override protected type LT = Any
 
   override def companion: GenericCompanion[Set] = Set
 
-  override def seq: Set[A] = this
+  override def seq: Set[L, A] = this
 }
 
 /** $factoryInfo
@@ -41,9 +41,9 @@ trait Set[A] extends (A => Boolean)
  */
 object Set extends SetFactory[Set] {
   def newBuilder[A] = immutable.Set.newBuilder[A]
-  override def empty[A]: Set[A] = immutable.Set.empty[A]
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Set[A]] = setCanBuildFrom[A]
+  override def empty[A]: Set[L, A] = immutable.Set.empty[A]
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Set[L, A]] = setCanBuildFrom[A]
 }
 
 /** Explicit instantiation of the `Set` trait to reduce class file size in subclasses. */
-abstract class AbstractSet[A] extends AbstractIterable[A] with Set[A]
+abstract class AbstractSet[A] extends AbstractIterable[L, A] with Set[L, A]

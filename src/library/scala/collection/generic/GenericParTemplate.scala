@@ -25,7 +25,7 @@ import scala.language.higherKinds
  *  @author Aleksandar Prokopec
  *  @since 2.8
  */
-trait GenericParTemplate[+A, +CC[X] <: ParIterable[X]]
+trait GenericParTemplate[+A, +CC[X] <: ParIterable[L, X]]
 extends GenericTraversableTemplate[A, CC]
    with HasNewCombiner[A, CC[A] @uncheckedVariance]
 {

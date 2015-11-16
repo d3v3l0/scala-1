@@ -30,8 +30,8 @@ import scala.collection.generic.CanCombineFrom
 trait ParMap[K, +V]
 extends GenMap[K, V]
    with GenericParMapTemplate[K, V, ParMap]
-   with ParIterable[(K, V)]
-   with ParMapLike[K, V, ParMap[K, V], Map[K, V]]
+   with ParIterable[L, (K, V)]
+   with ParMapLike[K, V, ParMap[K, V], Map[L, K, V]]
 {
 self =>
 

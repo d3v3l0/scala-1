@@ -112,7 +112,7 @@ extends MutableList[A]
    *  @return    a sequence of all elements in the queue for which
    *             p yields true.
    */
-  def dequeueAll(p: A => Boolean): Seq[A] = {
+  def dequeueAll(p: A => Boolean): Seq[L, A] = {
     if (first0.isEmpty)
       Seq.empty
     else {

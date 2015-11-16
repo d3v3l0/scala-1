@@ -18,7 +18,7 @@ import mutable.Builder
  *  $iterableInfo
  */
 trait Iterable[L, +A] extends Traversable[L, A]
-                      with GenIterable[A]
+                      with GenIterable[L, A]
                       with GenericTraversableTemplate[A, Iterable]
                       with IterableLike[L, A, Iterable[L, A]] {
   type LT
@@ -32,7 +32,7 @@ trait Iterable[L, +A] extends Traversable[L, A]
   override def iterator: Iterator[A]
   override def takeRight(n: Int): Iterable[L, A]
   override def dropRight(n: Int): Iterable[L, A]
-  override def sameElements[B >: A](that: GenIterable[B]): Boolean
+  override def sameElements[B >: A](that: GenIterable[L, B]): Boolean
   override def view
   override def view(from: Int, until: Int)
   */
@@ -53,4 +53,4 @@ object Iterable extends TraversableFactory[Iterable] {
 }
 
 /** Explicit instantiation of the `Iterable` trait to reduce class file size in subclasses. */
-abstract class AbstractIterable[+A] extends AbstractTraversable[A] with Iterable[L, A]
+abstract class AbstractIterable[L, +A] extends AbstractTraversable[L, A] with Iterable[L, A]

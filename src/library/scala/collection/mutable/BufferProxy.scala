@@ -27,9 +27,9 @@ import script._
  *  @define coll buffer proxy
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait BufferProxy[L, A] extends Buffer[A] with Proxy {
+trait BufferProxy[L, A] extends Buffer[L, A] with Proxy {
 
-  def self: Buffer[A]
+  def self: Buffer[L, A]
 
   def length: Int = self.length
 
@@ -50,7 +50,7 @@ trait BufferProxy[L, A] extends Buffer[A] with Proxy {
    *  @param xs   the traversable object.
    *  @return     a reference to this $coll.
    */
-  override def ++=(xs: TraversableOnce[A]): this.type = { self.++=(xs); this }
+  override def ++=(xs: TraversableOnce[L, A]): this.type = { self.++=(xs); this }
 
   /** Appends a sequence of elements to this buffer.
    *
@@ -62,7 +62,7 @@ trait BufferProxy[L, A] extends Buffer[A] with Proxy {
    *
    *  @param xs   the traversable object.
    */
-  override def appendAll(xs: TraversableOnce[A]) { self.appendAll(xs) }
+  override def appendAll(xs: TraversableOnce[L, A]) { self.appendAll(xs) }
 
   /** Prepend a single element to this buffer and return
    *  the identity of the buffer.
@@ -72,7 +72,7 @@ trait BufferProxy[L, A] extends Buffer[A] with Proxy {
    */
   def +=:(elem: A): this.type = { self.+=:(elem); this }
 
-  override def ++=:(xs: TraversableOnce[A]): this.type = { self.++=:(xs); this }
+  override def ++=:(xs: TraversableOnce[L, A]): this.type = { self.++=:(xs); this }
 
   /** Prepend an element to this list.
    *
@@ -85,7 +85,7 @@ trait BufferProxy[L, A] extends Buffer[A] with Proxy {
    *
    *  @param xs  the traversable object.
    */
-  override def prependAll(xs: TraversableOnce[A]) { self.prependAll(xs) }
+  override def prependAll(xs: TraversableOnce[L, A]) { self.prependAll(xs) }
 
   /** Inserts new elements at the index `n`. Opposed to method
    *  `update`, this method will not replace an element with a
@@ -139,7 +139,7 @@ trait BufferProxy[L, A] extends Buffer[A] with Proxy {
    *
    *  @return a `Buffer` with the same elements.
    */
-  override def clone(): Buffer[A] = new BufferProxy[L, A] {
+  override def clone(): Buffer[L, A] = new BufferProxy[L, A] {
     def self = BufferProxy.this.self.clone()
   }
 }

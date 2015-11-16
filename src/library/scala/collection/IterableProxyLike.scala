@@ -34,10 +34,10 @@ trait IterableProxyLike[L, +A, +Repr <: IterableLike[L, A, Repr] with Iterable[L
   override def sliding(size: Int, step: Int): Iterator[Repr] = self.sliding(size, step)
   override def takeRight(n: Int): Repr = self.takeRight(n)
   override def dropRight(n: Int): Repr = self.dropRight(n)
-  override def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = self.zip[A1, B, That](that)(bf)
-  override def zipAll[B, A1 >: A, That](that: GenIterable[B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = self.zipAll(that, thisElem, thatElem)(bf)
+  override def zip[A1 >: A, B, That](that: GenIterable[L, B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = self.zip[A1, B, That](that)(bf)
+  override def zipAll[B, A1 >: A, That](that: GenIterable[L, B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = self.zipAll(that, thisElem, thatElem)(bf)
   override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Repr, (A1, Int), That]): That = self.zipWithIndex(bf)
-  override def sameElements[B >: A](that: GenIterable[B]): Boolean = self.sameElements(that)
+  override def sameElements[B >: A](that: GenIterable[L, B]): Boolean = self.sameElements(that)
   override def view = self.view
   override def view(from: Int, until: Int) = self.view(from, until)
 }

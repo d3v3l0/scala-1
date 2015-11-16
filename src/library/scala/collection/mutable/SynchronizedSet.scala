@@ -25,7 +25,7 @@ import script._
  *  @define coll synchronized set
  */
 @deprecated("Synchronization via traits is deprecated as it is inherently unreliable.  Consider java.util.concurrent.ConcurrentHashMap[A,Unit] as an alternative.", "2.11.0")
-trait SynchronizedSet[A] extends Set[A] {
+trait SynchronizedSet[A] extends Set[L, A] {
   abstract override def size: Int = synchronized {
     super.size
   }
@@ -42,7 +42,7 @@ trait SynchronizedSet[A] extends Set[A] {
     super.+=(elem)
   }
 
-  override def ++=(xs: TraversableOnce[A]): this.type = synchronized[this.type] {
+  override def ++=(xs: TraversableOnce[L, A]): this.type = synchronized[this.type] {
     super.++=(xs)
   }
 
@@ -50,7 +50,7 @@ trait SynchronizedSet[A] extends Set[A] {
     super.-=(elem)
   }
 
-  override def --=(xs: TraversableOnce[A]): this.type = synchronized[this.type] {
+  override def --=(xs: TraversableOnce[L, A]): this.type = synchronized[this.type] {
     super.--=(xs)
   }
 

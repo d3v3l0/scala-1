@@ -55,7 +55,7 @@ import parallel.ParSet
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait SetLike[A, +This <: SetLike[A, This] with Set[A]]
+trait SetLike[L, A, +This <: SetLike[L, A, This] with Set[L, A]]
 extends IterableLike[L, A, This]
    with GenSetLike[A, This]
    with Subtractable[A, This]
@@ -78,8 +78,8 @@ self =>
   protected[this] override def parCombiner = ParSet.newCombiner[A]
 
   /* Overridden for efficiency. */
-  override def toSeq: Seq[A] = toBuffer[A]
-  override def toBuffer[A1 >: A]: mutable.Buffer[A1] = {
+  override def toSeq: Seq[L, A] = toBuffer[A]
+  override def toBuffer[A1 >: A]: mutable.Buffer[L, A1] = {
     val result = new mutable.ArrayBuffer[A1](size)
     copyToBuffer(result)
     result
@@ -115,7 +115,7 @@ self =>
    *  Example:
    *   {{{
    *    scala> val a = Set(1, 3) + 2 + 3
-   *    a: scala.collection.immutable.Set[Int] = Set(1, 3, 2)
+   *    a: scala.collection.immutable.Set[L, Int] = Set(1, 3, 2)
    *   }}}
    *
    *  @param elem1 the first element to add.
@@ -132,7 +132,7 @@ self =>
    * Example:
    *  {{{
    *    scala> val a = Set(1, 2) ++ Set(2, "a")
-   *    a: scala.collection.immutable.Set[Any] = Set(1, 2, a)
+   *    a: scala.collection.immutable.Set[L, Any] = Set(1, 2, a)
    *  }}}
    *
    *  @param elems     the collection containing the elements to add.

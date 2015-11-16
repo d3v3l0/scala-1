@@ -26,7 +26,7 @@ import script._
  *  @define coll synchronized buffer
  */
 @deprecated("Synchronization via traits is deprecated as it is inherently unreliable.  Consider java.util.concurrent.ConcurrentLinkedQueue as an alternative.", "2.11.0")
-trait SynchronizedBuffer[A] extends Buffer[A] {
+trait SynchronizedBuffer[A] extends Buffer[L, A] {
 
   import scala.collection.Traversable
 
@@ -65,7 +65,7 @@ trait SynchronizedBuffer[A] extends Buffer[A] {
    *
    *  @param xs   the iterable object.
    */
-  override def ++=(xs: TraversableOnce[A]): this.type = synchronized[this.type] {
+  override def ++=(xs: TraversableOnce[L, A]): this.type = synchronized[this.type] {
     super.++=(xs)
   }
 
@@ -82,7 +82,7 @@ trait SynchronizedBuffer[A] extends Buffer[A] {
    *
    *  @param xs the traversable object.
    */
-  override def appendAll(xs: TraversableOnce[A]): Unit = synchronized {
+  override def appendAll(xs: TraversableOnce[L, A]): Unit = synchronized {
     super.appendAll(xs)
   }
 
@@ -100,7 +100,7 @@ trait SynchronizedBuffer[A] extends Buffer[A] {
    *
    *  @param xs the traversable object.
    */
-  override def ++=:(xs: TraversableOnce[A]): this.type = synchronized[this.type] { super.++=:(xs) }
+  override def ++=:(xs: TraversableOnce[L, A]): this.type = synchronized[this.type] { super.++=:(xs) }
 
   /** Prepend an element to this list.
    *
@@ -113,7 +113,7 @@ trait SynchronizedBuffer[A] extends Buffer[A] {
    *
    *  @param xs the traversable object.
    */
-  override def prependAll(xs: TraversableOnce[A]): Unit = synchronized {
+  override def prependAll(xs: TraversableOnce[L, A]): Unit = synchronized {
     super.prependAll(xs)
   }
 

@@ -33,9 +33,9 @@ import scala.collection.generic.Signalling
 trait ParMapLike[K,
                  +V,
                  +Repr <: ParMapLike[K, V, Repr, Sequential] with ParMap[K, V],
-                 +Sequential <: Map[K, V] with MapLike[K, V, Sequential]]
+                 +Sequential <: Map[L, K, V] with MapLike[L, K, V, Sequential]]
 extends GenMapLike[K, V, Repr]
-   with ParIterableLike[(K, V), Repr, Sequential]
+   with ParIterableLike[L, (K, V), Repr, Sequential]
 {
 self =>
 
@@ -103,7 +103,7 @@ self =>
     override def seq = self.seq.keySet
   }
 
-  protected class DefaultValuesIterable extends ParIterable[V] {
+  protected class DefaultValuesIterable extends ParIterable[L, V] {
     def splitter = valuesIterator(self.splitter)
     override def size = self.size
     override def foreach[S](f: V => S) = for ((k, v) <- self) f(v)
@@ -112,9 +112,9 @@ self =>
 
   def keySet: ParSet[K] = new DefaultKeySet
 
-  def keys: ParIterable[K] = keySet
+  def keys: ParIterable[L, K] = keySet
 
-  def values: ParIterable[V] = new DefaultValuesIterable
+  def values: ParIterable[L, V] = new DefaultValuesIterable
 
   def filterKeys(p: K => Boolean): ParMap[K, V] = new ParMap[K, V] {
     lazy val filtered = self.filter(kv => p(kv._1))

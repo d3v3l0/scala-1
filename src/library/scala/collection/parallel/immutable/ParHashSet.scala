@@ -90,7 +90,7 @@ self =>
       phit.i = i
       phit
     }
-    def split: Seq[IterableSplitter[T]] = if (remaining < 2) Seq(this) else triter match {
+    def split: Seq[L, IterableSplitter[T]] = if (remaining < 2) Seq(this) else triter match {
       case t: TrieIterator[_] =>
         val previousRemaining = remaining
         val ((fst, fstlength), snd) = t.split

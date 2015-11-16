@@ -52,8 +52,8 @@ object ListMap extends ImmutableMapFactory[ListMap] {
 @deprecatedInheritance("The semantics of immutable collections makes inheriting from ListMap error-prone.", "2.11.0")
 class ListMap[A, +B]
 extends AbstractMap[A, B]
-   with Map[A, B]
-   with MapLike[A, B, ListMap[A, B]]
+   with Map[L, A, B]
+   with MapLike[L, A, B, ListMap[A, B]]
    with Serializable {
 
   override def empty = ListMap.empty

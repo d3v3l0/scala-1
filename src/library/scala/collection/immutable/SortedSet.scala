@@ -25,7 +25,7 @@ import mutable.Builder
  *  @define Coll `immutable.SortedSet`
  *  @define coll immutable sorted set
  */
-trait SortedSet[A] extends Set[A] with scala.collection.SortedSet[A] with SortedSetLike[A, SortedSet[A]] {
+trait SortedSet[A] extends Set[L, A] with scala.collection.SortedSet[A] with SortedSetLike[A, SortedSet[A]] {
   /** Needs to be overridden in subclasses. */
   override def empty: SortedSet[A] = SortedSet.empty[A]
 }

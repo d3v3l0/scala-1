@@ -42,7 +42,7 @@ trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Trav
   override def filterNot(@plocal p: A => Boolean): Repr = self.filterNot(p)
   override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That]): That = self.collect(pf)(bf)
   override def partition(@plocal p: A => Boolean): (Repr, Repr) = self.partition(p)
-  override def groupBy[K](f: A => K): immutable.Map[K, Repr] = self.groupBy(f)
+  override def groupBy[K](f: A => K): immutable.Map[L, K, Repr] = self.groupBy(f)
   override def forall(@plocal p: A => Boolean): Boolean = self.forall(p)
   override def exists(@plocal p: A => Boolean): Boolean = self.exists(p)
   override def count(@plocal p: A => Boolean): Int = self.count(p)
@@ -74,19 +74,19 @@ trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Trav
   override def dropWhile(@plocal p: A => Boolean): Repr = self.dropWhile(p)
   override def span(@plocal p: A => Boolean): (Repr, Repr) = self.span(p)
   override def splitAt(n: Int): (Repr, Repr) = self.splitAt(n)
-  override def copyToBuffer[B >: A](dest: Buffer[B]) = self.copyToBuffer(dest)
+  override def copyToBuffer[B >: A](dest: Buffer[L, B]) = self.copyToBuffer(dest)
   override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int) = self.copyToArray(xs, start, len)
   override def copyToArray[B >: A](xs: Array[B], start: Int) = self.copyToArray(xs, start)
   override def copyToArray[B >: A](xs: Array[B]) = self.copyToArray(xs)
   override def toArray[B >: A: ClassTag]: Array[B] = self.toArray
   override def toList: List[A] = self.toList
   override def toIterable: Iterable[L, A] = self.toIterable
-  override def toSeq: Seq[A] = self.toSeq
+  override def toSeq: Seq[L, A] = self.toSeq
   override def toIndexedSeq: immutable.IndexedSeq[A] = self.toIndexedSeq
   override def toBuffer[B >: A] = self.toBuffer
   override def toStream: Stream[A] = self.toStream
-  override def toSet[B >: A]: immutable.Set[B] = self.toSet
-  override def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[T, U] = self.toMap(ev)
+  override def toSet[B >: A]: immutable.Set[L, B] = self.toSet
+  override def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[L, T, U] = self.toMap(ev)
   override def toTraversable: Traversable[L, A] = self.toTraversable
   override def toIterator: Iterator[A] = self.toIterator
   override def mkString(start: String, sep: String, end: String): String = self.mkString(start, sep, end)
@@ -97,7 +97,7 @@ trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Trav
   override def addString(b: StringBuilder): StringBuilder = self.addString(b)
   override def stringPrefix : String = self.stringPrefix
   override def view = self.view
-  override def view(from: Int, until: Int): TraversableView[A, Repr] = self.view(from, until)
+  override def view(from: Int, until: Int): TraversableView[L, A, Repr] = self.view(from, until)
   // This appears difficult to override due to the type of WithFilter.
   // override def withFilter(p: A => Boolean): WithFilter = self.withFilter(p)
 }

@@ -27,7 +27,7 @@ import scala.language.higherKinds
  *  @define coll  collection
  *  @define Coll  Traversable
  */
-trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
+trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[L, X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
   type LT
 
   /** Applies a function `f` to all elements of this $coll.
@@ -70,7 +70,7 @@ trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[X]] extends HasNew
    */
   def genericBuilder[B]: Builder[B, CC[B]] = companion.newBuilder[B]
 
-  private def sequential: TraversableOnce[A] = this.asInstanceOf[GenTraversableOnce[A]].seq
+  private def sequential: TraversableOnce[L, A] = this.asInstanceOf[GenTraversableOnce[A]].seq
 
   /** Converts this $coll of pairs into two collections of the first and second
    *  half of each pair.

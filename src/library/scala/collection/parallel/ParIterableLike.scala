@@ -32,7 +32,7 @@ import scala.language.{ higherKinds, implicitConversions }
 import scala.collection.parallel.ParallelCollectionImplicits._
 
 
-/** A template trait for parallel collections of type `ParIterable[T]`.
+/** A template trait for parallel collections of type `ParIterable[L, T]`.
  *
  *  $paralleliterableinfo
  *
@@ -64,7 +64,7 @@ import scala.collection.parallel.ParallelCollectionImplicits._
  *  iterate over into disjunct subsets:
  *
  *  {{{
- *     def split: Seq[Splitter]
+ *     def split: Seq[L, Splitter]
  *  }}}
  *
  *  which splits the splitter into a sequence of disjunct subsplitters. This is typically a
@@ -153,13 +153,13 @@ import scala.collection.parallel.ParallelCollectionImplicits._
  *  @define Coll `ParIterable`
  *  @define coll parallel iterable
  */
-trait ParIterableLike[+T, +Repr <: ParIterable[T], +Sequential <: Iterable[L, T] with IterableLike[L, T, Sequential]]
+trait ParIterableLike[L, +T, +Repr <: ParIterable[L, T], +Sequential <: Iterable[L, T] with IterableLike[L, T, Sequential]]
 extends GenIterableLike[T, Repr]
    with CustomParallelizable[T, Repr]
    with Parallel
    with HasNewCombiner[T, Repr]
 {
-self: ParIterableLike[T, Repr, Sequential] =>
+self: ParIterableLike[L, T, Repr, Sequential] =>
 
   @transient
   @volatile
@@ -424,7 +424,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  `z` would be an empty set.
    *
    *  {{{
-   *    pc.aggregate(Set[Int]())(_ += process(_), _ ++ _)
+   *    pc.aggregate(Set[L, Int]())(_ += process(_), _ ++ _)
    *  }}}
    *
    *  Another example is calculating geometric mean from a collection of doubles
@@ -496,10 +496,10 @@ self: ParIterableLike[T, Repr, Sequential] =>
   }
 
   def map[S, That](f: T => S)(implicit bf: CanBuildFrom[Repr, S, That]): That = if (bf(repr).isCombiner) {
-    tasksupport.executeAndWaitResult(new Map[S, That](f, combinerFactory(() => bf(repr).asCombiner), splitter) mapResult { _.resultWithTaskSupport })
+    tasksupport.executeAndWaitResult(new Map[L, S, That](f, combinerFactory(() => bf(repr).asCombiner), splitter) mapResult { _.resultWithTaskSupport })
   } else setTaskSupport(seq.map(f)(bf2seq(bf)), tasksupport)
   /*bf ifParallel { pbf =>
-    tasksupport.executeAndWaitResult(new Map[S, That](f, pbf, splitter) mapResult { _.result })
+    tasksupport.executeAndWaitResult(new Map[L, S, That](f, pbf, splitter) mapResult { _.result })
   } otherwise seq.map(f)(bf2seq(bf))*/
 
   def collect[S, That](pf: PartialFunction[T, S])(implicit bf: CanBuildFrom[Repr, S, That]): That = if (bf(repr).isCombiner) {
@@ -818,16 +818,16 @@ self: ParIterableLike[T, Repr, Sequential] =>
     tasksupport.executeAndWaitResult(new CopyToArray(start, len, xs, splitter))
   }
 
-  def sameElements[U >: T](that: GenIterable[U]) = seq.sameElements(that)
+  def sameElements[U >: T](that: GenIterable[L, U]) = seq.sameElements(that)
 
-  def zip[U >: T, S, That](that: GenIterable[S])(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
+  def zip[U >: T, S, That](that: GenIterable[L, S])(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
     val thatseq = that.asParSeq
     tasksupport.executeAndWaitResult(new Zip(combinerFactory(() => bf(repr).asCombiner), splitter, thatseq.splitter) mapResult { _.resultWithTaskSupport })
   } else setTaskSupport(seq.zip(that)(bf2seq(bf)), tasksupport)
 
   def zipWithIndex[U >: T, That](implicit bf: CanBuildFrom[Repr, (U, Int), That]): That = this zip immutable.ParRange(0, size, 1, inclusive = false)
 
-  def zipAll[S, U >: T, That](that: GenIterable[S], thisElem: U, thatElem: S)(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
+  def zipAll[S, U >: T, That](that: GenIterable[L, S], thisElem: U, thatElem: S)(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
     val thatseq = that.asParSeq
     tasksupport.executeAndWaitResult(
       new ZipAll(size max thatseq.length, thisElem, thatElem, combinerFactory(() => bf(repr).asCombiner), splitter, thatseq.splitter) mapResult {
@@ -863,11 +863,11 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   // the methods below are overridden
 
-  override def toBuffer[U >: T]: scala.collection.mutable.Buffer[U] = seq.toBuffer // have additional, parallel buffers?
+  override def toBuffer[U >: T]: scala.collection.mutable.Buffer[L, U] = seq.toBuffer // have additional, parallel buffers?
 
-  override def toTraversable: GenTraversable[T] = this.asInstanceOf[GenTraversable[T]]
+  override def toTraversable: GenTraversable[L, T] = this.asInstanceOf[GenTraversable[L, T]]
 
-  override def toIterable: ParIterable[T] = this.asInstanceOf[ParIterable[T]]
+  override def toIterable: ParIterable[L, T] = this.asInstanceOf[ParIterable[L, T]]
 
   override def toSeq: ParSeq[T] = toParCollection[T, ParSeq[T]](() => ParSeq.newCombiner[T])
 
@@ -1048,12 +1048,12 @@ self: ParIterableLike[T, Repr, Sequential] =>
     override def requiresStrictSplitters = true
   }
 
-  protected[this] class Map[S, That](f: T => S, cbf: CombinerFactory[S, That], protected[this] val pit: IterableSplitter[T])
-  extends Transformer[Combiner[S, That], Map[S, That]] {
+  protected[this] class Map[L, S, That](f: T => S, cbf: CombinerFactory[S, That], protected[this] val pit: IterableSplitter[T])
+  extends Transformer[Combiner[S, That], Map[L, S, That]] {
     @volatile var result: Combiner[S, That] = null
     def leaf(prev: Option[Combiner[S, That]]) = result = pit.map2combiner(f, reuse(prev, cbf()))
     protected[this] def newSubtask(p: IterableSplitter[T]) = new Map(f, cbf, p)
-    override def merge(that: Map[S, That]) = result = result combine that.result
+    override def merge(that: Map[L, S, That]) = result = result combine that.result
   }
 
   protected[this] class Collect[S, That]
@@ -1478,7 +1478,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   private[parallel] def debugInformation = "Parallel collection: " + this.getClass
 
-  private[parallel] def brokenInvariants = Seq[String]()
+  private[parallel] def brokenInvariants = Seq[L, String]()
 
   // private val dbbuff = ArrayBuffer[String]()
   // def debugBuffer: ArrayBuffer[String] = dbbuff

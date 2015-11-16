@@ -54,7 +54,7 @@ import parallel.ParMap
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait MapLike[A, +B, +This <: MapLike[A, B, This] with Map[A, B]]
+trait MapLike[L, A, +B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
   extends PartialFunction[A, B]
      with IterableLike[L, (A, B), This]
      with GenMapLike[A, B, This]
@@ -94,16 +94,16 @@ self =>
    *  @tparam   B1 the type of the value in the key/value pair.
    *  @return   a new map with the new binding added to this map
    *
-   *  @usecase  def + (kv: (A, B)): Map[A, B]
+   *  @usecase  def + (kv: (A, B)): Map[L, A, B]
    *    @inheritdoc
    */
-  def + [B1 >: B] (kv: (A, B1)): Map[A, B1]
+  def + [B1 >: B] (kv: (A, B1)): Map[L, A, B1]
 
   /** Removes a key from this map, returning a new map.
    *  @param    key the key to be removed
    *  @return   a new map without a binding for `key`
    *
-   *  @usecase  def - (key: A): Map[A, B]
+   *  @usecase  def - (key: A): Map[L, A, B]
    *    @inheritdoc
    */
   def - (key: A): This
@@ -163,15 +163,15 @@ self =>
   /** Collects all keys of this map in a set.
    * @return  a set containing all keys of this map.
    */
-  def keySet: Set[A] = new DefaultKeySet
+  def keySet: Set[L, A] = new DefaultKeySet
 
   /** The implementation class of the set returned by `keySet`.
    */
-  protected class DefaultKeySet extends AbstractSet[A] with Set[A] with Serializable {
+  protected class DefaultKeySet extends AbstractSet[A] with Set[L, A] with Serializable {
     def contains(key : A) = self.contains(key)
     def iterator = keysIterator
-    def + (elem: A): Set[A] = (Set[A]() ++ this + elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
-    def - (elem: A): Set[A] = (Set[A]() ++ this - elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
+    def + (elem: A): Set[L, A] = (Set[L, A]() ++ this + elem).asInstanceOf[Set[L, A]] // !!! concrete overrides abstract problem
+    def - (elem: A): Set[L, A] = (Set[L, A]() ++ this - elem).asInstanceOf[Set[L, A]] // !!! concrete overrides abstract problem
     override def size = self.size
     override def foreach[C](f: A => C) = self.keysIterator foreach f
   }
@@ -202,7 +202,7 @@ self =>
 
   /** The implementation class of the iterable returned by `values`.
    */
-  protected class DefaultValuesIterable extends AbstractIterable[B] with Iterable[L, B] with Serializable {
+  protected class DefaultValuesIterable extends AbstractIterable[L, B] with Iterable[L, B] with Serializable {
     def iterator = valuesIterator
     override def size = self.size
     override def foreach[C](f: B => C) = self.valuesIterator foreach f
@@ -241,7 +241,7 @@ self =>
    *  @return an immutable map consisting only of those key value pairs of this map where the key satisfies
    *          the predicate `p`. The resulting map wraps the original map without copying any elements.
    */
-  def filterKeys(p: A => Boolean): Map[A, B] = new FilteredKeys(p)
+  def filterKeys(p: A => Boolean): Map[L, A, B] = new FilteredKeys(p)
 
   protected class MappedValues[C](f: B => C) extends AbstractMap[A, C] with DefaultMap[A, C] {
     override def foreach[D](g: ((A, C)) => D): Unit = for ((k, v) <- self) g((k, f(v)))
@@ -256,7 +256,7 @@ self =>
    *  @return a map view which maps every key of this map
    *          to `f(this(key))`. The resulting map wraps the original map without copying any elements.
    */
-  def mapValues[C](f: B => C): Map[A, C] = new MappedValues(f)
+  def mapValues[C](f: B => C): Map[L, A, C] = new MappedValues(f)
 
   // The following 5 operations (updated, two times +, two times ++) should really be
   // generic, returning This[B]. We need better covariance support to express that though.
@@ -268,10 +268,10 @@ self =>
    *  @tparam   B1 the type of the added value
    *  @return   A new map with the new key/value mapping added to this map.
    *
-   *  @usecase  def updated(key: A, value: B): Map[A, B]
+   *  @usecase  def updated(key: A, value: B): Map[L, A, B]
    *    @inheritdoc
    */
-  def updated [B1 >: B](key: A, value: B1): Map[A, B1] = this + ((key, value))
+  def updated [B1 >: B](key: A, value: B1): Map[L, A, B1] = this + ((key, value))
 
   /** Adds key/value pairs to this map, returning a new map.
    *
@@ -284,11 +284,11 @@ self =>
    *  @tparam   B1  the type of the added values
    *  @return   a new map with the given bindings added to this map
    *
-   *  @usecase  def + (kvs: (A, B)*): Map[A, B]
+   *  @usecase  def + (kvs: (A, B)*): Map[L, A, B]
    *    @inheritdoc
    *    @param    kvs the key/value pairs
    */
-  def + [B1 >: B] (kv1: (A, B1), kv2: (A, B1), kvs: (A, B1) *): Map[A, B1] =
+  def + [B1 >: B] (kv1: (A, B1), kv2: (A, B1), kvs: (A, B1) *): Map[L, A, B1] =
     this + kv1 + kv2 ++ kvs
 
   /** Adds all key/value pairs in a traversable collection to this map, returning a new map.
@@ -297,11 +297,11 @@ self =>
    *  @tparam   B1  the type of the added values
    *  @return   a new map with the given bindings added to this map
    *
-   *  @usecase  def ++ (xs: Traversable[L, (A, B)]): Map[A, B]
+   *  @usecase  def ++ (xs: Traversable[L, (A, B)]): Map[L, A, B]
    *    @inheritdoc
    */
-  def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): Map[A, B1] =
-    ((repr: Map[A, B1]) /: xs.seq) (_ + _)
+  def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): Map[L, A, B1] =
+    ((repr: Map[L, A, B1]) /: xs.seq) (_ + _)
 
   /** Returns a new map obtained by removing all key/value pairs for which the predicate
    *  `p` returns `true`.
@@ -322,8 +322,8 @@ self =>
   }
 
   /* Overridden for efficiency. */
-  override def toSeq: Seq[(A, B)] = toBuffer[(A, B)]
-  override def toBuffer[C >: (A, B)]: mutable.Buffer[C] = {
+  override def toSeq: Seq[L, (A, B)] = toBuffer[(A, B)]
+  override def toBuffer[C >: (A, B)]: mutable.Buffer[L, C] = {
     val result = new mutable.ArrayBuffer[C](size)
     copyToBuffer(result)
     result

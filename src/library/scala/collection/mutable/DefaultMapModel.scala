@@ -20,7 +20,7 @@ package mutable
  *  @since   1
  */
 @deprecated("This trait will be removed.", "2.11.0")
-trait DefaultMapModel[A, B] extends Map[A, B] {
+trait DefaultMapModel[A, B] extends Map[L, A, B] {
 
   type Entry = DefaultEntry[A, B]
 

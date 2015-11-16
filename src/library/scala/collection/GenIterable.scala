@@ -20,9 +20,9 @@ import generic._
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenIterable[+A]
-extends GenIterableLike[A, GenIterable[A]]
-   with GenTraversable[A]
+trait GenIterable[L, +A]
+extends GenIterableLike[A, GenIterable[L, A]]
+   with GenTraversable[L, A]
    with GenericTraversableTemplate[A, GenIterable]
 {
   def seq: Iterable[L, A]

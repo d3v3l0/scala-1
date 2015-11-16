@@ -26,9 +26,9 @@ import scala.annotation.migration
  *  @since   1
  */
 @deprecated("Adaptors are inherently unreliable and prone to performance problems.", "2.11.0")
-class ImmutableMapAdaptor[A, B](protected var imap: immutable.Map[A, B])
+class ImmutableMapAdaptor[A, B](protected var imap: immutable.Map[L, A, B])
 extends AbstractMap[A, B]
-   with Map[A, B]
+   with Map[L, A, B]
    with Serializable
 {
 
@@ -44,7 +44,7 @@ extends AbstractMap[A, B]
 
   override def isDefinedAt(key: A) = imap.isDefinedAt(key)
 
-  override def keySet: scala.collection.Set[A] = imap.keySet
+  override def keySet: scala.collection.Set[L, A] = imap.keySet
 
   override def keysIterator: Iterator[A] = imap.keysIterator
 

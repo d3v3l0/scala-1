@@ -19,7 +19,7 @@ trait ViewMkString[+A] {
 
   // It is necessary to use thisSeq rather than toSeq to avoid cycles in the
   // eager evaluation of vals in transformed view subclasses, see #4558.
-  protected[this] def thisSeq: Seq[A] = (new ArrayBuffer[A] ++= self).result
+  protected[this] def thisSeq: Seq[L, A] = (new ArrayBuffer[A] ++= self).result
 
   // Have to overload all three to work around #4299.  The overload
   // is because mkString should force a view but toString should not.
@@ -69,7 +69,7 @@ trait ViewMkString[+A] {
  */
 trait TraversableViewLike[L, +A,
                           +Coll,
-                          +This <: TraversableView[A, Coll] with TraversableViewLike[L, A, Coll, This]]
+                          +This <: TraversableView[L, A, Coll] with TraversableViewLike[L, A, Coll, This]]
   extends Traversable[L, A] with TraversableLike[L, A, This] with ViewMkString[A]
 {
   self =>
@@ -99,7 +99,7 @@ trait TraversableViewLike[L, +A,
    *  This trait and all its subtraits has to be re-implemented for each
    *  ViewLike class.
    */
-  trait Transformed[+B] extends TraversableView[B, Coll] {
+  trait Transformed[+B] extends TraversableView[L, B, Coll] {
     def foreach[U](f: B => U): Unit
 
     lazy val underlying = self.underlying
@@ -139,7 +139,7 @@ trait TraversableViewLike[L, +A,
    *  on it. Used for those operations which do not naturally lend themselves to a view
    */
   trait Forced[B] extends Transformed[B] {
-    protected[this] val forced: GenSeq[B]
+    protected[this] val forced: GenSeq[L, B]
     def foreach[U](f: B => U) = forced foreach f
     final override protected[this] def viewIdentifier = "C"
   }
@@ -184,7 +184,7 @@ trait TraversableViewLike[L, +A,
   }
 
   trait Appended[B >: A] extends Transformed[B] {
-    protected[this] val rest: GenTraversable[B]
+    protected[this] val rest: GenTraversable[L, B]
     def foreach[U](f: B => U) {
       self foreach f
       rest foreach f
@@ -253,8 +253,8 @@ trait TraversableViewLike[L, +A,
   /** Boilerplate method, to override in each subclass
    *  This method could be eliminated if Scala had virtual classes
    */
-  protected def newForced[B](xs: => GenSeq[B]): Transformed[B] = new { val forced = xs } with AbstractTransformed[B] with Forced[B]
-  protected def newAppended[B >: A](that: GenTraversable[B]): Transformed[B] = new { val rest = that } with AbstractTransformed[B] with Appended[B]
+  protected def newForced[B](xs: => GenSeq[L, B]): Transformed[B] = new { val forced = xs } with AbstractTransformed[B] with Forced[B]
+  protected def newAppended[B >: A](that: GenTraversable[L, B]): Transformed[B] = new { val rest = that } with AbstractTransformed[B] with Appended[B]
   protected def newMapped[B](f: A => B): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with Mapped[B]
   protected def newFlatMapped[B](f: A => GenTraversableOnce[B]): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with FlatMapped[B]
   protected def newFiltered(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with Filtered
@@ -284,7 +284,7 @@ trait TraversableViewLike[L, +A,
   override def scanRight[B, That](z: B)(op: (A, B) => B)(implicit bf: CanBuildFrom[This, B, That]): That =
     newForced(thisSeq.scanRight(z)(op)).asInstanceOf[That]
 
-  override def groupBy[K](f: A => K): immutable.Map[K, This] =
+  override def groupBy[K](f: A => K): immutable.Map[L, K, This] =
     thisSeq groupBy f mapValues (xs => newForced(xs))
 
   override def unzip[A1, A2](implicit asPair: A => (A1, A2)) =

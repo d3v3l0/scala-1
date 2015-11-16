@@ -28,7 +28,7 @@ import immutable.{List, Nil}
  */
 @SerialVersionUID(5938451523372603072L)
 class MutableList[A]
-extends AbstractSeq[A]
+extends AbstractSeq[L, A]
    with LinearSeq[A]
    with LinearSeqOptimized[A, MutableList[A]]
    with GenericTraversableTemplate[A, MutableList]

@@ -25,19 +25,19 @@ import parallel.immutable.ParSet
  *  @define Coll `immutable.Set`
  *  @define coll immutable set
  */
-trait Set[A] extends Iterable[L, A]
+trait Set[L, A] extends Iterable[L, A]
 //                with GenSet[A]
-                with scala.collection.Set[A]
+                with scala.collection.Set[L, A]
                 with GenericSetTemplate[A, Set]
-                with SetLike[A, Set[A]]
+                with SetLike[L, A, Set[L, A]]
                 with Parallelizable[A, ParSet[A]]
 {
   override def companion: GenericCompanion[Set] = Set
   
   
-  override def toSet[B >: A]: Set[B] = to[({type l[a] = immutable.Set[B]})#l] // for bincompat; remove in dev
+  override def toSet[B >: A]: Set[L, B] = to[({type l[a] = immutable.Set[L, B]})#l] // for bincompat; remove in dev
   
-  override def seq: Set[A] = this
+  override def seq: Set[L, A] = this
   protected override def parCombiner = ParSet.newCombiner[A] // if `immutable.SetLike` gets introduced, please move this there!
 }
 
@@ -47,30 +47,30 @@ trait Set[A] extends Iterable[L, A]
  */
 object Set extends ImmutableSetFactory[Set] {
   /** $setCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Set[A]] = setCanBuildFrom[A]
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Set[L, A]] = setCanBuildFrom[A]
   
   /** An optimized representation for immutable empty sets */
-  private object EmptySet extends AbstractSet[Any] with Set[Any] with Serializable {
+  private object EmptySet extends AbstractSet[Any] with Set[L, Any] with Serializable {
     override def size: Int = 0
     def contains(elem: Any): Boolean = false
-    def + (elem: Any): Set[Any] = new Set1(elem)
-    def - (elem: Any): Set[Any] = this
+    def + (elem: Any): Set[L, Any] = new Set1(elem)
+    def - (elem: Any): Set[L, Any] = this
     def iterator: Iterator[Any] = Iterator.empty
     override def foreach[U](f: Any =>  U): Unit = {}
-    override def toSet[B >: Any]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: Any]: Set[L, B] = this.asInstanceOf[Set[L, B]]
   }
-  private[collection] def emptyInstance: Set[Any] = EmptySet
+  private[collection] def emptyInstance: Set[L, Any] = EmptySet
 
   /** An optimized representation for immutable sets of size 1 */
   @SerialVersionUID(1233385750652442003L)
-  class Set1[A] private[collection] (elem1: A) extends AbstractSet[A] with Set[A] with Serializable {
+  class Set1[A] private[collection] (elem1: A) extends AbstractSet[A] with Set[L, A] with Serializable {
     override def size: Int = 1
     def contains(elem: A): Boolean =
       elem == elem1
-    def + (elem: A): Set[A] =
+    def + (elem: A): Set[L, A] =
       if (contains(elem)) this
       else new Set2(elem1, elem)
-    def - (elem: A): Set[A] =
+    def - (elem: A): Set[L, A] =
       if (elem == elem1) Set.empty
       else this
     def iterator: Iterator[A] =
@@ -89,19 +89,19 @@ object Set extends ImmutableSetFactory[Set] {
       else None
     }
     @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-    override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: A]: Set[L, B] = this.asInstanceOf[Set[L, B]]
   }
 
   /** An optimized representation for immutable sets of size 2 */
   @SerialVersionUID(-6443011234944830092L)
-  class Set2[A] private[collection] (elem1: A, elem2: A) extends AbstractSet[A] with Set[A] with Serializable {
+  class Set2[A] private[collection] (elem1: A, elem2: A) extends AbstractSet[A] with Set[L, A] with Serializable {
     override def size: Int = 2
     def contains(elem: A): Boolean =
       elem == elem1 || elem == elem2
-    def + (elem: A): Set[A] =
+    def + (elem: A): Set[L, A] =
       if (contains(elem)) this
       else new Set3(elem1, elem2, elem)
-    def - (elem: A): Set[A] =
+    def - (elem: A): Set[L, A] =
       if (elem == elem1) new Set1(elem2)
       else if (elem == elem2) new Set1(elem1)
       else this
@@ -122,19 +122,19 @@ object Set extends ImmutableSetFactory[Set] {
       else None
     }
     @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-    override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: A]: Set[L, B] = this.asInstanceOf[Set[L, B]]
   }
 
   /** An optimized representation for immutable sets of size 3 */
   @SerialVersionUID(-3590273538119220064L)
-  class Set3[A] private[collection] (elem1: A, elem2: A, elem3: A) extends AbstractSet[A] with Set[A] with Serializable {
+  class Set3[A] private[collection] (elem1: A, elem2: A, elem3: A) extends AbstractSet[A] with Set[L, A] with Serializable {
     override def size: Int = 3
     def contains(elem: A): Boolean =
       elem == elem1 || elem == elem2 || elem == elem3
-    def + (elem: A): Set[A] =
+    def + (elem: A): Set[L, A] =
       if (contains(elem)) this
       else new Set4(elem1, elem2, elem3, elem)
-    def - (elem: A): Set[A] =
+    def - (elem: A): Set[L, A] =
       if (elem == elem1) new Set2(elem2, elem3)
       else if (elem == elem2) new Set2(elem1, elem3)
       else if (elem == elem3) new Set2(elem1, elem2)
@@ -157,19 +157,19 @@ object Set extends ImmutableSetFactory[Set] {
       else None
     }
     @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-    override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: A]: Set[L, B] = this.asInstanceOf[Set[L, B]]
   }
 
   /** An optimized representation for immutable sets of size 4 */
   @SerialVersionUID(-3622399588156184395L)
-  class Set4[A] private[collection] (elem1: A, elem2: A, elem3: A, elem4: A) extends AbstractSet[A] with Set[A] with Serializable {
+  class Set4[A] private[collection] (elem1: A, elem2: A, elem3: A, elem4: A) extends AbstractSet[A] with Set[L, A] with Serializable {
     override def size: Int = 4
     def contains(elem: A): Boolean =
       elem == elem1 || elem == elem2 || elem == elem3 || elem == elem4
-    def + (elem: A): Set[A] =
+    def + (elem: A): Set[L, A] =
       if (contains(elem)) this
       else new HashSet[A] + (elem1, elem2, elem3, elem4, elem)
-    def - (elem: A): Set[A] =
+    def - (elem: A): Set[L, A] =
       if (elem == elem1) new Set3(elem2, elem3, elem4)
       else if (elem == elem2) new Set3(elem1, elem3, elem4)
       else if (elem == elem3) new Set3(elem1, elem2, elem4)
@@ -194,7 +194,7 @@ object Set extends ImmutableSetFactory[Set] {
       else None
     }
     @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-    override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: A]: Set[L, B] = this.asInstanceOf[Set[L, B]]
   }
 }
 

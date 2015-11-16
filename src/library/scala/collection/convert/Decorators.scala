@@ -38,7 +38,7 @@ private[collection] trait Decorators {
   }
 
   /** Generic class containing the `asJavaDictionary` converter method */
-  class AsJavaDictionary[A, B](m : mutable.Map[A, B]) {
+  class AsJavaDictionary[A, B](m : mutable.Map[L, A, B]) {
     /** Converts a Scala `Map` to a Java `Dictionary` */
     def asJavaDictionary: ju.Dictionary[A, B] = JavaConversions.asJavaDictionary(m)
   }

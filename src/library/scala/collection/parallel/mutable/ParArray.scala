@@ -97,7 +97,7 @@ self =>
 
     def dup = new ParArrayIterator(i, until, arr)
 
-    def psplit(sizesIncomplete: Int*): Seq[ParArrayIterator] = {
+    def psplit(sizesIncomplete: Int*): Seq[L, ParArrayIterator] = {
       var traversed = i
       val total = sizesIncomplete.reduceLeft(_ + _)
       val left = remaining
@@ -112,7 +112,7 @@ self =>
       }
     }
 
-    override def split: Seq[ParArrayIterator] = {
+    override def split: Seq[L, ParArrayIterator] = {
       val left = remaining
       if (left >= 2) {
         val splitpoint = left / 2
@@ -583,7 +583,7 @@ self =>
     val targetarr = targarrseq.array.asInstanceOf[Array[Any]]
 
     // fill it in parallel
-    tasksupport.executeAndWaitResult(new Map[S](f, targetarr, 0, length))
+    tasksupport.executeAndWaitResult(new Map[L, S](f, targetarr, 0, length))
 
     // wrap it into a parallel array
     (new ParArray[S](targarrseq)).asInstanceOf[That]
@@ -645,7 +645,7 @@ self =>
     }
   }
 
-  class Map[S](f: T => S, targetarr: Array[Any], offset: Int, howmany: Int) extends Task[Unit, Map[S]] {
+  class Map[L, S](f: T => S, targetarr: Array[Any], offset: Int, howmany: Int) extends Task[Unit, Map[L, S]] {
     var result = ()
 
     def leaf(prev: Option[Unit]) = {

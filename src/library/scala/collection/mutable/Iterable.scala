@@ -16,11 +16,11 @@ import parallel.mutable.ParIterable
  *  $iterableInfo
  */
 trait Iterable[L, A] extends Traversable[L, A]
-//                     with GenIterable[A]
+//                     with GenIterable[L, A]
                      with scala.collection.Iterable[L, A]
                      with GenericTraversableTemplate[A, Iterable]
                      with IterableLike[L, A, Iterable[L, A]]
-                     with Parallelizable[A, ParIterable[A]]
+                     with Parallelizable[A, ParIterable[L, A]]
 {
   override def companion: GenericCompanion[Iterable] = Iterable
   protected[this] override def parCombiner = ParIterable.newCombiner[A] // if `mutable.IterableLike` gets introduced, please move this there!
@@ -38,4 +38,4 @@ object Iterable extends TraversableFactory[Iterable] {
 }
 
 /** Explicit instantiation of the `Iterable` trait to reduce class file size in subclasses. */
-abstract class AbstractIterable[A] extends scala.collection.AbstractIterable[A] with Iterable[L, A]
+abstract class AbstractIterable[L, A] extends scala.collection.AbstractIterable[L, A] with Iterable[L, A]

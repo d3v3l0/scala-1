@@ -81,7 +81,7 @@ import java.io._
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(-6084104484083858598L) // value computed by serialver for 2.11.2, annotation added in 2.11.4
-sealed abstract class List[+A] extends AbstractSeq[A]
+sealed abstract class List[+A] extends AbstractSeq[L, A]
                                   with LinearSeq[A]
                                   with Product
                                   with GenericTraversableTemplate[A, List]
@@ -425,7 +425,7 @@ case object Nil extends List[Nothing] {
     throw new UnsupportedOperationException("tail of empty list")
   // Removal of equals method here might lead to an infinite recursion similar to IntMap.equals.
   override def equals(that: Any) = that match {
-    case that1: scala.collection.GenSeq[_] => that1.isEmpty
+    case that1: scala.collection.GenSeq[L, _] => that1.isEmpty
     case _ => false
   }
 }

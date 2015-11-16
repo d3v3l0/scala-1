@@ -46,8 +46,8 @@ import scala.reflect.ClassTag
 @deprecatedInheritance("UnrolledBuffer is not designed to enable meaningful subclassing.", "2.11.0")
 class UnrolledBuffer[T](implicit val tag: ClassTag[T])
 extends scala.collection.mutable.AbstractBuffer[T]
-   with scala.collection.mutable.Buffer[T]
-   with scala.collection.mutable.BufferLike[T, UnrolledBuffer[T]]
+   with scala.collection.mutable.Buffer[L, T]
+   with scala.collection.mutable.BufferLike[L, T, UnrolledBuffer[T]]
    with GenericClassTagTraversableTemplate[T, UnrolledBuffer]
    with scala.collection.mutable.Builder[T, UnrolledBuffer[T]]
    with Serializable

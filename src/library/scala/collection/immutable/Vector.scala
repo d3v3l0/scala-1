@@ -60,7 +60,7 @@ object Vector extends IndexedSeqFactory[Vector] {
  *  @define willNotTerminateInf
  */
 final class Vector[+A] private[immutable] (private[collection] val startIndex: Int, private[collection] val endIndex: Int, focus: Int)
-extends AbstractSeq[A]
+extends AbstractSeq[L, A]
    with IndexedSeq[A]
    with GenericTraversableTemplate[A, Vector]
    with IndexedSeqLike[A, Vector[A]]
@@ -728,7 +728,7 @@ final class VectorBuilder[A]() extends Builder[A,Vector[A]] with VectorPointer[A
     this
   }
 
-  override def ++=(xs: TraversableOnce[A]): this.type =
+  override def ++=(xs: TraversableOnce[L, A]): this.type =
     super.++=(xs)
 
   def result: Vector[A] = {

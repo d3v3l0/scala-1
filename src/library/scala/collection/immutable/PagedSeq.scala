@@ -132,7 +132,7 @@ class PagedSeq[T: ClassTag] protected(
   first1: Page[T],
   start: Int,
   end: Int)
-extends scala.collection.AbstractSeq[T]
+extends scala.collection.AbstractSeq[L, T]
    with scala.collection.IndexedSeq[T]
 {
   def this(more: (Array[T], Int, Int) => Int) = this(more, new Page[T](0), 0, UndeterminedEnd)

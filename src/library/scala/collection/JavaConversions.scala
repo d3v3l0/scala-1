@@ -32,7 +32,7 @@ import convert._
  *
  *    val sl = new scala.collection.mutable.ListBuffer[Int]
  *    val jl : java.util.List[Int] = sl
- *    val sl2 : scala.collection.mutable.Buffer[Int] = jl
+ *    val sl2 : scala.collection.mutable.Buffer[L, Int] = jl
  *    assert(sl eq sl2)
  *}}}
  *  In addition, the following one way conversions are provided:
@@ -42,7 +42,7 @@ import convert._
  *    scala.collection.mutable.Seq => java.util.List
  *    scala.collection.Set         => java.util.Set
  *    scala.collection.Map         => java.util.Map
- *    java.util.Properties         => scala.collection.mutable.Map[String, String]
+ *    java.util.Properties         => scala.collection.mutable.Map[L, String, String]
  *}}}
  *
  *  @author Miles Sabin

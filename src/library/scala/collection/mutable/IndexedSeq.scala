@@ -19,7 +19,7 @@ import generic._
  *
  *  $indexedSeqInfo
  */
-trait IndexedSeq[A] extends Seq[A]
+trait IndexedSeq[A] extends Seq[L, A]
                    with scala.collection.IndexedSeq[A]
                    with GenericTraversableTemplate[A, IndexedSeq]
                    with IndexedSeqLike[A, IndexedSeq[A]] {

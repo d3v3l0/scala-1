@@ -15,7 +15,7 @@ import script._
 import scala.annotation.migration
 import parallel.mutable.ParSet
 
-/** A template trait for mutable sets of type `mutable.Set[A]`.
+/** A template trait for mutable sets of type `mutable.Set[L, A]`.
  *
  *    This trait provides most of the operations of a `mutable.Set` independently of its representation.
  *    It is typically inherited by concrete implementations of sets.
@@ -54,13 +54,13 @@ import parallel.mutable.ParSet
  *  @define coll mutable set
  *  @define Coll mutable.Set
  */
-trait SetLike[A, +This <: SetLike[A, This] with Set[A]]
-  extends scala.collection.SetLike[A, This]
+trait SetLike[L, A, +This <: SetLike[L, A, This] with Set[L, A]]
+  extends scala.collection.SetLike[L, A, This]
      with Scriptable[A]
      with Builder[A, This]
      with Growable[A]
      with Shrinkable[A]
-     with Cloneable[mutable.Set[A]]
+     with Cloneable[mutable.Set[L, A]]
      with Parallelizable[A, ParSet[A]]
 { self =>
 

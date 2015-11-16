@@ -99,7 +99,7 @@ trait WrapAsJava {
    * @param b The Buffer to be converted.
    * @return A Java List view of the argument.
    */
-  implicit def bufferAsJavaList[A](b: mutable.Buffer[A]): ju.List[A] = b match {
+  implicit def bufferAsJavaList[A](b: mutable.Buffer[L, A]): ju.List[A] = b match {
     case JListWrapper(wrapped) => wrapped
     case _ => new MutableBufferWrapper(b)
   }
@@ -117,7 +117,7 @@ trait WrapAsJava {
    * @param seq The Seq to be converted.
    * @return    A Java List view of the argument.
    */
-  implicit def mutableSeqAsJavaList[A](seq: mutable.Seq[A]): ju.List[A] = seq match {
+  implicit def mutableSeqAsJavaList[A](seq: mutable.Seq[L, A]): ju.List[A] = seq match {
     case JListWrapper(wrapped) => wrapped
     case _ => new MutableSeqWrapper(seq)
   }
@@ -135,7 +135,7 @@ trait WrapAsJava {
    * @param seq The Seq to be converted.
    * @return    A Java List view of the argument.
    */
-  implicit def seqAsJavaList[A](seq: Seq[A]): ju.List[A] = seq match {
+  implicit def seqAsJavaList[A](seq: Seq[L, A]): ju.List[A] = seq match {
     case JListWrapper(wrapped) => wrapped.asInstanceOf[ju.List[A]]
     case _ => new SeqWrapper(seq)
   }
@@ -153,7 +153,7 @@ trait WrapAsJava {
    * @param s The Set to be converted.
    * @return A Java Set view of the argument.
    */
-  implicit def mutableSetAsJavaSet[A](s: mutable.Set[A]): ju.Set[A] = s match {
+  implicit def mutableSetAsJavaSet[A](s: mutable.Set[L, A]): ju.Set[L, A] = s match {
     case JSetWrapper(wrapped) => wrapped
     case _ => new MutableSetWrapper(s)
   }
@@ -171,7 +171,7 @@ trait WrapAsJava {
    * @param s The Set to be converted.
    * @return A Java Set view of the argument.
    */
-  implicit def setAsJavaSet[A](s: Set[A]): ju.Set[A] = s match {
+  implicit def setAsJavaSet[A](s: Set[L, A]): ju.Set[L, A] = s match {
     case JSetWrapper(wrapped) => wrapped
     case _ => new SetWrapper(s)
   }
@@ -189,7 +189,7 @@ trait WrapAsJava {
    * @param m The Map to be converted.
    * @return A Java Map view of the argument.
    */
-  implicit def mutableMapAsJavaMap[A, B](m: mutable.Map[A, B]): ju.Map[A, B] = m match {
+  implicit def mutableMapAsJavaMap[A, B](m: mutable.Map[L, A, B]): ju.Map[L, A, B] = m match {
     //case JConcurrentMapWrapper(wrapped) => wrapped
     case JMapWrapper(wrapped) => wrapped
     case _ => new MutableMapWrapper(m)
@@ -209,7 +209,7 @@ trait WrapAsJava {
    * @param m The `Map` to be converted.
    * @return A Java `Dictionary` view of the argument.
    */
-  implicit def asJavaDictionary[A, B](m: mutable.Map[A, B]): ju.Dictionary[A, B] = m match {
+  implicit def asJavaDictionary[A, B](m: mutable.Map[L, A, B]): ju.Dictionary[A, B] = m match {
     //case JConcurrentMapWrapper(wrapped) => wrapped
     case JDictionaryWrapper(wrapped) => wrapped
     case _ => new DictionaryWrapper(m)
@@ -229,9 +229,9 @@ trait WrapAsJava {
    * @param m The `Map` to be converted.
    * @return A Java `Map` view of the argument.
    */
-  implicit def mapAsJavaMap[A, B](m: Map[A, B]): ju.Map[A, B] = m match {
+  implicit def mapAsJavaMap[A, B](m: Map[L, A, B]): ju.Map[L, A, B] = m match {
     //case JConcurrentMapWrapper(wrapped) => wrapped
-    case JMapWrapper(wrapped) => wrapped.asInstanceOf[ju.Map[A, B]]
+    case JMapWrapper(wrapped) => wrapped.asInstanceOf[ju.Map[L, A, B]]
     case _ => new MapWrapper(m)
   }
 
@@ -250,7 +250,7 @@ trait WrapAsJava {
    * @param m The Scala `concurrent.Map` to be converted.
    * @return A Java `ConcurrentMap` view of the argument.
    */
-  implicit def mapAsJavaConcurrentMap[A, B](m: concurrent.Map[A, B]): juc.ConcurrentMap[A, B] = m match {
+  implicit def mapAsJavaConcurrentMap[A, B](m: concurrent.Map[L, A, B]): juc.ConcurrentMap[A, B] = m match {
     case JConcurrentMapWrapper(wrapped) => wrapped
     case _ => new ConcurrentMapWrapper(m)
   }

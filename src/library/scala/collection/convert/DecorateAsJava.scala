@@ -35,7 +35,7 @@ import scala.language.implicitConversions
  *
  *    val sl = new scala.collection.mutable.ListBuffer[Int]
  *    val jl : java.util.List[Int] = sl.asJava
- *    val sl2 : scala.collection.mutable.Buffer[Int] = jl.asScala
+ *    val sl2 : scala.collection.mutable.Buffer[L, Int] = jl.asScala
  *    assert(sl eq sl2)
  *  }}}
  *  The following conversions also are supported, but the
@@ -142,7 +142,7 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java `List` view
    *         of the argument.
    */
-  implicit def bufferAsJavaListConverter[A](b : mutable.Buffer[A]): AsJava[ju.List[A]] =
+  implicit def bufferAsJavaListConverter[A](b : mutable.Buffer[L, A]): AsJava[ju.List[A]] =
     new AsJava(bufferAsJavaList(b))
 
   /**
@@ -161,7 +161,7 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java `List`
    *         view of the argument.
    */
-  implicit def mutableSeqAsJavaListConverter[A](b : mutable.Seq[A]): AsJava[ju.List[A]] =
+  implicit def mutableSeqAsJavaListConverter[A](b : mutable.Seq[L, A]): AsJava[ju.List[A]] =
     new AsJava(mutableSeqAsJavaList(b))
 
   /**
@@ -180,7 +180,7 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java `List`
    *         view of the argument.
    */
-  implicit def seqAsJavaListConverter[A](b : Seq[A]): AsJava[ju.List[A]] =
+  implicit def seqAsJavaListConverter[A](b : Seq[L, A]): AsJava[ju.List[A]] =
     new AsJava(seqAsJavaList(b))
 
   /**
@@ -199,7 +199,7 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java `Set` view
    *         of the argument.
    */
-  implicit def mutableSetAsJavaSetConverter[A](s : mutable.Set[A]): AsJava[ju.Set[A]] =
+  implicit def mutableSetAsJavaSetConverter[A](s : mutable.Set[L, A]): AsJava[ju.Set[L, A]] =
     new AsJava(mutableSetAsJavaSet(s))
 
   /**
@@ -218,7 +218,7 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java `Set` view
    *         of the argument.
    */
-  implicit def setAsJavaSetConverter[A](s : Set[A]): AsJava[ju.Set[A]] =
+  implicit def setAsJavaSetConverter[A](s : Set[L, A]): AsJava[ju.Set[L, A]] =
     new AsJava(setAsJavaSet(s))
 
   /**
@@ -237,7 +237,7 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java `Map` view
    *         of the argument.
    */
-  implicit def mutableMapAsJavaMapConverter[A, B](m : mutable.Map[A, B]): AsJava[ju.Map[A, B]] =
+  implicit def mutableMapAsJavaMapConverter[A, B](m : mutable.Map[L, A, B]): AsJava[ju.Map[L, A, B]] =
     new AsJava(mutableMapAsJavaMap(m))
 
   /**
@@ -256,7 +256,7 @@ trait DecorateAsJava {
    * @return An object with an `asJavaDictionary` method that returns a
    *         Java `Dictionary` view of the argument.
    */
-  implicit def asJavaDictionaryConverter[A, B](m : mutable.Map[A, B]): AsJavaDictionary[A, B] =
+  implicit def asJavaDictionaryConverter[A, B](m : mutable.Map[L, A, B]): AsJavaDictionary[A, B] =
     new AsJavaDictionary(m)
 
   /**
@@ -275,7 +275,7 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java `Map` view
    *         of the argument.
    */
-  implicit def mapAsJavaMapConverter[A, B](m : Map[A, B]): AsJava[ju.Map[A, B]] =
+  implicit def mapAsJavaMapConverter[A, B](m : Map[L, A, B]): AsJava[ju.Map[L, A, B]] =
     new AsJava(mapAsJavaMap(m))
 
   /**
@@ -294,6 +294,6 @@ trait DecorateAsJava {
    * @return An object with an `asJava` method that returns a Java
    *         `ConcurrentMap` view of the argument.
    */
-  implicit def mapAsJavaConcurrentMapConverter[A, B](m: concurrent.Map[A, B]): AsJava[juc.ConcurrentMap[A, B]] =
+  implicit def mapAsJavaConcurrentMapConverter[A, B](m: concurrent.Map[L, A, B]): AsJava[juc.ConcurrentMap[A, B]] =
     new AsJava(mapAsJavaConcurrentMap(m))
 }

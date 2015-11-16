@@ -24,7 +24,7 @@ import script._
  *  @since   1
  */
 @deprecated("Observables are deprecated because scripting is deprecated.", "2.11.0")
-trait ObservableSet[A] extends Set[A] with Publisher[Message[A] with Undoable]
+trait ObservableSet[A] extends Set[L, A] with Publisher[Message[A] with Undoable]
 {
 
   type Pub <: ObservableSet[A]

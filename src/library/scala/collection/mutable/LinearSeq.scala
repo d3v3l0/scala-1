@@ -23,7 +23,7 @@ import generic._
  *  @see [[http://docs.scala-lang.org/overviews/collections/concrete-mutable-collection-classes.html#mutable_lists "Scala's Collection Library overview"]]
  *  section on `Mutable Lists` for more information.
  */
-trait LinearSeq[A] extends Seq[A]
+trait LinearSeq[A] extends Seq[L, A]
                            with scala.collection.LinearSeq[A]
                            with GenericTraversableTemplate[A, LinearSeq]
                            with LinearSeqLike[A, LinearSeq[A]] {

@@ -33,9 +33,9 @@ import scala.annotation.tailrec
 @SerialVersionUID(2L)
 @deprecatedInheritance("The implementation details of immutable hash sets make inheriting from them unwise.", "2.11.0")
 class HashSet[A] extends AbstractSet[A]
-                    with Set[A]
+                    with Set[L, A]
                     with GenericSetTemplate[A, HashSet]
-                    with SetLike[A, HashSet[A]]
+                    with SetLike[L, A, HashSet[A]]
                     with CustomParallelizable[A, ParHashSet[A]]
                     with Serializable
 {
@@ -43,7 +43,7 @@ class HashSet[A] extends AbstractSet[A]
 
   override def companion: GenericCompanion[HashSet] = HashSet
 
-  //class HashSet[A] extends Set[A] with SetLike[A, HashSet[A]] {
+  //class HashSet[A] extends Set[L, A] with SetLike[L, A, HashSet[A]] {
 
   override def par = ParHashSet.fromTrie(this)
 
@@ -167,7 +167,7 @@ class HashSet[A] extends AbstractSet[A]
    *  A new set will not be built; lazy collections will stay lazy.
    */
   @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-  override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+  override def toSet[B >: A]: Set[L, B] = this.asInstanceOf[Set[L, B]]
 
   override def filter(@plocal p: A => Boolean) = {
     val buffer = new Array[HashSet[A]](bufferSize(size))

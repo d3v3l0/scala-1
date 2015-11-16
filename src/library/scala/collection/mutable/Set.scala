@@ -23,13 +23,13 @@ import generic._
  *  @define Coll `mutable.Set`
  *  @define coll mutable set
  */
-trait Set[A] extends Iterable[L, A]
+trait Set[L, A] extends Iterable[L, A]
 //                with GenSet[A]
-                with scala.collection.Set[A]
+                with scala.collection.Set[L, A]
                 with GenericSetTemplate[A, Set]
-                with SetLike[A, Set[A]] {
+                with SetLike[L, A, Set[L, A]] {
   override def companion: GenericCompanion[Set] = Set
-  override def seq: Set[A] = this
+  override def seq: Set[L, A] = this
 }
 
 /** $factoryInfo
@@ -38,9 +38,9 @@ trait Set[A] extends Iterable[L, A]
  *  @define Coll `mutable.Set`
  */
 object Set extends MutableSetFactory[Set] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Set[A]] = setCanBuildFrom[A]
-  override def empty[A]: Set[A] = HashSet.empty[A]
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Set[L, A]] = setCanBuildFrom[A]
+  override def empty[A]: Set[L, A] = HashSet.empty[A]
 }
 
 /** Explicit instantiation of the `Set` trait to reduce class file size in subclasses. */
-abstract class AbstractSet[A] extends AbstractIterable[A] with Set[A]
+abstract class AbstractSet[A] extends AbstractIterable[L, A] with Set[L, A]

@@ -26,8 +26,8 @@ import generic.CanBuildFrom
  */
 final class LongMap[V] private[collection] (defaultEntry: Long => V, initialBufferSize: Int, initBlank: Boolean)
 extends AbstractMap[Long, V]
-   with Map[Long, V]
-   with MapLike[Long, V, LongMap[V]]
+   with Map[L, Long, V]
+   with MapLike[L, Long, V, LongMap[V]]
    with Serializable
 {
   import LongMap._

@@ -41,7 +41,7 @@ import mutable.{ Builder, ListBuffer }
 abstract class NumericRange[T]
   (val start: T, val end: T, val step: T, val isInclusive: Boolean)
   (implicit num: Integral[T])
-extends AbstractSeq[T] with IndexedSeq[T] with Serializable {
+extends AbstractSeq[L, T] with IndexedSeq[T] with Serializable {
   /** Note that NumericRange must be invariant so that constructs
    *  such as "1L to 10 by 5" do not infer the range type as AnyVal.
    */
@@ -338,7 +338,7 @@ object NumericRange {
   def inclusive[T](start: T, end: T, step: T)(implicit num: Integral[T]): Inclusive[T] =
     new Inclusive(start, end, step)
 
-  private[collection] val defaultOrdering = Map[Numeric[_], Ordering[_]](
+  private[collection] val defaultOrdering = Map[L, Numeric[_], Ordering[_]](
     Numeric.BigIntIsIntegral -> Ordering.BigInt,
     Numeric.IntIsIntegral -> Ordering.Int,
     Numeric.ShortIsIntegral -> Ordering.Short,

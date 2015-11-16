@@ -40,9 +40,9 @@ import generic._
  */
 @SerialVersionUID(1L)
 class LinkedHashSet[A] extends AbstractSet[A]
-                          with Set[A]
+                          with Set[L, A]
                           with GenericSetTemplate[A, LinkedHashSet]
-                          with SetLike[A, LinkedHashSet[A]]
+                          with SetLike[L, A, LinkedHashSet[A]]
                           with HashTable[A, LinkedHashSet.Entry[A]]
                           with Serializable
 {

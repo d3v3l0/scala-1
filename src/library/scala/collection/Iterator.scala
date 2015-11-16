@@ -30,7 +30,7 @@ object Iterator {
    */
   implicit def IteratorCanBuildFrom[A] = new TraversableOnce.BufferedCanBuildFrom[A, Iterator] {
     def bufferToColl[B](coll: ArrayBuffer[B]) = coll.iterator
-    def traversableToColl[B](t: GenTraversable[B]) = t.toIterator
+    def traversableToColl[B](t: GenTraversable[L, B]) = t.toIterator
   }
 
   /** The iterator which produces no values. */
@@ -262,7 +262,7 @@ import Iterator.empty
  *  on, as well as the one passed as parameter. Using the old iterators is
  *  undefined and subject to change.
  */
-trait Iterator[+A] extends TraversableOnce[A] {
+trait Iterator[+A] extends TraversableOnce[L, A] {
   self =>
 
   type LT
@@ -871,14 +871,14 @@ trait Iterator[+A] extends TraversableOnce[A] {
   }
 
   /** A flexible iterator for transforming an `Iterator[A]` into an
-   *  Iterator[Seq[A]], with configurable sequence size, step, and
+   *  Iterator[Seq[L, A]], with configurable sequence size, step, and
    *  strategy for dealing with elements which don't fit evenly.
    *
    *  Typical uses can be achieved via methods `grouped` and `sliding`.
    */
   class GroupedIterator[B >: A](self: Iterator[A], size: Int, step: Int)
-  extends AbstractIterator[Seq[B]]
-     with Iterator[Seq[B]] {
+  extends AbstractIterator[Seq[L, B]]
+     with Iterator[Seq[L, B]] {
 
     require(size >= 1 && step >= 1, "size=%d and step=%d, but both must be positive".format(size, step))
 
@@ -927,7 +927,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
      *  so a subsequent self.hasNext would not test self after the
      *  group was consumed.
      */
-    private def takeDestructively(size: Int): Seq[A] = {
+    private def takeDestructively(size: Int): Seq[L, A] = {
       val buf = new ArrayBuffer[A]
       var i = 0
       // The order of terms in the following condition is important
@@ -947,7 +947,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
       def isFirst = prevSize == 0
       // If there is padding defined we insert it immediately
       // so the rest of the code can be oblivious
-      val xs: Seq[B] = {
+      val xs: Seq[L, B] = {
         val res = takeDestructively(count)
         // was: extra checks so we don't calculate length unless there's reason
         // but since we took the group eagerly, just use the fast length

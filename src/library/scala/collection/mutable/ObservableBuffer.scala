@@ -24,7 +24,7 @@ import script._
  *  @since   1
  */
 @deprecated("Observables are deprecated because scripting is deprecated.", "2.11.0")
-trait ObservableBuffer[A] extends Buffer[A] with Publisher[Message[A] with Undoable]
+trait ObservableBuffer[A] extends Buffer[L, A] with Publisher[Message[A] with Undoable]
 {
   type Pub <: ObservableBuffer[A]
 
@@ -36,7 +36,7 @@ trait ObservableBuffer[A] extends Buffer[A] with Publisher[Message[A] with Undoa
     this
   }
 
-  abstract override def ++=(xs: TraversableOnce[A]): this.type = {
+  abstract override def ++=(xs: TraversableOnce[L, A]): this.type = {
     for (x <- xs) this += x
     this
   }

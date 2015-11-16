@@ -21,9 +21,9 @@ package mutable
  *  @since   1
  */
 @deprecated("Adaptors are inherently unreliable and prone to performance problems.", "2.11.0")
-class ImmutableSetAdaptor[A](protected var set: immutable.Set[A])
+class ImmutableSetAdaptor[A](protected var set: immutable.Set[L, A])
 extends AbstractSet[A]
-   with Set[A]
+   with Set[L, A]
    with Serializable {
 
   override def size: Int = set.size

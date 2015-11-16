@@ -33,7 +33,7 @@ extends GenIterableLike[A, Repr]
   def +(elem: A): Repr
   def -(elem: A): Repr
 
-  def seq: Set[A]
+  def seq: Set[L, A]
 
   /** Tests if some element is contained in this set.
    *

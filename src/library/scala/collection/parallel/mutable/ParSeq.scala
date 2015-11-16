@@ -22,18 +22,18 @@ import scala.collection.parallel.Combiner
  *  @define Coll `mutable.ParSeq`
  *  @define coll mutable parallel sequence
  */
-trait ParSeq[T] extends scala.collection/*.mutable*/.GenSeq[T] // was: scala.collection.mutable.Seq[T]
-                   with ParIterable[T]
+trait ParSeq[T] extends scala.collection/*.mutable*/.GenSeq[L, T] // was: scala.collection.mutable.Seq[L, T]
+                   with ParIterable[L, T]
                    with scala.collection.parallel.ParSeq[T]
                    with GenericParTemplate[T, ParSeq]
-                   with ParSeqLike[T, ParSeq[T], scala.collection.mutable.Seq[T]] {
+                   with ParSeqLike[T, ParSeq[T], scala.collection.mutable.Seq[L, T]] {
 self =>
   override def companion: GenericCompanion[ParSeq] with GenericParCompanion[ParSeq] = ParSeq
   //protected[this] override def newBuilder = ParSeq.newBuilder[T]
 
   def update(i: Int, elem: T): Unit
 
-  def seq: scala.collection.mutable.Seq[T]
+  def seq: scala.collection.mutable.Seq[L, T]
 
   override def toSeq: ParSeq[T] = this
 }

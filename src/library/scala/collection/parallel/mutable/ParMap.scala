@@ -26,9 +26,9 @@ import scala.collection.parallel.Combiner
 trait ParMap[K, V]
 extends GenMap[K, V]
    with parallel.ParMap[K, V]
-   with ParIterable[(K, V)]
+   with ParIterable[L, (K, V)]
    with GenericParMapTemplate[K, V, ParMap]
-   with ParMapLike[K, V, ParMap[K, V], mutable.Map[K, V]]
+   with ParMapLike[K, V, ParMap[K, V], mutable.Map[L, K, V]]
 {
 
   protected[this] override def newCombiner: Combiner[(K, V), ParMap[K, V]] = ParMap.newCombiner[K, V]
@@ -37,7 +37,7 @@ extends GenMap[K, V]
 
   override def empty: ParMap[K, V] = new ParHashMap[K, V]
 
-  def seq: scala.collection.mutable.Map[K, V]
+  def seq: scala.collection.mutable.Map[L, K, V]
 
   override def updated [U >: V](key: K, value: U): ParMap[K, U] = this + ((key, value))
 

@@ -56,7 +56,7 @@ trait GenTraversableOnce[+A] extends Any {
 
   def hasDefiniteSize: Boolean
 
-  def seq: TraversableOnce[A]
+  def seq: TraversableOnce[L, A]
 
   /** The size of this $coll.
    *
@@ -243,7 +243,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  to the list, while `combop` would concatenate two lists from different
    *  partitions together. The initial value `z` would be an empty set.
    *  {{{
-   *    pc.aggregate(Set[Int]())(_ += process(_), _ ++ _)
+   *    pc.aggregate(Set[L, Int]())(_ += process(_), _ ++ _)
    *  }}}
    *
    *  Another example is calculating geometric mean from a collection of doubles
@@ -524,14 +524,14 @@ trait GenTraversableOnce[+A] extends Any {
    *  $willNotTerminateInf
    *  @return a buffer containing all elements of this $coll.
    */
-  def toBuffer[A1 >: A]: scala.collection.mutable.Buffer[A1]
+  def toBuffer[A1 >: A]: scala.collection.mutable.Buffer[L, A1]
 
   /** Converts this $coll to an unspecified Traversable.  Will return
    *  the same collection if this instance is already Traversable.
    *  $willNotTerminateInf
    *  @return a Traversable containing all elements of this $coll.
    */
-  def toTraversable: GenTraversable[A]
+  def toTraversable: GenTraversable[L, A]
 
   /** Converts this $coll to an iterable collection.  Note that
    *  the choice of target `Iterable` is lazy in this default implementation
@@ -541,7 +541,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  $willNotTerminateInf
    *  @return an `Iterable` containing all elements of this $coll.
    */
-  def toIterable: GenIterable[A]
+  def toIterable: GenIterable[L, A]
 
   /** Converts this $coll to a sequence. As with `toIterable`, it's lazy
    *  in this default implementation, as this `TraversableOnce` may be
@@ -550,7 +550,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  $willNotTerminateInf
    *  @return a sequence containing all elements of this $coll.
    */
-  def toSeq: GenSeq[A]
+  def toSeq: GenSeq[L, A]
 
   /** Converts this $coll to a set.
    *  $willNotTerminateInf
@@ -565,10 +565,10 @@ trait GenTraversableOnce[+A] extends Any {
    *  is undefined.
    *  @return    a map containing all elements of this $coll.
    *
-   *  @usecase   def toMap[T, U]: Map[T, U]
+   *  @usecase   def toMap[T, U]: Map[L, T, U]
    *    @inheritdoc
    *    $willNotTerminateInf
-   *    @return    a map of type `immutable.Map[T, U]`
+   *    @return    a map of type `immutable.Map[L, T, U]`
    *               containing all key/value pairs of type `(T, U)` of this $coll.
    */
   def toMap[K, V](implicit ev: A <:< (K, V)): GenMap[K, V]

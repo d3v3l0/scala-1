@@ -19,8 +19,8 @@ import scala.util.control.Breaks
  *  $traversableInfo
  */
 trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
-                         with GenTraversable[A]
-                         with TraversableOnce[A]
+                         with GenTraversable[L, A]
+                         with TraversableOnce[L, A]
                          with GenericTraversableTemplate[A, Traversable] {
   type LT
 
@@ -39,7 +39,7 @@ trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
   override def filter(p: A => Boolean): Traversable[L, A]
   override def remove(p: A => Boolean): Traversable[L, A]
   override def partition(p: A => Boolean): (Traversable[L, A], Traversable[L, A])
-  override def groupBy[K](f: A => K): Map[K, Traversable[L, A]]
+  override def groupBy[K](f: A => K): Map[L, K, Traversable[L, A]]
   override def foreach[U](f: A =>  U): Unit
   override def forall(p: A => Boolean): Boolean
   override def exists(p: A => Boolean): Boolean
@@ -66,13 +66,13 @@ trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
   override def dropWhile(p: A => Boolean): Traversable[L, A]
   override def span(p: A => Boolean): (Traversable[L, A], Traversable[L, A])
   override def splitAt(n: Int): (Traversable[L, A], Traversable[L, A])
-  override def copyToBuffer[B >: A](dest: Buffer[B])
+  override def copyToBuffer[B >: A](dest: Buffer[L, B])
   override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)
   override def copyToArray[B >: A](xs: Array[B], start: Int)
   override def toArray[B >: A : ClassTag]: Array[B]
   override def toList: List[A]
   override def toIterable: Iterable[L, A]
-  override def toSeq: Seq[A]
+  override def toSeq: Seq[L, A]
   override def toStream: Stream[A]
   override def sortWith(lt : (A,A) => Boolean): Traversable[L, A]
   override def mkString(start: String, sep: String, end: String): String
@@ -84,7 +84,7 @@ trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
   override def toString
   override def stringPrefix : String
   override def view
-  override def view(from: Int, until: Int): TraversableView[A, Traversable[L, A]]
+  override def view(from: Int, until: Int): TraversableView[L, A, Traversable[L, A]]
   */
 }
 
@@ -103,4 +103,4 @@ object Traversable extends TraversableFactory[Traversable] { self =>
 }
 
 /** Explicit instantiation of the `Traversable` trait to reduce class file size in subclasses. */
-abstract class AbstractTraversable[+A] extends Traversable[L, A]
+abstract class AbstractTraversable[L, +A] extends Traversable[L, A]

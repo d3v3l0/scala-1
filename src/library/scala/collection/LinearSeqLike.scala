@@ -27,7 +27,7 @@ import scala.annotation.tailrec
  *  @tparam A    the element type of the $coll
  *  @tparam Repr the type of the actual $coll containing the elements.
  */
-trait LinearSeqLike[+A, +Repr <: LinearSeqLike[A, Repr]] extends SeqLike[A, Repr] {
+trait LinearSeqLike[+A, +Repr <: LinearSeqLike[A, Repr]] extends SeqLike[L, A, Repr] {
   self: Repr =>
 
   override protected[this] def thisCollection: LinearSeq[A] = this.asInstanceOf[LinearSeq[A]]
@@ -62,7 +62,7 @@ trait LinearSeqLike[+A, +Repr <: LinearSeqLike[A, Repr]] extends SeqLike[A, Repr
     }
   }
 
-  @tailrec override final def corresponds[B](that: GenSeq[B])(p: (A,B) => Boolean): Boolean = {
+  @tailrec override final def corresponds[B](that: GenSeq[L, B])(p: (A,B) => Boolean): Boolean = {
     if (this.isEmpty) that.isEmpty
     else that.nonEmpty && p(head, that.head) && (tail corresponds that.tail)(p)
   }

@@ -41,7 +41,7 @@ class BitSet(protected final var elems: Array[Long]) extends AbstractSet[Int]
                                                   with SortedSet[Int]
                                                   with scala.collection.BitSet
                                                   with BitSetLike[BitSet]
-                                                  with SetLike[Int, BitSet]
+                                                  with SetLike[L, Int, BitSet]
                                                   with Serializable {
 
   override def empty = BitSet.empty

@@ -152,8 +152,8 @@ private[immutable] class LongMapKeyIterator[V](it: LongMap[V]) extends LongMapIt
  */
 sealed abstract class LongMap[+T]
 extends AbstractMap[Long, T]
-   with Map[Long, T]
-   with MapLike[Long, T, LongMap[T]] {
+   with Map[L, Long, T]
+   with MapLike[L, Long, T, LongMap[T]] {
 
   override def empty: LongMap[T] = LongMap.Nil
 

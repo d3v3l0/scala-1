@@ -18,7 +18,7 @@ import generic._
  *  @version 2.8
  *  @since   2.4
  */
-trait SortedSet[A] extends Set[A] with SortedSetLike[A, SortedSet[A]] {
+trait SortedSet[A] extends Set[L, A] with SortedSetLike[A, SortedSet[A]] {
   /** Needs to be overridden in subclasses. */
   override def empty: SortedSet[A] = SortedSet.empty[A]
 }

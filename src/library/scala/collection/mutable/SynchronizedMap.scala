@@ -25,7 +25,7 @@ import scala.annotation.migration
  *  @define coll synchronized map
  */
 @deprecated("Synchronization via traits is deprecated as it is inherently unreliable.  Consider java.util.concurrent.ConcurrentHashMap as an alternative.", "2.11.0")
-trait SynchronizedMap[A, B] extends Map[A, B] {
+trait SynchronizedMap[A, B] extends Map[L, A, B] {
 
   abstract override def get(key: A): Option[B] = synchronized { super.get(key) }
   abstract override def iterator: Iterator[(A, B)] = synchronized { super.iterator }
@@ -46,7 +46,7 @@ trait SynchronizedMap[A, B] extends Map[A, B] {
   override def clone(): Self = synchronized { super.clone() }
   override def foreach[U](f: ((A, B)) => U) = synchronized { super.foreach(f) }
   override def apply(key: A): B = synchronized { super.apply(key) }
-  override def keySet: scala.collection.Set[A] = synchronized { super.keySet }
+  override def keySet: scala.collection.Set[L, A] = synchronized { super.keySet }
   @migration("`keys` returns `Iterable[L, A]` rather than `Iterator[A]`.", "2.8.0")
   override def keys: scala.collection.Iterable[L, A] = synchronized { super.keys }
   override def keysIterator: Iterator[A] = synchronized { super.keysIterator }

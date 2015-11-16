@@ -39,8 +39,8 @@ import scala.collection.parallel.mutable.ParHashMap
 @SerialVersionUID(1L)
 class HashMap[A, B] private[collection] (contents: HashTable.Contents[A, DefaultEntry[A, B]])
 extends AbstractMap[A, B]
-   with Map[A, B]
-   with MapLike[A, B, HashMap[A, B]]
+   with Map[L, A, B]
+   with MapLike[L, A, B, HashMap[A, B]]
    with HashTable[A, DefaultEntry[A, B]]
    with CustomParallelizable[(A, B), ParHashMap[A, B]]
    with Serializable
@@ -100,7 +100,7 @@ extends AbstractMap[A, B]
   override def foreach[C](f: ((A, B)) => C): Unit = foreachEntry(e => f((e.key, e.value)))
 
   /* Override to avoid tuple allocation in foreach */
-  override def keySet: scala.collection.Set[A] = new DefaultKeySet {
+  override def keySet: scala.collection.Set[L, A] = new DefaultKeySet {
     override def foreach[C](f: A => C) = foreachEntry(e => f(e.key))
   }
 

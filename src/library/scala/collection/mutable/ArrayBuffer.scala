@@ -47,9 +47,9 @@ import parallel.mutable.ParArray
 @SerialVersionUID(1529165946227428979L)
 class ArrayBuffer[A](override protected val initialSize: Int)
   extends AbstractBuffer[A]
-     with Buffer[A]
+     with Buffer[L, A]
      with GenericTraversableTemplate[A, ArrayBuffer]
-     with BufferLike[A, ArrayBuffer[A]]
+     with BufferLike[L, A, ArrayBuffer[A]]
      with IndexedSeqOptimized[A, ArrayBuffer[A]]
      with Builder[A, ArrayBuffer[A]]
      with ResizableArray[A]
@@ -93,7 +93,7 @@ class ArrayBuffer[A](override protected val initialSize: Int)
    *  @param xs    the traversable object.
    *  @return      the updated buffer.
    */
-  override def ++=(xs: TraversableOnce[A]): this.type = xs match {
+  override def ++=(xs: TraversableOnce[L, A]): this.type = xs match {
     case v: scala.collection.IndexedSeqLike[_, _] =>
       val n = v.length
       ensureSize(size0 + n)
@@ -125,7 +125,7 @@ class ArrayBuffer[A](override protected val initialSize: Int)
    *  @param xs    the traversable object.
    *  @return      the updated buffer.
    */
-  override def ++=:(xs: TraversableOnce[A]): this.type = { insertAll(0, xs.toTraversable); this }
+  override def ++=:(xs: TraversableOnce[L, A]): this.type = { insertAll(0, xs.toTraversable); this }
 
   /** Inserts new elements at the index `n`. Opposed to method
    *  `update`, this method will not replace an element with a new

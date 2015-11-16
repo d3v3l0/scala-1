@@ -17,15 +17,15 @@ import TraversableView.NoBuilder
 /** A base trait for non-strict views of `Iterable`s.
  *  $iterableViewInfo
  */
-trait IterableView[+A, +Coll] extends IterableViewLike[L, A, Coll, IterableView[A, Coll]]
+trait IterableView[L, +A, +Coll] extends IterableViewLike[L, A, Coll, IterableView[L, A, Coll]]
 
 /** An object containing the necessary implicit definitions to make
  *  `IterableView`s work. Its definitions are generally not accessed directly by clients.
  */
 object IterableView {
-  type Coll = TraversableView[_, C] forSome {type C <: Traversable[L, _]}
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, IterableView[A, Iterable[L, _]]] =
-    new CanBuildFrom[Coll, A, IterableView[A, Iterable[L, _]]] {
+  type Coll = TraversableView[L, _, C] forSome {type C <: Traversable[L, _]}
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, IterableView[L, A, Iterable[L, _]]] =
+    new CanBuildFrom[Coll, A, IterableView[L, A, Iterable[L, _]]] {
       def apply(from: Coll) = new NoBuilder
       def apply() = new NoBuilder
     }

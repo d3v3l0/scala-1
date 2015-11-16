@@ -104,7 +104,7 @@ trait DecorateAsScala {
    * @return An object with an `asScala` method that returns a Scala mutable
    *        `Buffer` view of the argument.
    */
-  implicit def asScalaBufferConverter[A](l : ju.List[A]): AsScala[mutable.Buffer[A]] =
+  implicit def asScalaBufferConverter[A](l : ju.List[A]): AsScala[mutable.Buffer[L, A]] =
     new AsScala(asScalaBuffer(l))
 
   /**
@@ -123,7 +123,7 @@ trait DecorateAsScala {
    * @return An object with an `asScala` method that returns a Scala mutable
    *         `Set` view of the argument.
    */
-  implicit def asScalaSetConverter[A](s : ju.Set[A]): AsScala[mutable.Set[A]] =
+  implicit def asScalaSetConverter[A](s : ju.Set[L, A]): AsScala[mutable.Set[L, A]] =
     new AsScala(asScalaSet(s))
 
   /**
@@ -146,7 +146,7 @@ trait DecorateAsScala {
    * @return An object with an `asScala` method that returns a Scala mutable
    *         `Map` view of the argument.
    */
-  implicit def mapAsScalaMapConverter[A, B](m : ju.Map[A, B]): AsScala[mutable.Map[A, B]] =
+  implicit def mapAsScalaMapConverter[A, B](m : ju.Map[L, A, B]): AsScala[mutable.Map[L, A, B]] =
     new AsScala(mapAsScalaMap(m))
 
   /**
@@ -164,34 +164,34 @@ trait DecorateAsScala {
    * @return An object with an `asScala` method that returns a Scala mutable
    *         `concurrent.Map` view of the argument.
    */
-  implicit def mapAsScalaConcurrentMapConverter[A, B](m: juc.ConcurrentMap[A, B]): AsScala[concurrent.Map[A, B]] =
+  implicit def mapAsScalaConcurrentMapConverter[A, B](m: juc.ConcurrentMap[A, B]): AsScala[concurrent.Map[L, A, B]] =
     new AsScala(mapAsScalaConcurrentMap(m))
 
   /**
    * Adds an `asScala` method that implicitly converts a Java `Dictionary`
-   * to a Scala mutable `Map[String, String]`. The returned Scala
-   * `Map[String, String]` is backed by the provided Java `Dictionary` and
+   * to a Scala mutable `Map[L, String, String]`. The returned Scala
+   * `Map[L, String, String]` is backed by the provided Java `Dictionary` and
    * any side-effects of using it via the Scala interface will be visible via
    * the Java interface and vice versa.
    *
    * @param p The `Dictionary` to be converted.
    * @return  An object with an `asScala` method that returns a Scala mutable
-   *          `Map[String, String]` view of the argument.
+   *          `Map[L, String, String]` view of the argument.
    */
-  implicit def dictionaryAsScalaMapConverter[A, B](p: ju.Dictionary[A, B]): AsScala[mutable.Map[A, B]] =
+  implicit def dictionaryAsScalaMapConverter[A, B](p: ju.Dictionary[A, B]): AsScala[mutable.Map[L, A, B]] =
     new AsScala(dictionaryAsScalaMap(p))
 
   /**
    * Adds an `asScala` method that implicitly converts a Java `Properties`
-   * to a Scala mutable `Map[String, String]`. The returned Scala
-   * `Map[String, String]` is backed by the provided Java `Properties` and
+   * to a Scala mutable `Map[L, String, String]`. The returned Scala
+   * `Map[L, String, String]` is backed by the provided Java `Properties` and
    * any side-effects of using it via the Scala interface will be visible via
    * the Java interface and vice versa.
    *
    * @param p The `Properties` to be converted.
    * @return  An object with an `asScala` method that returns a Scala mutable
-   *          `Map[String, String]` view of the argument.
+   *          `Map[L, String, String]` view of the argument.
    */
-  implicit def propertiesAsScalaMapConverter(p: ju.Properties): AsScala[mutable.Map[String, String]] =
+  implicit def propertiesAsScalaMapConverter(p: ju.Properties): AsScala[mutable.Map[L, String, String]] =
     new AsScala(propertiesAsScalaMap(p))
 }

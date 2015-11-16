@@ -32,7 +32,7 @@ import scala.language.higherKinds
  *    @see CanBuildFrom
  *    @see GenericCanBuildFrom
  */
-abstract class MapFactory[CC[A, B] <: Map[A, B] with MapLike[A, B, CC[A, B]]] extends GenMapFactory[CC] {
+abstract class MapFactory[CC[A, B] <: Map[L, A, B] with MapLike[L, A, B, CC[A, B]]] extends GenMapFactory[CC] {
 
   def empty[A, B]: CC[A, B]
 

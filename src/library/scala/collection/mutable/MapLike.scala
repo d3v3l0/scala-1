@@ -44,8 +44,8 @@ import scala.collection.parallel.mutable.ParMap
  *    It is also good idea to override methods `foreach` and
  *    `size` for efficiency.
  */
-trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
-  extends scala.collection.MapLike[A, B, This]
+trait MapLike[L, A, B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
+  extends scala.collection.MapLike[L, A, B, This]
      with Builder[(A, B), This]
      with Growable[(A, B)]
      with Shrinkable[A]
@@ -103,7 +103,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return       A fresh immutable map with the binding from `key` to
    *                `value` added to this map.
    */
-  override def updated[B1 >: B](key: A, value: B1): Map[A, B1] = this + ((key, value))
+  override def updated[B1 >: B](key: A, value: B1): Map[L, A, B1] = this + ((key, value))
 
   /** Creates a new map containing a new key/value mapping and all the key/value mappings
    *  of this map.
@@ -114,7 +114,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return      a new map containing mappings of this map and the mapping `kv`.
    */
   @migration("`+` creates a new map. Use `+=` to add an element to this map and return that map itself.", "2.8.0")
-  def + [B1 >: B] (kv: (A, B1)): Map[A, B1] = clone().asInstanceOf[Map[A, B1]] += kv
+  def + [B1 >: B] (kv: (A, B1)): Map[L, A, B1] = clone().asInstanceOf[Map[L, A, B1]] += kv
 
   /** Creates a new map containing two or more key/value mappings and all the key/value
    *  mappings of this map.
@@ -127,8 +127,8 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return      a new map containing mappings of this map and two or more specified mappings.
    */
   @migration("`+` creates a new map. Use `+=` to add an element to this map and return that map itself.", "2.8.0")
-  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): Map[A, B1] =
-    clone().asInstanceOf[Map[A, B1]] += elem1 += elem2 ++= elems
+  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): Map[L, A, B1] =
+    clone().asInstanceOf[Map[L, A, B1]] += elem1 += elem2 ++= elems
 
   /** Creates a new map containing the key/value mappings provided by the specified traversable object
    *  and all the key/value mappings of this map.
@@ -139,8 +139,8 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return       a new map containing mappings of this map and those provided by `xs`.
    */
   @migration("`++` creates a new map. Use `++=` to add an element to this map and return that map itself.", "2.8.0")
-  override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): Map[A, B1] =
-    clone().asInstanceOf[Map[A, B1]] ++= xs.seq
+  override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): Map[L, A, B1] =
+    clone().asInstanceOf[Map[L, A, B1]] ++= xs.seq
 
   /** Removes a key from this map, returning the value associated previously
    *  with that key as an option.

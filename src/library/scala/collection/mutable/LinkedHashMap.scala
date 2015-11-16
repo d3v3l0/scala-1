@@ -47,8 +47,8 @@ object LinkedHashMap extends MutableMapFactory[LinkedHashMap] {
  */
 @SerialVersionUID(1L)
 class LinkedHashMap[A, B] extends AbstractMap[A, B]
-                             with Map[A, B]
-                             with MapLike[A, B, LinkedHashMap[A, B]]
+                             with Map[L, A, B]
+                             with MapLike[L, A, B, LinkedHashMap[A, B]]
                              with HashTable[A, LinkedEntry[A, B]]
                              with Serializable
 {
@@ -104,19 +104,19 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
     override def empty = LinkedHashMap.empty
   }
 
-  override def filterKeys(p: A => Boolean): scala.collection.Map[A, B] = new FilteredKeys(p)
+  override def filterKeys(p: A => Boolean): scala.collection.Map[L, A, B] = new FilteredKeys(p)
 
   protected class MappedValues[C](f: B => C) extends super.MappedValues[C](f) {
     override def empty = LinkedHashMap.empty
   }
 
-  override def mapValues[C](f: B => C): scala.collection.Map[A, C] = new MappedValues(f)
+  override def mapValues[C](f: B => C): scala.collection.Map[L, A, C] = new MappedValues(f)
 
   protected class DefaultKeySet extends super.DefaultKeySet {
     override def empty = LinkedHashSet.empty
   }
 
-  override def keySet: scala.collection.Set[A] = new DefaultKeySet
+  override def keySet: scala.collection.Set[L, A] = new DefaultKeySet
 
   override def keysIterator: Iterator[A] = new AbstractIterator[A] {
     private var cur = firstEntry

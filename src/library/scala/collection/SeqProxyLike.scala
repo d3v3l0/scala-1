@@ -24,10 +24,10 @@ import generic._
  *  @since   2.8
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait SeqProxyLike[L, +A, +Repr <: SeqLike[A, Repr] with Seq[A]] extends SeqLike[A, Repr] with IterableProxyLike[L, A, Repr] {
+trait SeqProxyLike[L, +A, +Repr <: SeqLike[L, A, Repr] with Seq[L, A]] extends SeqLike[L, A, Repr] with IterableProxyLike[L, A, Repr] {
   type LT = L
   override def size = self.size
-  override def toSeq: Seq[A] = self.toSeq
+  override def toSeq: Seq[L, A] = self.toSeq
   override def length: Int = self.length
   override def apply(idx: Int): A = self.apply(idx)
   override def lengthCompare(len: Int): Int = self.lengthCompare(len)
@@ -45,25 +45,25 @@ trait SeqProxyLike[L, +A, +Repr <: SeqLike[A, Repr] with Seq[A]] extends SeqLike
   override def reverse: Repr = self.reverse
   override def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.reverseMap(f)(bf)
   override def reverseIterator: Iterator[A] = self.reverseIterator
-  override def startsWith[B](that: GenSeq[B], offset: Int): Boolean = self.startsWith(that, offset)
-  override def startsWith[B](that: GenSeq[B]): Boolean = self.startsWith(that)
-  override def endsWith[B](that: GenSeq[B]): Boolean = self.endsWith(that)
-  override def indexOfSlice[B >: A](that: GenSeq[B]): Int = self.indexOfSlice(that)
-  override def indexOfSlice[B >: A](that: GenSeq[B], from: Int): Int = self.indexOfSlice(that)
-  override def lastIndexOfSlice[B >: A](that: GenSeq[B]): Int = self.lastIndexOfSlice(that)
-  override def lastIndexOfSlice[B >: A](that: GenSeq[B], end: Int): Int = self.lastIndexOfSlice(that, end)
-  override def containsSlice[B](that: GenSeq[B]): Boolean = self.indexOfSlice(that) != -1
+  override def startsWith[B](that: GenSeq[L, B], offset: Int): Boolean = self.startsWith(that, offset)
+  override def startsWith[B](that: GenSeq[L, B]): Boolean = self.startsWith(that)
+  override def endsWith[B](that: GenSeq[L, B]): Boolean = self.endsWith(that)
+  override def indexOfSlice[B >: A](that: GenSeq[L, B]): Int = self.indexOfSlice(that)
+  override def indexOfSlice[B >: A](that: GenSeq[L, B], from: Int): Int = self.indexOfSlice(that)
+  override def lastIndexOfSlice[B >: A](that: GenSeq[L, B]): Int = self.lastIndexOfSlice(that)
+  override def lastIndexOfSlice[B >: A](that: GenSeq[L, B], end: Int): Int = self.lastIndexOfSlice(that, end)
+  override def containsSlice[B](that: GenSeq[L, B]): Boolean = self.indexOfSlice(that) != -1
   override def contains[A1 >: A](elem: A1): Boolean = self.contains(elem)
-  override def union[B >: A, That](that: GenSeq[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = self.union(that)(bf)
-  override def diff[B >: A](that: GenSeq[B]): Repr = self.diff(that)
-  override def intersect[B >: A](that: GenSeq[B]): Repr = self.intersect(that)
+  override def union[B >: A, That](that: GenSeq[L, B])(implicit bf: CanBuildFrom[Repr, B, That]): That = self.union(that)(bf)
+  override def diff[B >: A](that: GenSeq[L, B]): Repr = self.diff(that)
+  override def intersect[B >: A](that: GenSeq[L, B]): Repr = self.intersect(that)
   override def distinct: Repr = self.distinct
-  override def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.patch(from, patch, replaced)(bf)
+  override def patch[B >: A, That](from: Int, patch: GenSeq[L, B], replaced: Int)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.patch(from, patch, replaced)(bf)
   override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.updated(index, elem)(bf)
   override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.+:(elem)(bf)
   override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.:+(elem)(bf)
   override def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.padTo(len, elem)(bf)
-  override def corresponds[B](that: GenSeq[B])(p: (A,B) => Boolean): Boolean = self.corresponds(that)(p)
+  override def corresponds[B](that: GenSeq[L, B])(p: (A,B) => Boolean): Boolean = self.corresponds(that)(p)
   override def sortWith(lt: (A, A) => Boolean): Repr = self.sortWith(lt)
   override def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Repr = self.sortBy(f)(ord)
   override def sorted[B >: A](implicit ord: Ordering[B]): Repr = self.sorted(ord)

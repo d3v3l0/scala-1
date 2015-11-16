@@ -69,9 +69,9 @@ import scala.language.higherKinds
 trait TraversableLike[L, +A, +Repr] extends Any
                                     with HasNewBuilder[A, Repr]
                                     with FilterMonadic[A, Repr]
-                                    with TraversableOnce[A]
+                                    with TraversableOnce[L, A]
                                     with GenTraversableLike[A, Repr]
-                                    with Parallelizable[A, ParIterable[A]]
+                                    with Parallelizable[A, ParIterable[L, A]]
 {
   self =>
 
@@ -175,7 +175,7 @@ trait TraversableLike[L, +A, +Repr] extends Any
    *  @return       a new collection of type `That` which contains all elements
    *                of this $coll followed by all elements of `that`.
    *
-   *  @usecase def ++:[B](that: TraversableOnce[B]): $Coll[B]
+   *  @usecase def ++:[B](that: TraversableOnce[L, B]): $Coll[B]
    *    @inheritdoc
    *
    *    Example:
@@ -193,7 +193,7 @@ trait TraversableLike[L, +A, +Repr] extends Any
    *    @return       a new $coll which contains all elements of this $coll
    *                  followed by all elements of `that`.
    */
-  def ++:[B >: A, That](that: TraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def ++:[B >: A, That](that: TraversableOnce[L, B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
     val b = bf(repr)
     if (that.isInstanceOf[IndexedSeqLike[_, _]]) b.sizeHint(this, that.size)
     b ++= that
@@ -328,7 +328,7 @@ trait TraversableLike[L, +A, +Repr] extends Any
     (l.result, r.result)
   }
 
-  def groupBy[K](@plocal f: A => K): immutable.Map[K, Repr] = {
+  def groupBy[K](@plocal f: A => K): immutable.Map[L, K, Repr] = {
     val m = mutable.Map.empty[K, Builder[A, Repr]]
     for (elem <- this) {
       val key = f(elem)
@@ -665,7 +665,7 @@ trait TraversableLike[L, +A, +Repr] extends Any
    *
    *  @return a non-strict view of this $coll.
    */
-  def view = new TraversableView[A, Repr] {
+  def view = new TraversableView[L, A, Repr] {
     protected lazy val underlying = self.repr
     override def foreach[U](f: A => U) = self foreach f
   }
@@ -683,7 +683,7 @@ trait TraversableLike[L, +A, +Repr] extends Any
    *  @return a non-strict view of a slice of this $coll, starting at index `from`
    *  and extending up to (but not including) index `until`.
    */
-  def view(from: Int, until: Int): TraversableView[A, Repr] = view.slice(from, until)
+  def view(from: Int, until: Int): TraversableView[L, A, Repr] = view.slice(from, until)
 
   /** Creates a non-strict filter of this $coll.
    *
@@ -744,7 +744,7 @@ trait TraversableLike[L, +A, +Repr] extends Any
      *                of the outer $coll that satisfies predicate `p` and
      *                concatenating the results.
      *
-     *  @usecase def flatMap[B](f: A => TraversableOnce[B]): $Coll[B]
+     *  @usecase def flatMap[B](f: A => TraversableOnce[L, B]): $Coll[B]
      *    @inheritdoc
      *
      *    The type of the resulting collection will be guided by the static type

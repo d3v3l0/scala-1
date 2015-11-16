@@ -35,8 +35,8 @@ import parallel.immutable.ParHashMap
 @SerialVersionUID(2L)
 @deprecatedInheritance("The implementation details of immutable hash maps make inheriting from them unwise.", "2.11.0")
 class HashMap[A, +B] extends AbstractMap[A, B]
-                        with Map[A, B]
-                        with MapLike[A, B, HashMap[A, B]]
+                        with Map[L, A, B]
+                        with MapLike[L, A, B, HashMap[A, B]]
                         with Serializable
                         with CustomParallelizable[(A, B), ParHashMap[A, B]]
 {
@@ -101,7 +101,7 @@ class HashMap[A, +B] extends AbstractMap[A, B]
 
   protected def writeReplace(): AnyRef = new HashMap.SerializationProxy(this)
 
-  def split: Seq[HashMap[A, B]] = Seq(this)
+  def split: Seq[L, HashMap[A, B]] = Seq(this)
 
   /** Creates a new map which is the merge of this and the argument hash map.
    *
@@ -279,7 +279,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
 
     override def iterator: Iterator[(A,B)] = kvs.iterator
     override def foreach[U](f: ((A, B)) => U): Unit = kvs.foreach(f)
-    override def split: Seq[HashMap[A, B]] = {
+    override def split: Seq[L, HashMap[A, B]] = {
       val (x, y) = kvs.splitAt(kvs.size / 2)
       def newhm(lm: ListMap[A, B @uV]) = new HashMapCollision1(hash, lm)
       List(newhm(x), newhm(y))
@@ -444,7 +444,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
       i
     }
 
-    override def split: Seq[HashMap[A, B]] = if (size == 1) Seq(this) else {
+    override def split: Seq[L, HashMap[A, B]] = if (size == 1) Seq(this) else {
       val nodesize = Integer.bitCount(bitmap)
       if (nodesize > 1) {
         val splitpoint = nodesize / 2

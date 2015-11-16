@@ -199,7 +199,7 @@ import scala.language.implicitConversions
  *  @define willTerminateInf Note: lazily evaluated; will terminate for infinite-sized collections.
  */
 @deprecatedInheritance("This class will be sealed.", "2.11.0")
-abstract class Stream[+A] extends AbstractSeq[A]
+abstract class Stream[+A] extends AbstractSeq[L, A]
                              with LinearSeq[A]
                              with GenericTraversableTemplate[A, Stream]
                              with LinearSeqOptimized[A, Stream[A]]
@@ -253,7 +253,7 @@ self =>
    *  @param rest   The stream that gets appended to this stream
    *  @return       The stream containing elements of this stream and the traversable object.
    */
-  def append[B >: A](rest: => TraversableOnce[B]): Stream[B] =
+  def append[B >: A](rest: => TraversableOnce[L, B]): Stream[B] =
     if (isEmpty) rest.toStream else cons(head, tail append rest)
 
   /** Forces evaluation of the whole stream and returns it.
@@ -683,7 +683,7 @@ self =>
    * // (5,6)
    * }}}
    */
-  override final def zip[A1 >: A, B, That](that: scala.collection.GenIterable[B])(implicit bf: CanBuildFrom[Stream[A], (A1, B), That]): That =
+  override final def zip[A1 >: A, B, That](that: scala.collection.GenIterable[L, B])(implicit bf: CanBuildFrom[Stream[A], (A1, B), That]): That =
     // we assume there is no other builder factory on streams and therefore know that That = Stream[(A1, B)]
     if (isStreamBuilder(bf)) asThat(
       if (this.isEmpty || that.isEmpty) Stream.Empty
@@ -984,7 +984,7 @@ self =>
   override def distinct: Stream[A] = {
     // This should use max memory proportional to N, whereas
     // recursively calling distinct on the tail is N^2.
-    def loop(seen: Set[A], rest: Stream[A]): Stream[A] = {
+    def loop(seen: Set[L, A], rest: Stream[A]): Stream[A] = {
       if (rest.isEmpty) rest
       else if (seen(rest.head)) loop(seen, rest.tail)
       else cons(rest.head, loop(seen + rest.head, rest.tail))
