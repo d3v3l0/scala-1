@@ -18,7 +18,7 @@ import scala.util.control.Breaks
  *
  *  $traversableInfo
  */
-trait Traversable[+A] extends TraversableLike[A, Traversable[A]]
+trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[A]]
                          with GenTraversable[A]
                          with TraversableOnce[A]
                          with GenericTraversableTemplate[A, Traversable] {

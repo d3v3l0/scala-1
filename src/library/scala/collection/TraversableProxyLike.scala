@@ -25,7 +25,7 @@ import scala.reflect.ClassTag
  *  @since   2.8
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[A, Repr] with Traversable[A] /*{ type LT }*/] extends TraversableLike[A, Repr] with Proxy {
+trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Traversable[A] /*{ type LT }*/] extends TraversableLike[L, A, Repr] with Proxy {
   type LT = L
 
   def self: Repr
