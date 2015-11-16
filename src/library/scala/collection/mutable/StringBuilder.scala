@@ -31,9 +31,9 @@ import immutable.StringLike
 final class StringBuilder(private val underlying: JavaStringBuilder)
       extends AbstractSeq[L, Char]
          with java.lang.CharSequence
-         with IndexedSeq[Char]
-         with StringLike[StringBuilder]
-         with Builder[Char, String]
+         with IndexedSeq[L, Char]
+         with StringLike[L, StringBuilder]
+         with Builder[L, Char, String]
          with Serializable {
 
   override protected[this] def thisCollection: StringBuilder = this

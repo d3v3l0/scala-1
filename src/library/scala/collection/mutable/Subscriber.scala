@@ -10,7 +10,7 @@ package scala
 package collection
 package mutable
 
-/** `Subscriber[A, B]` objects may subscribe to events of type `A`
+/** `Subscriber[L, A, B]` objects may subscribe to events of type `A`
  *  published by an object of type `B`. `B` is typically a subtype of
  *  [[scala.collection.mutable.Publisher]].
  *
@@ -19,6 +19,6 @@ package mutable
  *  @version 2.8
  *  @since   1
  */
-trait Subscriber[-Evt, -Pub] {
+trait Subscriber[L, -Evt, -Pub] {
   def notify(pub: Pub, event: Evt): Unit
 }

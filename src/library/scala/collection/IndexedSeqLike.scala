@@ -12,7 +12,7 @@ package collection
 import mutable.ArrayBuffer
 import scala.annotation.tailrec
 
-/** A template trait for indexed sequences of type `IndexedSeq[A]`.
+/** A template trait for indexed sequences of type `IndexedSeq[L, A]`.
  *
  *  $indexedSeqInfo
  *
@@ -37,16 +37,16 @@ import scala.annotation.tailrec
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[L, A, Repr] {
+trait IndexedSeqLike[L, +A, +Repr] extends Any with SeqLike[L, A, Repr] {
   self =>
 
   type LT
 
-  def seq: IndexedSeq[A]
+  def seq: IndexedSeq[L, A]
   override def hashCode()= scala.util.hashing.MurmurHash3.seqHash(seq)  // TODO - can we get faster via "indexedSeqHash" ?
 
-  override protected[this] def thisCollection: IndexedSeq[A] = this.asInstanceOf[IndexedSeq[A]]
-  override protected[this] def toCollection(repr: Repr): IndexedSeq[A] = repr.asInstanceOf[IndexedSeq[A]]
+  override protected[this] def thisCollection: IndexedSeq[L, A] = this.asInstanceOf[IndexedSeq[L, A]]
+  override protected[this] def toCollection(repr: Repr): IndexedSeq[L, A] = repr.asInstanceOf[IndexedSeq[L, A]]
 
   /** The class of the iterator returned by the `iterator` method.
    *  multiple `take`, `drop`, and `slice` operations on this iterator are bunched
@@ -54,7 +54,7 @@ trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[L, A, Repr] {
    */
   // pre: start >= 0, end <= self.length
   @SerialVersionUID(1756321872811029277L)
-  protected class Elements(start: Int, end: Int) extends AbstractIterator[A] with BufferedIterator[A] with Serializable {
+  protected class Elements(start: Int, end: Int) extends AbstractIterator[L, A] with BufferedIterator[L, A] with Serializable {
     private var index = start
     private def available = (end - index) max 0
 
@@ -76,24 +76,24 @@ trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[L, A, Repr] {
       self(index)
     }
 
-    override def drop(n: Int): Iterator[A] =
+    override def drop(n: Int): Iterator[L, A] =
       if (n <= 0) new Elements(index, end)
       else if (index + n >= end) new Elements(end, end)
       else new Elements(index + n, end)
-    override def take(n: Int): Iterator[A] =
+    override def take(n: Int): Iterator[L, A] =
       if (n <= 0) Iterator.empty
       else if (n <= available) new Elements(index, index + n)
       else new Elements(index, end)
-    override def slice(from: Int, until: Int): Iterator[A] =
+    override def slice(from: Int, until: Int): Iterator[L, A] =
       this take until drop from
   }
 
   override /*IterableLike*/
-  def iterator: Iterator[A] = new Elements(0, length)
+  def iterator: Iterator[L, A] = new Elements(0, length)
 
   /* Overridden for efficiency */
   override def toBuffer[A1 >: A]: mutable.Buffer[L, A1] = {
-    val result = new mutable.ArrayBuffer[A1](size)
+    val result = new mutable.ArrayBuffer[L, A1](size)
     copyToBuffer(result)
     result
   }

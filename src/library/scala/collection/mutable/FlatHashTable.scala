@@ -19,7 +19,7 @@ package mutable
  *  @since 2.3
  *  @tparam A   the type of the elements contained in the $coll.
  */
-trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
+trait FlatHashTable[L, A] extends FlatHashTable.HashUtils[A] {
   import FlatHashTable._
 
   protected type plocal = local[Any]
@@ -206,7 +206,7 @@ trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
     false
   }
 
-  protected def iterator: Iterator[A] = new AbstractIterator[A] {
+  protected def iterator: Iterator[L, A] = new AbstractIterator[L, A] {
     private var i = 0
     def hasNext: Boolean = {
       while (i < table.length && (null == table(i))) i += 1

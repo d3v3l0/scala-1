@@ -13,12 +13,12 @@ package immutable
 /** A default map which implements the `+` and `-`
  *  methods of maps. It does so using the default builder for
  *  maps defined in the `Map` object.
- *  Instances that inherit from `DefaultMap[A, B]` still have to
+ *  Instances that inherit from `DefaultMap[L, A, B]` still have to
  *  define:
  *
  *  {{{
  *    def get(key: A): Option[B]
- *    def iterator: Iterator[(A, B)]
+ *    def iterator: Iterator[L, (A, B)]
  *  }}}
  *
  *  It refers back to the original map.
@@ -31,7 +31,7 @@ package immutable
  *
  *  @since 2.8
  */
-trait DefaultMap[A, +B] extends Map[L, A, B] { self =>
+trait DefaultMap[L, A, +B] extends Map[L, A, B] { self =>
 
   /** A default implementation which creates a new immutable map.
    */

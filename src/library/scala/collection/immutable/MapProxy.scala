@@ -35,7 +35,7 @@ trait MapProxy[L, A, +B] extends Map[L, A, B] with MapProxyLike[L, A, B, Map[L, 
   override def -(key: A) = newProxy(self - key)
   override def + [B1 >: B](kv: (A, B1)): Map[L, A, B1] = newProxy(self + kv)
   override def + [B1 >: B](elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *) = newProxy(self.+(elem1, elem2, elems: _*))
-  override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]) = newProxy(self ++ xs.seq)
+  override def ++[B1 >: B](xs: GenTraversableOnce[L, (A, B1)]) = newProxy(self ++ xs.seq)
 
   override def keySet: immutable.Set[L, A] = new SetProxy[L, A] { val self = MapProxy.this.self.keySet }
   override def filterKeys(p: A => Boolean) = self.filterKeys(p)

@@ -22,9 +22,9 @@ package mutable
  *  @since   1
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait QueueProxy[L, A] extends Queue[A] with Proxy {
+trait QueueProxy[L, A] extends Queue[L, A] with Proxy {
 
-  def self: Queue[A]
+  def self: Queue[L, A]
 
   /** Access element number `n`.
    *
@@ -87,13 +87,13 @@ trait QueueProxy[L, A] extends Queue[A] with Proxy {
    *
    *  @return an iterator over all queue elements.
    */
-  override def iterator: Iterator[A] = self.iterator
+  override def iterator: Iterator[L, A] = self.iterator
 
   /** This method clones the queue.
    *
    *  @return  a queue with the same elements.
    */
-  override def clone(): Queue[A] = new QueueProxy[L, A] {
+  override def clone(): Queue[L, A] = new QueueProxy[L, A] {
     def self = QueueProxy.this.self.clone()
   }
 }

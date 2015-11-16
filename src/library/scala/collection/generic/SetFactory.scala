@@ -15,5 +15,5 @@ package generic
 import mutable.Builder
 import scala.language.higherKinds
 
-abstract class SetFactory[CC[X] <: Set[L, X] with SetLike[L, X, CC[X]]]
-  extends GenSetFactory[CC] with GenericSeqCompanion[CC]
+abstract class SetFactory[L, CC[X] <: Set[L, X] with SetLike[L, X, CC[X]]]
+  extends GenSetFactory[L, CC] with GenericSeqCompanion[L, CC]

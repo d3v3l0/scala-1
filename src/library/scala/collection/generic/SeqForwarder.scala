@@ -26,7 +26,7 @@ import scala.collection.immutable.Range
  *  @since   2.8
  */
 @deprecated("Forwarding is inherently unreliable since it is not automated and new methods can be forgotten.", "2.11.0")
-trait SeqForwarder[+A] extends Seq[L, A] with IterableForwarder[L, A] {
+trait SeqForwarder[L, +A] extends Seq[L, A] with IterableForwarder[L, A] {
 
   protected override def underlying: Seq[L, A]
 
@@ -44,7 +44,7 @@ trait SeqForwarder[+A] extends Seq[L, A] with IterableForwarder[L, A] {
   override def lastIndexOf[B >: A](elem: B, end: Int): Int = underlying.lastIndexOf(elem, end)
   override def lastIndexWhere(p: A => Boolean): Int = underlying lastIndexWhere p
   override def lastIndexWhere(p: A => Boolean, end: Int): Int = underlying.lastIndexWhere(p, end)
-  override def reverseIterator: Iterator[A] = underlying.reverseIterator
+  override def reverseIterator: Iterator[L, A] = underlying.reverseIterator
   override def startsWith[B](that: GenSeq[L, B], offset: Int): Boolean = underlying.startsWith(that, offset)
   override def startsWith[B](that: GenSeq[L, B]): Boolean = underlying startsWith that
   override def endsWith[B](that: GenSeq[L, B]): Boolean = underlying endsWith that

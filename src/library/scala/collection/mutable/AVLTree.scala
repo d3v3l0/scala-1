@@ -21,7 +21,7 @@ private[mutable] sealed trait AVLTree[+A] extends Serializable {
 
   def depth: Int
 
-  def iterator[B >: A]: Iterator[B] = Iterator.empty
+  def iterator[B >: A]: Iterator[L, B] = Iterator.empty
 
   def contains[B >: A](value: B, ordering: Ordering[B]): Boolean = false
 
@@ -81,7 +81,7 @@ private case class Node[A](data: A, left: AVLTree[A], right: AVLTree[A]) extends
 
   override val depth: Int = math.max(left.depth, right.depth) + 1
 
-  override def iterator[B >: A]: Iterator[B] = new AVLIterator(this)
+  override def iterator[B >: A]: Iterator[L, B] = new AVLIterator(this)
 
   override def contains[B >: A](value: B, ordering: Ordering[B]) = {
     val ord = ordering.compare(value, data)
@@ -213,8 +213,8 @@ private case class Node[A](data: A, left: AVLTree[A], right: AVLTree[A]) extends
 /**
  * @deprecated("AVLTree and its related classes are being removed from the standard library since they're not different enough from RedBlackTree to justify keeping them.", "2.11.0")
  */
-private class AVLIterator[A](root: Node[A]) extends Iterator[A] {
-  val stack = mutable.ArrayStack[Node[A]](root)
+private class AVLIterator[A](root: Node[A]) extends Iterator[L, A] {
+  val stack = mutable.ArrayStack[L, Node[A]](root)
   diveLeft()
 
   private def diveLeft(): Unit = {

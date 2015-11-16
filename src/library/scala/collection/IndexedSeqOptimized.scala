@@ -13,7 +13,7 @@ import generic._
 import mutable.ArrayBuffer
 import scala.annotation.tailrec
 
-/** A template trait for indexed sequences of type `IndexedSeq[A]` which optimizes
+/** A template trait for indexed sequences of type `IndexedSeq[L, A]` which optimizes
  *  the implementation of several methods under the assumption of fast random access.
  *
  *  $indexedSeqInfo
@@ -21,7 +21,7 @@ import scala.annotation.tailrec
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { self =>
+trait IndexedSeqOptimized[L, +A, +Repr] extends Any with IndexedSeqLike[L, A, Repr] { self =>
 
   type LT
 
@@ -80,8 +80,8 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
     if (length > 0) foldr(0, length - 1, this(length - 1), op) else super.reduceRight(op)
 
   override /*IterableLike*/
-  def zip[A1 >: A, B, That](that: GenIterable[L, B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = that match {
-    case that: IndexedSeq[_] =>
+  def zip[A1 >: A, B, That](that: GenIterable[L, B])(implicit bf: CanBuildFrom[L, Repr, (A1, B), That]): That = that match {
+    case that: IndexedSeq[L, _] =>
       val b = bf(repr)
       var i = 0
       val len = this.length min that.length
@@ -96,7 +96,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*IterableLike*/
-  def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Repr, (A1, Int), That]): That = {
+  def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[L, Repr, (A1, Int), That]): That = {
     val b = bf(repr)
     val len = length
     b.sizeHint(len)
@@ -162,7 +162,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
 
   override /*IterableLike*/
   def sameElements[B >: A](that: GenIterable[L, B]): Boolean = that match {
-    case that: IndexedSeq[_] =>
+    case that: IndexedSeq[L, _] =>
       val len = length
       len == that.length && {
         var i = 0
@@ -226,7 +226,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*SeqLike*/
-  def reverseIterator: Iterator[A] = new AbstractIterator[A] {
+  def reverseIterator: Iterator[L, A] = new AbstractIterator[L, A] {
     private var i = self.length
     def hasNext: Boolean = 0 < i
     def next(): A =
@@ -238,7 +238,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
 
   override /*SeqLike*/
   def startsWith[B](that: GenSeq[L, B], offset: Int): Boolean = that match {
-    case that: IndexedSeq[_] =>
+    case that: IndexedSeq[L, _] =>
       var i = offset
       var j = 0
       val thisLen = length
@@ -263,7 +263,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
 
   override /*SeqLike*/
   def endsWith[B](that: GenSeq[L, B]): Boolean = that match {
-    case that: IndexedSeq[_] =>
+    case that: IndexedSeq[L, _] =>
       var i = length - 1
       var j = that.length - 1
 

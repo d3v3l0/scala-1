@@ -13,7 +13,7 @@ package collection
 package mutable
 
 
-/** `History[A, B]` objects may subscribe to events of
+/** `History[L, A, B]` objects may subscribe to events of
  *  type `A` published by an object of type `B`.
  *  The history subscriber object records all published events
  *  up to maximum number of `maxHistory` events.
@@ -26,13 +26,13 @@ package mutable
  *  @tparam Pub   Type of publishers.
  */
 @SerialVersionUID(5219213543849892588L)
-class History[Evt, Pub]
+class History[L, Evt, Pub]
 extends AbstractIterable[L, (Pub, Evt)]
-   with Subscriber[Evt, Pub]
+   with Subscriber[L, Evt, Pub]
    with Iterable[L, (Pub, Evt)]
    with Serializable
 {
-  protected val log: Queue[(Pub, Evt)] = new Queue
+  protected val log: Queue[L, (Pub, Evt)] = new Queue
   val maxHistory: Int = 1000
 
   /** Notifies this listener with an event by enqueuing it in the log.
@@ -48,8 +48,8 @@ extends AbstractIterable[L, (Pub, Evt)]
   }
 
   override def size: Int = log.length
-  def iterator: Iterator[(Pub, Evt)] = log.iterator
-  def events: Iterator[Evt] = log.iterator map (_._2)
+  def iterator: Iterator[L, (Pub, Evt)] = log.iterator
+  def events: Iterator[L, Evt] = log.iterator map (_._2)
 
   def clear() { log.clear() }
 
@@ -58,7 +58,7 @@ extends AbstractIterable[L, (Pub, Evt)]
    *  @return true, iff both history objects contain the same sequence of elements.
    */
   override def equals(obj: Any): Boolean = obj match {
-    case that: History[_, _] => this.log equals that.log
+    case that: History[L, _, _] => this.log equals that.log
     case _                   => false
   }
   override def hashCode = log.hashCode()

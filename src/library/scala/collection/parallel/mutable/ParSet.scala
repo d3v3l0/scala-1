@@ -16,16 +16,16 @@ import scala.collection.parallel.Combiner
  *
  *  @author Aleksandar Prokopec
  */
-trait ParSet[T]
-extends scala.collection/*.mutable*/.GenSet[T]
+trait ParSet[L, T]
+extends scala.collection/*.mutable*/.GenSet[L, T]
    with ParIterable[L, T]
-   with scala.collection.parallel.ParSet[T]
-   with GenericParTemplate[T, ParSet]
-   with ParSetLike[T, ParSet[T], scala.collection.mutable.Set[L, T]]
+   with scala.collection.parallel.ParSet[L, T]
+   with GenericParTemplate[L, T, ParSet]
+   with ParSetLike[L, T, ParSet[L, T], scala.collection.mutable.Set[L, T]]
 {
 self =>
-  override def companion: GenericCompanion[ParSet] with GenericParCompanion[ParSet] = ParSet
-  override def empty: ParSet[T] = ParHashSet()
+  override def companion: GenericCompanion[L, ParSet] with GenericParCompanion[L, ParSet] = ParSet
+  override def empty: ParSet[L, T] = ParHashSet()
   def seq: scala.collection.mutable.Set[L, T]
 }
 
@@ -34,10 +34,10 @@ self =>
  *  @define Coll `mutable.ParSet`
  *  @define coll mutable parallel set
  */
-object ParSet extends ParSetFactory[ParSet] {
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParSet[T]] = new GenericCanCombineFrom[T]
+object ParSet extends ParSetFactory[L, ParSet] {
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParSet[L, T]] = new GenericCanCombineFrom[T]
 
-  override def newBuilder[T]: Combiner[T, ParSet[T]] = ParHashSet.newBuilder
+  override def newBuilder[T]: Combiner[L, T, ParSet[L, T]] = ParHashSet.newBuilder
 
-  override def newCombiner[T]: Combiner[T, ParSet[T]] = ParHashSet.newCombiner
+  override def newCombiner[T]: Combiner[L, T, ParSet[L, T]] = ParHashSet.newCombiner
 }

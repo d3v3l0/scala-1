@@ -18,9 +18,9 @@ import generic._
  *  @define Coll `LinkedHashMap`
  *  @define coll linked hash map
  */
-object LinkedHashMap extends MutableMapFactory[LinkedHashMap] {
-  implicit def canBuildFrom[A, B]: CanBuildFrom[Coll, (A, B), LinkedHashMap[A, B]] = new MapCanBuildFrom[A, B]
-  def empty[A, B] = new LinkedHashMap[A, B]
+object LinkedHashMap extends MutableMapFactory[L, LinkedHashMap] {
+  implicit def canBuildFrom[A, B]: CanBuildFrom[L, Coll, (A, B), LinkedHashMap[L, A, B]] = new MapCanBuildFrom[A, B]
+  def empty[A, B] = new LinkedHashMap[L, A, B]
 }
 
 /** This class implements mutable maps using a hashtable.
@@ -32,8 +32,8 @@ object LinkedHashMap extends MutableMapFactory[LinkedHashMap] {
  *  @define Coll `LinkedHashMap`
  *  @define coll linked hash map
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `LinkedHashMap[A, B]` if the elements contained in the resulting collection are
- *    pairs of type `(A, B)`. This is because an implicit of type `CanBuildFrom[LinkedHashMap, (A, B), LinkedHashMap[A, B]]`
+ *    `That` is always `LinkedHashMap[L, A, B]` if the elements contained in the resulting collection are
+ *    pairs of type `(A, B)`. This is because an implicit of type `CanBuildFrom[L, LinkedHashMap, (A, B), LinkedHashMap[L, A, B]]`
  *    is defined in object `LinkedHashMap`. Otherwise, `That` resolves to the most specific type that doesn't have
  *    to contain pairs of type `(A, B)`, which is `Iterable`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
@@ -46,10 +46,10 @@ object LinkedHashMap extends MutableMapFactory[LinkedHashMap] {
  *  @define orderDependentFold
  */
 @SerialVersionUID(1L)
-class LinkedHashMap[A, B] extends AbstractMap[A, B]
+class LinkedHashMap[L, A, B] extends AbstractMap[L, A, B]
                              with Map[L, A, B]
-                             with MapLike[L, A, B, LinkedHashMap[A, B]]
-                             with HashTable[A, LinkedEntry[A, B]]
+                             with MapLike[L, A, B, LinkedHashMap[L, A, B]]
+                             with HashTable[L, A, LinkedEntry[L, A, B]]
                              with Serializable
 {
   override protected type plocal = local[LT]
@@ -57,7 +57,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
   override def empty = LinkedHashMap.empty[A, B]
   override def size = tableSize
 
-  type Entry = LinkedEntry[A, B]
+  type Entry = LinkedEntry[L, A, B]
 
   @transient protected var firstEntry: Entry = null
   @transient protected var lastEntry: Entry = null
@@ -92,7 +92,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
   @deprecatedOverriding("-= should not be overridden so it stays consistent with remove.", "2.11.0")
   def -=(key: A): this.type = { remove(key); this }
 
-  def iterator: Iterator[(A, B)] = new AbstractIterator[(A, B)] {
+  def iterator: Iterator[L, (A, B)] = new AbstractIterator[L, (A, B)] {
     private var cur = firstEntry
     def hasNext = cur ne null
     def next =
@@ -118,7 +118,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
 
   override def keySet: scala.collection.Set[L, A] = new DefaultKeySet
 
-  override def keysIterator: Iterator[A] = new AbstractIterator[A] {
+  override def keysIterator: Iterator[L, A] = new AbstractIterator[L, A] {
     private var cur = firstEntry
     def hasNext = cur ne null
     def next =
@@ -126,7 +126,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
       else Iterator.empty.next()
   }
 
-  override def valuesIterator: Iterator[B] = new AbstractIterator[B] {
+  override def valuesIterator: Iterator[L, B] = new AbstractIterator[L, B] {
     private var cur = firstEntry
     def hasNext = cur ne null
     def next =

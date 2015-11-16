@@ -35,10 +35,10 @@ import immutable.VectorIterator
  *  @define Coll `immutable.ParVector`
  *  @define coll immutable parallel vector
  */
-class ParVector[+T](private[this] val vector: Vector[T])
-extends ParSeq[T]
-   with GenericParTemplate[T, ParVector]
-   with ParSeqLike[T, ParVector[T], Vector[T]]
+class ParVector[L, +T](private[this] val vector: Vector[L, T])
+extends ParSeq[L, T]
+   with GenericParTemplate[L, T, ParVector]
+   with ParSeqLike[L, T, ParVector[L, T], Vector[L, T]]
    with Serializable
 {
   override def companion = ParVector
@@ -49,19 +49,19 @@ extends ParSeq[T]
 
   def length = vector.length
 
-  def splitter: SeqSplitter[T] = {
+  def splitter: SeqSplitter[L, T] = {
     val pit = new ParVectorIterator(vector.startIndex, vector.endIndex)
     vector.initIterator(pit)
     pit
   }
 
-  override def seq: Vector[T] = vector
+  override def seq: Vector[L, T] = vector
 
-  override def toVector: Vector[T] = vector
+  override def toVector: Vector[L, T] = vector
 
-  class ParVectorIterator(_start: Int, _end: Int) extends VectorIterator[T](_start, _end) with SeqSplitter[T] {
+  class ParVectorIterator(_start: Int, _end: Int) extends VectorIterator[L, T](_start, _end) with SeqSplitter[L, T] {
     def remaining: Int = remainingElementCount
-    def dup: SeqSplitter[T] = (new ParVector(remainingVector)).splitter
+    def dup: SeqSplitter[L, T] = (new ParVector(remainingVector)).splitter
     def split: Seq[L, ParVectorIterator] = {
       val rem = remaining
       if (rem >= 2) psplit(rem / 2, rem - rem / 2)
@@ -69,7 +69,7 @@ extends ParSeq[T]
     }
     def psplit(sizes: Int*): Seq[L, ParVectorIterator] = {
       var remvector = remainingVector
-      val splitted = new ArrayBuffer[Vector[T]]
+      val splitted = new ArrayBuffer[L, Vector[L, T]]
       for (sz <- sizes) {
         splitted += remvector.take(sz)
         remvector = remvector.drop(sz)
@@ -83,19 +83,19 @@ extends ParSeq[T]
  *  @define Coll `immutable.ParVector`
  *  @define coll immutable parallel vector
  */
-object ParVector extends ParFactory[ParVector] {
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParVector[T]] =
+object ParVector extends ParFactory[L, ParVector] {
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParVector[L, T]] =
     new GenericCanCombineFrom[T]
 
-  def newBuilder[T]: Combiner[T, ParVector[T]] = newCombiner[T]
+  def newBuilder[T]: Combiner[L, T, ParVector[L, T]] = newCombiner[T]
 
-  def newCombiner[T]: Combiner[T, ParVector[T]] = new LazyParVectorCombiner[T] // was: with EPC[T, ParVector[T]]
+  def newCombiner[T]: Combiner[L, T, ParVector[L, T]] = new LazyParVectorCombiner[T] // was: with EPC[T, ParVector[L, T]]
 }
 
-private[immutable] class LazyParVectorCombiner[T] extends Combiner[T, ParVector[T]] {
-//self: EnvironmentPassingCombiner[T, ParVector[T]] =>
+private[immutable] class LazyParVectorCombiner[T] extends Combiner[L, T, ParVector[L, T]] {
+//self: EnvironmentPassingCombiner[T, ParVector[L, T]] =>
   var sz = 0
-  val vectors = new ArrayBuffer[VectorBuilder[T]] += new VectorBuilder[T]
+  val vectors = new ArrayBuffer[L, VectorBuilder[L, T]] += new VectorBuilder[L, T]
 
   def size: Int = sz
 
@@ -107,19 +107,19 @@ private[immutable] class LazyParVectorCombiner[T] extends Combiner[T, ParVector[
 
   def clear() = {
     vectors.clear()
-    vectors += new VectorBuilder[T]
+    vectors += new VectorBuilder[L, T]
     sz = 0
   }
 
-  def result: ParVector[T] = {
-    val rvb = new VectorBuilder[T]
+  def result: ParVector[L, T] = {
+    val rvb = new VectorBuilder[L, T]
     for (vb <- vectors) {
       rvb ++= vb.result
     }
     new ParVector(rvb.result)
   }
 
-  def combine[U <: T, NewTo >: ParVector[T]](other: Combiner[U, NewTo]) = if (other eq this) this else {
+  def combine[U <: T, NewTo >: ParVector[L, T]](other: Combiner[L, U, NewTo]) = if (other eq this) this else {
     val that = other.asInstanceOf[LazyParVectorCombiner[T]]
     sz += that.sz
     vectors ++= that.vectors

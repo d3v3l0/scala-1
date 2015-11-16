@@ -24,10 +24,10 @@ import generic.CanBuildFrom
  *  rapidly as 2^30 is approached.
  *
  */
-final class LongMap[V] private[collection] (defaultEntry: Long => V, initialBufferSize: Int, initBlank: Boolean)
-extends AbstractMap[Long, V]
+final class LongMap[L, V] private[collection] (defaultEntry: Long => V, initialBufferSize: Int, initBlank: Boolean)
+extends AbstractMap[L, Long, V]
    with Map[L, Long, V]
-   with MapLike[L, Long, V, LongMap[V]]
+   with MapLike[L, Long, V, LongMap[L, V]]
    with Serializable
 {
   import LongMap._
@@ -73,7 +73,7 @@ extends AbstractMap[Long, V]
   }
   
   override def size: Int = _size + (extraKeys+1)/2
-  override def empty: LongMap[V] = new LongMap()
+  override def empty: LongMap[L, V] = new LongMap()
   
   private def imbalanced: Boolean = 
     (_size + _vacant) > 0.5*mask || _vacant > _size
@@ -355,7 +355,7 @@ extends AbstractMap[Long, V]
     this
   }
   
-  def iterator: Iterator[(Long, V)] = new Iterator[(Long, V)] {
+  def iterator: Iterator[L, (Long, V)] = new Iterator[L, (Long, V)] {
     private[this] val kz = _keys
     private[this] val vz = _values
     
@@ -407,10 +407,10 @@ extends AbstractMap[Long, V]
     }
   }
   
-  override def clone(): LongMap[V] = {
+  override def clone(): LongMap[L, V] = {
     val kz = java.util.Arrays.copyOf(_keys, _keys.length)
     val vz = java.util.Arrays.copyOf(_values,  _values.length)
-    val lm = new LongMap[V](defaultEntry, 1, false)
+    val lm = new LongMap[L, V](defaultEntry, 1, false)
     lm.initializeTo(mask, extraKeys, zeroValue, minValue, _size, _vacant, kz,  vz)
     lm
   }
@@ -449,10 +449,10 @@ extends AbstractMap[Long, V]
    *  Unlike `mapValues`, this method generates a new
    *  collection immediately.
    */
-  def mapValuesNow[V1](f: V => V1): LongMap[V1] = {
+  def mapValuesNow[V1](f: V => V1): LongMap[L, V1] = {
     val zv = if ((extraKeys & 1) == 1) f(zeroValue.asInstanceOf[V]).asInstanceOf[AnyRef] else null
     val mv = if ((extraKeys & 2) == 2) f(minValue.asInstanceOf[V]).asInstanceOf[AnyRef] else null
-    val lm = new LongMap[V1](LongMap.exceptionDefault,  1,  false)
+    val lm = new LongMap[L, V1](LongMap.exceptionDefault,  1,  false)
     val kz = java.util.Arrays.copyOf(_keys, _keys.length)
     val vz = new Array[AnyRef](_values.length)
     var i,j = 0
@@ -495,43 +495,43 @@ object LongMap {
   
   private val exceptionDefault: Long => Nothing = (k: Long) => throw new NoSuchElementException(k.toString)
   
-  implicit def canBuildFrom[V, U]: CanBuildFrom[LongMap[V], (Long, U), LongMap[U]] = 
-    new CanBuildFrom[LongMap[V], (Long, U), LongMap[U]] {
-      def apply(from: LongMap[V]): LongMapBuilder[U] = apply()
+  implicit def canBuildFrom[V, U]: CanBuildFrom[L, LongMap[L, V], (Long, U), LongMap[L, U]] = 
+    new CanBuildFrom[L, LongMap[L, V], (Long, U), LongMap[L, U]] {
+      def apply(from: LongMap[L, V]): LongMapBuilder[U] = apply()
       def apply(): LongMapBuilder[U] = new LongMapBuilder[U]
     }
   
-  final class LongMapBuilder[V] extends Builder[(Long, V), LongMap[V]] {
-    private[collection] var elems: LongMap[V] = new LongMap[V]
+  final class LongMapBuilder[V] extends Builder[L, (Long, V), LongMap[L, V]] {
+    private[collection] var elems: LongMap[L, V] = new LongMap[L, V]
     def +=(entry: (Long, V)): this.type = {
       elems += entry
       this
     }
-    def clear() { elems = new LongMap[V] }
-    def result(): LongMap[V] = elems
+    def clear() { elems = new LongMap[L, V] }
+    def result(): LongMap[L, V] = elems
   }
 
   /** Creates a new `LongMap` with zero or more key/value pairs. */
-  def apply[V](elems: (Long, V)*): LongMap[V] = {
+  def apply[V](elems: (Long, V)*): LongMap[L, V] = {
     val sz = if (elems.hasDefiniteSize) elems.size else 4
-    val lm = new LongMap[V](sz * 2)
+    val lm = new LongMap[L, V](sz * 2)
     elems.foreach{ case (k,v) => lm(k) = v }
     if (lm.size < (sz>>3)) lm.repack()
     lm
   }
   
   /** Creates a new empty `LongMap`. */
-  def empty[V]: LongMap[V] = new LongMap[V]
+  def empty[V]: LongMap[L, V] = new LongMap[L, V]
   
   /** Creates a new empty `LongMap` with the supplied default */
-  def withDefault[V](default: Long => V): LongMap[V] = new LongMap[V](default)
+  def withDefault[V](default: Long => V): LongMap[L, V] = new LongMap[L, V](default)
   
   /** Creates a new `LongMap` from arrays of keys and values. 
    *  Equivalent to but more efficient than `LongMap((keys zip values): _*)`.
    */
-  def fromZip[V](keys: Array[Long], values: Array[V]): LongMap[V] = {
+  def fromZip[V](keys: Array[Long], values: Array[V]): LongMap[L, V] = {
     val sz = math.min(keys.length, values.length)
-    val lm = new LongMap[V](sz * 2)
+    val lm = new LongMap[L, V](sz * 2)
     var i = 0
     while (i < sz) { lm(keys(i)) = values(i); i += 1 }
     if (lm.size < (sz>>3)) lm.repack()
@@ -541,9 +541,9 @@ object LongMap {
   /** Creates a new `LongMap` from keys and values. 
    *  Equivalent to but more efficient than `LongMap((keys zip values): _*)`.
    */
-  def fromZip[V](keys: Iterable[L, Long], values: Iterable[L, V]): LongMap[V] = {
+  def fromZip[V](keys: Iterable[L, Long], values: Iterable[L, V]): LongMap[L, V] = {
     val sz = math.min(keys.size, values.size)
-    val lm = new LongMap[V](sz * 2)
+    val lm = new LongMap[L, V](sz * 2)
     val ki = keys.iterator
     val vi = values.iterator
     while (ki.hasNext && vi.hasNext) lm(ki.next) = vi.next

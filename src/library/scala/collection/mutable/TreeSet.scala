@@ -23,11 +23,11 @@ import scala.runtime.ObjectRef
  * @author Lucien Pereira
  *
  */
-object TreeSet extends MutableSortedSetFactory[TreeSet] {
+object TreeSet extends MutableSortedSetFactory[L, TreeSet] {
   /**
    *  The empty set of this type
    */
-  def empty[A](implicit ordering: Ordering[A]) = new TreeSet[A]()
+  def empty[A](implicit ordering: Ordering[A]) = new TreeSet[L, A]()
 
 }
 
@@ -38,9 +38,9 @@ object TreeSet extends MutableSortedSetFactory[TreeSet] {
  *
  */
 @deprecatedInheritance("TreeSet is not designed to enable meaningful subclassing.", "2.11.0")
-class TreeSet[A] private (treeRef: ObjectRef[RB.Tree[A, Null]], from: Option[A], until: Option[A])(implicit val ordering: Ordering[A])
-  extends SortedSet[A] with SetLike[L, A, TreeSet[A]]
-  with SortedSetLike[A, TreeSet[A]] with Set[L, A] with Serializable {
+class TreeSet[L, A] private (treeRef: ObjectRef[RB.Tree[A, Null]], from: Option[A], until: Option[A])(implicit val ordering: Ordering[A])
+  extends SortedSet[L, A] with SetLike[L, A, TreeSet[L, A]]
+  with SortedSetLike[L, A, TreeSet[L, A]] with Set[L, A] with Serializable {
 
   if (ordering eq null)
     throw new NullPointerException("ordering must not be null")
@@ -51,7 +51,7 @@ class TreeSet[A] private (treeRef: ObjectRef[RB.Tree[A, Null]], from: Option[A],
 
   override def stringPrefix = "TreeSet"
 
-  override def empty: TreeSet[A] = TreeSet.empty
+  override def empty: TreeSet[L, A] = TreeSet.empty
 
   private def pickBound(comparison: (A, A) => A, oldBound: Option[A], newBound: Option[A]) = (newBound, oldBound) match {
     case (Some(newB), Some(oldB)) => Some(comparison(newB, oldB))
@@ -59,7 +59,7 @@ class TreeSet[A] private (treeRef: ObjectRef[RB.Tree[A, Null]], from: Option[A],
     case _ => newBound
   }
 
-  override def rangeImpl(fromArg: Option[A], untilArg: Option[A]): TreeSet[A] = {
+  override def rangeImpl(fromArg: Option[A], untilArg: Option[A]): TreeSet[L, A] = {
     val newFrom = pickBound(ordering.max, fromArg, from)
     val newUntil = pickBound(ordering.min, untilArg, until)
 
@@ -82,8 +82,8 @@ class TreeSet[A] private (treeRef: ObjectRef[RB.Tree[A, Null]], from: Option[A],
    * the clone. So clone complexity in time is O(1).
    *
    */
-  override def clone(): TreeSet[A] =
-    new TreeSet[A](new ObjectRef(treeRef.elem), from, until)
+  override def clone(): TreeSet[L, A] =
+    new TreeSet[L, A](new ObjectRef(treeRef.elem), from, until)
 
   private val notProjection = !(from.isDefined || until.isDefined)
 
@@ -102,7 +102,7 @@ class TreeSet[A] private (treeRef: ObjectRef[RB.Tree[A, Null]], from: Option[A],
       RB.contains(treeRef.elem, elem)
   }
 
-  override def iterator: Iterator[A] = iteratorFrom(None)
+  override def iterator: Iterator[L, A] = iteratorFrom(None)
 
   override def keysIteratorFrom(start: A) = iteratorFrom(Some(start))
 

@@ -13,7 +13,7 @@ package collection
 package mutable
 
 
-/** This is a synchronized version of the `Queue[T]` class. It
+/** This is a synchronized version of the `Queue[L, T]` class. It
  *  implements a data structure that allows one to insert and retrieve
  *  elements in a first-in-first-out (FIFO) manner.
  *
@@ -26,7 +26,7 @@ package mutable
  *  @define coll synchronized queue
  */
 @deprecated("Synchronization via selective overriding of methods is inherently unreliable.  Consider java.util.concurrent.ConcurrentLinkedQueue as an alternative.", "2.11.0")
-class SynchronizedQueue[A] extends Queue[A] {
+class SynchronizedQueue[L, A] extends Queue[L, A] {
   /** Checks if the queue is empty.
    *
    *  @return true, iff there is no element in the queue.

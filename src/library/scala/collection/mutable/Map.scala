@@ -22,7 +22,7 @@ import generic._
  */
 trait Map[L, A, B]
   extends Iterable[L, (A, B)]
-//     with GenMap[A, B]
+//     with GenMap[L, A, B]
      with scala.collection.Map[L, A, B]
      with MapLike[L, A, B, Map[L, A, B]] {
 
@@ -54,11 +54,11 @@ trait Map[L, A, B]
  *  @define coll mutable map
  *  @define Coll `mutable.Map`
  */
-object Map extends MutableMapFactory[Map] {
+object Map extends MutableMapFactory[L, Map] {
   /** $canBuildFromInfo */
-  implicit def canBuildFrom[A, B]: CanBuildFrom[Coll, (A, B), Map[L, A, B]] = new MapCanBuildFrom[A, B]
+  implicit def canBuildFrom[A, B]: CanBuildFrom[L, Coll, (A, B), Map[L, A, B]] = new MapCanBuildFrom[A, B]
 
-  def empty[A, B]: Map[L, A, B] = new HashMap[A, B]
+  def empty[A, B]: Map[L, A, B] = new HashMap[L, A, B]
 
   class WithDefault[A, B](underlying: Map[L, A, B], d: A => B) extends scala.collection.Map.WithDefault(underlying, d) with Map[L, A, B] {
     override def += (kv: (A, B)) = {underlying += kv; this}
@@ -77,4 +77,4 @@ object Map extends MutableMapFactory[Map] {
 }
 
 /** Explicit instantiation of the `Map` trait to reduce class file size in subclasses. */
-abstract class AbstractMap[A, B] extends scala.collection.AbstractMap[A, B] with Map[L, A, B]
+abstract class AbstractMap[L, A, B] extends scala.collection.AbstractMap[L, A, B] with Map[L, A, B]

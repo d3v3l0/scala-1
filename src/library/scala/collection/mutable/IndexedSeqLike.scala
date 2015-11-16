@@ -34,10 +34,10 @@ package mutable
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait IndexedSeqLike[A, +Repr] extends Any with scala.collection.IndexedSeqLike[A, Repr] { self =>
+trait IndexedSeqLike[L, A, +Repr] extends Any with scala.collection.IndexedSeqLike[L, A, Repr] { self =>
 
-  override protected[this] def thisCollection: IndexedSeq[A] = this.asInstanceOf[IndexedSeq[A]]
-  override protected[this] def toCollection(repr: Repr): IndexedSeq[A] = repr.asInstanceOf[IndexedSeq[A]]
+  override protected[this] def thisCollection: IndexedSeq[L, A] = this.asInstanceOf[IndexedSeq[L, A]]
+  override protected[this] def toCollection(repr: Repr): IndexedSeq[L, A] = repr.asInstanceOf[IndexedSeq[L, A]]
 
   /** Replaces element at given index with a new value.
    *
@@ -49,7 +49,7 @@ trait IndexedSeqLike[A, +Repr] extends Any with scala.collection.IndexedSeqLike[
 
   /** Creates a view of this iterable @see Iterable.View
    */
-  override def view = new IndexedSeqView[A, Repr] {
+  override def view = new IndexedSeqView[L, A, Repr] {
     protected lazy val underlying = self.repr
     override def iterator = self.iterator
     override def length = self.length

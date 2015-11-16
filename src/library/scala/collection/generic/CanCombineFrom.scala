@@ -20,8 +20,8 @@ import scala.collection.parallel._
  *  @tparam To    the type of the collection to be created.
  *  @since 2.8
  */
-trait CanCombineFrom[-From, -Elem, +To] extends CanBuildFrom[From, Elem, To] with Parallel {
-  def apply(from: From): Combiner[Elem, To]
-  def apply(): Combiner[Elem, To]
+trait CanCombineFrom[L, -From, -Elem, +To] extends CanBuildFrom[L, From, Elem, To] with Parallel {
+  def apply(from: From): Combiner[L, Elem, To]
+  def apply(): Combiner[L, Elem, To]
 }
 

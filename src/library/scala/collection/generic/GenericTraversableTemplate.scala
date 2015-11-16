@@ -27,7 +27,7 @@ import scala.language.higherKinds
  *  @define coll  collection
  *  @define Coll  Traversable
  */
-trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[L, X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
+trait GenericTraversableTemplate[L, +A, +CC[X] <: GenTraversable[L, X]] extends HasNewBuilder[L, A, CC[A] @uncheckedVariance] {
   type LT
 
   /** Applies a function `f` to all elements of this $coll.
@@ -59,18 +59,18 @@ trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[L, X]] extends Has
   /** The factory companion object that builds instances of class $Coll.
    *  (or its `Iterable` superclass where class $Coll is not a `Seq`.)
    */
-  def companion: GenericCompanion[CC]
+  def companion: GenericCompanion[L, CC]
 
   /** The builder that builds instances of type $Coll[A]
    */
-  protected[this] def newBuilder: Builder[A, CC[A]] = companion.newBuilder[A]
+  protected[this] def newBuilder: Builder[L, A, CC[A]] = companion.newBuilder[A]
 
   /** The generic builder that builds instances of $Coll
    *  at arbitrary element types.
    */
-  def genericBuilder[B]: Builder[B, CC[B]] = companion.newBuilder[B]
+  def genericBuilder[B]: Builder[L, B, CC[B]] = companion.newBuilder[B]
 
-  private def sequential: TraversableOnce[L, A] = this.asInstanceOf[GenTraversableOnce[A]].seq
+  private def sequential: TraversableOnce[L, A] = this.asInstanceOf[GenTraversableOnce[L, A]].seq
 
   /** Converts this $coll of pairs into two collections of the first and second
    *  half of each pair.
@@ -167,7 +167,7 @@ trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[L, X]] extends Has
    *    // ys == Set(1, 2, 3)
    *    }}}
    */
-  def flatten[B](implicit asTraversable: A => /*<:<!!!*/ GenTraversableOnce[B]): CC[B] = {
+  def flatten[B](implicit asTraversable: A => /*<:<!!!*/ GenTraversableOnce[L, B]): CC[B] = {
     val b = genericBuilder[B]
     for (xs <- sequential)
       b ++= asTraversable(xs).seq
@@ -207,14 +207,14 @@ trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[L, X]] extends Has
    *          are not of the same size.
    */
   @migration("`transpose` throws an `IllegalArgumentException` if collections are not uniformly sized.", "2.9.0")
-  def transpose[B](implicit asTraversable: A => /*<:<!!!*/ GenTraversableOnce[B]): CC[CC[B] @uncheckedVariance] = {
+  def transpose[B](implicit asTraversable: A => /*<:<!!!*/ GenTraversableOnce[L, B]): CC[CC[B] @uncheckedVariance] = {
     if (isEmpty)
       return genericBuilder[CC[B]].result()
 
     def fail = throw new IllegalArgumentException("transpose requires all collections have the same size")
 
     val headSize = asTraversable(head).size
-    val bs: IndexedSeq[Builder[B, CC[B]]] = IndexedSeq.fill(headSize)(genericBuilder[B])
+    val bs: IndexedSeq[L, Builder[L, B, CC[B]]] = IndexedSeq.fill(headSize)(genericBuilder[B])
     for (xs <- sequential) {
       var i = 0
       for (x <- asTraversable(xs).seq) {

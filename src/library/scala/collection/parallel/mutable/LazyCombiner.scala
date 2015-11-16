@@ -22,17 +22,17 @@ import scala.collection.parallel.Combiner
  *  @tparam To      the type of the collection the combiner produces
  *  @tparam Buff    the type of the buffers that contain leaf results and this combiner chains together
  */
-trait LazyCombiner[Elem, +To, Buff <: Growable[Elem] with Sizing] extends Combiner[Elem, To] {
+trait LazyCombiner[L, Elem, +To, Buff <: Growable[L, Elem] with Sizing] extends Combiner[L, Elem, To] {
 //self: scala.collection.parallel.EnvironmentPassingCombiner[Elem, To] =>
-  val chain: ArrayBuffer[Buff]
+  val chain: ArrayBuffer[L, Buff]
   val lastbuff = chain.last
   def +=(elem: Elem) = { lastbuff += elem; this }
   def result: To = allocateAndCopy
   def clear() = { chain.clear() }
-  def combine[N <: Elem, NewTo >: To](other: Combiner[N, NewTo]): Combiner[N, NewTo] = if (this ne other) {
+  def combine[N <: Elem, NewTo >: To](other: Combiner[L, N, NewTo]): Combiner[L, N, NewTo] = if (this ne other) {
     import language.existentials // FIXME: See SI-7750
-    if (other.isInstanceOf[LazyCombiner[_, _, _]]) {
-      val that = other.asInstanceOf[LazyCombiner[Elem, To, Buff]]
+    if (other.isInstanceOf[LazyCombiner[L, _, _, _]]) {
+      val that = other.asInstanceOf[LazyCombiner[L, Elem, To, Buff]]
       newLazyCombiner(chain ++= that.chain)
     } else throw new UnsupportedOperationException("Cannot combine with combiner of different type.")
   } else this
@@ -42,5 +42,5 @@ trait LazyCombiner[Elem, +To, Buff <: Growable[Elem] with Sizing] extends Combin
    *  `size` and `chain` members.
    */
   def allocateAndCopy: To
-  def newLazyCombiner(buffchain: ArrayBuffer[Buff]): LazyCombiner[Elem, To, Buff]
+  def newLazyCombiner(buffchain: ArrayBuffer[L, Buff]): LazyCombiner[L, Elem, To, Buff]
 }

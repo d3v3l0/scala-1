@@ -13,7 +13,7 @@ package collection
 package mutable
 
 /** This class can be used to construct data structures that are based
- *  on hashtables. Class `HashTable[A]` implements a hashtable
+ *  on hashtables. Class `HashTable[L, A]` implements a hashtable
  *  that maps keys of type `A` to values of the fully abstract
  *  member type `Entry`. Classes that make use of `HashTable`
  *  have to provide an implementation for `Entry`.
@@ -32,7 +32,7 @@ package mutable
  *
  *  @tparam A     type of the elements contained in this hash table.
  */
-trait HashTable[A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashUtils[A] {
+trait HashTable[L, A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashUtils[A] {
   // Replacing Entry type parameter by abstract type member here allows to not expose to public
   // implementation-specific entry classes such as `DefaultEntry` or `LinkedEntry`.
   // However, I'm afraid it's too late now for such breaking change.
@@ -208,7 +208,7 @@ trait HashTable[A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashU
 
   /** An iterator returning all entries.
    */
-  protected def entriesIterator: Iterator[Entry] = new AbstractIterator[Entry] {
+  protected def entriesIterator: Iterator[L, Entry] = new AbstractIterator[L, Entry] {
     val iterTable = table
     var idx       = lastPopulatedIndex
     var es        = iterTable(idx)

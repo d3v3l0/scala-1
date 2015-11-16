@@ -31,18 +31,18 @@ import generic._
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-class Queue[A]
-extends MutableList[A]
-   with LinearSeqOptimized[A, Queue[A]]
-   with GenericTraversableTemplate[A, Queue]
-   with Cloneable[Queue[A]]
+class Queue[L, A]
+extends MutableList[L, A]
+   with LinearSeqOptimized[L, A, Queue[L, A]]
+   with GenericTraversableTemplate[L, A, Queue]
+   with Cloneable[L, Queue[L, A]]
    with Serializable
 {
-  override def companion: GenericCompanion[Queue] = Queue
+  override def companion: GenericCompanion[L, Queue] = Queue
 
   override protected[this] def newBuilder = companion.newBuilder[A]
 
-  private[mutable] def this(fst: LinkedList[A], lst: LinkedList[A], lng: Int) {
+  private[mutable] def this(fst: LinkedList[L, A], lst: LinkedList[L, A], lng: Int) {
     this()
     first0 = fst
     last0 = lst
@@ -116,7 +116,7 @@ extends MutableList[A]
     if (first0.isEmpty)
       Seq.empty
     else {
-      val res = new ArrayBuffer[A]
+      val res = new ArrayBuffer[L, A]
       while ((first0.nonEmpty) && p(first0.elem)) {
         res += first0.elem
         first0 = first0.next
@@ -127,7 +127,7 @@ extends MutableList[A]
     }
   }
 
-  private def removeAllFromList(p: A => Boolean, res: ArrayBuffer[A]): ArrayBuffer[A] = {
+  private def removeAllFromList(p: A => Boolean, res: ArrayBuffer[L, A]): ArrayBuffer[L, A] = {
     var leftlst = first0
     while (leftlst.next.nonEmpty) {
       if (p(leftlst.next.elem)) {
@@ -144,7 +144,7 @@ extends MutableList[A]
    *  That element is unlinked from the list. If no element satisfies `p`, return None.
    */
   @deprecated("extractFirst inappropriately exposes implementation details.  Use dequeue or dequeueAll.", "2.11.0")
-  def extractFirst(start: LinkedList[A], p: A => Boolean): Option[LinkedList[A]] = {
+  def extractFirst(start: LinkedList[L, A], p: A => Boolean): Option[LinkedList[L, A]] = {
     if (isEmpty) None
     else {
       var cell = start
@@ -154,7 +154,7 @@ extends MutableList[A]
       if (cell.next.isEmpty)
         None
       else {
-        val res: Option[LinkedList[A]] = Some(cell.next)
+        val res: Option[LinkedList[L, A]] = Some(cell.next)
         cell.next = cell.next.next
         decrementLength()
         res
@@ -171,13 +171,13 @@ extends MutableList[A]
 
 
   // TODO - Don't override this just for new to create appropriate type....
-  override def tail: Queue[A] = {
-    val tl = new Queue[A]
+  override def tail: Queue[L, A] = {
+    val tl = new Queue[L, A]
     tailImpl(tl)
     tl
   }
 
-  override def clone(): Queue[A] = {
+  override def clone(): Queue[L, A] = {
     val bf = newBuilder
     bf ++= seq
     bf.result()
@@ -190,8 +190,8 @@ extends MutableList[A]
 }
 
 
-object Queue extends SeqFactory[Queue] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Queue[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+object Queue extends SeqFactory[L, Queue] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Queue[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, Queue[A]] = new MutableList[A] mapResult { _.toQueue }
+  def newBuilder[A]: Builder[L, A, Queue[L, A]] = new MutableList[L, A] mapResult { _.toQueue }
 }

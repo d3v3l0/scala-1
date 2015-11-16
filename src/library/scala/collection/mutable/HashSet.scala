@@ -27,7 +27,7 @@ import scala.collection.parallel.mutable.ParHashSet
  *  @define Coll `mutable.HashSet`
  *  @define coll mutable hash set
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `HashSet[B]` because an implicit of type `CanBuildFrom[HashSet, B, HashSet[B]]`
+ *    `That` is always `HashSet[L, B]` because an implicit of type `CanBuildFrom[L, HashSet, B, HashSet[L, B]]`
  *    is defined in object `HashSet`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -37,13 +37,13 @@ import scala.collection.parallel.mutable.ParHashSet
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(1L)
-class HashSet[A] private[collection] (contents: FlatHashTable.Contents[A])
-extends AbstractSet[A]
+class HashSet[L, A] private[collection] (contents: FlatHashTable.Contents[A])
+extends AbstractSet[L, A]
    with Set[L, A]
-   with GenericSetTemplate[A, HashSet]
-   with SetLike[L, A, HashSet[A]]
-   with FlatHashTable[A]
-   with CustomParallelizable[A, ParHashSet[A]]
+   with GenericSetTemplate[L, A, HashSet]
+   with SetLike[L, A, HashSet[L, A]]
+   with FlatHashTable[L, A]
+   with CustomParallelizable[L, A, ParHashSet[L, A]]
    with Serializable
 {
   initWithContents(contents)
@@ -52,7 +52,7 @@ extends AbstractSet[A]
 
   def this() = this(null)
 
-  override def companion: GenericCompanion[HashSet] = HashSet
+  override def companion: GenericCompanion[L, HashSet] = HashSet
 
   override def size: Int = tableSize
 
@@ -70,7 +70,7 @@ extends AbstractSet[A]
 
   override def clear() { clearTable() }
 
-  override def iterator: Iterator[A] = super[FlatHashTable].iterator
+  override def iterator: Iterator[L, A] = super[FlatHashTable].iterator
 
   override def foreach[U](f: A =>  U) {
     var i = 0
@@ -82,7 +82,7 @@ extends AbstractSet[A]
     }
   }
 
-  override def clone() = new HashSet[A] ++= this
+  override def clone() = new HashSet[L, A] ++= this
 
   private def writeObject(s: java.io.ObjectOutputStream) {
     ESC.TRY(cc=>serializeTo(s)(cc))
@@ -104,7 +104,7 @@ extends AbstractSet[A]
  *  @define Coll `mutable.HashSet`
  *  @define coll mutable hash set
  */
-object HashSet extends MutableSetFactory[HashSet] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, HashSet[A]] = setCanBuildFrom[A]
-  override def empty[A]: HashSet[A] = new HashSet[A]
+object HashSet extends MutableSetFactory[L, HashSet] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, HashSet[L, A]] = setCanBuildFrom[A]
+  override def empty[A]: HashSet[L, A] = new HashSet[L, A]
 }

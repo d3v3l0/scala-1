@@ -23,8 +23,8 @@ import annotation.tailrec
  *  @define Coll `mutable.ListMap`
  *  @define coll mutable list map
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `ListMap[A, B]` if the elements contained in the resulting collection are
- *    pairs of type `(A, B)`. This is because an implicit of type `CanBuildFrom[ListMap, (A, B), ListMap[A, B]]`
+ *    `That` is always `ListMap[L, A, B]` if the elements contained in the resulting collection are
+ *    pairs of type `(A, B)`. This is because an implicit of type `CanBuildFrom[L, ListMap, (A, B), ListMap[L, A, B]]`
  *    is defined in object `ListMap`. Otherwise, `That` resolves to the most specific type that doesn't have
  *    to contain pairs of type `(A, B)`, which is `Iterable`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
@@ -36,10 +36,10 @@ import annotation.tailrec
  *  @define orderDependent
  *  @define orderDependentFold
  */
-class ListMap[A, B]
-extends AbstractMap[A, B]
+class ListMap[L, A, B]
+extends AbstractMap[L, A, B]
    with Map[L, A, B]
-   with MapLike[L, A, B, ListMap[A, B]]
+   with MapLike[L, A, B, ListMap[L, A, B]]
    with Serializable {
 
   override def empty = ListMap.empty[A, B]
@@ -48,7 +48,7 @@ extends AbstractMap[A, B]
   private var siz: Int = 0
 
   def get(key: A): Option[B] = elems find (_._1 == key) map (_._2)
-  def iterator: Iterator[(A, B)] = elems.iterator
+  def iterator: Iterator[L, (A, B)] = elems.iterator
 
   @deprecatedOverriding("No sensible way to override += as private remove is used in multiple places internally.", "2.11.0")
   def += (kv: (A, B)) = { elems = remove(kv._1, elems, List()); elems = kv :: elems; siz += 1; this }
@@ -75,7 +75,7 @@ extends AbstractMap[A, B]
  *  @define Coll `mutable.ListMap`
  *  @define coll mutable list map
  */
-object ListMap extends MutableMapFactory[ListMap] {
-  implicit def canBuildFrom[A, B]: CanBuildFrom[Coll, (A, B), ListMap[A, B]] = new MapCanBuildFrom[A, B]
-  def empty[A, B]: ListMap[A, B] = new ListMap[A, B]
+object ListMap extends MutableMapFactory[L, ListMap] {
+  implicit def canBuildFrom[A, B]: CanBuildFrom[L, Coll, (A, B), ListMap[L, A, B]] = new MapCanBuildFrom[A, B]
+  def empty[A, B]: ListMap[L, A, B] = new ListMap[L, A, B]
 }

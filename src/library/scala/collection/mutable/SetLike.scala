@@ -35,7 +35,7 @@ import parallel.mutable.ParSet
  *    of the following methods:
  *    {{{
  *       def contains(elem: A): Boolean
- *       def iterator: Iterator[A]
+ *       def iterator: Iterator[L, A]
  *       def += (elem: A): this.type
  *       def -= (elem: A): this.type
  *    }}}
@@ -56,19 +56,19 @@ import parallel.mutable.ParSet
  */
 trait SetLike[L, A, +This <: SetLike[L, A, This] with Set[L, A]]
   extends scala.collection.SetLike[L, A, This]
-     with Scriptable[A]
-     with Builder[A, This]
-     with Growable[A]
-     with Shrinkable[A]
-     with Cloneable[mutable.Set[L, A]]
-     with Parallelizable[A, ParSet[A]]
+     with Scriptable[L, A]
+     with Builder[L, A, This]
+     with Growable[L, A]
+     with Shrinkable[L, A]
+     with Cloneable[L, mutable.Set[L, A]]
+     with Parallelizable[L, A, ParSet[L, A]]
 { self =>
 
   /** A common implementation of `newBuilder` for all mutable sets
    *  in terms of `empty`. Overrides the implementation in `collection.SetLike`
    *  for better efficiency.
    */
-  override protected[this] def newBuilder: Builder[A, This] = empty
+  override protected[this] def newBuilder: Builder[L, A, This] = empty
 
   protected[this] override def parCombiner = ParSet.newCombiner[A]
 
@@ -172,7 +172,7 @@ trait SetLike[L, A, +This <: SetLike[L, A, This] with Set[L, A]]
    *  @return          a new set consisting of elements of this set and those in `xs`.
    */
   @migration("`++` creates a new set. Use `++=` to add elements to this set and return that set itself.", "2.8.0")
-  override def ++(xs: GenTraversableOnce[A]): This = clone() ++= xs.seq
+  override def ++(xs: GenTraversableOnce[L, A]): This = clone() ++= xs.seq
 
   /** Creates a new set consisting of all the elements of this set except `elem`.
    *
@@ -203,7 +203,7 @@ trait SetLike[L, A, +This <: SetLike[L, A, This] with Set[L, A]]
    *                  elements from `xs`.
    */
   @migration("`--` creates a new set. Use `--=` to remove elements from this set and return that set itself.", "2.8.0")
-  override def --(xs: GenTraversableOnce[A]): This = clone() --= xs.seq
+  override def --(xs: GenTraversableOnce[L, A]): This = clone() --= xs.seq
 
   /** Send a message to this scriptable object.
    *
@@ -212,11 +212,11 @@ trait SetLike[L, A, +This <: SetLike[L, A, This] with Set[L, A]]
    *  if the message was not understood.
    */
   @deprecated("Scripting is deprecated.", "2.11.0")
-  def <<(cmd: Message[A]): Unit = cmd match {
+  def <<(cmd: Message[L, A]): Unit = cmd match {
     case Include(_, x)     => this += x
     case Remove(_, x)      => this -= x
     case Reset()           => clear()
-    case s: Script[_]      => s.iterator foreach <<
+    case s: Script[L, _]      => s.iterator foreach <<
     case _                 => throw new UnsupportedOperationException("message " + cmd + " not understood")
   }
 }

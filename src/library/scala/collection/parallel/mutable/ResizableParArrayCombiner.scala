@@ -22,15 +22,15 @@ import scala.collection.parallel.Task
 
 
 /** An array combiner that uses a chain of arraybuffers to store elements. */
-trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedArrayBuffer[T]] {
+trait ResizableParArrayCombiner[L, T] extends LazyCombiner[L, T, ParArray[L, T], ExposedArrayBuffer[T]] {
 
   override def sizeHint(sz: Int) = if (chain.length == 1) chain(0).sizeHint(sz)
 
   // public method with private[mutable] type ExposedArrayBuffer in parameter type; cannot be overridden.
-  final def newLazyCombiner(c: ArrayBuffer[ExposedArrayBuffer[T]]) = ResizableParArrayCombiner(c)
+  final def newLazyCombiner(c: ArrayBuffer[L, ExposedArrayBuffer[T]]) = ResizableParArrayCombiner(c)
 
   def allocateAndCopy = if (chain.size > 1) {
-    val arrayseq = new ArraySeq[T](size)
+    val arrayseq = new ArraySeq[L, T](size)
     val array = arrayseq.array.asInstanceOf[Array[Any]]
 
     combinerTaskSupport.executeAndWaitResult(new CopyChainToArray(array, 0, size))
@@ -44,7 +44,7 @@ trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedA
 
   /* tasks */
 
-  class CopyChainToArray(array: Array[Any], offset: Int, howmany: Int) extends Task[Unit, CopyChainToArray] {
+  class CopyChainToArray(array: Array[Any], offset: Int, howmany: Int) extends Task[L, Unit, CopyChainToArray] {
     var result = ()
     def leaf(prev: Option[Unit]) = if (howmany > 0) {
       var totalleft = howmany
@@ -87,8 +87,8 @@ trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedA
 }
 
 object ResizableParArrayCombiner {
-  def apply[T](c: ArrayBuffer[ExposedArrayBuffer[T]]): ResizableParArrayCombiner[T] = {
-    new { val chain = c } with ResizableParArrayCombiner[T] // was: with EnvironmentPassingCombiner[T, ParArray[T]]
+  def apply[T](c: ArrayBuffer[L, ExposedArrayBuffer[T]]): ResizableParArrayCombiner[L, T] = {
+    new { val chain = c } with ResizableParArrayCombiner[L, T] // was: with EnvironmentPassingCombiner[T, ParArray[L, T]]
   }
-  def apply[T](): ResizableParArrayCombiner[T] = apply(new ArrayBuffer[ExposedArrayBuffer[T]] += new ExposedArrayBuffer[T])
+  def apply[T](): ResizableParArrayCombiner[L, T] = apply(new ArrayBuffer[L, ExposedArrayBuffer[T]] += new ExposedArrayBuffer[T])
 }

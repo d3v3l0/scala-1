@@ -21,24 +21,24 @@ import scala.collection.generic._
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait ParSet[T]
-   extends GenSet[T]
-   with GenericParTemplate[T, ParSet]
+trait ParSet[L, T]
+   extends GenSet[L, T]
+   with GenericParTemplate[L, T, ParSet]
    with ParIterable[L, T]
-   with ParSetLike[T, ParSet[T], Set[L, T]]
+   with ParSetLike[L, T, ParSet[L, T], Set[L, T]]
 { self =>
 
-  override def empty: ParSet[T] = mutable.ParHashSet[T]()
+  override def empty: ParSet[L, T] = mutable.ParHashSet[L, T]()
 
-  //protected[this] override def newCombiner: Combiner[T, ParSet[T]] = ParSet.newCombiner[T]
+  //protected[this] override def newCombiner: Combiner[L, T, ParSet[L, T]] = ParSet.newCombiner[T]
 
-  override def companion: GenericCompanion[ParSet] with GenericParCompanion[ParSet] = ParSet
+  override def companion: GenericCompanion[L, ParSet] with GenericParCompanion[L, ParSet] = ParSet
 
   override def stringPrefix = "ParSet"
 }
 
-object ParSet extends ParSetFactory[ParSet] {
-  def newCombiner[T]: Combiner[T, ParSet[T]] = mutable.ParHashSetCombiner[T]
+object ParSet extends ParSetFactory[L, ParSet] {
+  def newCombiner[T]: Combiner[L, T, ParSet[L, T]] = mutable.ParHashSetCombiner[T]
 
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParSet[T]] = new GenericCanCombineFrom[T]
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParSet[L, T]] = new GenericCanCombineFrom[T]
 }

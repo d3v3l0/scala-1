@@ -44,12 +44,12 @@ import scala.reflect.ClassTag
  */
 @SerialVersionUID(1L)
 @deprecatedInheritance("UnrolledBuffer is not designed to enable meaningful subclassing.", "2.11.0")
-class UnrolledBuffer[T](implicit val tag: ClassTag[T])
-extends scala.collection.mutable.AbstractBuffer[T]
+class UnrolledBuffer[L, T](implicit val tag: ClassTag[T])
+extends scala.collection.mutable.AbstractBuffer[L, T]
    with scala.collection.mutable.Buffer[L, T]
-   with scala.collection.mutable.BufferLike[L, T, UnrolledBuffer[T]]
-   with GenericClassTagTraversableTemplate[T, UnrolledBuffer]
-   with scala.collection.mutable.Builder[T, UnrolledBuffer[T]]
+   with scala.collection.mutable.BufferLike[L, T, UnrolledBuffer[L, T]]
+   with GenericClassTagTraversableTemplate[L, T, UnrolledBuffer]
+   with scala.collection.mutable.Builder[L, T, UnrolledBuffer[L, T]]
    with Serializable
 {
   import UnrolledBuffer.Unrolled
@@ -64,7 +64,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
   private[collection] def lastPtr_=(last: Unrolled[T]) = lastptr = last
   private[collection] def size_=(s: Int) = sz = s
 
-  protected[this] override def newBuilder = new UnrolledBuffer[T]
+  protected[this] override def newBuilder = new UnrolledBuffer[L, T]
 
   protected def newUnrolled = new Unrolled[T](this)
 
@@ -92,7 +92,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
    *
    *  @param that    the unrolled buffer whose elements are added to this buffer
    */
-  def concat(that: UnrolledBuffer[T]) = {
+  def concat(that: UnrolledBuffer[L, T]) = {
     // bind the two together
     if (!lastptr.bind(that.headptr)) lastptr = that.lastPtr
 
@@ -120,7 +120,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
     sz = 0
   }
 
-  def iterator: Iterator[T] = new AbstractIterator[T] {
+  def iterator: Iterator[L, T] = new AbstractIterator[L, T] {
     var pos: Int = -1
     var node: Unrolled[T] = headptr
     scan()
@@ -199,17 +199,17 @@ extends scala.collection.mutable.AbstractBuffer[T]
     }
   }}
 
-  override def clone(): UnrolledBuffer[T] = new UnrolledBuffer[T] ++= this
+  override def clone(): UnrolledBuffer[L, T] = new UnrolledBuffer[L, T] ++= this
 
   override def stringPrefix = "UnrolledBuffer"
 }
 
 
-object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
+object UnrolledBuffer extends ClassTagTraversableFactory[L, UnrolledBuffer] {
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[T](implicit t: ClassTag[T]): CanBuildFrom[Coll, T, UnrolledBuffer[T]] =
+  implicit def canBuildFrom[T](implicit t: ClassTag[T]): CanBuildFrom[L, Coll, T, UnrolledBuffer[L, T]] =
     new GenericCanBuildFrom[T]
-  def newBuilder[T](implicit t: ClassTag[T]): Builder[T, UnrolledBuffer[T]] = new UnrolledBuffer[T]
+  def newBuilder[T](implicit t: ClassTag[T]): Builder[L, T, UnrolledBuffer[L, T]] = new UnrolledBuffer[L, T]
 
   val waterline = 50
   val waterlineDelim = 100    // TODO -- fix this name!  It's a denominator, not a delimiter.  (But it's part of the API so we can't just change it.)
@@ -217,9 +217,9 @@ object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
 
   /** Unrolled buffer node.
    */
-  class Unrolled[T: ClassTag] private[collection] (var size: Int, var array: Array[T], var next: Unrolled[T], val buff: UnrolledBuffer[T] = null) {
+  class Unrolled[T: ClassTag] private[collection] (var size: Int, var array: Array[T], var next: Unrolled[T], val buff: UnrolledBuffer[L, T] = null) {
     private[collection] def this() = this(0, new Array[T](unrolledlength), null, null)
-    private[collection] def this(b: UnrolledBuffer[T]) = this(0, new Array[T](unrolledlength), null, b)
+    private[collection] def this(b: UnrolledBuffer[L, T]) = this(0, new Array[T](unrolledlength), null, b)
 
     private def nextlength = if (buff eq null) unrolledlength else buff.calcNextLength(array.length)
 
@@ -277,7 +277,7 @@ object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
       }
     }
     // returns pointer to new last if changed
-    @tailrec final def remove(idx: Int, buffer: UnrolledBuffer[T]): T =
+    @tailrec final def remove(idx: Int, buffer: UnrolledBuffer[L, T]): T =
       if (idx < size) {
         // remove the element
         // then try to merge with the next bucket
@@ -304,7 +304,7 @@ object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
       if (next eq null) true else false // checks if last node was thrown out
     } else false
 
-    @tailrec final def insertAll(idx: Int, t: scala.collection.Traversable[L, T], buffer: UnrolledBuffer[T]): Unit = {
+    @tailrec final def insertAll(idx: Int, t: scala.collection.Traversable[L, T], buffer: UnrolledBuffer[L, T]): Unit = {
       if (idx < size) {
 	// divide this node at the appropriate position and insert all into head
 	// update new next

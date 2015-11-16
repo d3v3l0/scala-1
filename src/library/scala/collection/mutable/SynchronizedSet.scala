@@ -25,7 +25,7 @@ import script._
  *  @define coll synchronized set
  */
 @deprecated("Synchronization via traits is deprecated as it is inherently unreliable.  Consider java.util.concurrent.ConcurrentHashMap[A,Unit] as an alternative.", "2.11.0")
-trait SynchronizedSet[A] extends Set[L, A] {
+trait SynchronizedSet[L, A] extends Set[L, A] {
   abstract override def size: Int = synchronized {
     super.size
   }
@@ -66,7 +66,7 @@ trait SynchronizedSet[A] extends Set[L, A] {
     super.remove(elem)
   }
 
-  override def intersect(that: scala.collection.GenSet[A]) = synchronized {
+  override def intersect(that: scala.collection.GenSet[L, A]) = synchronized {
     super.intersect(that)
   }
 
@@ -74,7 +74,7 @@ trait SynchronizedSet[A] extends Set[L, A] {
     super.clear()
   }
 
-  override def subsetOf(that: scala.collection.GenSet[A]) = synchronized {
+  override def subsetOf(that: scala.collection.GenSet[L, A]) = synchronized {
     super.subsetOf(that)
   }
 
@@ -95,7 +95,7 @@ trait SynchronizedSet[A] extends Set[L, A] {
   }
 
   @deprecated("Scripting is deprecated.", "2.11.0")
-  override def <<(cmd: Message[A]): Unit = synchronized {
+  override def <<(cmd: Message[L, A]): Unit = synchronized {
     super.<<(cmd)
   }
 

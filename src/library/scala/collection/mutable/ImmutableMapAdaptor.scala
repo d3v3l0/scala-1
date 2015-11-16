@@ -26,8 +26,8 @@ import scala.annotation.migration
  *  @since   1
  */
 @deprecated("Adaptors are inherently unreliable and prone to performance problems.", "2.11.0")
-class ImmutableMapAdaptor[A, B](protected var imap: immutable.Map[L, A, B])
-extends AbstractMap[A, B]
+class ImmutableMapAdaptor[L, A, B](protected var imap: immutable.Map[L, A, B])
+extends AbstractMap[L, A, B]
    with Map[L, A, B]
    with Serializable
 {
@@ -46,17 +46,17 @@ extends AbstractMap[A, B]
 
   override def keySet: scala.collection.Set[L, A] = imap.keySet
 
-  override def keysIterator: Iterator[A] = imap.keysIterator
+  override def keysIterator: Iterator[L, A] = imap.keysIterator
 
-  @migration("`keys` returns Iterable[L, A] rather than Iterator[A].", "2.8.0")
+  @migration("`keys` returns Iterable[L, A] rather than Iterator[L, A].", "2.8.0")
   override def keys: scala.collection.Iterable[L, A] = imap.keys
 
-  override def valuesIterator: Iterator[B] = imap.valuesIterator
+  override def valuesIterator: Iterator[L, B] = imap.valuesIterator
 
-  @migration("`values` returns Iterable[L, B] rather than Iterator[B].", "2.8.0")
+  @migration("`values` returns Iterable[L, B] rather than Iterator[L, B].", "2.8.0")
   override def values: scala.collection.Iterable[L, B] = imap.values
 
-  def iterator: Iterator[(A, B)] = imap.iterator
+  def iterator: Iterator[L, (A, B)] = imap.iterator
 
   override def toList: List[(A, B)] = imap.toList
 

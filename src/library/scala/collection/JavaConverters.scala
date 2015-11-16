@@ -32,7 +32,7 @@ import convert._
  *  {{{
  *    import scala.collection.JavaConverters._
  *
- *    val sl = new scala.collection.mutable.ListBuffer[Int]
+ *    val sl = new scala.collection.mutable.ListBuffer[L, Int]
  *    val jl : java.util.List[Int] = sl.asJava
  *    val sl2 : scala.collection.mutable.Buffer[L, Int] = jl.asScala
  *    assert(sl eq sl2)

@@ -31,7 +31,7 @@ import parallel.mutable.ParArray
  *  @define Coll `ArraySeq`
  *  @define coll array sequence
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `ArraySeq[B]` because an implicit of type `CanBuildFrom[ArraySeq, B, ArraySeq[B]]`
+ *    `That` is always `ArraySeq[L, B]` because an implicit of type `CanBuildFrom[L, ArraySeq, B, ArraySeq[L, B]]`
  *    is defined in object `ArraySeq`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -43,16 +43,16 @@ import parallel.mutable.ParArray
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(1530165946227428979L)
-class ArraySeq[A](override val length: Int)
+class ArraySeq[L, A](override val length: Int)
 extends AbstractSeq[L, A]
-   with IndexedSeq[A]
-   with GenericTraversableTemplate[A, ArraySeq]
-   with IndexedSeqOptimized[A, ArraySeq[A]]
-   with CustomParallelizable[A, ParArray[A]]
+   with IndexedSeq[L, A]
+   with GenericTraversableTemplate[L, A, ArraySeq]
+   with IndexedSeqOptimized[L, A, ArraySeq[L, A]]
+   with CustomParallelizable[L, A, ParArray[L, A]]
    with Serializable
 {
 
-  override def companion: GenericCompanion[ArraySeq] = ArraySeq
+  override def companion: GenericCompanion[L, ArraySeq] = ArraySeq
 
   val array: Array[AnyRef] = new Array[AnyRef](length)
 
@@ -90,9 +90,9 @@ extends AbstractSeq[L, A]
     Array.copy(array, 0, xs, start, len1)
   }
 
-  override def clone(): ArraySeq[A] = {
+  override def clone(): ArraySeq[L, A] = {
     val cloned = array.clone().asInstanceOf[Array[AnyRef]]
-    new ArraySeq[A](length) {
+    new ArraySeq[L, A](length) {
       override val array = cloned
     }
   }
@@ -103,12 +103,12 @@ extends AbstractSeq[L, A]
  *  @define coll array sequence
  *  @define Coll `ArraySeq`
  */
-object ArraySeq extends SeqFactory[ArraySeq] {
+object ArraySeq extends SeqFactory[L, ArraySeq] {
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ArraySeq[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, ArraySeq[A]] =
-    new ArrayBuffer[A] mapResult { buf =>
-      val result = new ArraySeq[A](buf.length)
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, ArraySeq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, ArraySeq[L, A]] =
+    new ArrayBuffer[L, A] mapResult { buf =>
+      val result = new ArraySeq[L, A](buf.length)
       buf.copyToArray(result.array.asInstanceOf[Array[Any]], 0)
       result
     }

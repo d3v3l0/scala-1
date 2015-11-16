@@ -24,10 +24,10 @@ import script._
  *  @since   1
  */
 @deprecated("Observables are deprecated because scripting is deprecated.", "2.11.0")
-trait ObservableSet[A] extends Set[L, A] with Publisher[Message[A] with Undoable]
+trait ObservableSet[L, A] extends Set[L, A] with Publisher[L, Message[L, A] with Undoable]
 {
 
-  type Pub <: ObservableSet[A]
+  type Pub <: ObservableSet[L, A]
 
   abstract override def +=(elem: A): this.type = {
     if (!contains(elem)) {

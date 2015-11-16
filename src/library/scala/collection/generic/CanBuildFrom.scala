@@ -27,7 +27,7 @@ import scala.annotation.implicitNotFound
  *  @since 2.8
  */
 @implicitNotFound(msg = "Cannot construct a collection of type ${To} with elements of type ${Elem} based on a collection of type ${From}.")
-trait CanBuildFrom[-From, -Elem, +To] {
+trait CanBuildFrom[L, -From, -Elem, +To] {
 
   /** Creates a new builder on request of a collection.
    *  @param from  the collection requesting the builder to be created.
@@ -36,12 +36,12 @@ trait CanBuildFrom[-From, -Elem, +To] {
    *          that the created builder will build the same kind of collection
    *          as `from`.
    */
-  def apply(from: From): Builder[Elem, To]
+  def apply(from: From): Builder[L, Elem, To]
 
   /** Creates a new builder from scratch.
    *
    *  @return a builder for collections of type `To` with element type `Elem`.
    *  @see scala.collection.breakOut
    */
-  def apply(): Builder[Elem, To]
+  def apply(): Builder[L, Elem, To]
 }

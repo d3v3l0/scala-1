@@ -13,7 +13,7 @@ package collection
 package mutable
 
 
-/** `Publisher[A,This]` objects publish events of type `A`
+/** `Publisher[L, A,This]` objects publish events of type `A`
  *  to all registered subscribers. When subscribing, a subscriber may specify
  *  a filter which can be used to constrain the number of events sent to the
  *  subscriber. Subscribers may suspend their subscription, or reactivate a
@@ -27,10 +27,10 @@ package mutable
  *  @version 2.8
  *  @since   1
  */
-trait Publisher[Evt] {
+trait Publisher[L, Evt] {
 
-  type Pub <: Publisher[Evt]
-  type Sub = Subscriber[Evt, Pub]
+  type Pub <: Publisher[L, Evt]
+  type Sub = Subscriber[L, Evt, Pub]
   type Filter = Evt => Boolean
 
   /** The publisher itself of type `Pub`. Implemented by a cast from `this` here.
@@ -38,8 +38,8 @@ trait Publisher[Evt] {
    */
   protected val self: Pub = this.asInstanceOf[Pub]
 
-  private val filters = new HashMap[Sub, Set[L, Filter]] with MultiMap[Sub, Filter]
-  private val suspended = new HashSet[Sub]
+  private val filters = new HashMap[L, Sub, Set[L, Filter]] with MultiMap[L, Sub, Filter]
+  private val suspended = new HashSet[L, Sub]
 
   def subscribe(sub: Sub) { subscribe(sub, event => true) }
   def subscribe(sub: Sub, filter: Filter) { filters.addBinding(sub, filter) }
@@ -61,7 +61,7 @@ trait Publisher[Evt] {
    *  @return true, iff both publishers contain the same sequence of elements.
    */
   override def equals(obj: Any): Boolean = obj match {
-    case that: Publisher[_] => filters == that.filters && suspended == that.suspended
+    case that: Publisher[L, _] => filters == that.filters && suspended == that.suspended
     case _                  => false
   }
 }

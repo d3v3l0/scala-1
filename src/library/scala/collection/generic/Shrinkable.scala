@@ -19,7 +19,7 @@ package generic
  *  @define coll shrinkable collection
  *  @define Coll `Shrinkable`
  */
-trait Shrinkable[-A] {
+trait Shrinkable[L, -A] {
 
   /** Removes a single element from this $coll.
    *

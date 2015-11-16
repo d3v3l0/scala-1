@@ -32,7 +32,7 @@ import mutable.StringBuilder
  *  @define coll bitset
  *  @define Coll `BitSet`
  */
-trait BitSetLike[+This <: BitSetLike[This] with SortedSet[Int]] extends SortedSetLike[Int, This] { self =>
+trait BitSetLike[L, +This <: BitSetLike[L, This] with SortedSet[L, Int]] extends SortedSetLike[L, Int, This] { self =>
 
   def empty: This
 
@@ -101,9 +101,9 @@ trait BitSetLike[+This <: BitSetLike[This] with SortedSet[Int]] extends SortedSe
     fromBitMaskNoCopy(a)
   }
 
-  def iterator: Iterator[Int] = iteratorFrom(0)
+  def iterator: Iterator[L, Int] = iteratorFrom(0)
 
-  override def keysIteratorFrom(start: Int) = new AbstractIterator[Int] {
+  override def keysIteratorFrom(start: Int) = new AbstractIterator[L, Int] {
     private var current = start
     private val end = nwords * WordLength
     def hasNext: Boolean = {

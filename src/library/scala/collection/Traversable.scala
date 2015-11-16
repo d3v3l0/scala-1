@@ -21,10 +21,10 @@ import scala.util.control.Breaks
 trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
                          with GenTraversable[L, A]
                          with TraversableOnce[L, A]
-                         with GenericTraversableTemplate[A, Traversable] {
+                         with GenericTraversableTemplate[L, A, Traversable] {
   type LT
 
-  override def companion: GenericCompanion[Traversable] = Traversable
+  override def companion: GenericCompanion[L, Traversable] = Traversable
 
   override def seq: Traversable[L, A] = this
 
@@ -33,9 +33,9 @@ trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
   override def isEmpty: Boolean
   override def size: Int
   override def hasDefiniteSize
-  override def ++[B >: A, That](xs: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Traversable[L, A], B, That]): That
-  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Traversable[L, A], B, That]): That
-  override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Traversable[L, A], B, That]): That
+  override def ++[B >: A, That](xs: GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, Traversable[L, A], B, That]): That
+  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[L, Traversable[L, A], B, That]): That
+  override def flatMap[B, That](f: A => GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, Traversable[L, A], B, That]): That
   override def filter(p: A => Boolean): Traversable[L, A]
   override def remove(p: A => Boolean): Traversable[L, A]
   override def partition(p: A => Boolean): (Traversable[L, A], Traversable[L, A])
@@ -73,7 +73,7 @@ trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
   override def toList: List[A]
   override def toIterable: Iterable[L, A]
   override def toSeq: Seq[L, A]
-  override def toStream: Stream[A]
+  override def toStream: Stream[L, A]
   override def sortWith(lt : (A,A) => Boolean): Traversable[L, A]
   override def mkString(start: String, sep: String, end: String): String
   override def mkString(sep: String): String
@@ -91,15 +91,15 @@ trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
 /** $factoryInfo
  *  The current default implementation of a $Coll is a `List`.
  */
-object Traversable extends TraversableFactory[Traversable] { self =>
+object Traversable extends TraversableFactory[L, Traversable] { self =>
 
   /** Provides break functionality separate from client code */
   private[collection] val breaks: Breaks = new Breaks
 
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Traversable[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Traversable[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, Traversable[L, A]] = immutable.Traversable.newBuilder[A]
+  def newBuilder[A]: Builder[L, A, Traversable[L, A]] = immutable.Traversable.newBuilder[A]
 }
 
 /** Explicit instantiation of the `Traversable` trait to reduce class file size in subclasses. */

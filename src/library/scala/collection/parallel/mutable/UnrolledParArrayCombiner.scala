@@ -21,16 +21,16 @@ import scala.collection.parallel.Task
 import scala.reflect.ClassTag
 
 // Todo -- revisit whether inheritance is the best way to achieve this functionality
-private[mutable] class DoublingUnrolledBuffer[T](implicit t: ClassTag[T]) extends UnrolledBuffer[T]()(t) {
+private[mutable] class DoublingUnrolledBuffer[T](implicit t: ClassTag[T]) extends UnrolledBuffer[L, T]()(t) {
   override def calcNextLength(sz: Int) = if (sz < 10000) sz * 2 else sz
   protected override def newUnrolled = new Unrolled[T](0, new Array[T](4), null, this)
 }
 
 
 /** An array combiner that uses doubling unrolled buffers to store elements. */
-trait UnrolledParArrayCombiner[T]
-extends Combiner[T, ParArray[T]] {
-//self: EnvironmentPassingCombiner[T, ParArray[T]] =>
+trait UnrolledParArrayCombiner[L, T]
+extends Combiner[L, T, ParArray[L, T]] {
+//self: EnvironmentPassingCombiner[T, ParArray[L, T]] =>
   // because size is doubling, random access is O(logn)!
   val buff = new DoublingUnrolledBuffer[Any]
 
@@ -40,7 +40,7 @@ extends Combiner[T, ParArray[T]] {
   }
 
   def result = {
-    val arrayseq = new ArraySeq[T](size)
+    val arrayseq = new ArraySeq[L, T](size)
     val array = arrayseq.array.asInstanceOf[Array[Any]]
 
     combinerTaskSupport.executeAndWaitResult(new CopyUnrolledToArray(array, 0, size))
@@ -57,9 +57,9 @@ extends Combiner[T, ParArray[T]] {
     buff.lastPtr = buff.lastPtr.next
   }
 
-  def combine[N <: T, NewTo >: ParArray[T]](other: Combiner[N, NewTo]): Combiner[N, NewTo] = other match {
+  def combine[N <: T, NewTo >: ParArray[L, T]](other: Combiner[L, N, NewTo]): Combiner[L, N, NewTo] = other match {
     case that if that eq this => this // just return this
-    case that: UnrolledParArrayCombiner[t] =>
+    case that: UnrolledParArrayCombiner[L, t] =>
       buff concat that.buff
       this
     case _ => unsupportedop("Cannot combine with combiner of different type.")
@@ -70,7 +70,7 @@ extends Combiner[T, ParArray[T]] {
   /* tasks */
 
   class CopyUnrolledToArray(array: Array[Any], offset: Int, howmany: Int)
-  extends Task[Unit, CopyUnrolledToArray] {
+  extends Task[L, Unit, CopyUnrolledToArray] {
     var result = ()
 
     def leaf(prev: Option[Unit]) = if (howmany > 0) {
@@ -108,6 +108,6 @@ extends Combiner[T, ParArray[T]] {
 }
 
 object UnrolledParArrayCombiner {
-  def apply[T](): UnrolledParArrayCombiner[T] = new UnrolledParArrayCombiner[T] {} // was: with EnvironmentPassingCombiner[T, ParArray[T]]
+  def apply[T](): UnrolledParArrayCombiner[L, T] = new UnrolledParArrayCombiner[L, T] {} // was: with EnvironmentPassingCombiner[T, ParArray[L, T]]
 }
 

@@ -20,12 +20,12 @@ import scala.collection.parallel.IterableSplitter
  *
  *  @author Aleksandar Prokopec
  */
-trait ParFlatHashTable[T] extends scala.collection.mutable.FlatHashTable[T] {
+trait ParFlatHashTable[L, T] extends scala.collection.mutable.FlatHashTable[L, T] {
 
   override def alwaysInitSizeMap = true
 
   abstract class ParFlatHashTableIterator(var idx: Int, val until: Int, val totalsize: Int)
-  extends IterableSplitter[T] with SizeMapUtils {
+  extends IterableSplitter[L, T] with SizeMapUtils {
     import scala.collection.DebugUtils._
 
     private[this] var traversed = 0
@@ -39,7 +39,7 @@ trait ParFlatHashTable[T] extends scala.collection.mutable.FlatHashTable[T] {
       }
     }
 
-    def newIterator(index: Int, until: Int, totalsize: Int): IterableSplitter[T]
+    def newIterator(index: Int, until: Int, totalsize: Int): IterableSplitter[L, T]
 
     def remaining = totalsize - traversed
     def hasNext = traversed < totalsize

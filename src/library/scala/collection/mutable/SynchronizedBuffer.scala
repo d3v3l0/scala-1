@@ -26,7 +26,7 @@ import script._
  *  @define coll synchronized buffer
  */
 @deprecated("Synchronization via traits is deprecated as it is inherently unreliable.  Consider java.util.concurrent.ConcurrentLinkedQueue as an alternative.", "2.11.0")
-trait SynchronizedBuffer[A] extends Buffer[L, A] {
+trait SynchronizedBuffer[L, A] extends Buffer[L, A] {
 
   import scala.collection.Traversable
 
@@ -34,7 +34,7 @@ trait SynchronizedBuffer[A] extends Buffer[L, A] {
     super.length
   }
 
-  abstract override def iterator: Iterator[A] = synchronized {
+  abstract override def iterator: Iterator[L, A] = synchronized {
     super.iterator
   }
 
@@ -56,7 +56,7 @@ trait SynchronizedBuffer[A] extends Buffer[L, A] {
    *
    *  @param xs the traversable object.
    */
-  override def ++(xs: GenTraversableOnce[A]): Self = synchronized {
+  override def ++(xs: GenTraversableOnce[L, A]): Self = synchronized {
     super.++(xs)
   }
 
@@ -163,7 +163,7 @@ trait SynchronizedBuffer[A] extends Buffer[L, A] {
   }
 
   @deprecated("Scripting is deprecated.", "2.11.0")
-  override def <<(cmd: Message[A]): Unit = synchronized {
+  override def <<(cmd: Message[L, A]): Unit = synchronized {
     super.<<(cmd)
   }
 

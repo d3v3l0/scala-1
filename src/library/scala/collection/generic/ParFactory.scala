@@ -22,9 +22,9 @@ import scala.language.higherKinds
  *  @define Coll `ParIterable`
  *  @since 2.8
  */
-abstract class ParFactory[CC[X] <: ParIterable[L, X] with GenericParTemplate[X, CC]]
-extends GenTraversableFactory[CC]
-   with GenericParCompanion[CC] {
+abstract class ParFactory[L, CC[X] <: ParIterable[L, X] with GenericParTemplate[L, X, CC]]
+extends GenTraversableFactory[L, CC]
+   with GenericParCompanion[L, CC] {
 
   //type EPC[T, C] = scala.collection.parallel.EnvironmentPassingCombiner[T, C]
 
@@ -32,7 +32,7 @@ extends GenTraversableFactory[CC]
    *  all calls to `apply(from)` to the `genericParBuilder` method of the $coll
    * `from`, and calls to `apply()` to this factory.
    */
-  class GenericCanCombineFrom[A] extends GenericCanBuildFrom[A] with CanCombineFrom[CC[_], A, CC[A]] {
+  class GenericCanCombineFrom[A] extends GenericCanBuildFrom[A] with CanCombineFrom[L, CC[_], A, CC[A]] {
     override def apply(from: Coll) = from.genericCombiner
     override def apply() = newBuilder[A]
   }

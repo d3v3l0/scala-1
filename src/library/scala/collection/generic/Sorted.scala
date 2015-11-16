@@ -15,14 +15,14 @@ package generic
  *  @author Sean McDirmid
  *  @since  2.8
  */
-trait Sorted[K, +This <: Sorted[K, This]] {
+trait Sorted[L, K, +This <: Sorted[L, K, This]] {
   def ordering : Ordering[K]
 
   /** The current collection */
   protected def repr: This
 
   /** return as a projection the set of keys in this collection */
-  def keySet: SortedSet[K]
+  def keySet: SortedSet[L, K]
 
   /** Returns the first key of the collection. */
   def firstKey: K
@@ -91,9 +91,9 @@ trait Sorted[K, +This <: Sorted[K, This]] {
    * @param start The lower bound (inclusive)
    * on the keys to be returned
    */
-  def keysIteratorFrom(start: K): Iterator[K]
+  def keysIteratorFrom(start: K): Iterator[L, K]
 
-  protected def hasAll(j: Iterator[K]): Boolean = {
+  protected def hasAll(j: Iterator[L, K]): Boolean = {
     val i = keySet.iterator
     if (i.isEmpty) return j.isEmpty
 

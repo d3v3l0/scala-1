@@ -27,20 +27,20 @@ import immutable.{List, Nil}
  *  section on `Mutable Lists` for more information.
  */
 @SerialVersionUID(5938451523372603072L)
-class MutableList[A]
+class MutableList[L, A]
 extends AbstractSeq[L, A]
-   with LinearSeq[A]
-   with LinearSeqOptimized[A, MutableList[A]]
-   with GenericTraversableTemplate[A, MutableList]
-   with Builder[A, MutableList[A]]
+   with LinearSeq[L, A]
+   with LinearSeqOptimized[L, A, MutableList[L, A]]
+   with GenericTraversableTemplate[L, A, MutableList]
+   with Builder[L, A, MutableList[L, A]]
    with Serializable
 {
-  override def companion: GenericCompanion[MutableList] = MutableList
+  override def companion: GenericCompanion[L, MutableList] = MutableList
 
-  override protected[this] def newBuilder: Builder[A, MutableList[A]] = new MutableList[A]
+  override protected[this] def newBuilder: Builder[L, A, MutableList[L, A]] = new MutableList[L, A]
 
-  protected var first0: LinkedList[A] = new LinkedList[A]
-  protected var last0: LinkedList[A] = first0
+  protected var first0: LinkedList[L, A] = new LinkedList[L, A]
+  protected var last0: LinkedList[L, A] = first0
   protected var len: Int = 0
 
   def toQueue = new Queue(first0, last0, len)
@@ -55,13 +55,13 @@ extends AbstractSeq[L, A]
 
   /** Returns the rest of this list
    */
-  override def tail: MutableList[A] = {
-    val tl = new MutableList[A]
+  override def tail: MutableList[L, A] = {
+    val tl = new MutableList[L, A]
     tailImpl(tl)
     tl
   }
 
-  protected final def tailImpl(tl: MutableList[A]) {
+  protected final def tailImpl(tl: MutableList[L, A]) {
     require(nonEmpty, "tail of empty list")
     tl.first0 = first0.tail
     tl.len = len - 1
@@ -95,7 +95,7 @@ extends AbstractSeq[L, A]
   def get(n: Int): Option[A] = first0.get(n)
 
   protected def prependElem(elem: A) {
-    first0 = new LinkedList[A](elem, first0)
+    first0 = new LinkedList[L, A](elem, first0)
     if (len == 0) last0 = first0
     len = len + 1
   }
@@ -104,18 +104,18 @@ extends AbstractSeq[L, A]
     if (len == 0) {
       prependElem(elem)
     } else {
-      last0.next = new LinkedList[A]
+      last0.next = new LinkedList[L, A]
       last0 = last0.next
       last0.elem = elem
-      last0.next = new LinkedList[A] // for performance, use sentinel `object` instead?
+      last0.next = new LinkedList[L, A] // for performance, use sentinel `object` instead?
       len = len + 1
     }
   }
 
   /** Returns an iterator over up to `length` elements of this list.
    */
-  override def iterator: Iterator[A] = if (isEmpty) Iterator.empty else
-    new AbstractIterator[A] {
+  override def iterator: Iterator[L, A] = if (isEmpty) Iterator.empty else
+    new AbstractIterator[L, A] {
       var elems   = first0
       var count   = len
       def hasNext = count > 0 && elems.nonEmpty
@@ -141,7 +141,7 @@ extends AbstractSeq[L, A]
   /** Returns the current list of elements as a linked List
    *  sequence of elements.
    */
-  private[mutable] def toLinkedList: LinkedList[A] = first0
+  private[mutable] def toLinkedList: LinkedList[L, A] = first0
 
   /** Appends a single element to this buffer. This takes constant time.
    *
@@ -150,23 +150,23 @@ extends AbstractSeq[L, A]
   def +=(elem: A): this.type = { appendElem(elem); this }
 
   def clear() {
-    first0 = new LinkedList[A]
+    first0 = new LinkedList[L, A]
     last0 = first0
     len = 0
   }
 
   def result = this
 
-  override def clone(): MutableList[A]  = {
+  override def clone(): MutableList[L, A]  = {
     val bf = newBuilder
     bf ++= seq
     bf.result()
   }
 }
 
-object MutableList extends SeqFactory[MutableList] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, MutableList[A]] =
+object MutableList extends SeqFactory[L, MutableList] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, MutableList[L, A]] =
     ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, MutableList[A]] = new MutableList[A]
+  def newBuilder[A]: Builder[L, A, MutableList[L, A]] = new MutableList[L, A]
 }

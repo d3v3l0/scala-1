@@ -30,7 +30,7 @@ import generic._
  *  @define Coll `DoubleLinkedList`
  *  @define coll double linked list
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `DoubleLinkedList[B]` because an implicit of type `CanBuildFrom[DoubleLinkedList, B, DoubleLinkedList[B]]`
+ *    `That` is always `DoubleLinkedList[L, B]` because an implicit of type `CanBuildFrom[L, DoubleLinkedList, B, DoubleLinkedList[L, B]]`
  *    is defined in object `DoubleLinkedList`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -43,10 +43,10 @@ import generic._
  */
 @deprecated("Low-level linked lists are deprecated due to idiosyncrasies in interface and incomplete features.", "2.11.0")
 @SerialVersionUID(-8144992287952814767L)
-class DoubleLinkedList[A]() extends AbstractSeq[L, A]
-                            with LinearSeq[A]
-                            with GenericTraversableTemplate[A, DoubleLinkedList]
-                            with DoubleLinkedListLike[A, DoubleLinkedList[A]]
+class DoubleLinkedList[L, A]() extends AbstractSeq[L, A]
+                            with LinearSeq[L, A]
+                            with GenericTraversableTemplate[L, A, DoubleLinkedList]
+                            with DoubleLinkedListLike[L, A, DoubleLinkedList[L, A]]
                             with Serializable {
   next = this
 
@@ -55,7 +55,7 @@ class DoubleLinkedList[A]() extends AbstractSeq[L, A]
    *  @param elem    the element this node contains.
    *  @param next    the next node in the double linked list.
    */
-  def this(elem: A, next: DoubleLinkedList[A]) {
+  def this(elem: A, next: DoubleLinkedList[L, A]) {
     this()
     if (next != null) {
       this.elem = elem
@@ -64,10 +64,10 @@ class DoubleLinkedList[A]() extends AbstractSeq[L, A]
     }
   }
 
-  override def companion: GenericCompanion[DoubleLinkedList] = DoubleLinkedList
+  override def companion: GenericCompanion[L, DoubleLinkedList] = DoubleLinkedList
 
   // Accurately clone this collection.  See SI-6296
-  override def clone(): DoubleLinkedList[A] = {
+  override def clone(): DoubleLinkedList[L, A] = {
     val builder = newBuilder
     builder ++= this
     builder.result()
@@ -79,13 +79,13 @@ class DoubleLinkedList[A]() extends AbstractSeq[L, A]
  *  @define Coll `DoubleLinkedList`
  */
 @deprecated("Low-level linked lists are deprecated.", "2.11.0")
-object DoubleLinkedList extends SeqFactory[DoubleLinkedList] {
+object DoubleLinkedList extends SeqFactory[L, DoubleLinkedList] {
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, DoubleLinkedList[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, DoubleLinkedList[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, DoubleLinkedList[A]] =
-    new Builder[A, DoubleLinkedList[A]] {
-      def emptyList() = new DoubleLinkedList[A]()
+  def newBuilder[A]: Builder[L, A, DoubleLinkedList[L, A]] =
+    new Builder[L, A, DoubleLinkedList[L, A]] {
+      def emptyList() = new DoubleLinkedList[L, A]()
       var current = emptyList()
 
       def +=(elem: A): this.type = {

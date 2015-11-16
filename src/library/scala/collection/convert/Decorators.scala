@@ -32,7 +32,7 @@ private[collection] trait Decorators {
   }
 
   /** Generic class containing the `asJavaEnumeration` converter method */
-  class AsJavaEnumeration[A](i: Iterator[A]) {
+  class AsJavaEnumeration[A](i: Iterator[L, A]) {
     /** Converts a Scala `Iterator` to a Java `Enumeration` */
     def asJavaEnumeration: ju.Enumeration[A] = JavaConversions.asJavaEnumeration(i)
   }

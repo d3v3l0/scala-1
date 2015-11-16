@@ -21,7 +21,7 @@ package mutable
  *  @version 2.8
  *  @since   2.8
  */
-trait ArrayLike[A, +Repr] extends Any with IndexedSeqOptimized[A, Repr] { self =>
+trait ArrayLike[L, A, +Repr] extends Any with IndexedSeqOptimized[L, A, Repr] { self =>
 
   /** Creates a possible nested `IndexedSeq` which consists of all the elements
    *  of this array. If the elements are arrays themselves, the `deep` transformation
@@ -37,7 +37,7 @@ trait ArrayLike[A, +Repr] extends Any with IndexedSeqOptimized[A, Repr] { self =
    *
    *  @return    An possibly nested indexed sequence of consisting of all the elements of the array.
    */
-  def deep: scala.collection.IndexedSeq[Any] = new scala.collection.AbstractSeq[L, Any] with scala.collection.IndexedSeq[Any] {
+  def deep: scala.collection.IndexedSeq[L, Any] = new scala.collection.AbstractSeq[L, Any] with scala.collection.IndexedSeq[L, Any] {
     def length = self.length
     def apply(idx: Int): Any = self.apply(idx) match {
       case x: AnyRef if x.getClass.isArray => WrappedArray.make(x).deep

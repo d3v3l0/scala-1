@@ -13,8 +13,8 @@ package generic
 import mutable.{ Builder, GrowingBuilder }
 import scala.language.higherKinds
 
-abstract class MutableSetFactory[CC[X] <: mutable.Set[L, X] with mutable.SetLike[L, X, CC[X]]]
-  extends SetFactory[CC] {
+abstract class MutableSetFactory[L, CC[X] <: mutable.Set[L, X] with mutable.SetLike[L, X, CC[X]]]
+  extends SetFactory[L, CC] {
 
-  def newBuilder[A]: Builder[A, CC[A]] = new GrowingBuilder[A, CC[A]](empty[A])
+  def newBuilder[A]: Builder[L, A, CC[A]] = new GrowingBuilder[L, A, CC[A]](empty[A])
 }

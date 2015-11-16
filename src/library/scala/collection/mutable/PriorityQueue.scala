@@ -36,19 +36,19 @@ import generic._
  *  @define willNotTerminateInf
  */
 @deprecatedInheritance("PriorityQueue is not intended to be subclassed due to extensive private implementation details.", "2.11.0")
-class PriorityQueue[A](implicit val ord: Ordering[A])
+class PriorityQueue[L, A](implicit val ord: Ordering[A])
    extends AbstractIterable[L, A]
       with Iterable[L, A]
-      with GenericOrderedTraversableTemplate[A, PriorityQueue]
-      with IterableLike[L, A, PriorityQueue[A]]
-      with Growable[A]
-      with Builder[A, PriorityQueue[A]]
+      with GenericOrderedTraversableTemplate[L, A, PriorityQueue]
+      with IterableLike[L, A, PriorityQueue[L, A]]
+      with Growable[L, A]
+      with Builder[L, A, PriorityQueue[L, A]]
       with Serializable
       with scala.Cloneable
 {
   import ord._
 
-  private class ResizableArrayAccess[A] extends AbstractSeq[L, A] with ResizableArray[A] with Serializable {
+  private class ResizableArrayAccess[A] extends AbstractSeq[L, A] with ResizableArray[L, A] with Serializable {
     def p_size0 = size0
     def p_size0_=(s: Int) = size0 = s
     def p_array = array
@@ -56,7 +56,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
     def p_swap(a: Int, b: Int) = super.swap(a, b)
   }
 
-  protected[this] override def newBuilder = new PriorityQueue[A]
+  protected[this] override def newBuilder = new PriorityQueue[L, A]
 
   private val resarr = new ResizableArrayAccess[A]
 
@@ -115,7 +115,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
    *  @param  xs    a traversable object.
    *  @return       a new priority queue containing elements of both `xs` and `this`.
    */
-  def ++(xs: GenTraversableOnce[A]): PriorityQueue[A] = { this.clone() ++= xs.seq }
+  def ++(xs: GenTraversableOnce[L, A]): PriorityQueue[L, A] = { this.clone() ++= xs.seq }
 
   /** Adds all elements to the queue.
    *
@@ -138,7 +138,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
     } else
       throw new NoSuchElementException("no element to remove from heap")
 
-  def dequeueAll[A1 >: A, That](implicit bf: CanBuildFrom[_, A1, That]): That = {
+  def dequeueAll[A1 >: A, That](implicit bf: CanBuildFrom[L, _, A1, That]): That = {
     val b = bf.apply()
     while (nonEmpty) {
       b += dequeue()
@@ -166,7 +166,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
    *
    *  @return  an iterator over all the elements.
    */
-  override def iterator: Iterator[A] = new AbstractIterator[A] {
+  override def iterator: Iterator[L, A] = new AbstractIterator[L, A] {
     private var i = 1
     def hasNext: Boolean = i < resarr.p_size0
     def next(): A = {
@@ -190,7 +190,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
    *  @return   A reversed priority queue.
    */
   def reverse = {
-    val revq = new PriorityQueue[A]()(new scala.math.Ordering[A] {
+    val revq = new PriorityQueue[L, A]()(new scala.math.Ordering[A] {
       def compare(x: A, y: A) = ord.compare(y, x)
     })
     for (i <- 1 until resarr.length) revq += resarr(i)
@@ -204,7 +204,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
    *
    *  @return  an iterator over all elements sorted in descending order.
    */
-  def reverseIterator: Iterator[A] = new AbstractIterator[A] {
+  def reverseIterator: Iterator[L, A] = new AbstractIterator[L, A] {
     private var i = resarr.p_size0 - 1
     def hasNext: Boolean = i >= 1
     def next(): A = {
@@ -226,7 +226,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
    *
    *  Note: the order of elements is undefined.
    */
-  def toQueue: Queue[A] = new Queue[A] ++= this.iterator
+  def toQueue: Queue[L, A] = new Queue[L, A] ++= this.iterator
 
   /** Returns a textual representation of a queue as a string.
    *
@@ -246,12 +246,12 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
    *
    *  @return  a priority queue with the same elements.
    */
-  override def clone(): PriorityQueue[A] = new PriorityQueue[A] ++= this.iterator
+  override def clone(): PriorityQueue[L, A] = new PriorityQueue[L, A] ++= this.iterator
 }
 
 
-object PriorityQueue extends OrderedTraversableFactory[PriorityQueue] {
-  def newBuilder[A](implicit ord: Ordering[A]) = new PriorityQueue[A]
-  implicit def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[Coll, A, PriorityQueue[A]] = new GenericCanBuildFrom[A]
+object PriorityQueue extends OrderedTraversableFactory[L, PriorityQueue] {
+  def newBuilder[A](implicit ord: Ordering[A]) = new PriorityQueue[L, A]
+  implicit def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[L, Coll, A, PriorityQueue[L, A]] = new GenericCanBuildFrom[A]
 }
 

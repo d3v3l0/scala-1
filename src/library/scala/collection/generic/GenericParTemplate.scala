@@ -25,22 +25,22 @@ import scala.language.higherKinds
  *  @author Aleksandar Prokopec
  *  @since 2.8
  */
-trait GenericParTemplate[+A, +CC[X] <: ParIterable[L, X]]
-extends GenericTraversableTemplate[A, CC]
-   with HasNewCombiner[A, CC[A] @uncheckedVariance]
+trait GenericParTemplate[L, +A, +CC[X] <: ParIterable[L, X]]
+extends GenericTraversableTemplate[L, A, CC]
+   with HasNewCombiner[L, A, CC[A] @uncheckedVariance]
 {
-  def companion: GenericCompanion[CC] with GenericParCompanion[CC]
+  def companion: GenericCompanion[L, CC] with GenericParCompanion[L, CC]
 
-  protected[this] override def newBuilder: scala.collection.mutable.Builder[A, CC[A]] = newCombiner
+  protected[this] override def newBuilder: scala.collection.mutable.Builder[L, A, CC[A]] = newCombiner
 
-  protected[this] override def newCombiner: Combiner[A, CC[A]] = {
+  protected[this] override def newCombiner: Combiner[L, A, CC[A]] = {
     val cb = companion.newCombiner[A]
     cb
   }
 
-  override def genericBuilder[B]: Combiner[B, CC[B]] = genericCombiner[B]
+  override def genericBuilder[B]: Combiner[L, B, CC[B]] = genericCombiner[B]
 
-  def genericCombiner[B]: Combiner[B, CC[B]] = {
+  def genericCombiner[B]: Combiner[L, B, CC[B]] = {
     val cb = companion.newCombiner[B]
     cb
   }
@@ -48,16 +48,16 @@ extends GenericTraversableTemplate[A, CC]
 }
 
 
-trait GenericParMapTemplate[K, +V, +CC[X, Y] <: ParMap[X, Y]] extends GenericParTemplate[(K, V), ParIterable]
+trait GenericParMapTemplate[L, K, +V, +CC[X, Y] <: ParMap[L, X, Y]] extends GenericParTemplate[L, (K, V), ParIterable]
 {
-  protected[this] override def newCombiner: Combiner[(K, V), CC[K, V]] = {
+  protected[this] override def newCombiner: Combiner[L, (K, V), CC[K, V]] = {
     val cb = mapCompanion.newCombiner[K, V]
     cb
   }
 
-  def mapCompanion: GenericParMapCompanion[CC]
+  def mapCompanion: GenericParMapCompanion[L, CC]
 
-  def genericMapCombiner[P, Q]: Combiner[(P, Q), CC[P, Q]] = {
+  def genericMapCombiner[P, Q]: Combiner[L, (P, Q), CC[P, Q]] = {
     val cb = mapCompanion.newCombiner[P, Q]
     cb
   }

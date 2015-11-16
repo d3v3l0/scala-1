@@ -27,15 +27,15 @@ import scala.collection.generic.Shrinkable
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait ParSetLike[T,
-                 +Repr <: ParSetLike[T, Repr, Sequential] with ParSet[T],
+trait ParSetLike[L, T,
+                 +Repr <: ParSetLike[L, T, Repr, Sequential] with ParSet[L, T],
                  +Sequential <: mutable.Set[L, T] with mutable.SetLike[L, T, Sequential]]
-extends GenSetLike[T, Repr]
+extends GenSetLike[L, T, Repr]
    with scala.collection.parallel.ParIterableLike[L, T, Repr, Sequential]
-   with scala.collection.parallel.ParSetLike[T, Repr, Sequential]
-   with Growable[T]
-   with Shrinkable[T]
-   with Cloneable[Repr]
+   with scala.collection.parallel.ParSetLike[L, T, Repr, Sequential]
+   with Growable[L, T]
+   with Shrinkable[L, T]
+   with Cloneable[L, Repr]
 {
 self =>
   override def empty: Repr

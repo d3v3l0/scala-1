@@ -18,7 +18,7 @@ import parallel.Combiner
  *  @tparam A            the type of the elements in the collection
  *  @tparam ParRepr      the actual type of the collection, which has to be parallel
  */
-trait Parallelizable[+A, +ParRepr <: Parallel] extends Any {
+trait Parallelizable[L, +A, +ParRepr <: Parallel] extends Any {
 
   def seq: TraversableOnce[L, A]
 
@@ -48,6 +48,6 @@ trait Parallelizable[+A, +ParRepr <: Parallel] extends Any {
    *
    *  @return  a combiner for the parallel collection of type `ParRepr`
    */
-  protected[this] def parCombiner: Combiner[A, ParRepr]
+  protected[this] def parCombiner: Combiner[L, A, ParRepr]
 }
 

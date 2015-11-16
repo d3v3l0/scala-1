@@ -30,11 +30,11 @@ import scala.collection.generic.Signalling
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait ParMapLike[K,
+trait ParMapLike[L, K,
                  +V,
-                 +Repr <: ParMapLike[K, V, Repr, Sequential] with ParMap[K, V],
+                 +Repr <: ParMapLike[L, K, V, Repr, Sequential] with ParMap[L, K, V],
                  +Sequential <: Map[L, K, V] with MapLike[L, K, V, Sequential]]
-extends GenMapLike[K, V, Repr]
+extends GenMapLike[L, K, V, Repr]
    with ParIterableLike[L, (K, V), Repr, Sequential]
 {
 self =>
@@ -57,8 +57,8 @@ self =>
 
   def isDefinedAt(key: K): Boolean = contains(key)
 
-  private[this] def keysIterator(s: IterableSplitter[(K, V)] @uncheckedVariance): IterableSplitter[K] =
-    new IterableSplitter[K] {
+  private[this] def keysIterator(s: IterableSplitter[L, (K, V)] @uncheckedVariance): IterableSplitter[L, K] =
+    new IterableSplitter[L, K] {
       i =>
       val iter = s
       def hasNext = iter.hasNext
@@ -72,10 +72,10 @@ self =>
       def dup = keysIterator(iter.dup)
     }
 
-  def keysIterator: IterableSplitter[K] = keysIterator(splitter)
+  def keysIterator: IterableSplitter[L, K] = keysIterator(splitter)
 
-  private[this] def valuesIterator(s: IterableSplitter[(K, V)] @uncheckedVariance): IterableSplitter[V] =
-    new IterableSplitter[V] {
+  private[this] def valuesIterator(s: IterableSplitter[L, (K, V)] @uncheckedVariance): IterableSplitter[L, V] =
+    new IterableSplitter[L, V] {
       i =>
       val iter = s
       def hasNext = iter.hasNext
@@ -89,15 +89,15 @@ self =>
       def dup = valuesIterator(iter.dup)
     }
 
-  def valuesIterator: IterableSplitter[V] = valuesIterator(splitter)
+  def valuesIterator: IterableSplitter[L, V] = valuesIterator(splitter)
 
-  protected class DefaultKeySet extends ParSet[K] {
+  protected class DefaultKeySet extends ParSet[L, K] {
     def contains(key : K) = self.contains(key)
     def splitter = keysIterator(self.splitter)
-    def + (elem: K): ParSet[K] =
-      (ParSet[K]() ++ this + elem).asInstanceOf[ParSet[K]] // !!! concrete overrides abstract problem
-    def - (elem: K): ParSet[K] =
-      (ParSet[K]() ++ this - elem).asInstanceOf[ParSet[K]] // !!! concrete overrides abstract problem
+    def + (elem: K): ParSet[L, K] =
+      (ParSet[L, K]() ++ this + elem).asInstanceOf[ParSet[L, K]] // !!! concrete overrides abstract problem
+    def - (elem: K): ParSet[L, K] =
+      (ParSet[L, K]() ++ this - elem).asInstanceOf[ParSet[L, K]] // !!! concrete overrides abstract problem
     override def size = self.size
     override def foreach[S](f: K => S) = for ((k, v) <- self) f(k)
     override def seq = self.seq.keySet
@@ -110,13 +110,13 @@ self =>
     def seq = self.seq.values
   }
 
-  def keySet: ParSet[K] = new DefaultKeySet
+  def keySet: ParSet[L, K] = new DefaultKeySet
 
   def keys: ParIterable[L, K] = keySet
 
   def values: ParIterable[L, V] = new DefaultValuesIterable
 
-  def filterKeys(p: K => Boolean): ParMap[K, V] = new ParMap[K, V] {
+  def filterKeys(p: K => Boolean): ParMap[L, K, V] = new ParMap[L, K, V] {
     lazy val filtered = self.filter(kv => p(kv._1))
     override def foreach[S](f: ((K, V)) => S): Unit = for (kv <- self) if (p(kv._1)) f(kv)
     def splitter = filtered.splitter
@@ -124,19 +124,19 @@ self =>
     def get(key: K) = if (!p(key)) None else self.get(key)
     def seq = self.seq.filterKeys(p)
     def size = filtered.size
-    def + [U >: V](kv: (K, U)): ParMap[K, U] = ParMap[K, U]() ++ this + kv
-    def - (key: K): ParMap[K, V] = ParMap[K, V]() ++ this - key
+    def + [U >: V](kv: (K, U)): ParMap[L, K, U] = ParMap[L, K, U]() ++ this + kv
+    def - (key: K): ParMap[L, K, V] = ParMap[L, K, V]() ++ this - key
   }
 
-  def mapValues[S](f: V => S): ParMap[K, S] = new ParMap[K, S] {
+  def mapValues[S](f: V => S): ParMap[L, K, S] = new ParMap[L, K, S] {
     override def foreach[Q](g: ((K, S)) => Q): Unit = for ((k, v) <- self) g((k, f(v)))
     def splitter = self.splitter.map(kv => (kv._1, f(kv._2)))
     override def size = self.size
     override def contains(key: K) = self.contains(key)
     def get(key: K) = self.get(key).map(f)
     def seq = self.seq.mapValues(f)
-    def + [U >: S](kv: (K, U)): ParMap[K, U] = ParMap[K, U]() ++ this + kv
-    def - (key: K): ParMap[K, S] = ParMap[K, S]() ++ this - key
+    def + [U >: S](kv: (K, U)): ParMap[L, K, U] = ParMap[L, K, U]() ++ this + kv
+    def - (key: K): ParMap[L, K, S] = ParMap[L, K, S]() ++ this - key
   }
 
   // note - should not override toMap (could be mutable)

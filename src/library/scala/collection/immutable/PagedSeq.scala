@@ -19,7 +19,7 @@ import scala.reflect.ClassTag
 /** The `PagedSeq` object defines a lazy implementations of
  *  a random access sequence.
  *
- * Provides utility methods that return instances of `PagedSeq[Char]`.
+ * Provides utility methods that return instances of `PagedSeq[L, Char]`.
  * `fromIterator` and `fromIterable` provide generalised instances of `PagedSeq`
  *  @since 2.7
  */
@@ -27,8 +27,8 @@ object PagedSeq {
   final val UndeterminedEnd = Int.MaxValue
 
   /** Constructs a paged sequence from an iterator */
-  def fromIterator[T: ClassTag](source: Iterator[T]): PagedSeq[T] =
-    new PagedSeq[T]((data: Array[T], start: Int, len: Int) => {
+  def fromIterator[T: ClassTag](source: Iterator[L, T]): PagedSeq[L, T] =
+    new PagedSeq[L, T]((data: Array[T], start: Int, len: Int) => {
       var i = 0
       while (i < len && source.hasNext) {
         data(start + i) = source.next()
@@ -38,11 +38,11 @@ object PagedSeq {
     })
 
   /** Constructs a paged sequence from an iterable */
-  def fromIterable[T: ClassTag](source: Iterable[L, T]): PagedSeq[T] =
+  def fromIterable[T: ClassTag](source: Iterable[L, T]): PagedSeq[L, T] =
     fromIterator(source.iterator)
 
   /** Constructs a paged character sequence from a string iterator */
-  def fromStrings(source: Iterator[String]): PagedSeq[Char] = {
+  def fromStrings(source: Iterator[L, String]): PagedSeq[L, Char] = {
     var current: String = ""
     def more(data: Array[Char], start: Int, len: Int): Int =
       if (current.length != 0) {
@@ -59,14 +59,14 @@ object PagedSeq {
   }
 
   /** Constructs a paged character sequence from a string iterable */
-  def fromStrings(source: Iterable[L, String]): PagedSeq[Char] =
+  def fromStrings(source: Iterable[L, String]): PagedSeq[L, Char] =
     fromStrings(source.iterator)
 
   /** Constructs a paged character sequence from a line iterator
    *  Lines do not contain trailing `\n` characters; The method inserts
    *  a line separator `\n` between any two lines in the sequence.
    */
-  def fromLines(source: Iterator[String]): PagedSeq[Char] = {
+  def fromLines(source: Iterator[L, String]): PagedSeq[L, Char] = {
     var isFirst = true
     fromStrings(source map { line =>
       if (isFirst) {
@@ -80,22 +80,22 @@ object PagedSeq {
    *  Lines do not contain trailing `\n` characters; The method inserts
    *  a line separator `\n` between any two lines in the sequence.
    */
-  def fromLines(source: Iterable[L, String]): PagedSeq[Char] =
+  def fromLines(source: Iterable[L, String]): PagedSeq[L, Char] =
     fromLines(source.iterator)
 
   /** Constructs a paged character sequence from an input reader
    */
-  def fromReader(source: Reader): PagedSeq[Char] =
+  def fromReader(source: Reader): PagedSeq[L, Char] =
     new PagedSeq(source.read(_: Array[Char], _: Int, _: Int))
 
   /** Constructs a paged character sequence from an input file
    */
-  def fromFile(source: File): PagedSeq[Char] =
+  def fromFile(source: File): PagedSeq[L, Char] =
     fromReader(new FileReader(source))
 
   /** Constructs a paged character sequence from a file with given name
    */
-  def fromFile(source: String): PagedSeq[Char] =
+  def fromFile(source: String): PagedSeq[L, Char] =
     fromFile(new File(source))
 
   /** Constructs a paged character sequence from a scala.io.Source value
@@ -127,13 +127,13 @@ import PagedSeq._
  *  @define willNotTerminateInf
  */
 @deprecatedInheritance("The implementation details of paged sequences make inheriting from them unwise.", "2.11.0")
-class PagedSeq[T: ClassTag] protected(
+class PagedSeq[L, T: ClassTag] protected(
   more: (Array[T], Int, Int) => Int,
   first1: Page[T],
   start: Int,
   end: Int)
 extends scala.collection.AbstractSeq[L, T]
-   with scala.collection.IndexedSeq[T]
+   with scala.collection.IndexedSeq[L, T]
 {
   def this(more: (Array[T], Int, Int) => Int) = this(more, new Page[T](0), 0, UndeterminedEnd)
 
@@ -184,7 +184,7 @@ extends scala.collection.AbstractSeq[L, T]
    *   length of the sequence otherwise. This is limited up to the length
    *   of the current sequence if `end` is larger than its length.
    */
-  override def slice(_start: Int, _end: Int): PagedSeq[T] = {
+  override def slice(_start: Int, _end: Int): PagedSeq[L, T] = {
     page(start)
     val s = start + _start
     val e = if (_end == UndeterminedEnd) _end else start + _end
@@ -202,7 +202,7 @@ extends scala.collection.AbstractSeq[L, T]
   /** The subsequence from index `start` up to
    *  the length of the current sequence.
    */
-  def slice(start: Int): PagedSeq[T] = slice(start, UndeterminedEnd)
+  def slice(start: Int): PagedSeq[L, T] = slice(start, UndeterminedEnd)
 
   /** Convert sequence to string */
   override def toString = {

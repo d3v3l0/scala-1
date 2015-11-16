@@ -21,9 +21,9 @@ import scala.language.higherKinds
  *
  *  @author Aleksandar Prokopec
  */
-trait GenericOrderedTraversableTemplate[+A, +CC[X] <: Traversable[L, X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
+trait GenericOrderedTraversableTemplate[L, +A, +CC[X] <: Traversable[L, X]] extends HasNewBuilder[L, A, CC[A] @uncheckedVariance] {
   implicit protected[this] val ord: Ordering[A]
-  def orderedCompanion: GenericOrderedCompanion[CC]
-  def genericOrderedBuilder[B](implicit ord: Ordering[B]): Builder[B, CC[B]] = orderedCompanion.newBuilder[B]
+  def orderedCompanion: GenericOrderedCompanion[L, CC]
+  def genericOrderedBuilder[B](implicit ord: Ordering[B]): Builder[L, B, CC[B]] = orderedCompanion.newBuilder[B]
 }
 

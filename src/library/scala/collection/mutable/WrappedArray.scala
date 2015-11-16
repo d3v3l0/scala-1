@@ -32,15 +32,15 @@ import scala.collection.parallel.mutable.ParArray
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-abstract class WrappedArray[T]
+abstract class WrappedArray[L, T]
 extends AbstractSeq[L, T]
-    with IndexedSeq[T]
-    with ArrayLike[T, WrappedArray[T]]
-    with CustomParallelizable[T, ParArray[T]]
+    with IndexedSeq[L, T]
+    with ArrayLike[L, T, WrappedArray[L, T]]
+    with CustomParallelizable[L, T, ParArray[L, T]]
 {
 
-  override protected[this] def thisCollection: WrappedArray[T] = this
-  override protected[this] def toCollection(repr: WrappedArray[T]): WrappedArray[T] = repr
+  override protected[this] def thisCollection: WrappedArray[L, T] = this
+  override protected[this] def toCollection(repr: WrappedArray[L, T]): WrappedArray[L, T] = repr
 
   /** The tag of the element type */
   def elemTag: ClassTag[T]
@@ -76,12 +76,12 @@ extends AbstractSeq[L, T]
   override def stringPrefix = "WrappedArray"
 
   /** Clones this object, including the underlying Array. */
-  override def clone(): WrappedArray[T] = WrappedArray make array.clone()
+  override def clone(): WrappedArray[L, T] = WrappedArray make array.clone()
 
   /** Creates new builder for this collection ==> move to subclasses
    */
-  override protected[this] def newBuilder: Builder[T, WrappedArray[T]] =
-    new WrappedArrayBuilder[T](elemTag)
+  override protected[this] def newBuilder: Builder[L, T, WrappedArray[L, T]] =
+    new WrappedArrayBuilder[L, T](elemTag)
 
 }
 
@@ -90,14 +90,14 @@ extends AbstractSeq[L, T]
 object WrappedArray {
   // This is reused for all calls to empty.
   private val EmptyWrappedArray  = new ofRef[AnyRef](new Array[AnyRef](0))
-  def empty[T <: AnyRef]: WrappedArray[T] = EmptyWrappedArray.asInstanceOf[WrappedArray[T]]
+  def empty[T <: AnyRef]: WrappedArray[L, T] = EmptyWrappedArray.asInstanceOf[WrappedArray[L, T]]
 
   // If make is called explicitly we use whatever we're given, even if it's
   // empty.  This may be unnecessary (if WrappedArray is to honor the collections
   // contract all empty ones must be equal, so discriminating based on the reference
   // equality of an empty array should not come up) but we may as well be
   // conservative since wrapRefArray contributes most of the unnecessary allocations.
-  def make[T](x: AnyRef): WrappedArray[T] = (x match {
+  def make[T](x: AnyRef): WrappedArray[L, T] = (x match {
     case null              => null
     case x: Array[AnyRef]  => new ofRef[AnyRef](x)
     case x: Array[Int]     => new ofInt(x)
@@ -109,82 +109,82 @@ object WrappedArray {
     case x: Array[Short]   => new ofShort(x)
     case x: Array[Boolean] => new ofBoolean(x)
     case x: Array[Unit]    => new ofUnit(x)
-  }).asInstanceOf[WrappedArray[T]]
+  }).asInstanceOf[WrappedArray[L, T]]
 
-  implicit def canBuildFrom[T](implicit m: ClassTag[T]): CanBuildFrom[WrappedArray[_], T, WrappedArray[T]] =
-    new CanBuildFrom[WrappedArray[_], T, WrappedArray[T]] {
-      def apply(from: WrappedArray[_]): Builder[T, WrappedArray[T]] =
+  implicit def canBuildFrom[T](implicit m: ClassTag[T]): CanBuildFrom[L, WrappedArray[L, _], T, WrappedArray[L, T]] =
+    new CanBuildFrom[L, WrappedArray[L, _], T, WrappedArray[L, T]] {
+      def apply(from: WrappedArray[L, _]): Builder[L, T, WrappedArray[L, T]] =
         ArrayBuilder.make[T]()(m) mapResult WrappedArray.make[T]
-      def apply: Builder[T, WrappedArray[T]] =
+      def apply: Builder[L, T, WrappedArray[L, T]] =
         ArrayBuilder.make[T]()(m) mapResult WrappedArray.make[T]
   }
 
-  def newBuilder[A]: Builder[A, IndexedSeq[A]] = new ArrayBuffer
+  def newBuilder[A]: Builder[L, A, IndexedSeq[L, A]] = new ArrayBuffer
 
-  final class ofRef[T <: AnyRef](val array: Array[T]) extends WrappedArray[T] with Serializable {
+  final class ofRef[T <: AnyRef](val array: Array[T]) extends WrappedArray[L, T] with Serializable {
     lazy val elemTag = ClassTag[T](arrayElementClass(array.getClass))
     def length: Int = array.length
     def apply(index: Int): T = array(index).asInstanceOf[T]
     def update(index: Int, elem: T) { array(index) = elem }
   }
 
-  final class ofByte(val array: Array[Byte]) extends WrappedArray[Byte] with Serializable {
+  final class ofByte(val array: Array[Byte]) extends WrappedArray[L, Byte] with Serializable {
     def elemTag = ClassTag.Byte
     def length: Int = array.length
     def apply(index: Int): Byte = array(index)
     def update(index: Int, elem: Byte) { array(index) = elem }
   }
 
-  final class ofShort(val array: Array[Short]) extends WrappedArray[Short] with Serializable {
+  final class ofShort(val array: Array[Short]) extends WrappedArray[L, Short] with Serializable {
     def elemTag = ClassTag.Short
     def length: Int = array.length
     def apply(index: Int): Short = array(index)
     def update(index: Int, elem: Short) { array(index) = elem }
   }
 
-  final class ofChar(val array: Array[Char]) extends WrappedArray[Char] with Serializable {
+  final class ofChar(val array: Array[Char]) extends WrappedArray[L, Char] with Serializable {
     def elemTag = ClassTag.Char
     def length: Int = array.length
     def apply(index: Int): Char = array(index)
     def update(index: Int, elem: Char) { array(index) = elem }
   }
 
-  final class ofInt(val array: Array[Int]) extends WrappedArray[Int] with Serializable {
+  final class ofInt(val array: Array[Int]) extends WrappedArray[L, Int] with Serializable {
     def elemTag = ClassTag.Int
     def length: Int = array.length
     def apply(index: Int): Int = array(index)
     def update(index: Int, elem: Int) { array(index) = elem }
   }
 
-  final class ofLong(val array: Array[Long]) extends WrappedArray[Long] with Serializable {
+  final class ofLong(val array: Array[Long]) extends WrappedArray[L, Long] with Serializable {
     def elemTag = ClassTag.Long
     def length: Int = array.length
     def apply(index: Int): Long = array(index)
     def update(index: Int, elem: Long) { array(index) = elem }
   }
 
-  final class ofFloat(val array: Array[Float]) extends WrappedArray[Float] with Serializable {
+  final class ofFloat(val array: Array[Float]) extends WrappedArray[L, Float] with Serializable {
     def elemTag = ClassTag.Float
     def length: Int = array.length
     def apply(index: Int): Float = array(index)
     def update(index: Int, elem: Float) { array(index) = elem }
   }
 
-  final class ofDouble(val array: Array[Double]) extends WrappedArray[Double] with Serializable {
+  final class ofDouble(val array: Array[Double]) extends WrappedArray[L, Double] with Serializable {
     def elemTag = ClassTag.Double
     def length: Int = array.length
     def apply(index: Int): Double = array(index)
     def update(index: Int, elem: Double) { array(index) = elem }
   }
 
-  final class ofBoolean(val array: Array[Boolean]) extends WrappedArray[Boolean] with Serializable {
+  final class ofBoolean(val array: Array[Boolean]) extends WrappedArray[L, Boolean] with Serializable {
     def elemTag = ClassTag.Boolean
     def length: Int = array.length
     def apply(index: Int): Boolean = array(index)
     def update(index: Int, elem: Boolean) { array(index) = elem }
   }
 
-  final class ofUnit(val array: Array[Unit]) extends WrappedArray[Unit] with Serializable {
+  final class ofUnit(val array: Array[Unit]) extends WrappedArray[L, Unit] with Serializable {
     def elemTag = ClassTag.Unit
     def length: Int = array.length
     def apply(index: Int): Unit = array(index)

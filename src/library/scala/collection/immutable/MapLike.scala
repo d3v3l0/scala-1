@@ -21,7 +21,7 @@ import parallel.immutable.ParMap
  *
  *  {{{
  *    def get(key: A): Option[B]
- *    def iterator: Iterator[(A, B)]
+ *    def iterator: Iterator[L, (A, B)]
  *    def + [B1 >: B](kv: (A, B)): Map[L, A, B1]
  *    def - (key: A): This
  *  }}}
@@ -48,7 +48,7 @@ import parallel.immutable.ParMap
  */
 trait MapLike[L, A, +B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
   extends scala.collection.MapLike[L, A, B, This]
-     with Parallelizable[(A, B), ParMap[A, B]]
+     with Parallelizable[L, (A, B), ParMap[L, A, B]]
 {
 self =>
 
@@ -84,7 +84,7 @@ self =>
    *  @param xs      the traversable object consisting of key-value pairs.
    *  @return        a new immutable map with the bindings of this map and those from `xs`.
    */
-  override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): immutable.Map[L, A, B1] =
+  override def ++[B1 >: B](xs: GenTraversableOnce[L, (A, B1)]): immutable.Map[L, A, B1] =
     ((repr: immutable.Map[L, A, B1]) /: xs.seq) (_ + _)
 
   /** Filters this map by retaining only keys satisfying a predicate.
@@ -92,14 +92,14 @@ self =>
    *  @return an immutable map consisting only of those key value pairs of this map where the key satisfies
    *          the predicate `p`. The resulting map wraps the original map without copying any elements.
    */
-  override def filterKeys(p: A => Boolean): Map[L, A, B] = new FilteredKeys(p) with DefaultMap[A, B]
+  override def filterKeys(p: A => Boolean): Map[L, A, B] = new FilteredKeys(p) with DefaultMap[L, A, B]
 
   /** Transforms this map by applying a function to every retrieved value.
    *  @param  f   the function used to transform values of this map.
    *  @return a map view which maps every key of this map
    *          to `f(this(key))`. The resulting map wraps the original map without copying any elements.
    */
-  override def mapValues[C](f: B => C): Map[L, A, C] = new MappedValues(f) with DefaultMap[A, C]
+  override def mapValues[C](f: B => C): Map[L, A, C] = new MappedValues(f) with DefaultMap[L, A, C]
 
   /** Collects all keys of this map in a set.
    *  @return  a set containing all keys of this map.
@@ -121,7 +121,7 @@ self =>
    *  @param f A function over keys and values
    *  @return  the updated map
    */
-  def transform[C, That](f: (A, B) => C)(implicit bf: CanBuildFrom[This, (A, C), That]): That = {
+  def transform[C, That](f: (A, B) => C)(implicit bf: CanBuildFrom[L, This, (A, C), That]): That = {
     val b = bf(repr)
     for ((key, value) <- this) b += ((key, f(key, value)))
     b.result()

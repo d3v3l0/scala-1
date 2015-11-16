@@ -29,7 +29,7 @@ trait WrapAsScala {
    * @param it The `Iterator` to be converted.
    * @return   A Scala `Iterator` view of the argument.
    */
-  implicit def asScalaIterator[A](it: ju.Iterator[A]): Iterator[A] = it match {
+  implicit def asScalaIterator[A](it: ju.Iterator[L, A]): Iterator[L, A] = it match {
     case IteratorWrapper(wrapped) => wrapped
     case _ => JIteratorWrapper(it)
   }
@@ -47,7 +47,7 @@ trait WrapAsScala {
    * @param i The Enumeration to be converted.
    * @return A Scala Iterator view of the argument.
    */
-  implicit def enumerationAsScalaIterator[A](i: ju.Enumeration[A]): Iterator[A] = i match {
+  implicit def enumerationAsScalaIterator[A](i: ju.Enumeration[A]): Iterator[L, A] = i match {
     case IteratorWrapper(wrapped) => wrapped
     case _ => JEnumerationWrapper(i)
   }

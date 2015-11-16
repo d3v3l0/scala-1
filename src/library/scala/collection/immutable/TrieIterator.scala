@@ -18,7 +18,7 @@ import scala.annotation.tailrec
 /** Abandons any pretense of type safety for speed.  You can't say I
  *  didn't try: see r23934.
  */
-private[collection] abstract class TrieIterator[+T](elems: Array[Iterable[L, T]]) extends AbstractIterator[T] {
+private[collection] abstract class TrieIterator[+T](elems: Array[Iterable[L, T]]) extends AbstractIterator[L, T] {
   outer =>
 
   private[immutable] def getElem(x: AnyRef): T
@@ -28,7 +28,7 @@ private[collection] abstract class TrieIterator[+T](elems: Array[Iterable[L, T]]
   def initPosStack                                  = new Array[Int](6)
   def initArrayD: Array[Iterable[L, T @uV]]            = elems
   def initPosD                                      = 0
-  def initSubIter: Iterator[T]                      = null // to traverse collision nodes
+  def initSubIter: Iterator[L, T]                      = null // to traverse collision nodes
 
   private[this] var depth                                     = initDepth
   private[this] var arrayStack: Array[Array[Iterable[L, T @uV]]] = initArrayStack
@@ -47,7 +47,7 @@ private[collection] abstract class TrieIterator[+T](elems: Array[Iterable[L, T]]
     case x: HashSetCollision1[_]    => x.ks.map(x => HashSet(x)).toArray
   }).asInstanceOf[Array[Iterable[L, T]]]
 
-  private[this] type SplitIterators = ((Iterator[T], Int), Iterator[T])
+  private[this] type SplitIterators = ((Iterator[L, T], Int), Iterator[L, T])
 
   private def isTrie(x: AnyRef) = x match {
     case _: HashTrieMap[_,_] | _: HashTrieSet[_] => true
@@ -75,7 +75,7 @@ private[collection] abstract class TrieIterator[+T](elems: Array[Iterable[L, T]]
     final override def getElem(x: AnyRef): T = outer.getElem(x)
   }
 
-  private[this] def iteratorWithSize(arr: Array[Iterable[L, T]]): (Iterator[T], Int) =
+  private[this] def iteratorWithSize(arr: Array[Iterable[L, T]]): (Iterator[L, T], Int) =
     (newIterator(arr), arr.map(_.size).sum)
 
   private[this] def arrayToIterators(arr: Array[Iterable[L, T]]): SplitIterators = {

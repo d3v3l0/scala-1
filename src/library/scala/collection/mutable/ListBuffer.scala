@@ -30,7 +30,7 @@ import scala.annotation.migration
  *  @define Coll `ListBuffer`
  *  @define coll list buffer
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `ListBuffer[B]` because an implicit of type `CanBuildFrom[ListBuffer, B, ListBuffer[B]]`
+ *    `That` is always `ListBuffer[L, B]` because an implicit of type `CanBuildFrom[L, ListBuffer, B, ListBuffer[L, B]]`
  *    is defined in object `ListBuffer`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -42,16 +42,16 @@ import scala.annotation.migration
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(3419063961353022662L)
-final class ListBuffer[A]
-      extends AbstractBuffer[A]
+final class ListBuffer[L, A]
+      extends AbstractBuffer[L, A]
          with Buffer[L, A]
-         with GenericTraversableTemplate[A, ListBuffer]
-         with BufferLike[L, A, ListBuffer[A]]
-         with Builder[A, List[A]]
-         with SeqForwarder[A]
+         with GenericTraversableTemplate[L, A, ListBuffer]
+         with BufferLike[L, A, ListBuffer[L, A]]
+         with Builder[L, A, List[A]]
+         with SeqForwarder[L, A]
          with Serializable
 {
-  override def companion: GenericCompanion[ListBuffer] = ListBuffer
+  override def companion: GenericCompanion[L, ListBuffer] = ListBuffer
 
   import scala.collection.Traversable
   import scala.collection.immutable.ListSerializeEnd
@@ -390,7 +390,7 @@ final class ListBuffer[A]
    *  guaranteed to be consistent.  In particular, an empty `ListBuffer`
    *  will give an empty iterator even if the `ListBuffer` is later filled.
    */
-  override def iterator: Iterator[A] = new AbstractIterator[A] {
+  override def iterator: Iterator[L, A] = new AbstractIterator[L, A] {
     // Have to be careful iterating over mutable structures.
     // This used to have "(cursor ne last0)" as part of its hasNext
     // condition, which means it can return true even when the iterator
@@ -428,7 +428,7 @@ final class ListBuffer[A]
   }
 
   override def equals(that: Any): Boolean = that match {
-    case that: ListBuffer[_] => this.readOnly equals that.readOnly
+    case that: ListBuffer[L, _] => this.readOnly equals that.readOnly
     case _                   => super.equals(that)
   }
 
@@ -436,7 +436,7 @@ final class ListBuffer[A]
    *
    *  @return a `ListBuffer` with the same elements.
    */
-  override def clone(): ListBuffer[A] = (new ListBuffer[A]) ++= this
+  override def clone(): ListBuffer[L, A] = (new ListBuffer[L, A]) ++= this
 
   /** Defines the prefix of the string representation.
    *
@@ -449,7 +449,7 @@ final class ListBuffer[A]
  *  @define Coll `ListBuffer`
  *  @define coll list buffer
  */
-object ListBuffer extends SeqFactory[ListBuffer] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ListBuffer[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, ListBuffer[A]] = new GrowingBuilder(new ListBuffer[A])
+object ListBuffer extends SeqFactory[L, ListBuffer] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, ListBuffer[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, ListBuffer[L, A]] = new GrowingBuilder(new ListBuffer[L, A])
 }

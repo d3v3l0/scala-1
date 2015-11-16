@@ -20,9 +20,9 @@ package mutable
  *  @since   1
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait StackProxy[L, A] extends Stack[A] with Proxy {
+trait StackProxy[L, A] extends Stack[L, A] with Proxy {
 
-  def self: Stack[A]
+  def self: Stack[L, A]
 
   /** Access element number `n`.
    *
@@ -87,7 +87,7 @@ trait StackProxy[L, A] extends Stack[A] with Proxy {
    *
    *  @return an iterator over all stack elements.
    */
-  override def iterator: Iterator[A] = self.iterator
+  override def iterator: Iterator[L, A] = self.iterator
 
   /** Creates a list of all stack elements in FIFO order.
    *
@@ -99,7 +99,7 @@ trait StackProxy[L, A] extends Stack[A] with Proxy {
    *
    *  @return  a stack with the same elements.
    */
-  override def clone(): Stack[A] = new StackProxy[L, A] {
+  override def clone(): Stack[L, A] = new StackProxy[L, A] {
     def self = StackProxy.this.self.clone()
   }
 }

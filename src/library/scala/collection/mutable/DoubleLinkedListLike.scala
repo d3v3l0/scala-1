@@ -57,7 +57,7 @@ import scala.annotation.migration
  *  @define coll double linked list
  */
 @deprecated("Low-level linked lists are deprecated due to idiosyncrasies in interface and incomplete features.", "2.11.0")
-trait DoubleLinkedListLike[A, This <: Seq[L, A] with DoubleLinkedListLike[A, This]] extends SeqLike[L, A, This] with LinkedListLike[A, This] { self =>
+trait DoubleLinkedListLike[L, A, This <: Seq[L, A] with DoubleLinkedListLike[L, A, This]] extends SeqLike[L, A, This] with LinkedListLike[L, A, This] { self =>
 
   /** A reference to the node in the linked list preceding the current node. */
   var prev: This = _

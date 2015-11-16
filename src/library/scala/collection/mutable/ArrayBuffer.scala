@@ -33,7 +33,7 @@ import parallel.mutable.ParArray
  *  @define Coll `mutable.ArrayBuffer`
  *  @define coll array buffer
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `ArrayBuffer[B]` because an implicit of type `CanBuildFrom[ArrayBuffer, B, ArrayBuffer[B]]`
+ *    `That` is always `ArrayBuffer[L, B]` because an implicit of type `CanBuildFrom[L, ArrayBuffer, B, ArrayBuffer[L, B]]`
  *    is defined in object `ArrayBuffer`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -45,18 +45,18 @@ import parallel.mutable.ParArray
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(1529165946227428979L)
-class ArrayBuffer[A](override protected val initialSize: Int)
-  extends AbstractBuffer[A]
+class ArrayBuffer[L, A](override protected val initialSize: Int)
+  extends AbstractBuffer[L, A]
      with Buffer[L, A]
-     with GenericTraversableTemplate[A, ArrayBuffer]
-     with BufferLike[L, A, ArrayBuffer[A]]
-     with IndexedSeqOptimized[A, ArrayBuffer[A]]
-     with Builder[A, ArrayBuffer[A]]
-     with ResizableArray[A]
-     with CustomParallelizable[A, ParArray[A]]
+     with GenericTraversableTemplate[L, A, ArrayBuffer]
+     with BufferLike[L, A, ArrayBuffer[L, A]]
+     with IndexedSeqOptimized[L, A, ArrayBuffer[L, A]]
+     with Builder[L, A, ArrayBuffer[L, A]]
+     with ResizableArray[L, A]
+     with CustomParallelizable[L, A, ParArray[L, A]]
      with Serializable {
 
-  override def companion: GenericCompanion[ArrayBuffer] = ArrayBuffer
+  override def companion: GenericCompanion[L, ArrayBuffer] = ArrayBuffer
 
   import scala.collection.Traversable
 
@@ -94,7 +94,7 @@ class ArrayBuffer[A](override protected val initialSize: Int)
    *  @return      the updated buffer.
    */
   override def ++=(xs: TraversableOnce[L, A]): this.type = xs match {
-    case v: scala.collection.IndexedSeqLike[_, _] =>
+    case v: scala.collection.IndexedSeqLike[L, _, _] =>
       val n = v.length
       ensureSize(size0 + n)
       v.copyToArray(array.asInstanceOf[scala.Array[Any]], size0, n)
@@ -171,7 +171,7 @@ class ArrayBuffer[A](override protected val initialSize: Int)
     result
   }
 
-  def result: ArrayBuffer[A] = this
+  def result: ArrayBuffer[L, A] = this
 
   /** Defines the prefix of the string representation.
    */
@@ -185,9 +185,9 @@ class ArrayBuffer[A](override protected val initialSize: Int)
  *  @define coll array buffer
  *  @define Coll `ArrayBuffer`
  */
-object ArrayBuffer extends SeqFactory[ArrayBuffer] {
+object ArrayBuffer extends SeqFactory[L, ArrayBuffer] {
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ArrayBuffer[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, ArrayBuffer[A]] = new ArrayBuffer[A]
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, ArrayBuffer[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, ArrayBuffer[L, A]] = new ArrayBuffer[L, A]
 }
 

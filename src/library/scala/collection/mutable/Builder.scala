@@ -23,7 +23,7 @@ import generic._
  *
  *  @since 2.8
  */
-trait Builder[-Elem, +To] extends Growable[Elem] {
+trait Builder[L, -Elem, +To] extends Growable[L, Elem] {
 
   /** Adds a single element to the builder.
    *  @param elem the element to be added.
@@ -65,7 +65,7 @@ trait Builder[-Elem, +To] extends Growable[Elem] {
    *  @param coll  the collection which serves as a hint for the result's size.
    */
   def sizeHint(coll: TraversableLike[_, _, _]) {
-    if (coll.isInstanceOf[collection.IndexedSeqLike[_,_]]) {
+    if (coll.isInstanceOf[collection.IndexedSeqLike[L, _,_]]) {
       sizeHint(coll.size)
     }
   }
@@ -84,7 +84,7 @@ trait Builder[-Elem, +To] extends Growable[Elem] {
    *  @param delta a correction to add to the `coll.size` to produce the size hint.
    */
   def sizeHint(coll: TraversableLike[_, _, _], delta: Int) {
-    if (coll.isInstanceOf[collection.IndexedSeqLike[_,_]]) {
+    if (coll.isInstanceOf[collection.IndexedSeqLike[L, _,_]]) {
       sizeHint(coll.size + delta)
     }
   }
@@ -102,7 +102,7 @@ trait Builder[-Elem, +To] extends Growable[Elem] {
    *                       than collection's size are reduced.
    */
   def sizeHintBounded(size: Int, boundingColl: TraversableLike[_, _, _]) {
-    if (boundingColl.isInstanceOf[collection.IndexedSeqLike[_,_]])
+    if (boundingColl.isInstanceOf[collection.IndexedSeqLike[L, _,_]])
       sizeHint(size min boundingColl.size)
   }
 
@@ -113,8 +113,8 @@ trait Builder[-Elem, +To] extends Growable[Elem] {
    *  @return a new builder which is the same as the current builder except
    *          that a transformation function is applied to this builder's result.
    */
-  def mapResult[NewTo](f: To => NewTo): Builder[Elem, NewTo] =
-    new Builder[Elem, NewTo] with Proxy {
+  def mapResult[NewTo](f: To => NewTo): Builder[L, Elem, NewTo] =
+    new Builder[L, Elem, NewTo] with Proxy {
       val self = Builder.this
       def +=(x: Elem): this.type = { self += x; this }
       def clear() = self.clear()

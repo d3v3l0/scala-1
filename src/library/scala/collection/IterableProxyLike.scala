@@ -28,15 +28,15 @@ trait IterableProxyLike[L, +A, +Repr <: IterableLike[L, A, Repr] with Iterable[L
     extends IterableLike[L, A, Repr]
     with TraversableProxyLike[L, A, Repr] {
   type LT = L
-  override def iterator: Iterator[A] = self.iterator
-  override def grouped(size: Int): Iterator[Repr] = self.grouped(size)
-  override def sliding(size: Int): Iterator[Repr] = self.sliding(size)
-  override def sliding(size: Int, step: Int): Iterator[Repr] = self.sliding(size, step)
+  override def iterator: Iterator[L, A] = self.iterator
+  override def grouped(size: Int): Iterator[L, Repr] = self.grouped(size)
+  override def sliding(size: Int): Iterator[L, Repr] = self.sliding(size)
+  override def sliding(size: Int, step: Int): Iterator[L, Repr] = self.sliding(size, step)
   override def takeRight(n: Int): Repr = self.takeRight(n)
   override def dropRight(n: Int): Repr = self.dropRight(n)
-  override def zip[A1 >: A, B, That](that: GenIterable[L, B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = self.zip[A1, B, That](that)(bf)
-  override def zipAll[B, A1 >: A, That](that: GenIterable[L, B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = self.zipAll(that, thisElem, thatElem)(bf)
-  override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Repr, (A1, Int), That]): That = self.zipWithIndex(bf)
+  override def zip[A1 >: A, B, That](that: GenIterable[L, B])(implicit bf: CanBuildFrom[L, Repr, (A1, B), That]): That = self.zip[A1, B, That](that)(bf)
+  override def zipAll[B, A1 >: A, That](that: GenIterable[L, B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[L, Repr, (A1, B), That]): That = self.zipAll(that, thisElem, thatElem)(bf)
+  override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[L, Repr, (A1, Int), That]): That = self.zipWithIndex(bf)
   override def sameElements[B >: A](that: GenIterable[L, B]): Boolean = self.sameElements(that)
   override def view = self.view
   override def view(from: Int, until: Int) = self.view(from, until)

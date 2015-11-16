@@ -21,17 +21,17 @@ import generic._
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenSet[A]
-extends GenSetLike[A, GenSet[A]]
+trait GenSet[L, A]
+extends GenSetLike[L, A, GenSet[L, A]]
    with GenIterable[L, A]
-   with GenericSetTemplate[A, GenSet]
+   with GenericSetTemplate[L, A, GenSet]
 {
-  override def companion: GenericCompanion[GenSet] = GenSet
+  override def companion: GenericCompanion[L, GenSet] = GenSet
   def seq: Set[L, A]
 }
 
 
-object GenSet extends GenTraversableFactory[GenSet] {
+object GenSet extends GenTraversableFactory[L, GenSet] {
   implicit def canBuildFrom[A] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
   def newBuilder[A] = Set.newBuilder
 }

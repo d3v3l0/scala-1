@@ -30,7 +30,7 @@ import mutable.{Builder, StringBuilder}
  *  @define coll wrapped string
  */
 @deprecatedInheritance("Inherit from StringLike instead of WrappedString.", "2.11.0")
-class WrappedString(val self: String) extends AbstractSeq[L, Char] with IndexedSeq[Char] with StringLike[WrappedString] {
+class WrappedString(val self: String) extends AbstractSeq[L, Char] with IndexedSeq[L, Char] with StringLike[L, WrappedString] {
 
   override protected[this] def thisCollection: WrappedString = this
   override protected[this] def toCollection(repr: WrappedString): WrappedString = repr
@@ -55,10 +55,10 @@ class WrappedString(val self: String) extends AbstractSeq[L, Char] with IndexedS
  *  @since 2.8
  */
 object WrappedString {
-  implicit def canBuildFrom: CanBuildFrom[WrappedString, Char, WrappedString] = new CanBuildFrom[WrappedString, Char, WrappedString] {
+  implicit def canBuildFrom: CanBuildFrom[L, WrappedString, Char, WrappedString] = new CanBuildFrom[L, WrappedString, Char, WrappedString] {
     def apply(from: WrappedString) = newBuilder
     def apply() = newBuilder
   }
 
-  def newBuilder: Builder[Char, WrappedString] = StringBuilder.newBuilder mapResult (x => new WrappedString(x))
+  def newBuilder: Builder[L, Char, WrappedString] = StringBuilder.newBuilder mapResult (x => new WrappedString(x))
 }

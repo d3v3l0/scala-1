@@ -28,22 +28,22 @@ import scala.collection.parallel.Combiner
 trait ParIterable[L, +T]
 extends scala.collection.GenIterable[L, T]
    with scala.collection.parallel.ParIterable[L, T]
-   with GenericParTemplate[T, ParIterable]
+   with GenericParTemplate[L, T, ParIterable]
    with ParIterableLike[L, T, ParIterable[L, T], scala.collection.immutable.Iterable[L, T]]
    with Immutable
 {
-  override def companion: GenericCompanion[ParIterable] with GenericParCompanion[ParIterable] = ParIterable
+  override def companion: GenericCompanion[L, ParIterable] with GenericParCompanion[L, ParIterable] = ParIterable
   // if `immutable.ParIterableLike` is introduced, please move these 4 methods there
   override def toIterable: ParIterable[L, T] = this
-  override def toSeq: ParSeq[T] = toParCollection[T, ParSeq[T]](() => ParSeq.newCombiner[T])
+  override def toSeq: ParSeq[L, T] = toParCollection[T, ParSeq[L, T]](() => ParSeq.newCombiner[T])
 }
 
 /** $factoryInfo
  */
-object ParIterable extends ParFactory[ParIterable] {
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParIterable[L, T]] =
+object ParIterable extends ParFactory[L, ParIterable] {
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParIterable[L, T]] =
     new GenericCanCombineFrom[T]
 
-  def newBuilder[T]: Combiner[T, ParIterable[L, T]] = ParVector.newBuilder[T]
-  def newCombiner[T]: Combiner[T, ParIterable[L, T]] = ParVector.newCombiner[T]
+  def newBuilder[T]: Combiner[L, T, ParIterable[L, T]] = ParVector.newBuilder[T]
+  def newCombiner[T]: Combiner[L, T, ParIterable[L, T]] = ParVector.newCombiner[T]
 }

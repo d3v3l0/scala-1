@@ -28,9 +28,9 @@ import generic._
 trait Seq[L, A] extends Iterable[L, A]
 //                with GenSeq[L, A]
                 with scala.collection.Seq[L, A]
-                with GenericTraversableTemplate[A, Seq]
+                with GenericTraversableTemplate[L, A, Seq]
                 with SeqLike[L, A, Seq[L, A]] {
-  override def companion: GenericCompanion[Seq] = Seq
+  override def companion: GenericCompanion[L, Seq] = Seq
   override def seq: Seq[L, A] = this
 }
 
@@ -39,9 +39,9 @@ trait Seq[L, A] extends Iterable[L, A]
  *  @define coll mutable sequence
  *  @define Coll `mutable.Seq`
  */
-object Seq extends SeqFactory[Seq] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Seq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, Seq[L, A]] = new ArrayBuffer
+object Seq extends SeqFactory[L, Seq] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Seq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, Seq[L, A]] = new ArrayBuffer
 }
 
 /** Explicit instantiation of the `Seq` trait to reduce class file size in subclasses. */

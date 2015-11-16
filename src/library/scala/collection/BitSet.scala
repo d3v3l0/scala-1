@@ -16,8 +16,8 @@ import generic._
 /** A common base class for mutable and immutable bitsets.
  *  $bitsetinfo
  */
-trait BitSet extends SortedSet[Int]
-                with BitSetLike[BitSet] {
+trait BitSet extends SortedSet[L, Int]
+                with BitSetLike[L, BitSet] {
   override def empty: BitSet = BitSet.empty
 }
 
@@ -25,11 +25,11 @@ trait BitSet extends SortedSet[Int]
  *  @define coll bitset
  *  @define Coll `BitSet`
  */
-object BitSet extends BitSetFactory[BitSet] {
+object BitSet extends BitSetFactory[L, BitSet] {
   val empty: BitSet = immutable.BitSet.empty
   def newBuilder = immutable.BitSet.newBuilder
 
   /** $canBuildFromInfo */
-  implicit def canBuildFrom: CanBuildFrom[BitSet, Int, BitSet] = bitsetCanBuildFrom
+  implicit def canBuildFrom: CanBuildFrom[L, BitSet, Int, BitSet] = bitsetCanBuildFrom
 }
 

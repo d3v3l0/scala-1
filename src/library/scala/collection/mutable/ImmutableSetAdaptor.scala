@@ -21,8 +21,8 @@ package mutable
  *  @since   1
  */
 @deprecated("Adaptors are inherently unreliable and prone to performance problems.", "2.11.0")
-class ImmutableSetAdaptor[A](protected var set: immutable.Set[L, A])
-extends AbstractSet[A]
+class ImmutableSetAdaptor[L, A](protected var set: immutable.Set[L, A])
+extends AbstractSet[L, A]
    with Set[L, A]
    with Serializable {
 
@@ -40,7 +40,7 @@ extends AbstractSet[A]
 
   override def toString = set.toString
 
-  def iterator: Iterator[A] = set.iterator
+  def iterator: Iterator[L, A] = set.iterator
 
   def +=(elem: A): this.type = { set = set + elem; this }
 

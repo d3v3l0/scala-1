@@ -31,7 +31,7 @@ import parallel.ParSet
  *    following methods:
  *    {{{
  *       def contains(key: A): Boolean
- *       def iterator: Iterator[A]
+ *       def iterator: Iterator[L, A]
  *       def +(elem: A): This
  *       def -(elem: A): This
  *    }}}
@@ -57,9 +57,9 @@ import parallel.ParSet
  */
 trait SetLike[L, A, +This <: SetLike[L, A, This] with Set[L, A]]
 extends IterableLike[L, A, This]
-   with GenSetLike[A, This]
-   with Subtractable[A, This]
-   with Parallelizable[A, ParSet[A]]
+   with GenSetLike[L, A, This]
+   with Subtractable[L, A, This]
+   with Parallelizable[L, A, ParSet[L, A]]
 {
 self =>
 
@@ -73,14 +73,14 @@ self =>
    *  <a href="mutable/SetLike.html" target="ContentFrame">
    *  `mutable.SetLike`</a>.
    */
-  override protected[this] def newBuilder: Builder[A, This] = new SetBuilder[A, This](empty)
+  override protected[this] def newBuilder: Builder[L, A, This] = new SetBuilder[L, A, This](empty)
 
   protected[this] override def parCombiner = ParSet.newCombiner[A]
 
   /* Overridden for efficiency. */
   override def toSeq: Seq[L, A] = toBuffer[A]
   override def toBuffer[A1 >: A]: mutable.Buffer[L, A1] = {
-    val result = new mutable.ArrayBuffer[A1](size)
+    val result = new mutable.ArrayBuffer[L, A1](size)
     copyToBuffer(result)
     result
   }
@@ -89,7 +89,7 @@ self =>
   // which I hope to turn into an Xlint style warning as the migration aspect
   // is not central to its importance.
   @migration("Set.map now returns a Set, so it will discard duplicate values.", "2.8.0")
-  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[This, B, That]): That = super.map(f)(bf)
+  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[L, This, B, That]): That = super.map(f)(bf)
 
   /** Tests if some element is contained in this set.
    *
@@ -138,7 +138,7 @@ self =>
    *  @param elems     the collection containing the elements to add.
    *  @return a new $coll with the given elements added, omitting duplicates.
    */
-  def ++ (elems: GenTraversableOnce[A]): This = (repr /: elems.seq)(_ + _)
+  def ++ (elems: GenTraversableOnce[L, A]): This = (repr /: elems.seq)(_ + _)
 
   /** Creates a new set with a given element removed from this set.
    *
@@ -160,7 +160,7 @@ self =>
    *  @return  a new set consisting of all elements that are in this
    *  set or in the given set `that`.
    */
-  def union(that: GenSet[A]): This = this ++ that
+  def union(that: GenSet[L, A]): This = this ++ that
 
   /** Computes the difference of this set and another set.
    *
@@ -168,7 +168,7 @@ self =>
    *  @return     a set containing those elements of this
    *              set that are not also contained in the given set `that`.
    */
-  def diff(that: GenSet[A]): This = this -- that
+  def diff(that: GenSet[L, A]): This = this -- that
 
   /** An iterator over all subsets of this set of the given size.
    *  If the requested size is impossible, an empty iterator is returned.
@@ -176,7 +176,7 @@ self =>
    *  @param len  the size of the subsets.
    *  @return     the iterator.
    */
-  def subsets(len: Int): Iterator[This] = {
+  def subsets(len: Int): Iterator[L, This] = {
     if (len < 0 || len > size) Iterator.empty
     else new SubsetsItr(self.toIndexedSeq, len)
   }
@@ -185,10 +185,10 @@ self =>
    *
    *  @return     the iterator.
    */
-  def subsets(): Iterator[This] = new AbstractIterator[This] {
+  def subsets(): Iterator[L, This] = new AbstractIterator[L, This] {
     private val elms = self.toIndexedSeq
     private var len = 0
-    private var itr: Iterator[This] = Iterator.empty
+    private var itr: Iterator[L, This] = Iterator.empty
 
     def hasNext = len <= elms.size || itr.hasNext
     def next = {
@@ -211,7 +211,7 @@ self =>
    *  @author Eastsun
    *  @date 2010.12.6
    */
-  private class SubsetsItr(elms: IndexedSeq[A], len: Int) extends AbstractIterator[This] {
+  private class SubsetsItr(elms: IndexedSeq[L, A], len: Int) extends AbstractIterator[L, This] {
     private val idxs = Array.range(0, len+1)
     private var _hasNext = true
     idxs(len) = elms.size

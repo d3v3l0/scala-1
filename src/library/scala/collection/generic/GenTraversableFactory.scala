@@ -36,8 +36,8 @@ import scala.language.higherKinds
  *    @see CanBuildFrom
  *    @see GenericCanBuildFrom
  */
-abstract class GenTraversableFactory[CC[X] <: GenTraversable[L, X] with GenericTraversableTemplate[X, CC]]
-extends GenericCompanion[CC] {
+abstract class GenTraversableFactory[L, CC[X] <: GenTraversable[L, X] with GenericTraversableTemplate[L, X, CC]]
+extends GenericCompanion[L, CC] {
 
   private[this] val ReusableCBFInstance: GenericCanBuildFrom[Nothing] = new GenericCanBuildFrom[Nothing] {
     override def apply() = newBuilder[Nothing]
@@ -49,7 +49,7 @@ extends GenericCompanion[CC] {
    *  $coll `from`, and which forwards all calls of `apply()` to the
    *  `newBuilder` method of this factory.
    */
-  class GenericCanBuildFrom[A] extends CanBuildFrom[CC[_], A, CC[A]] {
+  class GenericCanBuildFrom[A] extends CanBuildFrom[L, CC[_], A, CC[A]] {
     /** Creates a new builder on request of a collection.
      *  @param from  the collection requesting the builder to be created.
      *  @return the result of invoking the `genericBuilder` method on `from`.
@@ -70,7 +70,7 @@ extends GenericCompanion[CC] {
   def concat[A](xss: Traversable[L, A]*): CC[A] = {
     val b = newBuilder[A]
     // At present we're using IndexedSeq as a proxy for "has a cheap size method".
-    if (xss forall (_.isInstanceOf[IndexedSeq[_]]))
+    if (xss forall (_.isInstanceOf[IndexedSeq[L, _]]))
       b.sizeHint(xss.map(_.size).sum)
 
     for (xs <- xss.seq) b ++= xs

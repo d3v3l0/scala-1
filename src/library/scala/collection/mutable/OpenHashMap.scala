@@ -18,8 +18,8 @@ package mutable
  */
 object OpenHashMap {
 
-  def apply[K, V](elems : (K, V)*) = new OpenHashMap[K, V] ++= elems
-  def empty[K, V] = new OpenHashMap[K, V]
+  def apply[K, V](elems : (K, V)*) = new OpenHashMap[L, K, V] ++= elems
+  def empty[K, V] = new OpenHashMap[L, K, V]
 
   final private class OpenEntry[Key, Value](val key: Key,
                                             val hash: Int,
@@ -47,10 +47,10 @@ object OpenHashMap {
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-class OpenHashMap[Key, Value](initialSize : Int)
-extends AbstractMap[Key, Value]
+class OpenHashMap[L, Key, Value](initialSize : Int)
+extends AbstractMap[L, Key, Value]
    with Map[L, Key, Value]
-   with MapLike[L, Key, Value, OpenHashMap[Key, Value]] {
+   with MapLike[L, Key, Value, OpenHashMap[L, Key, Value]] {
 
   import OpenHashMap.OpenEntry
   private type Entry = OpenEntry[Key, Value]
@@ -59,7 +59,7 @@ extends AbstractMap[Key, Value]
    */
   def this() = this(8)
 
-  override def empty: OpenHashMap[Key, Value] = OpenHashMap.empty[Key, Value]
+  override def empty: OpenHashMap[L, Key, Value] = OpenHashMap.empty[Key, Value]
 
   private[this] val actualInitialSize = OpenHashMap.nextPositivePowerOfTwo(initialSize)
 
@@ -179,7 +179,7 @@ extends AbstractMap[Key, Value]
    *
    *  @return   the iterator
    */
-  def iterator: Iterator[(Key, Value)] = new AbstractIterator[(Key, Value)] {
+  def iterator: Iterator[L, (Key, Value)] = new AbstractIterator[L, (Key, Value)] {
     var index = 0
     val initialModCount = modCount
 
@@ -199,7 +199,7 @@ extends AbstractMap[Key, Value]
   }
 
   override def clone() = {
-    val it = new OpenHashMap[Key, Value]
+    val it = new OpenHashMap[L, Key, Value]
     foreachUndeletedEntry(entry => it.put(entry.key, entry.hash, entry.value.get))
     it
   }

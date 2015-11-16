@@ -18,7 +18,7 @@ import scala.collection.generic.VolatileAbort
 
 import scala.collection.parallel.ParallelCollectionImplicits._
 
-/** A template trait for sequences of type `ParSeq[T]`, representing
+/** A template trait for sequences of type `ParSeq[L, T]`, representing
  *  parallel sequences with element type `T`.
  *
  *  $parallelseqinfo
@@ -42,26 +42,26 @@ import scala.collection.parallel.ParallelCollectionImplicits._
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait ParSeqLike[+T, +Repr <: ParSeq[T], +Sequential <: Seq[L, T] with SeqLike[L, T, Sequential]]
-extends scala.collection.GenSeqLike[T, Repr]
+trait ParSeqLike[L, +T, +Repr <: ParSeq[L, T], +Sequential <: Seq[L, T] with SeqLike[L, T, Sequential]]
+extends scala.collection.GenSeqLike[L, T, Repr]
    with ParIterableLike[L, T, Repr, Sequential] {
 self =>
 
-  protected[this] type SuperParIterator = IterableSplitter[T]
+  protected[this] type SuperParIterator = IterableSplitter[L, T]
 
   /** A more refined version of the iterator found in the `ParallelIterable` trait,
    *  this iterator can be split into arbitrary subsets of iterators.
    *
    *  @return       an iterator that can be split into subsets of precise size
    */
-  protected[parallel] def splitter: SeqSplitter[T]
+  protected[parallel] def splitter: SeqSplitter[L, T]
 
-  override def iterator: PreciseSplitter[T] = splitter
+  override def iterator: PreciseSplitter[L, T] = splitter
 
   override def size = length
 
   /** Used to iterate elements using indices */
-  protected abstract class Elements(start: Int, val end: Int) extends SeqSplitter[T] with BufferedIterator[T] {
+  protected abstract class Elements(start: Int, val end: Int) extends SeqSplitter[L, T] with BufferedIterator[L, T] {
     private var i = start
 
     def hasNext = i < end
@@ -151,7 +151,7 @@ self =>
     tasksupport.executeAndWaitResult(new Reverse(() => newCombiner, splitter) mapResult { _.resultWithTaskSupport })
   }
 
-  def reverseMap[S, That](f: T => S)(implicit bf: CanBuildFrom[Repr, S, That]): That = if (bf(repr).isCombiner) {
+  def reverseMap[S, That](f: T => S)(implicit bf: CanBuildFrom[L, Repr, S, That]): That = if (bf(repr).isCombiner) {
     tasksupport.executeAndWaitResult(
       new ReverseMap[S, That](f, () => bf(repr).asCombiner, splitter) mapResult { _.resultWithTaskSupport }
     )
@@ -204,7 +204,7 @@ self =>
     }
   } otherwise seq.endsWith(that)
 
-  def patch[U >: T, That](from: Int, patch: GenSeq[L, U], replaced: Int)(implicit bf: CanBuildFrom[Repr, U, That]): That = {
+  def patch[U >: T, That](from: Int, patch: GenSeq[L, U], replaced: Int)(implicit bf: CanBuildFrom[L, Repr, U, That]): That = {
     val realreplaced = replaced min (length - from)
     if (patch.isParSeq && bf(repr).isCombiner && (size - realreplaced + patch.size) > MIN_FOR_COPY) {
       val that = patch.asParSeq
@@ -222,7 +222,7 @@ self =>
     } else patch_sequential(from, patch.seq, replaced)
   }
 
-  private def patch_sequential[U >: T, That](fromarg: Int, patch: Seq[L, U], r: Int)(implicit bf: CanBuildFrom[Repr, U, That]): That = {
+  private def patch_sequential[U >: T, That](fromarg: Int, patch: Seq[L, U], r: Int)(implicit bf: CanBuildFrom[L, Repr, U, That]): That = {
     val from = 0 max fromarg
     val b = bf(repr)
     val repl = (r min (length - from)) max 0
@@ -233,7 +233,7 @@ self =>
     setTaskSupport(b.result(), tasksupport)
   }
 
-  def updated[U >: T, That](index: Int, elem: U)(implicit bf: CanBuildFrom[Repr, U, That]): That = if (bf(repr).isCombiner) {
+  def updated[U >: T, That](index: Int, elem: U)(implicit bf: CanBuildFrom[L, Repr, U, That]): That = if (bf(repr).isCombiner) {
     tasksupport.executeAndWaitResult(
       new Updated(index, elem, combinerFactory(() => bf(repr).asCombiner), splitter) mapResult {
         _.resultWithTaskSupport
@@ -244,19 +244,19 @@ self =>
     tasksupport.executeAndWaitResult(new Updated(index, elem, pbf, splitter) mapResult { _.result })
   } otherwise seq.updated(index, elem)(bf2seq(bf))*/
 
-  def +:[U >: T, That](elem: U)(implicit bf: CanBuildFrom[Repr, U, That]): That = {
+  def +:[U >: T, That](elem: U)(implicit bf: CanBuildFrom[L, Repr, U, That]): That = {
     patch(0, mutable.ParArray(elem), 0)
   }
 
-  def :+[U >: T, That](elem: U)(implicit bf: CanBuildFrom[Repr, U, That]): That = {
+  def :+[U >: T, That](elem: U)(implicit bf: CanBuildFrom[L, Repr, U, That]): That = {
     patch(length, mutable.ParArray(elem), 0)
   }
 
-  def padTo[U >: T, That](len: Int, elem: U)(implicit bf: CanBuildFrom[Repr, U, That]): That = if (length < len) {
+  def padTo[U >: T, That](len: Int, elem: U)(implicit bf: CanBuildFrom[L, Repr, U, That]): That = if (length < len) {
     patch(length, new immutable.Repetition(elem, len - length), 0)
   } else patch(length, Nil, 0)
 
-  override def zip[U >: T, S, That](that: GenIterable[L, S])(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
+  override def zip[U >: T, S, That](that: GenIterable[L, S])(implicit bf: CanBuildFrom[L, Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
     val thatseq = that.asParSeq
     tasksupport.executeAndWaitResult(
       new Zip(length min thatseq.length, combinerFactory(() => bf(repr).asCombiner), splitter, thatseq.splitter) mapResult {
@@ -322,22 +322,22 @@ self =>
 
   override def toString = seq.mkString(stringPrefix + "(", ", ", ")")
 
-  override def toSeq = this.asInstanceOf[ParSeq[T]]
+  override def toSeq = this.asInstanceOf[ParSeq[L, T]]
 
   @deprecated("use .seq.view", "2.11.0")
   override def view = seq.view
 
   /* tasks */
 
-  protected[this] def down(p: IterableSplitter[_]) = p.asInstanceOf[SeqSplitter[T]]
+  protected[this] def down(p: IterableSplitter[L, _]) = p.asInstanceOf[SeqSplitter[L, T]]
 
   protected trait Accessor[R, Tp] extends super.Accessor[R, Tp] {
-    protected[this] val pit: SeqSplitter[T]
+    protected[this] val pit: SeqSplitter[L, T]
   }
 
   protected trait Transformer[R, Tp] extends Accessor[R, Tp] with super.Transformer[R, Tp]
 
-  protected[this] class SegmentLength(pred: T => Boolean, from: Int, protected[this] val pit: SeqSplitter[T])
+  protected[this] class SegmentLength(pred: T => Boolean, from: Int, protected[this] val pit: SeqSplitter[L, T])
   extends Accessor[(Int, Boolean), SegmentLength] {
     @volatile var result: (Int, Boolean) = null
     def leaf(prev: Option[(Int, Boolean)]) = if (from < pit.indexFlag) {
@@ -355,7 +355,7 @@ self =>
     override def requiresStrictSplitters = true
   }
 
-  protected[this] class IndexWhere(pred: T => Boolean, from: Int, protected[this] val pit: SeqSplitter[T])
+  protected[this] class IndexWhere(pred: T => Boolean, from: Int, protected[this] val pit: SeqSplitter[L, T])
   extends Accessor[Int, IndexWhere] {
     @volatile var result: Int = -1
     def leaf(prev: Option[Int]) = if (from < pit.indexFlag) {
@@ -376,7 +376,7 @@ self =>
     override def requiresStrictSplitters = true
   }
 
-  protected[this] class LastIndexWhere(pred: T => Boolean, pos: Int, protected[this] val pit: SeqSplitter[T])
+  protected[this] class LastIndexWhere(pred: T => Boolean, pos: Int, protected[this] val pit: SeqSplitter[L, T])
   extends Accessor[Int, LastIndexWhere] {
     @volatile var result: Int = -1
     def leaf(prev: Option[Int]) = if (pos > pit.indexFlag) {
@@ -397,23 +397,23 @@ self =>
     override def requiresStrictSplitters = true
   }
 
-  protected[this] class Reverse[U >: T, This >: Repr](cbf: () => Combiner[U, This], protected[this] val pit: SeqSplitter[T])
-  extends Transformer[Combiner[U, This], Reverse[U, This]] {
-    @volatile var result: Combiner[U, This] = null
-    def leaf(prev: Option[Combiner[U, This]]) = result = pit.reverse2combiner(reuse(prev, cbf()))
+  protected[this] class Reverse[U >: T, This >: Repr](cbf: () => Combiner[L, U, This], protected[this] val pit: SeqSplitter[L, T])
+  extends Transformer[Combiner[L, U, This], Reverse[U, This]] {
+    @volatile var result: Combiner[L, U, This] = null
+    def leaf(prev: Option[Combiner[L, U, This]]) = result = pit.reverse2combiner(reuse(prev, cbf()))
     protected[this] def newSubtask(p: SuperParIterator) = new Reverse(cbf, down(p))
     override def merge(that: Reverse[U, This]) = result = that.result combine result
   }
 
-  protected[this] class ReverseMap[S, That](f: T => S, pbf: () => Combiner[S, That], protected[this] val pit: SeqSplitter[T])
-  extends Transformer[Combiner[S, That], ReverseMap[S, That]] {
-    @volatile var result: Combiner[S, That] = null
-    def leaf(prev: Option[Combiner[S, That]]) = result = pit.reverseMap2combiner(f, pbf())
+  protected[this] class ReverseMap[S, That](f: T => S, pbf: () => Combiner[L, S, That], protected[this] val pit: SeqSplitter[L, T])
+  extends Transformer[Combiner[L, S, That], ReverseMap[S, That]] {
+    @volatile var result: Combiner[L, S, That] = null
+    def leaf(prev: Option[Combiner[L, S, That]]) = result = pit.reverseMap2combiner(f, pbf())
     protected[this] def newSubtask(p: SuperParIterator) = new ReverseMap(f, pbf, down(p))
     override def merge(that: ReverseMap[S, That]) = result = that.result combine result
   }
 
-  protected[this] class SameElements[U >: T](protected[this] val pit: SeqSplitter[T], val otherpit: SeqSplitter[U])
+  protected[this] class SameElements[U >: T](protected[this] val pit: SeqSplitter[L, T], val otherpit: SeqSplitter[L, U])
   extends Accessor[Boolean, SameElements[U]] {
     @volatile var result: Boolean = true
     def leaf(prev: Option[Boolean]) = if (!pit.isAborted) {
@@ -430,10 +430,10 @@ self =>
     override def requiresStrictSplitters = true
   }
 
-  protected[this] class Updated[U >: T, That](pos: Int, elem: U, pbf: CombinerFactory[U, That], protected[this] val pit: SeqSplitter[T])
-  extends Transformer[Combiner[U, That], Updated[U, That]] {
-    @volatile var result: Combiner[U, That] = null
-    def leaf(prev: Option[Combiner[U, That]]) = result = pit.updated2combiner(pos, elem, pbf())
+  protected[this] class Updated[U >: T, That](pos: Int, elem: U, pbf: CombinerFactory[U, That], protected[this] val pit: SeqSplitter[L, T])
+  extends Transformer[Combiner[L, U, That], Updated[U, That]] {
+    @volatile var result: Combiner[L, U, That] = null
+    def leaf(prev: Option[Combiner[L, U, That]]) = result = pit.updated2combiner(pos, elem, pbf())
     protected[this] def newSubtask(p: SuperParIterator) = unsupported
     override def split = {
       val pits = pit.splitWithSignalling
@@ -443,8 +443,8 @@ self =>
     override def requiresStrictSplitters = true
   }
 
-  protected[this] class Zip[U >: T, S, That](len: Int, cf: CombinerFactory[(U, S), That], protected[this] val pit: SeqSplitter[T], val otherpit: SeqSplitter[S])
-  extends Transformer[Combiner[(U, S), That], Zip[U, S, That]] {
+  protected[this] class Zip[U >: T, S, That](len: Int, cf: CombinerFactory[(U, S), That], protected[this] val pit: SeqSplitter[L, T], val otherpit: SeqSplitter[L, S])
+  extends Transformer[Combiner[L, (U, S), That], Zip[U, S, That]] {
     @volatile var result: Result = null
     def leaf(prev: Option[Result]) = result = pit.zip2combiner[U, S, That](otherpit, cf())
     protected[this] def newSubtask(p: SuperParIterator) = unsupported
@@ -461,7 +461,7 @@ self =>
     override def merge(that: Zip[U, S, That]) = result = result combine that.result
   }
 
-  protected[this] class Corresponds[S](corr: (T, S) => Boolean, protected[this] val pit: SeqSplitter[T], val otherpit: SeqSplitter[S])
+  protected[this] class Corresponds[S](corr: (T, S) => Boolean, protected[this] val pit: SeqSplitter[L, T], val otherpit: SeqSplitter[L, S])
   extends Accessor[Boolean, Corresponds[S]] {
     @volatile var result: Boolean = true
     def leaf(prev: Option[Boolean]) = if (!pit.isAborted) {

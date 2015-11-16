@@ -60,10 +60,10 @@ import scala.annotation.{migration, bridge}
  *  undeprecated methods throughout the collections hierarchy.
  */
 trait BufferLike[L, A, +This <: BufferLike[L, A, This] with Buffer[L, A]]
-                extends Growable[A]
-                   with Shrinkable[A]
-                   with Scriptable[A]
-                   with Subtractable[A, This]
+                extends Growable[L, A]
+                   with Shrinkable[L, A]
+                   with Scriptable[L, A]
+                   with Subtractable[L, A, This]
                    with SeqLike[L, A, This]
                    with scala.Cloneable
 { self : This =>
@@ -185,7 +185,7 @@ trait BufferLike[L, A, +This <: BufferLike[L, A, This] with Buffer[L, A]]
    *  @param cmd  the message to send.
    */
   @deprecated("Scripting is deprecated.", "2.11.0")
-  def <<(cmd: Message[A]): Unit = cmd match {
+  def <<(cmd: Message[L, A]): Unit = cmd match {
     case Include(Start, x)      => prepend(x)
     case Include(End, x)        => append(x)
     case Include(Index(n), x)   => insert(n, x)
@@ -201,7 +201,7 @@ trait BufferLike[L, A, +This <: BufferLike[L, A, This] with Buffer[L, A]]
     case Remove(NoLo, x)        => this -= x
 
     case Reset()                => clear()
-    case s: Script[_]           => s.iterator foreach <<
+    case s: Script[L, _]           => s.iterator foreach <<
     case _                      => throw new UnsupportedOperationException("message " + cmd + " not understood")
   }
 
@@ -225,7 +225,7 @@ trait BufferLike[L, A, +This <: BufferLike[L, A, This] with Buffer[L, A]]
    *  @return       a new collection consisting of all the elements of this collection and `xs`.
    */
   @migration("`++` creates a new buffer. Use `++=` to add an element from this buffer and return that buffer itself.", "2.8.0")
-  def ++(xs: GenTraversableOnce[A]): This = clone() ++= xs.seq
+  def ++(xs: GenTraversableOnce[L, A]): This = clone() ++= xs.seq
 
   /** Creates a new collection with all the elements of this collection except `elem`.
    *
@@ -255,7 +255,7 @@ trait BufferLike[L, A, +This <: BufferLike[L, A, This] with Buffer[L, A]]
    *                  those in `xs`
    */
   @migration("`--` creates a new buffer. Use `--=` to remove an element from this buffer and return that buffer itself.", "2.8.0")
-  override def --(xs: GenTraversableOnce[A]): This = clone() --= xs.seq
+  override def --(xs: GenTraversableOnce[L, A]): This = clone() --= xs.seq
 
   /** Return a clone of this buffer.
    *

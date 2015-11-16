@@ -40,11 +40,11 @@ import StringLike._
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-trait StringLike[+Repr] extends Any with scala.collection.IndexedSeqOptimized[Char, Repr] with Ordered[String] {
+trait StringLike[L, +Repr] extends Any with scala.collection.IndexedSeqOptimized[L, Char, Repr] with Ordered[String] {
 self =>
 
   /** Creates a string builder buffer as builder for this class */
-  protected[this] def newBuilder: Builder[Char, Repr]
+  protected[this] def newBuilder: Builder[L, Char, Repr]
 
   /** Return element at index `n`
    *  @throws   IndexOutOfBoundsException if the index is not valid
@@ -106,7 +106,7 @@ self =>
    *  - `LF` - line feed   (`0x0A` hex)
    *  - `FF` - form feed   (`0x0C` hex)
    */
-  def linesWithSeparators: Iterator[String] = new AbstractIterator[String] {
+  def linesWithSeparators: Iterator[L, String] = new AbstractIterator[L, String] {
     val str = self.toString
     private val len = str.length
     private var index = 0
@@ -124,7 +124,7 @@ self =>
    *  end characters, i.e., apply `.stripLineEnd` to all lines
    *  returned by `linesWithSeparators`.
    */
-  def lines: Iterator[String] =
+  def lines: Iterator[L, String] =
     linesWithSeparators map (line => new WrappedString(line).stripLineEnd)
 
   /** Return all lines in this string in an iterator, excluding trailing line
@@ -132,7 +132,7 @@ self =>
    *  returned by `linesWithSeparators`.
    */
   @deprecated("Use `lines` instead.","2.11.0")
-  def linesIterator: Iterator[String] =
+  def linesIterator: Iterator[L, String] =
     linesWithSeparators map (line => new WrappedString(line).stripLineEnd)
 
   /** Returns this string with first character converted to upper case.

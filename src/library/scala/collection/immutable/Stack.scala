@@ -17,10 +17,10 @@ import mutable.{ ArrayBuffer, Builder }
  *  @define Coll `immutable.Stack`
  *  @define coll immutable stack
  */
-object Stack extends SeqFactory[Stack] {
+object Stack extends SeqFactory[L, Stack] {
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Stack[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, Stack[A]] = new ArrayBuffer[A] mapResult (buf => new Stack(buf.toList))
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Stack[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, Stack[L, A]] = new ArrayBuffer[L, A] mapResult (buf => new Stack(buf.toList))
 }
 
 /** This class implements immutable stacks using a list-based data
@@ -47,13 +47,13 @@ object Stack extends SeqFactory[Stack] {
  */
 @SerialVersionUID(1976480595012942526L)
 @deprecated("Stack is an inelegant and potentially poorly-performing wrapper around List.  Use List instead: stack push x becomes x :: list; stack.pop is list.tail.", "2.11.0")
-class Stack[+A] protected (protected val elems: List[A])
+class Stack[L, +A] protected (protected val elems: List[A])
                  extends AbstractSeq[L, A]
-                    with LinearSeq[A]
-                    with GenericTraversableTemplate[A, Stack]
-                    with LinearSeqOptimized[A, Stack[A]]
+                    with LinearSeq[L, A]
+                    with GenericTraversableTemplate[L, A, Stack]
+                    with LinearSeqOptimized[L, A, Stack[L, A]]
                     with Serializable {
-  override def companion: GenericCompanion[Stack] = Stack
+  override def companion: GenericCompanion[L, Stack] = Stack
 
   def this() = this(Nil)
 
@@ -71,7 +71,7 @@ class Stack[+A] protected (protected val elems: List[A])
    *  @param   elem       the element to push on the stack.
    *  @return the stack with the new element on top.
    */
-  def push[B >: A](elem: B): Stack[B] = new Stack(elem :: elems)
+  def push[B >: A](elem: B): Stack[L, B] = new Stack(elem :: elems)
 
   /** Push a sequence of elements onto the stack. The last element
    *  of the sequence will be on top of the new stack.
@@ -79,7 +79,7 @@ class Stack[+A] protected (protected val elems: List[A])
    *  @param   elems      the element sequence.
    *  @return the stack with the new elements on top.
    */
-  def push[B >: A](elem1: B, elem2: B, elems: B*): Stack[B] =
+  def push[B >: A](elem1: B, elem2: B, elems: B*): Stack[L, B] =
     this.push(elem1).push(elem2).pushAll(elems)
 
   /** Push all elements provided by the given traversable object onto
@@ -89,8 +89,8 @@ class Stack[+A] protected (protected val elems: List[A])
    *  @param   xs      the iterator object.
    *  @return the stack with the new elements on top.
    */
-  def pushAll[B >: A](xs: TraversableOnce[L, B]): Stack[B] =
-    ((this: Stack[B]) /: xs.toIterator)(_ push _)
+  def pushAll[B >: A](xs: TraversableOnce[L, B]): Stack[L, B] =
+    ((this: Stack[L, B]) /: xs.toIterator)(_ push _)
 
   /** Returns the top element of the stack. An error is signaled if
    *  there is no element on the stack.
@@ -103,20 +103,20 @@ class Stack[+A] protected (protected val elems: List[A])
     else throw new NoSuchElementException("top of empty stack")
 
   /** Removes the top element from the stack.
-   *  Note: should return `(A, Stack[A])` as for queues (mics)
+   *  Note: should return `(A, Stack[L, A])` as for queues (mics)
    *
    *  @throws java.util.NoSuchElementException
    *  @return the new stack without the former top element.
    */
-  def pop: Stack[A] =
+  def pop: Stack[L, A] =
     if (!isEmpty) new Stack(elems.tail)
     else throw new NoSuchElementException("pop of empty stack")
 
-  def pop2: (A, Stack[A]) =
+  def pop2: (A, Stack[L, A]) =
     if (!isEmpty) (elems.head, new Stack(elems.tail))
     else throw new NoSuchElementException("pop of empty stack")
 
-  override def reverse: Stack[A] = new Stack(elems.reverse)
+  override def reverse: Stack[L, A] = new Stack(elems.reverse)
 
   /** Returns an iterator over all elements on the stack. The iterator
    *  issues elements in the reversed order they were inserted into the
@@ -124,7 +124,7 @@ class Stack[+A] protected (protected val elems: List[A])
    *
    *  @return an iterator over all stack elements.
    */
-  override def iterator: Iterator[A] = elems.iterator
+  override def iterator: Iterator[L, A] = elems.iterator
 
   /** Returns a string representation of this stack.
    */

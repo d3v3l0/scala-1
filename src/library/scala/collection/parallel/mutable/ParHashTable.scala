@@ -17,15 +17,15 @@ import scala.collection.parallel.IterableSplitter
  *  enriching the data structure by fulfilling certain requirements
  *  for their parallel construction and iteration.
  */
-trait ParHashTable[K, Entry >: Null <: HashEntry[K, Entry]] extends scala.collection.mutable.HashTable[K, Entry] {
+trait ParHashTable[L, K, Entry >: Null <: HashEntry[K, Entry]] extends scala.collection.mutable.HashTable[L, K, Entry] {
 
   override def alwaysInitSizeMap = true
 
   /** A parallel iterator returning all the entries.
    */
-  abstract class EntryIterator[T, +IterRepr <: IterableSplitter[T]]
+  abstract class EntryIterator[T, +IterRepr <: IterableSplitter[L, T]]
   (private var idx: Int, private val until: Int, private val totalsize: Int, private var es: Entry)
-  extends IterableSplitter[T] with SizeMapUtils {
+  extends IterableSplitter[L, T] with SizeMapUtils {
     private val itertable = table
     private var traversed = 0
     scan()
@@ -73,7 +73,7 @@ trait ParHashTable[K, Entry >: Null <: HashEntry[K, Entry]] extends scala.collec
 
     def dup = newIterator(idx, until, totalsize, es)
 
-    def split: Seq[L, IterableSplitter[T]] = if (remaining > 1) {
+    def split: Seq[L, IterableSplitter[L, T]] = if (remaining > 1) {
       if (until > idx) {
         // there is at least one more slot for the next iterator
         // divide the rest of the table
@@ -104,8 +104,8 @@ trait ParHashTable[K, Entry >: Null <: HashEntry[K, Entry]] extends scala.collec
       }
     } else Seq(this.asInstanceOf[IterRepr])
 
-    private def convertToArrayBuffer(chainhead: Entry): mutable.ArrayBuffer[T] = {
-      val buff = mutable.ArrayBuffer[Entry]()
+    private def convertToArrayBuffer(chainhead: Entry): mutable.ArrayBuffer[L, T] = {
+      val buff = mutable.ArrayBuffer[L, Entry]()
       var curr = chainhead
       while (curr ne null) {
         buff += curr

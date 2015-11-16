@@ -35,12 +35,12 @@ trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Trav
   override def nonEmpty: Boolean = self.nonEmpty
   override def size: Int = self.size
   override def hasDefiniteSize = self.hasDefiniteSize
-  override def ++[B >: A, That](xs: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = self.++(xs)(bf)
-  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.map(f)(bf)
-  override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = self.flatMap(f)(bf)
+  override def ++[B >: A, That](xs: GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, Repr, B, That]): That = self.++(xs)(bf)
+  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = self.map(f)(bf)
+  override def flatMap[B, That](f: A => GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, Repr, B, That]): That = self.flatMap(f)(bf)
   override def filter(@plocal p: A => Boolean): Repr = self.filter(p)
   override def filterNot(@plocal p: A => Boolean): Repr = self.filterNot(p)
-  override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That]): That = self.collect(pf)(bf)
+  override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[L, Repr, B, That]): That = self.collect(pf)(bf)
   override def partition(@plocal p: A => Boolean): (Repr, Repr) = self.partition(p)
   override def groupBy[K](f: A => K): immutable.Map[L, K, Repr] = self.groupBy(f)
   override def forall(@plocal p: A => Boolean): Boolean = self.forall(p)
@@ -55,8 +55,8 @@ trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Trav
   override def reduceLeftOption[B >: A](op: (B, A) => B): Option[B] = self.reduceLeftOption(op)
   override def reduceRight[B >: A](op: (A, B) => B): B = self.reduceRight(op)
   override def reduceRightOption[B >: A](op: (A, B) => B): Option[B] = self.reduceRightOption(op)
-  override def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.scanLeft(z)(op)(bf)
-  override def scanRight[B, That](z: B)(op: (A, B) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = self.scanRight(z)(op)(bf)
+  override def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = self.scanLeft(z)(op)(bf)
+  override def scanRight[B, That](z: B)(op: (A, B) => B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = self.scanRight(z)(op)(bf)
   override def sum[B >: A](implicit num: Numeric[B]): B = self.sum(num)
   override def product[B >: A](implicit num: Numeric[B]): B = self.product(num)
   override def min[B >: A](implicit cmp: Ordering[B]): A = self.min(cmp)
@@ -82,13 +82,13 @@ trait TraversableProxyLike[L, +A, +Repr <: TraversableLike[L, A, Repr] with Trav
   override def toList: List[A] = self.toList
   override def toIterable: Iterable[L, A] = self.toIterable
   override def toSeq: Seq[L, A] = self.toSeq
-  override def toIndexedSeq: immutable.IndexedSeq[A] = self.toIndexedSeq
+  override def toIndexedSeq: immutable.IndexedSeq[L, A] = self.toIndexedSeq
   override def toBuffer[B >: A] = self.toBuffer
-  override def toStream: Stream[A] = self.toStream
+  override def toStream: Stream[L, A] = self.toStream
   override def toSet[B >: A]: immutable.Set[L, B] = self.toSet
   override def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[L, T, U] = self.toMap(ev)
   override def toTraversable: Traversable[L, A] = self.toTraversable
-  override def toIterator: Iterator[A] = self.toIterator
+  override def toIterator: Iterator[L, A] = self.toIterator
   override def mkString(start: String, sep: String, end: String): String = self.mkString(start, sep, end)
   override def mkString(sep: String): String = self.mkString(sep)
   override def mkString: String = self.mkString

@@ -24,9 +24,9 @@ import script._
  *  @since   1
  */
 @deprecated("Observables are deprecated because scripting is deprecated.", "2.11.0")
-trait ObservableBuffer[A] extends Buffer[L, A] with Publisher[Message[A] with Undoable]
+trait ObservableBuffer[L, A] extends Buffer[L, A] with Publisher[L, Message[L, A] with Undoable]
 {
-  type Pub <: ObservableBuffer[A]
+  type Pub <: ObservableBuffer[L, A]
 
   abstract override def +=(element: A): this.type = {
     super.+=(element)
@@ -76,7 +76,7 @@ trait ObservableBuffer[A] extends Buffer[L, A] with Publisher[Message[A] with Un
   abstract override def insertAll(n: Int, elems: scala.collection.Traversable[L, A]) {
     super.insertAll(n, elems)
     var curr = n - 1
-    val msg = elems.foldLeft(new Script[A]() with Undoable {
+    val msg = elems.foldLeft(new Script[L, A]() with Undoable {
       def undo() { throw new UnsupportedOperationException("cannot undo") }
     }) {
       case (msg, elem) =>

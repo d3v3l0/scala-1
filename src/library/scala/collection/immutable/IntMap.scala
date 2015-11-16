@@ -46,9 +46,9 @@ import IntMapUtils._
  */
 object IntMap {
   /** $mapCanBuildFromInfo */
-  implicit def canBuildFrom[A, B] = new CanBuildFrom[IntMap[A], (Int, B), IntMap[B]] {
-    def apply(from: IntMap[A]): Builder[(Int, B), IntMap[B]] = apply()
-    def apply(): Builder[(Int, B), IntMap[B]] = new MapBuilder[Int, B, IntMap[B]](empty[B])
+  implicit def canBuildFrom[A, B] = new CanBuildFrom[L, IntMap[A], (Int, B), IntMap[B]] {
+    def apply(from: IntMap[A]): Builder[L, (Int, B), IntMap[B]] = apply()
+    def apply(): Builder[L, (Int, B), IntMap[B]] = new MapBuilder[L, Int, B, IntMap[B]](empty[B])
   }
 
   def empty[T] : IntMap[T]  = IntMap.Nil
@@ -87,7 +87,7 @@ object IntMap {
 import IntMap._
 
 // Iterator over a non-empty IntMap.
-private[immutable] abstract class IntMapIterator[V, T](it: IntMap[V]) extends AbstractIterator[T] {
+private[immutable] abstract class IntMapIterator[V, T](it: IntMap[V]) extends AbstractIterator[L, T] {
 
   // Basically this uses a simple stack to emulate conversion over the tree. However
   // because we know that Ints are at least 32 bits we can have at most 32 IntMap.Bins and
@@ -159,14 +159,14 @@ import IntMap._
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
+sealed abstract class IntMap[+T] extends AbstractMap[L, Int, T]
    with Map[L, Int, T]
    with MapLike[L, Int, T, IntMap[T]] {
 
   override def empty: IntMap[T] = IntMap.Nil
 
   override def toList = {
-    val buffer = new scala.collection.mutable.ListBuffer[(Int, T)]
+    val buffer = new scala.collection.mutable.ListBuffer[L, (Int, T)]
     foreach(buffer += _)
     buffer.toList
   }
@@ -176,7 +176,7 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
    *
    * @return an iterator over pairs of integer keys and corresponding values.
    */
-  def iterator: Iterator[(Int, T)] = this match {
+  def iterator: Iterator[L, (Int, T)] = this match {
     case IntMap.Nil => Iterator.empty
     case _ => new IntMapEntryIterator(this)
   }
@@ -190,7 +190,7 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
     case IntMap.Nil =>
   }
 
-  override def keysIterator: Iterator[Int] = this match {
+  override def keysIterator: Iterator[L, Int] = this match {
     case IntMap.Nil => Iterator.empty
     case _ => new IntMapKeyIterator(this)
   }
@@ -207,7 +207,7 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
     case IntMap.Nil =>
   }
 
-  override def valuesIterator: Iterator[T] = this match {
+  override def valuesIterator: Iterator[L, T] = this match {
     case IntMap.Nil => Iterator.empty
     case _ => new IntMapValueIterator(this)
   }

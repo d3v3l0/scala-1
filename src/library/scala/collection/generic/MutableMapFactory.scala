@@ -20,12 +20,12 @@ import scala.language.higherKinds
  *    @version 2.8
  *    @since 2.8
  */
-abstract class MutableMapFactory[CC[A, B] <: mutable.Map[L, A, B] with mutable.MapLike[L, A, B, CC[A, B]]]
-  extends MapFactory[CC] {
+abstract class MutableMapFactory[L, CC[A, B] <: mutable.Map[L, A, B] with mutable.MapLike[L, A, B, CC[A, B]]]
+  extends MapFactory[L, CC] {
 
   /** The default builder for $Coll objects.
    *  @tparam A      the type of the keys
    *  @tparam B      the type of the associated values
    */
-  override def newBuilder[A, B]: Builder[(A, B), CC[A, B]] = empty[A, B]
+  override def newBuilder[A, B]: Builder[L, (A, B), CC[A, B]] = empty[A, B]
 }

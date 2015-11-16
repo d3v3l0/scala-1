@@ -39,14 +39,14 @@ import scala.annotation.tailrec
 
 @SerialVersionUID(-7622936493364270175L)
 @deprecatedInheritance("The implementation details of immutable queues make inheriting from them unwise.", "2.11.0")
-class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
+class Queue[L, +A] protected(protected val in: List[A], protected val out: List[A])
          extends AbstractSeq[L, A]
-            with LinearSeq[A]
-            with GenericTraversableTemplate[A, Queue]
-            with LinearSeqLike[A, Queue[A]]
+            with LinearSeq[L, A]
+            with GenericTraversableTemplate[L, A, Queue]
+            with LinearSeqLike[L, A, Queue[L, A]]
             with Serializable {
 
-  override def companion: GenericCompanion[Queue] = Queue
+  override def companion: GenericCompanion[L, Queue] = Queue
 
   /** Returns the `n`-th element of this queue.
    *  The first element is at position `0`.
@@ -68,7 +68,7 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
 
   /** Returns the elements in the list as an iterator
    */
-  override def iterator: Iterator[A] = (out ::: in.reverse).iterator
+  override def iterator: Iterator[L, A] = (out ::: in.reverse).iterator
 
   /** Checks if the queue is empty.
    *
@@ -81,7 +81,7 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
     else if (in.nonEmpty) in.last
     else throw new NoSuchElementException("head on empty queue")
 
-  override def tail: Queue[A] =
+  override def tail: Queue[L, A] =
     if (out.nonEmpty) new Queue(in, out.tail)
     else if (in.nonEmpty) new Queue(Nil, in.reverse.tail)
     else throw new NoSuchElementException("tail on empty queue")
@@ -90,12 +90,12 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
    */
   override def length = in.length + out.length
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Queue[A], B, That]): That = bf match {
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, Queue[L, A], B, That]): That = bf match {
     case _: Queue.GenericCanBuildFrom[_] => new Queue(in, elem :: out).asInstanceOf[That]
     case _                               => super.+:(elem)(bf)
   }
 
-  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Queue[A], B, That]): That = bf match {
+  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, Queue[L, A], B, That]): That = bf match {
     case _: Queue.GenericCanBuildFrom[_] => enqueue(elem).asInstanceOf[That]
     case _                               => super.:+(elem)(bf)
   }
@@ -124,7 +124,7 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
    *  @throws java.util.NoSuchElementException
    *  @return the first element of the queue.
    */
-  def dequeue: (A, Queue[A]) = out match {
+  def dequeue: (A, Queue[L, A]) = out match {
     case Nil if !in.isEmpty => val rev = in.reverse ; (rev.head, new Queue(Nil, rev.tail))
     case x :: xs            => (x, new Queue(in, xs))
     case _                  => throw new NoSuchElementException("dequeue on empty queue")
@@ -135,7 +135,7 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
    * @return A tuple of the first element of the queue, and a new queue with this element removed.
    *         If the queue is empty, `None` is returned.
    */
-  def dequeueOption: Option[(A, Queue[A])] = if(isEmpty) None else Some(dequeue)
+  def dequeueOption: Option[(A, Queue[L, A])] = if(isEmpty) None else Some(dequeue)
 
   /** Returns the first element in the queue, or throws an error if there
    *  is no element contained in the queue.
@@ -154,12 +154,12 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
  *  @define Coll `immutable.Queue`
  *  @define coll immutable queue
  */
-object Queue extends SeqFactory[Queue] {
+object Queue extends SeqFactory[L, Queue] {
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Queue[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, Queue[A]] = new ListBuffer[A] mapResult (x => new Queue[A](Nil, x.toList))
-  override def empty[A]: Queue[A] = EmptyQueue.asInstanceOf[Queue[A]]
-  override def apply[A](xs: A*): Queue[A] = new Queue[A](Nil, xs.toList)
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Queue[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, Queue[L, A]] = new ListBuffer[L, A] mapResult (x => new Queue[L, A](Nil, x.toList))
+  override def empty[A]: Queue[L, A] = EmptyQueue.asInstanceOf[Queue[L, A]]
+  override def apply[A](xs: A*): Queue[L, A] = new Queue[L, A](Nil, xs.toList)
 
-  private object EmptyQueue extends Queue[Nothing](Nil, Nil) { }
+  private object EmptyQueue extends Queue[L, Nothing](Nil, Nil) { }
 }

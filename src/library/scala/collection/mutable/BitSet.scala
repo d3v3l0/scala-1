@@ -25,7 +25,7 @@ import BitSetLike.{LogWL, MaxSize, updateArray}
  *  @define Coll `BitSet`
  *  @define coll bitset
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `BitSet[B]` because an implicit of type `CanBuildFrom[BitSet, B, BitSet]`
+ *    `That` is always `BitSet[B]` because an implicit of type `CanBuildFrom[L, BitSet, B, BitSet]`
  *    is defined in object `BitSet`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -37,10 +37,10 @@ import BitSetLike.{LogWL, MaxSize, updateArray}
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(8483111450368547763L)
-class BitSet(protected final var elems: Array[Long]) extends AbstractSet[Int]
-                                                  with SortedSet[Int]
+class BitSet(protected final var elems: Array[Long]) extends AbstractSet[L, Int]
+                                                  with SortedSet[L, Int]
                                                   with scala.collection.BitSet
-                                                  with BitSetLike[BitSet]
+                                                  with BitSetLike[L, BitSet]
                                                   with SetLike[L, Int, BitSet]
                                                   with Serializable {
 
@@ -178,14 +178,14 @@ class BitSet(protected final var elems: Array[Long]) extends AbstractSet[Int]
  *  @define coll bitset
  *  @define Coll `BitSet`
  */
-object BitSet extends BitSetFactory[BitSet] {
+object BitSet extends BitSetFactory[L, BitSet] {
   def empty: BitSet = new BitSet
 
   /** A growing builder for mutable Sets. */
-  def newBuilder: Builder[Int, BitSet] = new GrowingBuilder[Int, BitSet](empty)
+  def newBuilder: Builder[L, Int, BitSet] = new GrowingBuilder[L, Int, BitSet](empty)
 
   /** $bitsetCanBuildFrom */
-  implicit def canBuildFrom: CanBuildFrom[BitSet, Int, BitSet] = bitsetCanBuildFrom
+  implicit def canBuildFrom: CanBuildFrom[L, BitSet, Int, BitSet] = bitsetCanBuildFrom
 
   /** A bitset containing all the bits in an array */
   def fromBitMask(elems: Array[Long]): BitSet = {

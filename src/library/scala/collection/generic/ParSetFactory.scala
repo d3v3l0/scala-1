@@ -20,15 +20,15 @@ import scala.language.higherKinds
  *  @author Aleksandar Prokopec
  *  @since 2.8
  */
-abstract class ParSetFactory[CC[X] <: ParSet[X] with ParSetLike[X, CC[X], _] with GenericParTemplate[X, CC]]
-  extends GenSetFactory[CC]
-     with GenericParCompanion[CC]
+abstract class ParSetFactory[L, CC[X] <: ParSet[L, X] with ParSetLike[L, X, CC[X], _] with GenericParTemplate[L, X, CC]]
+  extends GenSetFactory[L, CC]
+     with GenericParCompanion[L, CC]
 {
-  def newBuilder[A]: Combiner[A, CC[A]] = newCombiner[A]
+  def newBuilder[A]: Combiner[L, A, CC[A]] = newCombiner[A]
 
-  def newCombiner[A]: Combiner[A, CC[A]]
+  def newCombiner[A]: Combiner[L, A, CC[A]]
 
-  class GenericCanCombineFrom[A] extends CanCombineFrom[CC[_], A, CC[A]] {
+  class GenericCanCombineFrom[A] extends CanCombineFrom[L, CC[_], A, CC[A]] {
     override def apply(from: Coll) = from.genericCombiner[A]
     override def apply() = newCombiner[A]
   }

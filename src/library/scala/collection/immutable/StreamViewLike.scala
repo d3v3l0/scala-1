@@ -4,18 +4,18 @@ package immutable
 
 import generic._
 
-trait StreamViewLike[+A,
+trait StreamViewLike[L, +A,
 		     +Coll,
-		     +This <: StreamView[A, Coll] with StreamViewLike[A, Coll, This]]
-extends SeqView[A, Coll]
-   with SeqViewLike[A, Coll, This]
+		     +This <: StreamView[L, A, Coll] with StreamViewLike[L, A, Coll, This]]
+extends SeqView[L, A, Coll]
+   with SeqViewLike[L, A, Coll, This]
 { self =>
 
-  override def force[B >: A, That](implicit bf: CanBuildFrom[Coll, B, That]) = {
+  override def force[B >: A, That](implicit bf: CanBuildFrom[L, Coll, B, That]) = {
     self.iterator.toStream.asInstanceOf[That]
   }
 
-  trait Transformed[+B] extends StreamView[B, Coll] with super.Transformed[B] {
+  trait Transformed[+B] extends StreamView[L, B, Coll] with super.Transformed[B] {
     override def toString = viewToString
   }
 
@@ -54,7 +54,7 @@ extends SeqView[A, Coll]
   protected override def newForced[B](xs: => scala.collection.GenSeq[L, B]): Transformed[B] = new { val forced = xs } with AbstractTransformed[B] with Forced[B]
   protected override def newAppended[B >: A](that: scala.collection.GenTraversable[L, B]): Transformed[B] = new { val rest = that } with AbstractTransformed[B] with Appended[B]
   protected override def newMapped[B](f: A => B): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with Mapped[B]
-  protected override def newFlatMapped[B](f: A => scala.collection.GenTraversableOnce[B]): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with FlatMapped[B]
+  protected override def newFlatMapped[B](f: A => scala.collection.GenTraversableOnce[L, B]): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with FlatMapped[B]
   protected override def newFiltered(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with Filtered
   protected override def newSliced(_endpoints: SliceInterval): Transformed[A] = new { val endpoints = _endpoints } with AbstractTransformed[A] with Sliced
   protected override def newDroppedWhile(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with DroppedWhile

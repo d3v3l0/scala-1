@@ -30,20 +30,20 @@ import generic._
  *  @define coll buffer
  */
 trait Buffer[L, A] extends Seq[L, A]
-                   with GenericTraversableTemplate[A, Buffer]
+                   with GenericTraversableTemplate[L, A, Buffer]
                    with BufferLike[L, A, Buffer[L, A]]
                    with scala.Cloneable {
-  override def companion: GenericCompanion[Buffer] = Buffer
+  override def companion: GenericCompanion[L, Buffer] = Buffer
 }
 
 /** $factoryInfo
  *  @define coll buffer
  *  @define Coll `Buffer`
  */
-object Buffer extends SeqFactory[Buffer] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Buffer[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, Buffer[L, A]] = new ArrayBuffer
+object Buffer extends SeqFactory[L, Buffer] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Buffer[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, Buffer[L, A]] = new ArrayBuffer
 }
 
 /** Explicit instantiation of the `Buffer` trait to reduce class file size in subclasses. */
-abstract class AbstractBuffer[A] extends AbstractSeq[L, A] with Buffer[L, A]
+abstract class AbstractBuffer[L, A] extends AbstractSeq[L, A] with Buffer[L, A]

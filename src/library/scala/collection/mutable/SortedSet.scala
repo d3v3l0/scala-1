@@ -21,11 +21,11 @@ import generic._
  * @author Lucien Pereira
  *
  */
-trait SortedSet[A] extends scala.collection.SortedSet[A] with scala.collection.SortedSetLike[A,SortedSet[A]]
-  with mutable.Set[L, A] with mutable.SetLike[L, A, SortedSet[A]] {
+trait SortedSet[L, A] extends scala.collection.SortedSet[L, A] with scala.collection.SortedSetLike[L, A,SortedSet[L, A]]
+  with mutable.Set[L, A] with mutable.SetLike[L, A, SortedSet[L, A]] {
 
   /** Needs to be overridden in subclasses. */
-  override def empty: SortedSet[A] = SortedSet.empty[A]
+  override def empty: SortedSet[L, A] = SortedSet.empty[A]
 
 }
 
@@ -42,9 +42,9 @@ trait SortedSet[A] extends scala.collection.SortedSet[A] with scala.collection.S
  * @author Lucien Pereira
  *
  */
-object SortedSet extends MutableSortedSetFactory[SortedSet] {
-  implicit def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[Coll, A, SortedSet[A]] = new SortedSetCanBuildFrom[A]
+object SortedSet extends MutableSortedSetFactory[L, SortedSet] {
+  implicit def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[L, Coll, A, SortedSet[L, A]] = new SortedSetCanBuildFrom[A]
 
-  def empty[A](implicit ord: Ordering[A]): SortedSet[A] = TreeSet.empty[A]
+  def empty[A](implicit ord: Ordering[A]): SortedSet[L, A] = TreeSet.empty[A]
 
 }

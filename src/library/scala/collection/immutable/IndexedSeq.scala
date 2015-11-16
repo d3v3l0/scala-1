@@ -18,19 +18,19 @@ import mutable.{ArrayBuffer, Builder}
  *  that are guaranteed immutable.
  *  $indexedSeqInfo
  */
-trait IndexedSeq[+A] extends Seq[L, A]
-                    with scala.collection.IndexedSeq[A]
-                    with GenericTraversableTemplate[A, IndexedSeq]
-                    with IndexedSeqLike[A, IndexedSeq[A]] {
-  override def companion: GenericCompanion[IndexedSeq] = IndexedSeq
+trait IndexedSeq[L, +A] extends Seq[L, A]
+                    with scala.collection.IndexedSeq[L, A]
+                    with GenericTraversableTemplate[L, A, IndexedSeq]
+                    with IndexedSeqLike[L, A, IndexedSeq[L, A]] {
+  override def companion: GenericCompanion[L, IndexedSeq] = IndexedSeq
   
   /** Returns this $coll as an indexed sequence.
    *  
    *  A new indexed sequence will not be built; lazy collections will stay lazy.
    */
   @deprecatedOverriding("Immutable indexed sequences should do nothing on toIndexedSeq except cast themselves as an indexed sequence.", "2.11.0")
-  override def toIndexedSeq: IndexedSeq[A] = this
-  override def seq: IndexedSeq[A] = this
+  override def toIndexedSeq: IndexedSeq[L, A] = this
+  override def seq: IndexedSeq[L, A] = this
 }
 
 /** $factoryInfo
@@ -38,13 +38,13 @@ trait IndexedSeq[+A] extends Seq[L, A]
  *  @define coll indexed sequence
  *  @define Coll `IndexedSeq`
  */
-object IndexedSeq extends IndexedSeqFactory[IndexedSeq] {
-  class Impl[A](buf: ArrayBuffer[A]) extends AbstractSeq[L, A] with IndexedSeq[A] with Serializable {
+object IndexedSeq extends IndexedSeqFactory[L, IndexedSeq] {
+  class Impl[A](buf: ArrayBuffer[L, A]) extends AbstractSeq[L, A] with IndexedSeq[L, A] with Serializable {
     def length = buf.length
     def apply(idx: Int) = buf.apply(idx)
   }
-  def newBuilder[A]: Builder[A, IndexedSeq[A]] = Vector.newBuilder[A]
+  def newBuilder[A]: Builder[L, A, IndexedSeq[L, A]] = Vector.newBuilder[A]
 
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, IndexedSeq[A]] =
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, IndexedSeq[L, A]] =
     ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 }

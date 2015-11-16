@@ -58,7 +58,7 @@ import scala.reflect.ClassTag
  *
  *    Note: will not terminate for infinite-sized collections.
  */
-trait TraversableOnce[L, +A] extends Any with GenTraversableOnce[A] {
+trait TraversableOnce[L, +A] extends Any with GenTraversableOnce[L, A] {
   self =>
 
   type LT
@@ -131,8 +131,8 @@ trait TraversableOnce[L, +A] extends Any with GenTraversableOnce[A] {
    */
   def collectFirst[B](@plocal pf: PartialFunction[A, B]): Option[B] = {
     // TODO 2.12 -- move out alternate implementations into child classes
-    val i: Iterator[A] = self match {
-      case it: Iterator[A] => it
+    val i: Iterator[L, A] = self match {
+      case it: Iterator[L, A] => it
       case _: GenIterable[L, _] => self.toIterator   // If it might be parallel, be sure to .seq or use iterator!
       case _ =>                                   // Not parallel, not iterable--just traverse
         self.foreach(pf.runWith(b => return Some(b)))
@@ -297,15 +297,15 @@ trait TraversableOnce[L, +A] extends Any with GenTraversableOnce[A] {
 
   def toSeq: Seq[L, A] = toStream
 
-  def toIndexedSeq: immutable.IndexedSeq[A] = to[immutable.IndexedSeq]
+  def toIndexedSeq: immutable.IndexedSeq[L, A] = to[immutable.IndexedSeq]
 
   def toBuffer[B >: A]: mutable.Buffer[L, B] = to[ArrayBuffer].asInstanceOf[mutable.Buffer[L, B]]
 
   def toSet[B >: A]: immutable.Set[L, B] = to[immutable.Set].asInstanceOf[immutable.Set[L, B]]
 
-  def toVector: Vector[A] = to[Vector]
+  def toVector: Vector[L, A] = to[Vector]
 
-  def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]]): Col[A @uV] = {
+  def to[Col[_]](implicit cbf: CanBuildFrom[L, Nothing, A, Col[A @uV]]): Col[A @uV] = {
     val b = cbf()
     b ++= seq
     b.result()
@@ -422,18 +422,18 @@ object TraversableOnce {
     new FlattenOps[A](travs map ev)
 
   /* Functionality reused in Iterator.CanBuildFrom */
-  private[collection] abstract class BufferedCanBuildFrom[A, CC[X] <: TraversableOnce[L, X]] extends generic.CanBuildFrom[CC[_], A, CC[A]] {
-    def bufferToColl[B](buff: ArrayBuffer[B]): CC[B]
+  private[collection] abstract class BufferedCanBuildFrom[A, CC[X] <: TraversableOnce[L, X]] extends generic.CanBuildFrom[L, CC[_], A, CC[A]] {
+    def bufferToColl[B](buff: ArrayBuffer[L, B]): CC[B]
     def traversableToColl[B](t: GenTraversable[L, B]): CC[B]
 
-    def newIterator: Builder[A, CC[A]] = new ArrayBuffer[A] mapResult bufferToColl
+    def newIterator: Builder[L, A, CC[A]] = new ArrayBuffer[L, A] mapResult bufferToColl
 
     /** Creates a new builder on request of a collection.
      *  @param from  the collection requesting the builder to be created.
      *  @return the result of invoking the `genericBuilder` method on `from`.
      */
-    def apply(from: CC[_]): Builder[A, CC[A]] = from match {
-      case xs: generic.GenericTraversableTemplate[_, _] => xs.genericBuilder.asInstanceOf[Builder[A, Traversable[L, A]]] mapResult {
+    def apply(from: CC[_]): Builder[L, A, CC[A]] = from match {
+      case xs: generic.GenericTraversableTemplate[L, _, _] => xs.genericBuilder.asInstanceOf[Builder[L, A, Traversable[L, A]]] mapResult {
         case res => traversableToColl(res.asInstanceOf[GenTraversable[L, A]])
       }
       case _ => newIterator
@@ -450,7 +450,7 @@ object TraversableOnce {
    *  See `scala.util.Random.shuffle` or `scala.concurrent.Future.sequence` for an example.
    */
   class OnceCanBuildFrom[A] extends BufferedCanBuildFrom[A, TraversableOnce] {
-    def bufferToColl[B](buff: ArrayBuffer[B]) = buff.iterator
+    def bufferToColl[B](buff: ArrayBuffer[L, B]) = buff.iterator
     def traversableToColl[B](t: GenTraversable[L, B]) = t.seq
   }
 
@@ -458,9 +458,9 @@ object TraversableOnce {
   implicit def OnceCanBuildFrom[A] = new OnceCanBuildFrom[A]
 
   class FlattenOps[A](travs: TraversableOnce[L, TraversableOnce[L, A]]) {
-    def flatten: Iterator[A] = new AbstractIterator[A] {
+    def flatten: Iterator[L, A] = new AbstractIterator[L, A] {
       val its = travs.toIterator
-      private var it: Iterator[A] = Iterator.empty
+      private var it: Iterator[L, A] = Iterator.empty
       def hasNext: Boolean = it.hasNext || its.hasNext && { it = its.next().toIterator; hasNext }
       def next(): A = if (hasNext) it.next() else Iterator.empty.next()
     }
@@ -470,7 +470,7 @@ object TraversableOnce {
 
   implicit class MonadOps[+A](trav: TraversableOnce[L, A]) {
     def map[B](f: A => B): TraversableOnce[L, B] = trav.toIterator map f
-    def flatMap[B](f: A => GenTraversableOnce[B]): TraversableOnce[L, B] = trav.toIterator flatMap f
+    def flatMap[B](f: A => GenTraversableOnce[L, B]): TraversableOnce[L, B] = trav.toIterator flatMap f
     def withFilter(p: A => Boolean) = trav.toIterator filter p
     def filter(p: A => Boolean): TraversableOnce[L, A] = withFilter(p)
   }

@@ -26,11 +26,11 @@ import parallel.immutable.ParSeq
 trait Seq[L, +A] extends Iterable[L, A]
 //                      with GenSeq[L, A]
                       with scala.collection.Seq[L, A]
-                      with GenericTraversableTemplate[A, Seq]
+                      with GenericTraversableTemplate[L, A, Seq]
                       with SeqLike[L, A, Seq[L, A]]
-                      with Parallelizable[A, ParSeq[A]]
+                      with Parallelizable[L, A, ParSeq[L, A]]
 {
-  override def companion: GenericCompanion[Seq] = Seq
+  override def companion: GenericCompanion[L, Seq] = Seq
   override def toSeq: Seq[L, A] = this
   override def seq: Seq[L, A] = this
   protected[this] override def parCombiner = ParSeq.newCombiner[A] // if `immutable.SeqLike` gets introduced, please move this there!
@@ -40,8 +40,8 @@ trait Seq[L, +A] extends Iterable[L, A]
  *  @define Coll `immutable.Seq`
  *  @define coll immutable sequence
  */
-object Seq extends SeqFactory[Seq] {
+object Seq extends SeqFactory[L, Seq] {
   /** genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Seq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, Seq[L, A]] = new mutable.ListBuffer
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Seq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, Seq[L, A]] = new mutable.ListBuffer
 }

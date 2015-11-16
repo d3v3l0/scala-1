@@ -19,16 +19,16 @@ import generic._
  *  @since 2.9
  */
 trait GenTraversable[L, +A]
-extends GenTraversableLike[A, GenTraversable[L, A]]
-   with GenTraversableOnce[A]
-   with GenericTraversableTemplate[A, GenTraversable]
+extends GenTraversableLike[L, A, GenTraversable[L, A]]
+   with GenTraversableOnce[L, A]
+   with GenericTraversableTemplate[L, A, GenTraversable]
 {
 
   def seq: Traversable[L, A]
-  def companion: GenericCompanion[GenTraversable] = GenTraversable
+  def companion: GenericCompanion[L, GenTraversable] = GenTraversable
 }
 
-object GenTraversable extends GenTraversableFactory[GenTraversable] {
+object GenTraversable extends GenTraversableFactory[L, GenTraversable] {
   implicit def canBuildFrom[A] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
   def newBuilder[A] = Traversable.newBuilder
 }

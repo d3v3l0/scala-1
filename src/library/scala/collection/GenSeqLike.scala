@@ -30,7 +30,7 @@ import generic._
  *  Sequences are special cases of iterable collections of class `Iterable`.
  *  Unlike iterables, sequences always have a defined order of elements.
  */
-trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equals with Parallelizable[A, parallel.ParSeq[A]] {
+trait GenSeqLike[L, +A, +Repr] extends Any with GenIterableLike[L, A, Repr] with Equals with Parallelizable[L, A, parallel.ParSeq[L, A]] {
   type LT
 
   def seq: Seq[L, A]
@@ -221,7 +221,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    @return       a new $coll resulting from applying the given function
    *                  `f` to each element of this $coll and collecting the results in reversed order.
    */
-  def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Tests whether this $coll starts with the given sequence.
    *
@@ -268,7 +268,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *                     except that `replaced` elements starting from `from` are replaced
    *                     by `patch`.
    */
-  def patch[B >: A, That](from: Int, patch: GenSeq[L, B], replaced: Int)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def patch[B >: A, That](from: Int, patch: GenSeq[L, B], replaced: Int)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** A copy of this $coll with one single replaced element.
    *  @param  index  the position of the replacement
@@ -284,7 +284,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *
    *    @return a copy of this $coll with the element at position `index` replaced by `elem`.
    */
-  def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** A copy of the $coll with an element prepended.
    *
@@ -318,7 +318,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    @return a new $coll consisting of `elem` followed
    *            by all elements of this $coll.
    */
-  def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** A copy of this $coll with an element appended.
    *
@@ -351,7 +351,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    @return a new $coll consisting of
    *            all elements of this $coll followed by `elem`.
    */
-  def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** A copy of this $coll with an element value appended until a given target length is reached.
    *
@@ -370,7 +370,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *            all elements of this $coll followed by the minimal number of occurrences of `elem` so
    *            that the resulting $coll has a length of at least `len`.
    */
-  def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Tests whether every element of this $coll relates to the
    *  corresponding element of another sequence by satisfying a test predicate.
@@ -408,7 +408,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    @return       a new $coll which contains all elements of this $coll
    *                  followed by all elements of `that`.
    */
-  def union[B >: A, That](that: GenSeq[L, B])(implicit bf: CanBuildFrom[Repr, B, That]): That = this ++ that
+  def union[B >: A, That](that: GenSeq[L, B])(implicit bf: CanBuildFrom[L, Repr, B, That]): That = this ++ that
 
   /** Computes the multiset difference between this $coll and another sequence.
    *

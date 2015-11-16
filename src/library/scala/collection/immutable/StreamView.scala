@@ -2,4 +2,4 @@ package scala
 package collection
 package immutable
 
-trait StreamView[+A, +Coll] extends StreamViewLike[A, Coll, StreamView[A, Coll]] { }
+trait StreamView[L, +A, +Coll] extends StreamViewLike[L, A, Coll, StreamView[L, A, Coll]] { }

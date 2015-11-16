@@ -23,24 +23,24 @@ import scala.collection.parallel.Combiner
  *  @define Coll `mutable.ParSeq`
  *  @define coll mutable parallel sequence
  */
-trait ParSeq[+T]
+trait ParSeq[L, +T]
 extends scala.collection/*.immutable*/.GenSeq[L, T]
-   with scala.collection.parallel.ParSeq[T]
+   with scala.collection.parallel.ParSeq[L, T]
    with ParIterable[L, T]
-   with GenericParTemplate[T, ParSeq]
-   with ParSeqLike[T, ParSeq[T], scala.collection.immutable.Seq[L, T]]
+   with GenericParTemplate[L, T, ParSeq]
+   with ParSeqLike[L, T, ParSeq[L, T], scala.collection.immutable.Seq[L, T]]
 {
-  override def companion: GenericCompanion[ParSeq] with GenericParCompanion[ParSeq] = ParSeq
-  override def toSeq: ParSeq[T] = this
+  override def companion: GenericCompanion[L, ParSeq] with GenericParCompanion[L, ParSeq] = ParSeq
+  override def toSeq: ParSeq[L, T] = this
 }
 
 /** $factoryInfo
  *  @define Coll `mutable.ParSeq`
  *  @define coll mutable parallel sequence
  */
-object ParSeq extends ParFactory[ParSeq] {
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParSeq[T]] = new GenericCanCombineFrom[T]
+object ParSeq extends ParFactory[L, ParSeq] {
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParSeq[L, T]] = new GenericCanCombineFrom[T]
 
-  def newBuilder[T]: Combiner[T, ParSeq[T]] = ParVector.newBuilder[T]
-  def newCombiner[T]: Combiner[T, ParSeq[T]] = ParVector.newCombiner[T]
+  def newBuilder[T]: Combiner[L, T, ParSeq[L, T]] = ParVector.newBuilder[T]
+  def newCombiner[T]: Combiner[L, T, ParSeq[L, T]] = ParVector.newCombiner[T]
 }

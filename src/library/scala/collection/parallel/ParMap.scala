@@ -27,40 +27,40 @@ import scala.collection.generic.CanCombineFrom
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait ParMap[K, +V]
-extends GenMap[K, V]
-   with GenericParMapTemplate[K, V, ParMap]
+trait ParMap[L, K, +V]
+extends GenMap[L, K, V]
+   with GenericParMapTemplate[L, K, V, ParMap]
    with ParIterable[L, (K, V)]
-   with ParMapLike[K, V, ParMap[K, V], Map[L, K, V]]
+   with ParMapLike[L, K, V, ParMap[L, K, V], Map[L, K, V]]
 {
 self =>
 
-  def mapCompanion: GenericParMapCompanion[ParMap] = ParMap
+  def mapCompanion: GenericParMapCompanion[L, ParMap] = ParMap
 
-  //protected[this] override def newCombiner: Combiner[(K, V), ParMap[K, V]] = ParMap.newCombiner[K, V]
+  //protected[this] override def newCombiner: Combiner[L, (K, V), ParMap[L, K, V]] = ParMap.newCombiner[K, V]
 
-  def empty: ParMap[K, V] = new mutable.ParHashMap[K, V]
+  def empty: ParMap[L, K, V] = new mutable.ParHashMap[L, K, V]
 
   override def stringPrefix = "ParMap"
 
-  override def updated [U >: V](key: K, value: U): ParMap[K, U] = this + ((key, value))
+  override def updated [U >: V](key: K, value: U): ParMap[L, K, U] = this + ((key, value))
 
-  def + [U >: V](kv: (K, U)): ParMap[K, U]
+  def + [U >: V](kv: (K, U)): ParMap[L, K, U]
 }
 
 
 
-object ParMap extends ParMapFactory[ParMap] {
-  def empty[K, V]: ParMap[K, V] = new mutable.ParHashMap[K, V]
+object ParMap extends ParMapFactory[L, ParMap] {
+  def empty[K, V]: ParMap[L, K, V] = new mutable.ParHashMap[L, K, V]
 
-  def newCombiner[K, V]: Combiner[(K, V), ParMap[K, V]] = mutable.ParHashMapCombiner[K, V]
+  def newCombiner[K, V]: Combiner[L, (K, V), ParMap[L, K, V]] = mutable.ParHashMapCombiner[K, V]
 
-  implicit def canBuildFrom[K, V]: CanCombineFrom[Coll, (K, V), ParMap[K, V]] = new CanCombineFromMap[K, V]
+  implicit def canBuildFrom[K, V]: CanCombineFrom[L, Coll, (K, V), ParMap[L, K, V]] = new CanCombineFromMap[K, V]
 
   /** An abstract shell used by { mutable, immutable }.Map but not by collection.Map
    *  because of variance issues.
    */
-  abstract class WithDefault[A, +B](underlying: ParMap[A, B], d: A => B) extends ParMap[A, B] {
+  abstract class WithDefault[A, +B](underlying: ParMap[L, A, B], d: A => B) extends ParMap[L, A, B] {
     override def size               = underlying.size
     def get(key: A)                 = underlying.get(key)
     def splitter                    = underlying.splitter

@@ -22,28 +22,28 @@ import scala.runtime.ScalaRunTime._
  *
  *  @since 2.8
  */
-class WrappedArrayBuilder[A](tag: ClassTag[A]) extends Builder[A, WrappedArray[A]] {
+class WrappedArrayBuilder[L, A](tag: ClassTag[A]) extends Builder[L, A, WrappedArray[L, A]] {
 
   @deprecated("use tag instead", "2.10.0")
   val manifest: ClassTag[A] = tag
 
-  private var elems: WrappedArray[A] = _
+  private var elems: WrappedArray[L, A] = _
   private var capacity: Int = 0
   private var size: Int = 0
 
-  private def mkArray(size: Int): WrappedArray[A] = {
+  private def mkArray(size: Int): WrappedArray[L, A] = {
     val runtimeClass = arrayElementClass(tag)
     val newelems = runtimeClass match {
-      case java.lang.Byte.TYPE      => new WrappedArray.ofByte(new Array[Byte](size)).asInstanceOf[WrappedArray[A]]
-      case java.lang.Short.TYPE     => new WrappedArray.ofShort(new Array[Short](size)).asInstanceOf[WrappedArray[A]]
-      case java.lang.Character.TYPE => new WrappedArray.ofChar(new Array[Char](size)).asInstanceOf[WrappedArray[A]]
-      case java.lang.Integer.TYPE   => new WrappedArray.ofInt(new Array[Int](size)).asInstanceOf[WrappedArray[A]]
-      case java.lang.Long.TYPE      => new WrappedArray.ofLong(new Array[Long](size)).asInstanceOf[WrappedArray[A]]
-      case java.lang.Float.TYPE     => new WrappedArray.ofFloat(new Array[Float](size)).asInstanceOf[WrappedArray[A]]
-      case java.lang.Double.TYPE    => new WrappedArray.ofDouble(new Array[Double](size)).asInstanceOf[WrappedArray[A]]
-      case java.lang.Boolean.TYPE   => new WrappedArray.ofBoolean(new Array[Boolean](size)).asInstanceOf[WrappedArray[A]]
-      case java.lang.Void.TYPE      => new WrappedArray.ofUnit(new Array[Unit](size)).asInstanceOf[WrappedArray[A]]
-      case _                        => new WrappedArray.ofRef[A with AnyRef](tag.newArray(size).asInstanceOf[Array[A with AnyRef]]).asInstanceOf[WrappedArray[A]]
+      case java.lang.Byte.TYPE      => new WrappedArray.ofByte(new Array[Byte](size)).asInstanceOf[WrappedArray[L, A]]
+      case java.lang.Short.TYPE     => new WrappedArray.ofShort(new Array[Short](size)).asInstanceOf[WrappedArray[L, A]]
+      case java.lang.Character.TYPE => new WrappedArray.ofChar(new Array[Char](size)).asInstanceOf[WrappedArray[L, A]]
+      case java.lang.Integer.TYPE   => new WrappedArray.ofInt(new Array[Int](size)).asInstanceOf[WrappedArray[L, A]]
+      case java.lang.Long.TYPE      => new WrappedArray.ofLong(new Array[Long](size)).asInstanceOf[WrappedArray[L, A]]
+      case java.lang.Float.TYPE     => new WrappedArray.ofFloat(new Array[Float](size)).asInstanceOf[WrappedArray[L, A]]
+      case java.lang.Double.TYPE    => new WrappedArray.ofDouble(new Array[Double](size)).asInstanceOf[WrappedArray[L, A]]
+      case java.lang.Boolean.TYPE   => new WrappedArray.ofBoolean(new Array[Boolean](size)).asInstanceOf[WrappedArray[L, A]]
+      case java.lang.Void.TYPE      => new WrappedArray.ofUnit(new Array[Unit](size)).asInstanceOf[WrappedArray[L, A]]
+      case _                        => new WrappedArray.ofRef[A with AnyRef](tag.newArray(size).asInstanceOf[Array[A with AnyRef]]).asInstanceOf[WrappedArray[L, A]]
     }
     if (this.size > 0) Array.copy(elems.array, 0, newelems.array, 0, this.size)
     newelems

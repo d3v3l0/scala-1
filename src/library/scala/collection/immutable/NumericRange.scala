@@ -38,10 +38,10 @@ import mutable.{ Builder, ListBuffer }
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-abstract class NumericRange[T]
+abstract class NumericRange[L, T]
   (val start: T, val end: T, val step: T, val isInclusive: Boolean)
   (implicit num: Integral[T])
-extends AbstractSeq[L, T] with IndexedSeq[T] with Serializable {
+extends AbstractSeq[L, T] with IndexedSeq[L, T] with Serializable {
   /** Note that NumericRange must be invariant so that constructs
    *  such as "1L to 10 by 5" do not infer the range type as AnyVal.
    */
@@ -60,11 +60,11 @@ extends AbstractSeq[L, T] with IndexedSeq[T] with Serializable {
   /** Create a new range with the start and end values of this range and
    *  a new `step`.
    */
-  def by(newStep: T): NumericRange[T] = copy(start, end, newStep)
+  def by(newStep: T): NumericRange[L, T] = copy(start, end, newStep)
 
   /** Create a copy of this range.
    */
-  def copy(start: T, end: T, step: T): NumericRange[T]
+  def copy(start: T, end: T, step: T): NumericRange[L, T]
 
   override def foreach[U](f: T => U) {
     var count = 0
@@ -96,13 +96,13 @@ extends AbstractSeq[L, T] with IndexedSeq[T] with Serializable {
   // based on the given value.
   private def newEmptyRange(value: T) = NumericRange(value, value, step)
 
-  final override def take(n: Int): NumericRange[T] = (
+  final override def take(n: Int): NumericRange[L, T] = (
     if (n <= 0 || length == 0) newEmptyRange(start)
     else if (n >= length) this
     else new NumericRange.Inclusive(start, locationAfterN(n - 1), step)
   )
 
-  final override def drop(n: Int): NumericRange[T] = (
+  final override def drop(n: Int): NumericRange[L, T] = (
     if (n <= 0 || length == 0) this
     else if (n >= length) newEmptyRange(end)
     else copy(locationAfterN(n), end, step)
@@ -139,26 +139,26 @@ extends AbstractSeq[L, T] with IndexedSeq[T] with Serializable {
   //
   // should result in
   //
-  //   NumericRange[Double](0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+  //   NumericRange[L, Double](0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
   //
   // and not
   //
-  //   NumericRange[Double](0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9)
+  //   NumericRange[L, Double](0.0, 0.1, 0.2, 0.30000000000000004, 0.4, 0.5, 0.6000000000000001, 0.7000000000000001, 0.8, 0.9)
   //
   // or perhaps more importantly,
   //
   //   (0.1 to 0.3 by 0.1 contains 0.3) == true
   //
-  private[immutable] def mapRange[A](fm: T => A)(implicit unum: Integral[A]): NumericRange[A] = {
+  private[immutable] def mapRange[A](fm: T => A)(implicit unum: Integral[A]): NumericRange[L, A] = {
     val self = this
 
     // XXX This may be incomplete.
-    new NumericRange[A](fm(start), fm(end), fm(step), isInclusive) {
-      def copy(start: A, end: A, step: A): NumericRange[A] =
+    new NumericRange[L, A](fm(start), fm(end), fm(step), isInclusive) {
+      def copy(start: A, end: A, step: A): NumericRange[L, A] =
         if (isInclusive) NumericRange.inclusive(start, end, step)
         else NumericRange(start, end, step)
 
-      private lazy val underlyingRange: NumericRange[T] = self
+      private lazy val underlyingRange: NumericRange[L, T] = self
       override def foreach[U](f: A => U) { underlyingRange foreach (x => f(fm(x))) }
       override def isEmpty = underlyingRange.isEmpty
       override def apply(idx: Int): A = fm(underlyingRange(idx))
@@ -209,7 +209,7 @@ extends AbstractSeq[L, T] with IndexedSeq[T] with Serializable {
 
   override lazy val hashCode = super.hashCode()
   override def equals(other: Any) = other match {
-    case x: NumericRange[_] =>
+    case x: NumericRange[L, _] =>
       (x canEqual this) && (length == x.length) && (
         (length == 0) ||                      // all empty sequences are equal
         (start == x.start && last == x.last)  // same length and same endpoints implies equality

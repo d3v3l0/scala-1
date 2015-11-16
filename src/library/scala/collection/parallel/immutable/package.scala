@@ -16,14 +16,14 @@ package immutable {
    *  @param elem      the element in the repetition
    *  @param length    the length of the collection
    */
-  private[parallel] class Repetition[T](elem: T, val length: Int) extends ParSeq[T] {
+  private[parallel] class Repetition[T](elem: T, val length: Int) extends ParSeq[L, T] {
     self =>
 
     def apply(idx: Int) = if (0 <= idx && idx < length) elem else throw new IndexOutOfBoundsException("" + idx)
     override def seq = throw new UnsupportedOperationException
     def update(idx: Int, elem: T) = throw new UnsupportedOperationException
 
-    class ParIterator(var i: Int = 0, val until: Int = length, elem: T = self.elem) extends SeqSplitter[T] {
+    class ParIterator(var i: Int = 0, val until: Int = length, elem: T = self.elem) extends SeqSplitter[L, T] {
       def remaining = until - i
       def hasNext = i < until
       def next = { i += 1; elem }

@@ -23,17 +23,17 @@ import scala.annotation.migration
  *  @define coll mutable stack
  *  @define Coll `mutable.Stack`
  */
-object Stack extends SeqFactory[Stack] {
-  class StackBuilder[A] extends Builder[A, Stack[A]] {
-    val lbuff = new ListBuffer[A]
+object Stack extends SeqFactory[L, Stack] {
+  class StackBuilder[A] extends Builder[L, A, Stack[L, A]] {
+    val lbuff = new ListBuffer[L, A]
     def +=(elem: A) = { lbuff += elem; this }
     def clear() = lbuff.clear()
     def result = new Stack(lbuff.result)
   }
 
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Stack[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, Stack[A]] = new StackBuilder[A]
-  val empty: Stack[Nothing] = new Stack(Nil)
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Stack[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, Stack[L, A]] = new StackBuilder[A]
+  val empty: Stack[L, Nothing] = new Stack(Nil)
 }
 
 /** A stack implements a data structure which allows to store and retrieve
@@ -54,12 +54,12 @@ object Stack extends SeqFactory[Stack] {
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-class Stack[A] private (var elems: List[A])
+class Stack[L, A] private (var elems: List[A])
 extends AbstractSeq[L, A]
    with Seq[L, A]
-   with SeqLike[L, A, Stack[A]]
-   with GenericTraversableTemplate[A, Stack]
-   with Cloneable[Stack[A]]
+   with SeqLike[L, A, Stack[L, A]]
+   with GenericTraversableTemplate[L, A, Stack]
+   with Cloneable[L, Stack[L, A]]
    with Serializable
 {
   def this() = this(Nil)
@@ -157,7 +157,7 @@ extends AbstractSeq[L, A]
    *  @return an iterator over all stack elements.
    */
   @migration("`iterator` traverses in FIFO order.", "2.8.0")
-  override def iterator: Iterator[A] = elems.iterator
+  override def iterator: Iterator[L, A] = elems.iterator
 
   /** Creates a list of all stack elements in LIFO order.
    *
@@ -173,5 +173,5 @@ extends AbstractSeq[L, A]
    *
    *  @return  a stack with the same elements.
    */
-  override def clone(): Stack[A] = new Stack[A](elems)
+  override def clone(): Stack[L, A] = new Stack[L, A](elems)
 }

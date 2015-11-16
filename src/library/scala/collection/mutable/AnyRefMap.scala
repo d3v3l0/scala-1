@@ -27,10 +27,10 @@ import generic.CanBuildFrom
  *  rapidly as 2^30^ is approached.
  *
  */
-final class AnyRefMap[K <: AnyRef, V] private[collection] (defaultEntry: K => V, initialBufferSize: Int, initBlank: Boolean)
-extends AbstractMap[K, V]
+final class AnyRefMap[L, K <: AnyRef, V] private[collection] (defaultEntry: K => V, initialBufferSize: Int, initBlank: Boolean)
+extends AbstractMap[L, K, V]
    with Map[L, K, V]
-   with MapLike[L, K, V, AnyRefMap[K, V]]
+   with MapLike[L, K, V, AnyRefMap[L, K, V]]
 {
   import AnyRefMap._
   def this() = this(AnyRefMap.exceptionDefault, 16, true)
@@ -73,7 +73,7 @@ extends AbstractMap[K, V]
   }
   
   override def size: Int = _size
-  override def empty: AnyRefMap[K,V] = new AnyRefMap(defaultEntry)
+  override def empty: AnyRefMap[L, K,V] = new AnyRefMap(defaultEntry)
   
   private def imbalanced: Boolean = 
     (_size + _vacant) > 0.5*mask || _vacant > _size
@@ -285,7 +285,7 @@ extends AbstractMap[K, V]
     this
   }
   
-  def iterator: Iterator[(K, V)] = new Iterator[(K, V)] {
+  def iterator: Iterator[L, (K, V)] = new Iterator[L, (K, V)] {
     private[this] val hz = _hashes
     private[this] val kz = _keys
     private[this] val vz = _values
@@ -326,11 +326,11 @@ extends AbstractMap[K, V]
     }
   }
     
-  override def clone(): AnyRefMap[K, V] = {
+  override def clone(): AnyRefMap[L, K, V] = {
     val hz = java.util.Arrays.copyOf(_hashes, _hashes.length)
     val kz = java.util.Arrays.copyOf(_keys, _keys.length)
     val vz = java.util.Arrays.copyOf(_values,  _values.length)
-    val arm = new AnyRefMap[K, V](defaultEntry, 1, false)
+    val arm = new AnyRefMap[L, K, V](defaultEntry, 1, false)
     arm.initializeTo(mask, _size, _vacant, hz, kz,  vz)
     arm
   }
@@ -357,8 +357,8 @@ extends AbstractMap[K, V]
    *  Unlike `mapValues`, this method generates a new
    *  collection immediately.
    */
-  def mapValuesNow[V1](f: V => V1): AnyRefMap[K, V1] = {
-    val arm = new AnyRefMap[K,V1](AnyRefMap.exceptionDefault,  1,  false)
+  def mapValuesNow[V1](f: V => V1): AnyRefMap[L, K, V1] = {
+    val arm = new AnyRefMap[L, K,V1](AnyRefMap.exceptionDefault,  1,  false)
     val hz = java.util.Arrays.copyOf(_hashes, _hashes.length)
     val kz = java.util.Arrays.copyOf(_keys, _keys.length)
     val vz = new Array[AnyRef](_values.length)
@@ -401,43 +401,43 @@ object AnyRefMap {
   
   private val exceptionDefault = (k: Any) => throw new NoSuchElementException(if (k == null) "(null)" else k.toString)
   
-  implicit def canBuildFrom[K <: AnyRef, V, J <: AnyRef, U]: CanBuildFrom[AnyRefMap[K,V], (J, U), AnyRefMap[J,U]] =
-    new CanBuildFrom[AnyRefMap[K,V], (J, U), AnyRefMap[J,U]] {
-      def apply(from: AnyRefMap[K,V]): AnyRefMapBuilder[J, U] = apply()
+  implicit def canBuildFrom[K <: AnyRef, V, J <: AnyRef, U]: CanBuildFrom[L, AnyRefMap[L, K,V], (J, U), AnyRefMap[L, J,U]] =
+    new CanBuildFrom[L, AnyRefMap[L, K,V], (J, U), AnyRefMap[L, J,U]] {
+      def apply(from: AnyRefMap[L, K,V]): AnyRefMapBuilder[J, U] = apply()
       def apply(): AnyRefMapBuilder[J, U] = new AnyRefMapBuilder[J, U]
     }
   
-  final class AnyRefMapBuilder[K <: AnyRef, V] extends Builder[(K, V), AnyRefMap[K, V]] {
-    private[collection] var elems: AnyRefMap[K, V] = new AnyRefMap[K, V]
+  final class AnyRefMapBuilder[K <: AnyRef, V] extends Builder[L, (K, V), AnyRefMap[L, K, V]] {
+    private[collection] var elems: AnyRefMap[L, K, V] = new AnyRefMap[L, K, V]
     def +=(entry: (K, V)): this.type = {
       elems += entry
       this
     }
-    def clear() { elems = new AnyRefMap[K, V] }
-    def result(): AnyRefMap[K, V] = elems
+    def clear() { elems = new AnyRefMap[L, K, V] }
+    def result(): AnyRefMap[L, K, V] = elems
   }
 
   /** Creates a new `AnyRefMap` with zero or more key/value pairs. */
-  def apply[K <: AnyRef, V](elems: (K, V)*): AnyRefMap[K, V] = {
+  def apply[K <: AnyRef, V](elems: (K, V)*): AnyRefMap[L, K, V] = {
     val sz = if (elems.hasDefiniteSize) elems.size else 4
-    val arm = new AnyRefMap[K, V](sz * 2)
+    val arm = new AnyRefMap[L, K, V](sz * 2)
     elems.foreach{ case (k,v) => arm(k) = v }
     if (arm.size < (sz>>3)) arm.repack()
     arm
   }
   
   /** Creates a new empty `AnyRefMap`. */
-  def empty[K <: AnyRef, V]: AnyRefMap[K, V] = new AnyRefMap[K, V]
+  def empty[K <: AnyRef, V]: AnyRefMap[L, K, V] = new AnyRefMap[L, K, V]
   
   /** Creates a new empty `AnyRefMap` with the supplied default */
-  def withDefault[K <: AnyRef, V](default: K => V): AnyRefMap[K, V] = new AnyRefMap[K, V](default)
+  def withDefault[K <: AnyRef, V](default: K => V): AnyRefMap[L, K, V] = new AnyRefMap[L, K, V](default)
   
   /** Creates a new `AnyRefMap` from arrays of keys and values. 
    *  Equivalent to but more efficient than `AnyRefMap((keys zip values): _*)`.
    */
-  def fromZip[K <: AnyRef, V](keys: Array[K], values: Array[V]): AnyRefMap[K, V] = {
+  def fromZip[K <: AnyRef, V](keys: Array[K], values: Array[V]): AnyRefMap[L, K, V] = {
     val sz = math.min(keys.length, values.length)
-    val arm = new AnyRefMap[K, V](sz * 2)
+    val arm = new AnyRefMap[L, K, V](sz * 2)
     var i = 0
     while (i < sz) { arm(keys(i)) = values(i); i += 1 }
     if (arm.size < (sz>>3)) arm.repack()
@@ -447,9 +447,9 @@ object AnyRefMap {
   /** Creates a new `AnyRefMap` from keys and values. 
    *  Equivalent to but more efficient than `AnyRefMap((keys zip values): _*)`.
    */
-  def fromZip[K <: AnyRef, V](keys: Iterable[L, K], values: Iterable[L, V]): AnyRefMap[K, V] = {
+  def fromZip[K <: AnyRef, V](keys: Iterable[L, K], values: Iterable[L, V]): AnyRefMap[L, K, V] = {
     val sz = math.min(keys.size, values.size)
-    val arm = new AnyRefMap[K, V](sz * 2)
+    val arm = new AnyRefMap[L, K, V](sz * 2)
     val ki = keys.iterator
     val vi = values.iterator
     while (ki.hasNext && vi.hasNext) arm(ki.next) = vi.next

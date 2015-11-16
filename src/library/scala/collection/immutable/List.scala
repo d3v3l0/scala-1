@@ -69,7 +69,7 @@ import java.io._
  *  @define coll list
  *  @define Coll `List`
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `List[B]` because an implicit of type `CanBuildFrom[List, B, That]`
+ *    `That` is always `List[B]` because an implicit of type `CanBuildFrom[L, List, B, That]`
  *    is defined in object `List`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -82,14 +82,14 @@ import java.io._
  */
 @SerialVersionUID(-6084104484083858598L) // value computed by serialver for 2.11.2, annotation added in 2.11.4
 sealed abstract class List[+A] extends AbstractSeq[L, A]
-                                  with LinearSeq[A]
+                                  with LinearSeq[L, A]
                                   with Product
-                                  with GenericTraversableTemplate[A, List]
-                                  with LinearSeqOptimized[A, List[A]]
+                                  with GenericTraversableTemplate[L, A, List]
+                                  with LinearSeqOptimized[L, A, List[A]]
                                   with Serializable {
   override protected type LT = Any
 
-  override def companion: GenericCompanion[List] = List
+  override def companion: GenericCompanion[L, List] = List
 
   import scala.collection.{Iterable, Traversable, Seq, IndexedSeq}
 
@@ -127,7 +127,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
   def :::[B >: A](prefix: List[B]): List[B] =
     if (isEmpty) prefix
     else if (prefix.isEmpty) this
-    else (new ListBuffer[B] ++= prefix).prependToList(this)
+    else (new ListBuffer[L, B] ++= prefix).prependToList(this)
 
   /** Adds the elements of a given list in reverse order in front of this list.
    *  `xs reverse_::: ys` is equivalent to
@@ -166,7 +166,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
     // If any successful optimization attempts or other changes are made, please rehash them there too.
     @tailrec
     @plocal
-    def loop(mapped: ListBuffer[B], unchanged: List[A], pending: List[A]): List[B] =
+    def loop(mapped: ListBuffer[L, B], unchanged: List[A], pending: List[A]): List[B] =
       if (pending.isEmpty) {
         if (mapped eq null) unchanged
         else mapped.prependToList(unchanged)
@@ -178,7 +178,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
         if (head1 eq head0.asInstanceOf[AnyRef])
           loop(mapped, unchanged, pending.tail)
         else {
-          val b = if (mapped eq null) new ListBuffer[B] else mapped
+          val b = if (mapped eq null) new ListBuffer[L, B] else mapped
           var xc = unchanged
           while (xc ne pending) {
             b += xc.head
@@ -194,11 +194,11 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
 
   // Overridden methods from IterableLike and SeqLike or overloaded variants of such methods
 
-  override def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[List[A], B, That]): That =
+  override def ++[B >: A, That](that: GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, List[A], B, That]): That =
     if (bf eq List.ReusableCBF) (this ::: that.seq.toList).asInstanceOf[That]
     else super.++(that)
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[List[A], B, That]): That = bf match {
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, List[A], B, That]): That = bf match {
     case _: List.GenericCanBuildFrom[_] => (elem :: this).asInstanceOf[That]
     case _ => super.+:(elem)(bf)
   }
@@ -258,7 +258,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
   // dropRight is inherited from LinearSeq
 
   override def splitAt(n: Int): (List[A], List[A]) = {
-    val b = new ListBuffer[A]
+    val b = new ListBuffer[L, A]
     var i = 0
     var these = this
     while (!these.isEmpty && i < n) {
@@ -270,7 +270,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
   }
 
   @noinline // TODO - fix optimizer bug that requires noinline (see SI-8334)
-  final override def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[L, List[A], B, That]): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         val h = new ::[B](f(head), Nil)
@@ -289,7 +289,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
   }
 
   @noinline // TODO - fix optimizer bug that requires noinline for map; applied here to be safe (see SI-8334)
-  final override def collect[B, That](@plocal pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def collect[B, That](@plocal pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[L, List[A], B, That]): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         var rest = this
@@ -319,7 +319,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
   }
 
   @noinline // TODO - fix optimizer bug that requires noinline for map; applied here to be safe (see SI-8334)
-  final override def flatMap[B, That](@plocal f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def flatMap[B, That](@plocal f: A => GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, List[A], B, That]): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         var rest = this
@@ -348,7 +348,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
   }
 
   @inline final override def takeWhile(@plocal p: A => Boolean): List[A] = {
-    val b = new ListBuffer[A]
+    val b = new ListBuffer[L, A]
     var these = this
     while (!these.isEmpty && p(these.head)) {
       b += these.head
@@ -367,7 +367,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
   }
 
   @inline final override def span(@plocal p: A => Boolean): (List[A], List[A]) = {
-    val b = new ListBuffer[A]
+    val b = new ListBuffer[L, A]
     var these = this
     while (!these.isEmpty && p(these.head)) {
       b += these.head
@@ -401,7 +401,7 @@ sealed abstract class List[+A] extends AbstractSeq[L, A]
 
   override def stringPrefix = "List"
 
-  override def toStream : Stream[A] =
+  override def toStream : Stream[L, A] =
     if (isEmpty) Stream.Empty
     else new Stream.Cons(head, tail.toStream)
 
@@ -448,12 +448,12 @@ final case class ::[B](override val head: B, private[scala] var tl: List[B]) ext
  *  @define coll list
  *  @define Coll `List`
  */
-object List extends SeqFactory[List] {
+object List extends SeqFactory[L, List] {
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, List[A]] =
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, List[A]] =
     ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, List[A]] = new ListBuffer[A]
+  def newBuilder[A]: Builder[L, A, List[A]] = new ListBuffer[L, A]
 
   override def empty[A]: List[A] = Nil
 

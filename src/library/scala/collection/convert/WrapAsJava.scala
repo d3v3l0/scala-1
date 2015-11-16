@@ -29,8 +29,8 @@ trait WrapAsJava {
    * @param  it The Iterator to be converted.
    * @return    A Java Iterator view of the argument.
    */
-  implicit def asJavaIterator[A](it: Iterator[A]): ju.Iterator[A] = it match {
-    case JIteratorWrapper(wrapped) => wrapped.asInstanceOf[ju.Iterator[A]]
+  implicit def asJavaIterator[A](it: Iterator[L, A]): ju.Iterator[L, A] = it match {
+    case JIteratorWrapper(wrapped) => wrapped.asInstanceOf[ju.Iterator[L, A]]
     case _ => IteratorWrapper(it)
   }
 
@@ -47,7 +47,7 @@ trait WrapAsJava {
    * @param it The Iterator to be converted.
    * @return   A Java Enumeration view of the argument.
    */
-  implicit def asJavaEnumeration[A](it: Iterator[A]): ju.Enumeration[A] = it match {
+  implicit def asJavaEnumeration[A](it: Iterator[L, A]): ju.Enumeration[A] = it match {
     case JEnumerationWrapper(wrapped) => wrapped.asInstanceOf[ju.Enumeration[A]]
     case _ => IteratorWrapper(it)
   }

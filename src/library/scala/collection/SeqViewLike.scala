@@ -27,16 +27,16 @@ import Seq.fill
  *  @tparam Coll the type of the underlying collection containing the elements.
  *  @tparam This the type of the view itself
  */
-trait SeqViewLike[+A,
+trait SeqViewLike[L, +A,
                   +Coll,
-                  +This <: SeqView[A, Coll] with SeqViewLike[A, Coll, This]]
+                  +This <: SeqView[L, A, Coll] with SeqViewLike[L, A, Coll, This]]
   extends Seq[L, A] with SeqLike[L, A, This] with IterableView[L, A, Coll] with IterableViewLike[L, A, Coll, This]
 { self =>
 
   /** Explicit instantiation of the `Transformed` trait to reduce class file size in subclasses. */
   private[collection] abstract class AbstractTransformed[+B] extends Seq[L, B] with super[IterableViewLike].Transformed[B] with Transformed[B]
 
-  trait Transformed[+B] extends SeqView[B, Coll] with super.Transformed[B] {
+  trait Transformed[+B] extends SeqView[L, B, Coll] with super.Transformed[B] {
     def length: Int
     def apply(idx: Int): B
     override def toString = viewToString
@@ -59,7 +59,7 @@ trait SeqViewLike[+A,
       else throw new IndexOutOfBoundsException(idx.toString)
 
     override def foreach[U](f: A => U) = iterator foreach f
-    override def iterator: Iterator[A] = self.iterator drop from take endpoints.width
+    override def iterator: Iterator[L, A] = self.iterator drop from take endpoints.width
   }
 
   trait Mapped[B] extends super.Mapped[B] with Transformed[B] {
@@ -143,7 +143,7 @@ trait SeqViewLike[+A,
   }
 
   trait Reversed extends Transformed[A] {
-    override def iterator: Iterator[A] = createReversedIterator
+    override def iterator: Iterator[L, A] = createReversedIterator
     def length: Int = self.length
     def apply(idx: Int): A = self.apply(length - 1 - idx)
     final override protected[this] def viewIdentifier = "R"
@@ -163,7 +163,7 @@ trait SeqViewLike[+A,
     protected[this] val patch: GenSeq[L, B]
     protected[this] val replaced: Int
     private lazy val plen = patch.length
-    override def iterator: Iterator[B] = self.iterator patch (from, patch.iterator, replaced)
+    override def iterator: Iterator[L, B] = self.iterator patch (from, patch.iterator, replaced)
     def length: Int = {
       val len = self.length
       val pre = math.min(from, len)
@@ -181,7 +181,7 @@ trait SeqViewLike[+A,
 
   trait Prepended[B >: A] extends Transformed[B] {
     protected[this] val fst: B
-    override def iterator: Iterator[B] = Iterator.single(fst) ++ self.iterator
+    override def iterator: Iterator[L, B] = Iterator.single(fst) ++ self.iterator
     def length: Int = 1 + self.length
     def apply(idx: Int): B =
       if (idx == 0) fst
@@ -195,7 +195,7 @@ trait SeqViewLike[+A,
   protected override def newForced[B](xs: => GenSeq[L, B]): Transformed[B] = new { val forced = xs } with AbstractTransformed[B] with Forced[B]
   protected override def newAppended[B >: A](that: GenTraversable[L, B]): Transformed[B] = new { val rest = that } with AbstractTransformed[B] with Appended[B]
   protected override def newMapped[B](f: A => B): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with Mapped[B]
-  protected override def newFlatMapped[B](f: A => GenTraversableOnce[B]): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with FlatMapped[B]
+  protected override def newFlatMapped[B](f: A => GenTraversableOnce[L, B]): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with FlatMapped[B]
   protected override def newFiltered(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with Filtered
   protected override def newSliced(_endpoints: SliceInterval): Transformed[A] = new { val endpoints = _endpoints } with AbstractTransformed[A] with Sliced
   protected override def newDroppedWhile(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with DroppedWhile
@@ -220,7 +220,7 @@ trait SeqViewLike[+A,
 
   override def reverse: This = newReversed.asInstanceOf[This]
 
-  override def patch[B >: A, That](from: Int, patch: GenSeq[L, B], replaced: Int)(implicit bf: CanBuildFrom[This, B, That]): That = {
+  override def patch[B >: A, That](from: Int, patch: GenSeq[L, B], replaced: Int)(implicit bf: CanBuildFrom[L, This, B, That]): That = {
     // Be careful to not evaluate the entire sequence!  Patch should work (slowly, perhaps) on infinite streams.
     val nonNegFrom = math.max(0,from)
     val nonNegRep = math.max(0,replaced)
@@ -230,24 +230,24 @@ trait SeqViewLike[+A,
 //    else super.patch[B, That](from, patch, replaced)(bf)
   }
 
-  override def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[L, This, B, That]): That =
     patch(length, fill(len - length)(elem), 0)
 
-  override def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[L, This, B, That]): That =
     reverse map f
 
-  override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[This, B, That]): That = {
+  override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[L, This, B, That]): That = {
     require(0 <= index && index < length) // !!! can't call length like this.
     patch(index, List(elem), 1)(bf)
   }
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, This, B, That]): That =
     newPrepended(elem).asInstanceOf[That]
 
-  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, This, B, That]): That =
     ++(Iterator.single(elem))(bf)
 
-  override def union[B >: A, That](that: GenSeq[L, B])(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def union[B >: A, That](that: GenSeq[L, B])(implicit bf: CanBuildFrom[L, This, B, That]): That =
     newForced(thisSeq union that).asInstanceOf[That]
 
   override def diff[B >: A](that: GenSeq[L, B]): This =
@@ -265,10 +265,10 @@ trait SeqViewLike[+A,
   override def sortBy[B](f: (A) => B)(implicit ord: Ordering[B]): This =
     newForced(thisSeq sortBy f).asInstanceOf[This]
 
-  override def combinations(n: Int): Iterator[This] =
+  override def combinations(n: Int): Iterator[L, This] =
     (thisSeq combinations n).map(as => newForced(as).asInstanceOf[This])
 
-  override def permutations: Iterator[This] =
+  override def permutations: Iterator[L, This] =
     thisSeq.permutations.map(as => newForced(as).asInstanceOf[This])
 
   override def distinct: This =

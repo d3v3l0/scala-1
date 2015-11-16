@@ -19,7 +19,7 @@ import scala.collection.{ Seq, Iterator }
  *  @since 2.9
  *  @author Aleksandar Prokopec
  */
-trait Splitter[+T] extends Iterator[T] {
+trait Splitter[L, +T] extends Iterator[L, T] {
 
   /** Splits the iterator into a sequence of disjunct views.
    *
@@ -36,7 +36,7 @@ trait Splitter[+T] extends Iterator[T] {
    *
    *  @return a sequence of disjunct iterators of the collection
    */
-  def split: Seq[L, Splitter[T]]
+  def split: Seq[L, Splitter[L, T]]
   /*
    *  '''Note:''' splitters in this sequence may actually be empty and it can contain a splitter
    *  which iterates over the same elements as the original splitter AS LONG AS calling `split`
@@ -51,7 +51,7 @@ trait Splitter[+T] extends Iterator[T] {
 }
 
 object Splitter {
-  def empty[T]: Splitter[T] = new Splitter[T] {
+  def empty[T]: Splitter[L, T] = new Splitter[L, T] {
     def hasNext = false
     def next = Iterator.empty.next()
     def split = Seq(this)

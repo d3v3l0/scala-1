@@ -51,7 +51,7 @@ import scala.math.{ min, max, Ordering }
  *  @define thatinfo the class of the returned collection. Where possible, `That` is
  *    the same class as the current collection class `Repr`, but this
  *    depends on the element type `B` being admissible for that class,
- *    which means that an implicit instance of type `CanBuildFrom[Repr, B, That]`
+ *    which means that an implicit instance of type `CanBuildFrom[L, Repr, B, That]`
  *    is found.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -59,7 +59,7 @@ import scala.math.{ min, max, Ordering }
  *  @define orderDependent
  *  @define orderDependentFold
  */
-trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSeqLike[A, Repr] with Parallelizable[A, ParSeq[A]] { self =>
+trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSeqLike[L, A, Repr] with Parallelizable[L, A, ParSeq[L, A]] { self =>
 
   type LT
 
@@ -138,7 +138,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
    *  @return   An Iterator which traverses the distinct permutations of this $coll.
    *  @example  `"abb".permutations = Iterator(abb, bab, bba)`
    */
-  def permutations: Iterator[Repr] =
+  def permutations: Iterator[L, Repr] =
     if (isEmpty) Iterator(repr)
     else new PermutationsItr
 
@@ -155,11 +155,11 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
    *  @return   An Iterator which traverses the possible n-element combinations of this $coll.
    *  @example  `"abbbc".combinations(2) = Iterator(ab, ac, bb, bc)`
    */
-  def combinations(n: Int): Iterator[Repr] =
+  def combinations(n: Int): Iterator[L, Repr] =
     if (n < 0 || n > size) Iterator.empty
     else new CombinationsItr(n)
 
-  private class PermutationsItr extends AbstractIterator[Repr] {
+  private class PermutationsItr extends AbstractIterator[L, Repr] {
     private[this] val (elms, idxs) = init()
     private var _hasNext = true
 
@@ -168,7 +168,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
       if (!hasNext)
         Iterator.empty.next()
 
-      val forcedElms = new mutable.ArrayBuffer[A](elms.size) ++= elms
+      val forcedElms = new mutable.ArrayBuffer[L, A](elms.size) ++= elms
       val result = (self.newBuilder ++= forcedElms).result()
       var i = idxs.length - 2
       while(i >= 0 && idxs(i) >= idxs(i+1))
@@ -200,14 +200,14 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
     }
 
     private[this] def init() = {
-      val m = mutable.HashMap[A, Int]()
+      val m = mutable.HashMap[L, A, Int]()
       val (es, is) = (thisCollection map (e => (e, m.getOrElseUpdate(e, m.size))) sortBy (_._2)).unzip
 
       (es.toBuffer, is.toArray)
     }
   }
 
-  private class CombinationsItr(n: Int) extends AbstractIterator[Repr] {
+  private class CombinationsItr(n: Int) extends AbstractIterator[L, Repr] {
     // generating all nums such that:
     // (1) nums(0) + .. + nums(length-1) = n
     // (2) 0 <= nums(i) <= cnts(i), where 0 <= i <= cnts.length-1
@@ -252,8 +252,8 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
      *
      *  @return     (newSeq,cnts,nums)
      */
-    private def init(): (IndexedSeq[A], Array[Int], Array[Int]) = {
-      val m = mutable.HashMap[A, Int]()
+    private def init(): (IndexedSeq[L, A], Array[Int], Array[Int]) = {
+      val m = mutable.HashMap[L, A, Int]()
 
       // e => (e, weight(e))
       val (es, is) = (thisCollection map (e => (e, m.getOrElseUpdate(e, m.size))) sortBy (_._2)).unzip
@@ -281,7 +281,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
     b.result()
   }
 
-  def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = {
     var xs: List[A] = List()
     for (x <- this)
       xs = x :: xs
@@ -300,7 +300,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
    *
    *  @return  an iterator yielding the elements of this $coll in reversed order
    */
-  def reverseIterator: Iterator[A] = toCollection(reverse).iterator
+  def reverseIterator: Iterator[L, A] = toCollection(reverse).iterator
 
   def startsWith[B](that: GenSeq[L, B], offset: Int): Boolean = {
     val i = this.iterator drop offset
@@ -423,7 +423,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
    *    @return       a new $coll which contains all elements of this $coll
    *                  followed by all elements of `that`.
    */
-  override def union[B >: A, That](that: GenSeq[L, B])(implicit bf: CanBuildFrom[Repr, B, That]): That =
+  override def union[B >: A, That](that: GenSeq[L, B])(implicit bf: CanBuildFrom[L, Repr, B, That]): That =
     this ++ that
 
   /** Computes the multiset difference between this $coll and another sequence.
@@ -491,7 +491,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
   }
 
   private def occCounts[B](sq: Seq[L, B]): mutable.Map[L, B, Int] = {
-    val occ = new mutable.HashMap[B, Int] { override def default(k: B) = 0 }
+    val occ = new mutable.HashMap[L, B, Int] { override def default(k: B) = 0 }
     for (y <- sq) occ(y) += 1
     occ
   }
@@ -503,7 +503,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
    */
   def distinct: Repr = {
     val b = newBuilder
-    val seen = mutable.HashSet[A]()
+    val seen = mutable.HashSet[L, A]()
     for (x <- this) {
       if (!seen(x)) {
         b += x
@@ -513,7 +513,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
     b.result()
   }
 
-  def patch[B >: A, That](from: Int, patch: GenSeq[L, B], replaced: Int)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def patch[B >: A, That](from: Int, patch: GenSeq[L, B], replaced: Int)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = {
     val b = bf(repr)
     var i = 0
     val it = this.iterator
@@ -531,7 +531,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
     b.result()
   }
 
-  def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = {
     if (index < 0) throw new IndexOutOfBoundsException(index.toString)
     val b = bf(repr)
     var i = 0
@@ -547,21 +547,21 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
     b.result()
   }
 
-  def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = {
     val b = bf(repr)
     b += elem
     b ++= thisCollection
     b.result()
   }
 
-  def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = {
     val b = bf(repr)
     b ++= thisCollection
     b += elem
     b.result()
   }
 
-  def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That = {
     val b = bf(repr)
     val L = length
     b.sizeHint(math.max(L, len))
@@ -670,7 +670,7 @@ trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSe
    */
   def indices: Range = 0 until length
 
-  override def view = new SeqView[A, Repr] {
+  override def view = new SeqView[L, A, Repr] {
     protected lazy val underlying = self.repr
     override def iterator = self.iterator
     override def length = self.length
@@ -699,21 +699,21 @@ object SeqLike {
    *  @return Target packed in an IndexedSeq (taken from iterator unless W already is an IndexedSeq)
    */
   private def kmpOptimizeWord[B](W: Seq[L, B], n0: Int, n1: Int, forward: Boolean) = W match {
-    case iso: IndexedSeq[_] =>
+    case iso: IndexedSeq[L, _] =>
       // Already optimized for indexing--use original (or custom view of original)
-      if (forward && n0==0 && n1==W.length) iso.asInstanceOf[IndexedSeq[B]]
-      else if (forward) new AbstractSeq[L, B] with IndexedSeq[B] {
+      if (forward && n0==0 && n1==W.length) iso.asInstanceOf[IndexedSeq[L, B]]
+      else if (forward) new AbstractSeq[L, B] with IndexedSeq[L, B] {
         val length = n1 - n0
         def apply(x: Int) = iso(n0 + x).asInstanceOf[B]
       }
-      else new AbstractSeq[L, B] with IndexedSeq[B] {
+      else new AbstractSeq[L, B] with IndexedSeq[L, B] {
         def length = n1 - n0
         def apply(x: Int) = iso(n1 - 1 - x).asInstanceOf[B]
       }
     case _ =>
       // W is probably bad at indexing.  Pack in array (in correct orientation)
       // Would be marginally faster to special-case each direction
-      new AbstractSeq[L, B] with IndexedSeq[B] {
+      new AbstractSeq[L, B] with IndexedSeq[L, B] {
         private[this] val Warr = new Array[AnyRef](n1-n0)
         private[this] val delta = if (forward) 1 else -1
         private[this] val done = if (forward) n1-n0 else -1
@@ -737,7 +737,7 @@ object SeqLike {
    *  @param  wlen Just in case we're only IndexedSeq and not IndexedSeqOptimized
    *  @return KMP jump table for target sequence
    */
- private def kmpJumpTable[B](Wopt: IndexedSeq[B], wlen: Int) = {
+ private def kmpJumpTable[B](Wopt: IndexedSeq[L, B], wlen: Int) = {
     val arr = new Array[Int](wlen)
     var pos = 2
     var cnd = 0
@@ -794,7 +794,7 @@ object SeqLike {
     }
     // Now we know we actually need KMP search, so do it
     else S match {
-      case xs: IndexedSeq[_] =>
+      case xs: IndexedSeq[L, _] =>
         // We can index into S directly; it should be adequately fast
         val Wopt = kmpOptimizeWord(W, n0, n1, forward)
         val T = kmpJumpTable(Wopt, n1-n0)

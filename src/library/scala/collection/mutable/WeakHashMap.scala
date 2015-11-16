@@ -27,8 +27,8 @@ import convert.Wrappers._
  *  @define Coll `WeakHashMap`
  *  @define coll weak hash map
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `WeakHashMap[A, B]` if the elements contained in the resulting collection are
- *    pairs of type `(A, B)`. This is because an implicit of type `CanBuildFrom[WeakHashMap, (A, B), WeakHashMap[A, B]]`
+ *    `That` is always `WeakHashMap[L, A, B]` if the elements contained in the resulting collection are
+ *    pairs of type `(A, B)`. This is because an implicit of type `CanBuildFrom[L, WeakHashMap, (A, B), WeakHashMap[L, A, B]]`
  *    is defined in object `WeakHashMap`. Otherwise, `That` resolves to the most specific type that doesn't have
  *    to contain pairs of type `(A, B)`, which is `Iterable`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
@@ -38,17 +38,17 @@ import convert.Wrappers._
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-class WeakHashMap[A, B] extends JMapWrapper[A, B](new java.util.WeakHashMap)
-			   with JMapWrapperLike[A, B, WeakHashMap[A, B]] {
-  override def empty = new WeakHashMap[A, B]
+class WeakHashMap[L, A, B] extends JMapWrapper[A, B](new java.util.WeakHashMap)
+			   with JMapWrapperLike[A, B, WeakHashMap[L, A, B]] {
+  override def empty = new WeakHashMap[L, A, B]
 }
 
 /** $factoryInfo
  *  @define Coll `WeakHashMap`
  *  @define coll weak hash map
  */
-object WeakHashMap extends MutableMapFactory[WeakHashMap] {
-  implicit def canBuildFrom[A, B]: CanBuildFrom[Coll, (A, B), WeakHashMap[A, B]] = new MapCanBuildFrom[A, B]
-  def empty[A, B]: WeakHashMap[A, B] = new WeakHashMap[A, B]
+object WeakHashMap extends MutableMapFactory[L, WeakHashMap] {
+  implicit def canBuildFrom[A, B]: CanBuildFrom[L, Coll, (A, B), WeakHashMap[L, A, B]] = new MapCanBuildFrom[A, B]
+  def empty[A, B]: WeakHashMap[L, A, B] = new WeakHashMap[L, A, B]
 }
 

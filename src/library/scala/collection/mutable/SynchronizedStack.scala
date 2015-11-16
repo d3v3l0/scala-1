@@ -13,7 +13,7 @@ package collection
 package mutable
 
 
-/** This is a synchronized version of the `Stack[T]` class. It
+/** This is a synchronized version of the `Stack[L, T]` class. It
  *  implements a data structure which allows to store and retrieve
  *  objects in a last-in-first-out (LIFO) fashion.
  *
@@ -26,7 +26,7 @@ package mutable
  *  @define coll synchronized stack
  */
 @deprecated("Synchronization via selective overriding of methods is inherently unreliable.  Consider java.util.concurrent.LinkedBlockingDequeue instead.", "2.11.0")
-class SynchronizedStack[A] extends Stack[A] {
+class SynchronizedStack[L, A] extends Stack[L, A] {
   import scala.collection.Traversable
 
   /** Checks if the stack is empty.
@@ -85,7 +85,7 @@ class SynchronizedStack[A] extends Stack[A] {
    *
    *  @return an iterator over all stack elements.
    */
-  override def iterator: Iterator[A] = synchronized { super.iterator }
+  override def iterator: Iterator[L, A] = synchronized { super.iterator }
 
   /** Creates a list of all stack elements in FIFO order.
    *

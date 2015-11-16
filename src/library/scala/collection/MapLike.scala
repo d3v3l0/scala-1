@@ -29,7 +29,7 @@ import parallel.ParMap
  *    following methods:
  *    {{{
  *       def get(key: A): Option[B]
- *       def iterator: Iterator[(A, B)]
+ *       def iterator: Iterator[L, (A, B)]
  *       def + [B1 >: B](kv: (A, B1)): This
  *       def -(key: A): This
  *    }}}
@@ -57,9 +57,9 @@ import parallel.ParMap
 trait MapLike[L, A, +B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
   extends PartialFunction[A, B]
      with IterableLike[L, (A, B), This]
-     with GenMapLike[A, B, This]
-     with Subtractable[A, This]
-     with Parallelizable[(A, B), ParMap[A, B]]
+     with GenMapLike[L, A, B, This]
+     with Subtractable[L, A, This]
+     with Parallelizable[L, (A, B), ParMap[L, A, B]]
 {
 self =>
 
@@ -73,7 +73,7 @@ self =>
   /** A common implementation of `newBuilder` for all maps in terms of `empty`.
    *  Overridden for mutable maps in `mutable.MapLike`.
    */
-  override protected[this] def newBuilder: Builder[(A, B), This] = new MapBuilder[A, B, This](empty)
+  override protected[this] def newBuilder: Builder[L, (A, B), This] = new MapBuilder[L, A, B, This](empty)
 
   /** Optionally returns the value associated with a key.
    *
@@ -87,7 +87,7 @@ self =>
    *
    *  @return the new iterator
    */
-  def iterator: Iterator[(A, B)]
+  def iterator: Iterator[L, (A, B)]
 
   /** Adds a key/value pair to this map, returning a new map.
    *  @param    kv the key/value pair
@@ -167,7 +167,7 @@ self =>
 
   /** The implementation class of the set returned by `keySet`.
    */
-  protected class DefaultKeySet extends AbstractSet[A] with Set[L, A] with Serializable {
+  protected class DefaultKeySet extends AbstractSet[L, A] with Set[L, A] with Serializable {
     def contains(key : A) = self.contains(key)
     def iterator = keysIterator
     def + (elem: A): Set[L, A] = (Set[L, A]() ++ this + elem).asInstanceOf[Set[L, A]] // !!! concrete overrides abstract problem
@@ -180,7 +180,7 @@ self =>
    *
    *  @return an iterator over all keys.
    */
-  def keysIterator: Iterator[A] = new AbstractIterator[A] {
+  def keysIterator: Iterator[L, A] = new AbstractIterator[L, A] {
     val iter = self.iterator
     def hasNext = iter.hasNext
     def next() = iter.next()._1
@@ -190,14 +190,14 @@ self =>
    *
    *  @return the keys of this map as an iterable.
    */
-  @migration("`keys` returns `Iterable[L, A]` rather than `Iterator[A]`.", "2.8.0")
+  @migration("`keys` returns `Iterable[L, A]` rather than `Iterator[L, A]`.", "2.8.0")
   def keys: Iterable[L, A] = keySet
 
   /** Collects all values of this map in an iterable collection.
    *
    *  @return the values of this map as an iterable.
    */
-  @migration("`values` returns `Iterable[L, B]` rather than `Iterator[B]`.", "2.8.0")
+  @migration("`values` returns `Iterable[L, B]` rather than `Iterator[L, B]`.", "2.8.0")
   def values: Iterable[L, B] = new DefaultValuesIterable
 
   /** The implementation class of the iterable returned by `values`.
@@ -212,7 +212,7 @@ self =>
    *
    *  @return an iterator over all values that are associated with some key in this map.
    */
-  def valuesIterator: Iterator[B] = new AbstractIterator[B] {
+  def valuesIterator: Iterator[L, B] = new AbstractIterator[L, B] {
     val iter = self.iterator
     def hasNext = iter.hasNext
     def next() = iter.next()._2
@@ -229,7 +229,7 @@ self =>
   def default(key: A): B =
     throw new NoSuchElementException("key not found: " + key)
 
-  protected class FilteredKeys(p: A => Boolean) extends AbstractMap[A, B] with DefaultMap[A, B] {
+  protected class FilteredKeys(p: A => Boolean) extends AbstractMap[L, A, B] with DefaultMap[L, A, B] {
     override def foreach[C](f: ((A, B)) => C): Unit = for (kv <- self) if (p(kv._1)) f(kv)
     def iterator = self.iterator.filter(kv => p(kv._1))
     override def contains(key: A) = self.contains(key) && p(key)
@@ -243,7 +243,7 @@ self =>
    */
   def filterKeys(p: A => Boolean): Map[L, A, B] = new FilteredKeys(p)
 
-  protected class MappedValues[C](f: B => C) extends AbstractMap[A, C] with DefaultMap[A, C] {
+  protected class MappedValues[C](f: B => C) extends AbstractMap[L, A, C] with DefaultMap[L, A, C] {
     override def foreach[D](g: ((A, C)) => D): Unit = for ((k, v) <- self) g((k, f(v)))
     def iterator = for ((k, v) <- self.iterator) yield (k, f(v))
     override def size = self.size
@@ -300,7 +300,7 @@ self =>
    *  @usecase  def ++ (xs: Traversable[L, (A, B)]): Map[L, A, B]
    *    @inheritdoc
    */
-  def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): Map[L, A, B1] =
+  def ++[B1 >: B](xs: GenTraversableOnce[L, (A, B1)]): Map[L, A, B1] =
     ((repr: Map[L, A, B1]) /: xs.seq) (_ + _)
 
   /** Returns a new map obtained by removing all key/value pairs for which the predicate
@@ -324,7 +324,7 @@ self =>
   /* Overridden for efficiency. */
   override def toSeq: Seq[L, (A, B)] = toBuffer[(A, B)]
   override def toBuffer[C >: (A, B)]: mutable.Buffer[L, C] = {
-    val result = new mutable.ArrayBuffer[C](size)
+    val result = new mutable.ArrayBuffer[L, C](size)
     copyToBuffer(result)
     result
   }

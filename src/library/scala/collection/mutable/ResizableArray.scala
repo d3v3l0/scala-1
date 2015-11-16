@@ -22,18 +22,18 @@ import generic._
  *  @version 2.8
  *  @since   1
  */
-trait ResizableArray[A] extends IndexedSeq[A]
-                           with GenericTraversableTemplate[A, ResizableArray]
-                           with IndexedSeqOptimized[A, ResizableArray[A]] {
+trait ResizableArray[L, A] extends IndexedSeq[L, A]
+                           with GenericTraversableTemplate[L, A, ResizableArray]
+                           with IndexedSeqOptimized[L, A, ResizableArray[L, A]] {
 
-  override def companion: GenericCompanion[ResizableArray] = ResizableArray
+  override def companion: GenericCompanion[L, ResizableArray] = ResizableArray
 
   protected def initialSize: Int = 16
   protected var array: Array[AnyRef] = new Array[AnyRef](math.max(initialSize, 1))
   protected var size0: Int = 0
 
   //##########################################################################
-  // implement/override methods of IndexedSeq[A]
+  // implement/override methods of IndexedSeq[L, A]
 
   /** Returns the length of this resizable array.
    */
@@ -121,9 +121,9 @@ trait ResizableArray[A] extends IndexedSeq[A]
   }
 }
 
-object ResizableArray extends SeqFactory[ResizableArray] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ResizableArray[A]] =
+object ResizableArray extends SeqFactory[L, ResizableArray] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, ResizableArray[L, A]] =
     ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, ResizableArray[A]] = new ArrayBuffer[A]
+  def newBuilder[A]: Builder[L, A, ResizableArray[L, A]] = new ArrayBuffer[L, A]
 }

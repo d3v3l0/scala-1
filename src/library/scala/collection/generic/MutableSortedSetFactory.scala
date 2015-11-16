@@ -20,7 +20,7 @@ import scala.language.higherKinds
  * @author Lucien Pereira
  *
  */
-abstract class MutableSortedSetFactory[CC[A] <: mutable.SortedSet[A] with SortedSetLike[A, CC[A]] with mutable.Set[L, A] with mutable.SetLike[L, A, CC[A]]] extends SortedSetFactory[CC] {
+abstract class MutableSortedSetFactory[L, CC[A] <: mutable.SortedSet[L, A] with SortedSetLike[L, A, CC[A]] with mutable.Set[L, A] with mutable.SetLike[L, A, CC[A]]] extends SortedSetFactory[L, CC] {
 
   /**
    * mutable.SetBuilder uses '+' which is not a primitive for anything extending mutable.SetLike,
@@ -30,6 +30,6 @@ abstract class MutableSortedSetFactory[CC[A] <: mutable.SortedSet[A] with Sorted
    * Fortunately GrowingBuilder comes to rescue.
    *
    */
-  override def newBuilder[A](implicit ord: Ordering[A]): Builder[A, CC[A]] = new GrowingBuilder[A, CC[A]](empty)
+  override def newBuilder[A](implicit ord: Ordering[A]): Builder[L, A, CC[A]] = new GrowingBuilder[L, A, CC[A]](empty)
 
 }

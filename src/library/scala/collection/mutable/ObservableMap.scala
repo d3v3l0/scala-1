@@ -26,10 +26,10 @@ import script._
  *  @since   1
  */
 @deprecated("Observables are deprecated because scripting is deprecated.", "2.11.0")
-trait ObservableMap[A, B] extends Map[L, A, B] with Publisher[Message[(A, B)] with Undoable]
+trait ObservableMap[L, A, B] extends Map[L, A, B] with Publisher[L, Message[L, (A, B)] with Undoable]
 {
 
-  type Pub <: ObservableMap[A, B]
+  type Pub <: ObservableMap[L, A, B]
 
   abstract override def += (kv: (A, B)): this.type = {
     val (key, value) = kv

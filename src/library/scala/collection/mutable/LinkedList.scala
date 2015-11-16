@@ -20,7 +20,7 @@ import generic._
   * The danger of directly manipulating next:
   * {{{
   *     scala> val b = LinkedList(1)
-  *     b: scala.collection.mutable.LinkedList[Int] = LinkedList(1)
+  *     b: scala.collection.mutable.LinkedList[L, Int] = LinkedList(1)
   *
   *     scala> b.next = null
   *
@@ -44,7 +44,7 @@ import generic._
   *  @define Coll `LinkedList`
   *  @define coll linked list
   *  @define thatinfo the class of the returned collection. In the standard library configuration,
-  *    `That` is always `LinkedList[B]` because an implicit of type `CanBuildFrom[LinkedList, B, LinkedList[B]]`
+  *    `That` is always `LinkedList[L, B]` because an implicit of type `CanBuildFrom[L, LinkedList, B, LinkedList[L, B]]`
   *    is defined in object `LinkedList`.
   *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
   *    result class `That` from the current representation type `Repr`
@@ -57,30 +57,30 @@ import generic._
   *  @define collectExample Example:
   *  {{{
   *    scala>     val a = LinkedList(1, 2, 3)
-  *    a: scala.collection.mutable.LinkedList[Int] = LinkedList(1, 2, 3)
+  *    a: scala.collection.mutable.LinkedList[L, Int] = LinkedList(1, 2, 3)
   *
   *    scala>     val addOne: PartialFunction[Any, Float] = {case i: Int => i + 1.0f}
   *    addOne: PartialFunction[Any,Float] = <function1>
   *
   *    scala>     val b = a.collect(addOne)
-  *    b: scala.collection.mutable.LinkedList[Float] = LinkedList(2.0, 3.0, 4.0)
+  *    b: scala.collection.mutable.LinkedList[L, Float] = LinkedList(2.0, 3.0, 4.0)
   *
   *    scala> val c = LinkedList('a')
-  *    c: scala.collection.mutable.LinkedList[Char] = LinkedList(a)
+  *    c: scala.collection.mutable.LinkedList[L, Char] = LinkedList(a)
   *
   *    scala> val d = a ++ c
-  *    d: scala.collection.mutable.LinkedList[AnyVal] = LinkedList(1, 2, 3, a)
+  *    d: scala.collection.mutable.LinkedList[L, AnyVal] = LinkedList(1, 2, 3, a)
   *
   *    scala> val e = d.collect(addOne)
-  *    e: scala.collection.mutable.LinkedList[Float] = LinkedList(2.0, 3.0, 4.0)
+  *    e: scala.collection.mutable.LinkedList[L, Float] = LinkedList(2.0, 3.0, 4.0)
   *  }}}
   */
 @SerialVersionUID(-7308240733518833071L)
 @deprecated("Low-level linked lists are deprecated due to idiosyncrasies in interface and incomplete features.", "2.11.0")
-class LinkedList[A]() extends AbstractSeq[L, A]
-                         with LinearSeq[A]
-                         with GenericTraversableTemplate[A, LinkedList]
-                         with LinkedListLike[A, LinkedList[A]]
+class LinkedList[L, A]() extends AbstractSeq[L, A]
+                         with LinearSeq[L, A]
+                         with GenericTraversableTemplate[L, A, LinkedList]
+                         with LinkedListLike[L, A, LinkedList[L, A]]
                          with Serializable {
   next = this
 
@@ -93,13 +93,13 @@ class LinkedList[A]() extends AbstractSeq[L, A]
    * @example
    * {{{
    *     scala> val m = LinkedList(1)
-   *     m: scala.collection.mutable.LinkedList[Int] = LinkedList(1)
+   *     m: scala.collection.mutable.LinkedList[L, Int] = LinkedList(1)
    *
-   *     scala> val n = new LinkedList[Int](2, m)
-   *     n: scala.collection.mutable.LinkedList[Int] = LinkedList(2, 1)
+   *     scala> val n = new LinkedList[L, Int](2, m)
+   *     n: scala.collection.mutable.LinkedList[L, Int] = LinkedList(2, 1)
    * }}}
    */
-  def this(elem: A, next: LinkedList[A]) {
+  def this(elem: A, next: LinkedList[L, A]) {
     this()
     if (next != null) {
       this.elem = elem
@@ -107,7 +107,7 @@ class LinkedList[A]() extends AbstractSeq[L, A]
     }
   }
 
-  override def companion: GenericCompanion[LinkedList] = LinkedList
+  override def companion: GenericCompanion[L, LinkedList] = LinkedList
 }
 
 /** $factoryInfo
@@ -115,10 +115,10 @@ class LinkedList[A]() extends AbstractSeq[L, A]
  *  @define coll linked list
  */
 @deprecated("Low-level linked lists are deprecated.", "2.11.0")
-object LinkedList extends SeqFactory[LinkedList] {
-  override def empty[A]: LinkedList[A] = new LinkedList[A]
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, LinkedList[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+object LinkedList extends SeqFactory[L, LinkedList] {
+  override def empty[A]: LinkedList[L, A] = new LinkedList[L, A]
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, LinkedList[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, LinkedList[A]] =
-    (new MutableList) mapResult ((l: MutableList[A]) => l.toLinkedList)
+  def newBuilder[A]: Builder[L, A, LinkedList[L, A]] =
+    (new MutableList) mapResult ((l: MutableList[L, A]) => l.toLinkedList)
 }

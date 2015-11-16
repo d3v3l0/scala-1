@@ -25,19 +25,19 @@ import mutable.Builder
  *  @define Coll `immutable.SortedSet`
  *  @define coll immutable sorted set
  */
-trait SortedSet[A] extends Set[L, A] with scala.collection.SortedSet[A] with SortedSetLike[A, SortedSet[A]] {
+trait SortedSet[L, A] extends Set[L, A] with scala.collection.SortedSet[L, A] with SortedSetLike[L, A, SortedSet[L, A]] {
   /** Needs to be overridden in subclasses. */
-  override def empty: SortedSet[A] = SortedSet.empty[A]
+  override def empty: SortedSet[L, A] = SortedSet.empty[A]
 }
 
 /** $factoryInfo
  *  @define Coll `immutable.SortedSet`
  *  @define coll immutable sorted set
  */
-object SortedSet extends ImmutableSortedSetFactory[SortedSet] {
+object SortedSet extends ImmutableSortedSetFactory[L, SortedSet] {
   /** $sortedSetCanBuildFromInfo */
-  def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[Coll, A, SortedSet[A]] = newCanBuildFrom[A]
-  def empty[A](implicit ord: Ordering[A]): SortedSet[A] = TreeSet.empty[A]
+  def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[L, Coll, A, SortedSet[L, A]] = newCanBuildFrom[A]
+  def empty[A](implicit ord: Ordering[A]): SortedSet[L, A] = TreeSet.empty[A]
   // Force a declaration here so that BitSet's (which does not inherit from SortedSetFactory) can be more specific
-  override implicit def newCanBuildFrom[A](implicit ord : Ordering[A]) : CanBuildFrom[Coll, A, SortedSet[A]] = super.newCanBuildFrom
+  override implicit def newCanBuildFrom[A](implicit ord : Ordering[A]) : CanBuildFrom[L, Coll, A, SortedSet[L, A]] = super.newCanBuildFrom
 }

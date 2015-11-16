@@ -20,14 +20,14 @@ import mutable.{ Builder, SetBuilder }
  *  @define Coll `immutable.TreeSet`
  *  @define coll immutable tree set
  */
-object TreeSet extends ImmutableSortedSetFactory[TreeSet] {
-  implicit def implicitBuilder[A](implicit ordering: Ordering[A]): Builder[A, TreeSet[A]] = newBuilder[A](ordering)
-  override def newBuilder[A](implicit ordering: Ordering[A]): Builder[A, TreeSet[A]] =
+object TreeSet extends ImmutableSortedSetFactory[L, TreeSet] {
+  implicit def implicitBuilder[A](implicit ordering: Ordering[A]): Builder[L, A, TreeSet[L, A]] = newBuilder[A](ordering)
+  override def newBuilder[A](implicit ordering: Ordering[A]): Builder[L, A, TreeSet[L, A]] =
     new SetBuilder(empty[A](ordering))
 
   /** The empty set of this type
    */
-  def empty[A](implicit ordering: Ordering[A]) = new TreeSet[A]
+  def empty[A](implicit ordering: Ordering[A]) = new TreeSet[L, A]
 }
 
 /** This class implements immutable sets using a tree.
@@ -50,8 +50,8 @@ object TreeSet extends ImmutableSortedSetFactory[TreeSet] {
  */
 @SerialVersionUID(-5685982407650748405L)
 @deprecatedInheritance("The implementation details of immutable tree sets make inheriting from them unwise.", "2.11.0")
-class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Ordering[A])
-  extends SortedSet[A] with SortedSetLike[A, TreeSet[A]] with Serializable {
+class TreeSet[L, A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Ordering[A])
+  extends SortedSet[L, A] with SortedSetLike[L, A, TreeSet[L, A]] with Serializable {
 
   if (ordering eq null)
     throw new NullPointerException("ordering must not be null")
@@ -103,7 +103,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
 
   def this()(implicit ordering: Ordering[A]) = this(null)(ordering)
 
-  private def newSet(t: RB.Tree[A, Unit]) = new TreeSet[A](t)
+  private def newSet(t: RB.Tree[A, Unit]) = new TreeSet[L, A](t)
 
   /** A factory to create empty sets of the same type of keys.
    */
@@ -114,7 +114,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
    *  @param elem    a new element to add.
    *  @return        a new $coll containing `elem` and all the elements of this $coll.
    */
-  def + (elem: A): TreeSet[A] = newSet(RB.update(tree, elem, (), overwrite = false))
+  def + (elem: A): TreeSet[L, A] = newSet(RB.update(tree, elem, (), overwrite = false))
 
   /** A new `TreeSet` with the entry added is returned,
    *  assuming that elem is <em>not</em> in the TreeSet.
@@ -122,7 +122,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
    *  @param elem    a new element to add.
    *  @return        a new $coll containing `elem` and all the elements of this $coll.
    */
-  def insert(elem: A): TreeSet[A] = {
+  def insert(elem: A): TreeSet[L, A] = {
     assert(!RB.contains(tree, elem))
     newSet(RB.update(tree, elem, (), overwrite = false))
   }
@@ -132,7 +132,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
    *  @param elem    a new element to add.
    *  @return        a new $coll containing all the elements of this $coll except `elem`.
    */
-  def - (elem:A): TreeSet[A] =
+  def - (elem:A): TreeSet[L, A] =
     if (!RB.contains(tree, elem)) this
     else newSet(RB.delete(tree, elem))
 
@@ -148,16 +148,16 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
    *
    *  @return the new iterator
    */
-  def iterator: Iterator[A] = RB.keysIterator(tree)
-  override def keysIteratorFrom(start: A): Iterator[A] = RB.keysIterator(tree, Some(start))
+  def iterator: Iterator[L, A] = RB.keysIterator(tree)
+  override def keysIteratorFrom(start: A): Iterator[L, A] = RB.keysIterator(tree, Some(start))
 
   override def foreach[U](f: A =>  U) = RB.foreachKey(tree, f)
 
-  override def rangeImpl(from: Option[A], until: Option[A]): TreeSet[A] = newSet(RB.rangeImpl(tree, from, until))
-  override def range(from: A, until: A): TreeSet[A] = newSet(RB.range(tree, from, until))
-  override def from(from: A): TreeSet[A] = newSet(RB.from(tree, from))
-  override def to(to: A): TreeSet[A] = newSet(RB.to(tree, to))
-  override def until(until: A): TreeSet[A] = newSet(RB.until(tree, until))
+  override def rangeImpl(from: Option[A], until: Option[A]): TreeSet[L, A] = newSet(RB.rangeImpl(tree, from, until))
+  override def range(from: A, until: A): TreeSet[L, A] = newSet(RB.range(tree, from, until))
+  override def from(from: A): TreeSet[L, A] = newSet(RB.from(tree, from))
+  override def to(to: A): TreeSet[L, A] = newSet(RB.to(tree, to))
+  override def until(until: A): TreeSet[L, A] = newSet(RB.until(tree, until))
 
   override def firstKey = head
   override def lastKey = last

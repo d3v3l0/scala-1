@@ -19,7 +19,7 @@ import generic._
  *
  * {{{
  *    def get(key: A): Option[B]
- *    def iterator: Iterator[(A, B)]
+ *    def iterator: Iterator[L, (A, B)]
  *    def + [B1 >: B](kv: (A, B1)): Map[L, A, B1]
  *    def -(key: A): Map[L, A, B]
  * }}}
@@ -27,7 +27,7 @@ import generic._
  * @since 1
  */
 trait Map[L, A, +B] extends Iterable[L, (A, B)]
-//                    with GenMap[A, B]
+//                    with GenMap[L, A, B]
                     with scala.collection.Map[L, A, B]
                     with MapLike[L, A, B, Map[L, A, B]] { self =>
 
@@ -76,10 +76,10 @@ trait Map[L, A, +B] extends Iterable[L, (A, B)]
  *  @define Coll `immutable.Map`
  *  @define coll immutable map
  */
-object Map extends ImmutableMapFactory[Map] {
+object Map extends ImmutableMapFactory[L, Map] {
 
   /** $mapCanBuildFromInfo */
-  implicit def canBuildFrom[A, B]: CanBuildFrom[Coll, (A, B), Map[L, A, B]] = new MapCanBuildFrom[A, B]
+  implicit def canBuildFrom[A, B]: CanBuildFrom[L, Coll, (A, B), Map[L, A, B]] = new MapCanBuildFrom[A, B]
 
   def empty[A, B]: Map[L, A, B] = EmptyMap.asInstanceOf[Map[L, A, B]]
 
@@ -92,16 +92,16 @@ object Map extends ImmutableMapFactory[Map] {
     override def withDefaultValue[B1 >: B](d: B1): immutable.Map[L, A, B1] = new WithDefault[A, B1](underlying, x => d)
   }
 
-  private object EmptyMap extends AbstractMap[Any, Nothing] with Map[L, Any, Nothing] with Serializable {
+  private object EmptyMap extends AbstractMap[L, Any, Nothing] with Map[L, Any, Nothing] with Serializable {
     override def size: Int = 0
     def get(key: Any): Option[Nothing] = None
-    def iterator: Iterator[(Any, Nothing)] = Iterator.empty
+    def iterator: Iterator[L, (Any, Nothing)] = Iterator.empty
     override def updated [B1] (key: Any, value: B1): Map[L, Any, B1] = new Map1(key, value)
     def + [B1](kv: (Any, B1)): Map[L, Any, B1] = updated(kv._1, kv._2)
     def - (key: Any): Map[L, Any, Nothing] = this
   }
 
-  class Map1[A, +B](key1: A, value1: B) extends AbstractMap[A, B] with Map[L, A, B] with Serializable {
+  class Map1[A, +B](key1: A, value1: B) extends AbstractMap[L, A, B] with Map[L, A, B] with Serializable {
     override def size = 1
     def get(key: A): Option[B] =
       if (key == key1) Some(value1) else None
@@ -117,7 +117,7 @@ object Map extends ImmutableMapFactory[Map] {
     }
   }
 
-  class Map2[A, +B](key1: A, value1: B, key2: A, value2: B) extends AbstractMap[A, B] with Map[L, A, B] with Serializable {
+  class Map2[A, +B](key1: A, value1: B, key2: A, value2: B) extends AbstractMap[L, A, B] with Map[L, A, B] with Serializable {
     override def size = 2
     def get(key: A): Option[B] =
       if (key == key1) Some(value1)
@@ -138,7 +138,7 @@ object Map extends ImmutableMapFactory[Map] {
     }
   }
 
-  class Map3[A, +B](key1: A, value1: B, key2: A, value2: B, key3: A, value3: B) extends AbstractMap[A, B] with Map[L, A, B] with Serializable {
+  class Map3[A, +B](key1: A, value1: B, key2: A, value2: B, key3: A, value3: B) extends AbstractMap[L, A, B] with Map[L, A, B] with Serializable {
     override def size = 3
     def get(key: A): Option[B] =
       if (key == key1) Some(value1)
@@ -162,7 +162,7 @@ object Map extends ImmutableMapFactory[Map] {
     }
   }
 
-  class Map4[A, +B](key1: A, value1: B, key2: A, value2: B, key3: A, value3: B, key4: A, value4: B) extends AbstractMap[A, B] with Map[L, A, B] with Serializable {
+  class Map4[A, +B](key1: A, value1: B, key2: A, value2: B, key3: A, value3: B, key4: A, value4: B) extends AbstractMap[L, A, B] with Map[L, A, B] with Serializable {
     override def size = 4
     def get(key: A): Option[B] =
       if (key == key1) Some(value1)
@@ -191,4 +191,4 @@ object Map extends ImmutableMapFactory[Map] {
 }
 
 /** Explicit instantiation of the `Map` trait to reduce class file size in subclasses. */
-abstract class AbstractMap[A, +B] extends scala.collection.AbstractMap[A, B] with Map[L, A, B]
+abstract class AbstractMap[L, A, +B] extends scala.collection.AbstractMap[L, A, B] with Map[L, A, B]

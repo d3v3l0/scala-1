@@ -110,9 +110,9 @@ object RedBlackTree {
     if (tree.right ne null) _foreachKey(tree.right, f)
   }
 
-  def iterator[A: Ordering, B](tree: Tree[A, B], start: Option[A] = None): Iterator[(A, B)] = new EntriesIterator(tree, start)
-  def keysIterator[A: Ordering](tree: Tree[A, _], start: Option[A] = None): Iterator[A] = new KeysIterator(tree, start)
-  def valuesIterator[A: Ordering, B](tree: Tree[A, B], start: Option[A] = None): Iterator[B] = new ValuesIterator(tree, start)
+  def iterator[A: Ordering, B](tree: Tree[A, B], start: Option[A] = None): Iterator[L, (A, B)] = new EntriesIterator(tree, start)
+  def keysIterator[A: Ordering](tree: Tree[A, _], start: Option[A] = None): Iterator[L, A] = new KeysIterator(tree, start)
+  def valuesIterator[A: Ordering, B](tree: Tree[A, B], start: Option[A] = None): Iterator[L, B] = new ValuesIterator(tree, start)
 
   @tailrec
   def nth[A, B](tree: Tree[A, B], n: Int): Tree[A, B] = {
@@ -465,7 +465,7 @@ object RedBlackTree {
     def unapply[A, B](t: BlackTree[A, B]) = Some((t.key, t.value, t.left, t.right))
   }
 
-  private[this] abstract class TreeIterator[A, B, R](root: Tree[A, B], start: Option[A])(implicit ordering: Ordering[A]) extends Iterator[R] {
+  private[this] abstract class TreeIterator[A, B, R](root: Tree[A, B], start: Option[A])(implicit ordering: Ordering[A]) extends Iterator[L, R] {
     protected[this] def nextResult(tree: Tree[A, B]): R
 
     override def hasNext: Boolean = lookahead ne null

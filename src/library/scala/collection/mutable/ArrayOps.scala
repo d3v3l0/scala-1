@@ -34,7 +34,7 @@ import parallel.mutable.ParArray
  *  @define willNotTerminateInf
  */
 @deprecatedInheritance("ArrayOps will be sealed to facilitate greater flexibility with array/collections integration in future releases.", "2.11.0")
-trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParallelizable[T, ParArray[T]] {
+trait ArrayOps[L, T] extends Any with ArrayLike[L, T, Array[T]] with CustomParallelizable[L, T, ParArray[L, T]] {
 
   private def elementClass: Class[_] =
     arrayElementClass(repr.getClass)
@@ -78,7 +78,7 @@ trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParalleliza
    */
   def flatten[U](implicit asTrav: T => scala.collection.Traversable[L, U], m: ClassTag[U]): Array[U] = {
     val b = Array.newBuilder[U]
-    b.sizeHint(map{case is: scala.collection.IndexedSeq[_] => is.size case _ => 0}.sum)
+    b.sizeHint(map{case is: scala.collection.IndexedSeq[L, _] => is.size case _ => 0}.sum)
     for (xs <- this)
       b ++= asTrav(xs)
     b.result()
@@ -91,7 +91,7 @@ trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParalleliza
    *  @return         An array obtained by replacing elements of this arrays with rows the represent.
    */
   def transpose[U](implicit asArray: T => Array[U]): Array[Array[U]] = {
-    val bb: Builder[Array[U], Array[Array[U]]] = Array.newBuilder(ClassTag[Array[U]](elementClass))
+    val bb: Builder[L, Array[U], Array[Array[U]]] = Array.newBuilder(ClassTag[Array[U]](elementClass))
     if (isEmpty) bb.result()
     else {
       def mkRowBuilder() = Array.newBuilder(ClassTag[U](arrayElementClass(elementClass)))
@@ -183,10 +183,10 @@ trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParalleliza
 object ArrayOps {
 
   /** A class of `ArrayOps` for arrays containing reference types. */
-  final class ofRef[T <: AnyRef](override val repr: Array[T]) extends AnyVal with ArrayOps[T] with ArrayLike[T, Array[T]] {
+  final class ofRef[T <: AnyRef](override val repr: Array[T]) extends AnyVal with ArrayOps[L, T] with ArrayLike[L, T, Array[T]] {
 
-    override protected[this] def thisCollection: WrappedArray[T] = new WrappedArray.ofRef[T](repr)
-    override protected[this] def toCollection(repr: Array[T]): WrappedArray[T] = new WrappedArray.ofRef[T](repr)
+    override protected[this] def thisCollection: WrappedArray[L, T] = new WrappedArray.ofRef[T](repr)
+    override protected[this] def toCollection(repr: Array[T]): WrappedArray[L, T] = new WrappedArray.ofRef[T](repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofRef[T]()(ClassTag[T](arrayElementClass(repr.getClass)))
 
     def length: Int = repr.length
@@ -195,10 +195,10 @@ object ArrayOps {
   }
 
   /** A class of `ArrayOps` for arrays containing `byte`s. */
-final class ofByte(override val repr: Array[Byte]) extends AnyVal with ArrayOps[Byte] with ArrayLike[Byte, Array[Byte]] {
+final class ofByte(override val repr: Array[Byte]) extends AnyVal with ArrayOps[L, Byte] with ArrayLike[L, Byte, Array[Byte]] {
 
-    override protected[this] def thisCollection: WrappedArray[Byte] = new WrappedArray.ofByte(repr)
-    override protected[this] def toCollection(repr: Array[Byte]): WrappedArray[Byte] = new WrappedArray.ofByte(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Byte] = new WrappedArray.ofByte(repr)
+    override protected[this] def toCollection(repr: Array[Byte]): WrappedArray[L, Byte] = new WrappedArray.ofByte(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofByte
 
     def length: Int = repr.length
@@ -207,10 +207,10 @@ final class ofByte(override val repr: Array[Byte]) extends AnyVal with ArrayOps[
   }
 
   /** A class of `ArrayOps` for arrays containing `short`s. */
-final class ofShort(override val repr: Array[Short]) extends AnyVal with ArrayOps[Short] with ArrayLike[Short, Array[Short]] {
+final class ofShort(override val repr: Array[Short]) extends AnyVal with ArrayOps[L, Short] with ArrayLike[L, Short, Array[Short]] {
 
-    override protected[this] def thisCollection: WrappedArray[Short] = new WrappedArray.ofShort(repr)
-    override protected[this] def toCollection(repr: Array[Short]): WrappedArray[Short] = new WrappedArray.ofShort(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Short] = new WrappedArray.ofShort(repr)
+    override protected[this] def toCollection(repr: Array[Short]): WrappedArray[L, Short] = new WrappedArray.ofShort(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofShort
 
     def length: Int = repr.length
@@ -219,10 +219,10 @@ final class ofShort(override val repr: Array[Short]) extends AnyVal with ArrayOp
   }
 
   /** A class of `ArrayOps` for arrays containing `char`s. */
-final class ofChar(override val repr: Array[Char]) extends AnyVal with ArrayOps[Char] with ArrayLike[Char, Array[Char]] {
+final class ofChar(override val repr: Array[Char]) extends AnyVal with ArrayOps[L, Char] with ArrayLike[L, Char, Array[Char]] {
 
-    override protected[this] def thisCollection: WrappedArray[Char] = new WrappedArray.ofChar(repr)
-    override protected[this] def toCollection(repr: Array[Char]): WrappedArray[Char] = new WrappedArray.ofChar(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Char] = new WrappedArray.ofChar(repr)
+    override protected[this] def toCollection(repr: Array[Char]): WrappedArray[L, Char] = new WrappedArray.ofChar(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofChar
 
     def length: Int = repr.length
@@ -231,10 +231,10 @@ final class ofChar(override val repr: Array[Char]) extends AnyVal with ArrayOps[
   }
 
   /** A class of `ArrayOps` for arrays containing `int`s. */
-final class ofInt(override val repr: Array[Int]) extends AnyVal with ArrayOps[Int] with ArrayLike[Int, Array[Int]] {
+final class ofInt(override val repr: Array[Int]) extends AnyVal with ArrayOps[L, Int] with ArrayLike[L, Int, Array[Int]] {
 
-    override protected[this] def thisCollection: WrappedArray[Int] = new WrappedArray.ofInt(repr)
-    override protected[this] def toCollection(repr: Array[Int]): WrappedArray[Int] = new WrappedArray.ofInt(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Int] = new WrappedArray.ofInt(repr)
+    override protected[this] def toCollection(repr: Array[Int]): WrappedArray[L, Int] = new WrappedArray.ofInt(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofInt
 
     def length: Int = repr.length
@@ -243,10 +243,10 @@ final class ofInt(override val repr: Array[Int]) extends AnyVal with ArrayOps[In
   }
 
   /** A class of `ArrayOps` for arrays containing `long`s. */
-final class ofLong(override val repr: Array[Long]) extends AnyVal with ArrayOps[Long] with ArrayLike[Long, Array[Long]] {
+final class ofLong(override val repr: Array[Long]) extends AnyVal with ArrayOps[L, Long] with ArrayLike[L, Long, Array[Long]] {
 
-    override protected[this] def thisCollection: WrappedArray[Long] = new WrappedArray.ofLong(repr)
-    override protected[this] def toCollection(repr: Array[Long]): WrappedArray[Long] = new WrappedArray.ofLong(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Long] = new WrappedArray.ofLong(repr)
+    override protected[this] def toCollection(repr: Array[Long]): WrappedArray[L, Long] = new WrappedArray.ofLong(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofLong
 
     def length: Int = repr.length
@@ -255,10 +255,10 @@ final class ofLong(override val repr: Array[Long]) extends AnyVal with ArrayOps[
   }
 
   /** A class of `ArrayOps` for arrays containing `float`s. */
-final class ofFloat(override val repr: Array[Float]) extends AnyVal with ArrayOps[Float] with ArrayLike[Float, Array[Float]] {
+final class ofFloat(override val repr: Array[Float]) extends AnyVal with ArrayOps[L, Float] with ArrayLike[L, Float, Array[Float]] {
 
-    override protected[this] def thisCollection: WrappedArray[Float] = new WrappedArray.ofFloat(repr)
-    override protected[this] def toCollection(repr: Array[Float]): WrappedArray[Float] = new WrappedArray.ofFloat(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Float] = new WrappedArray.ofFloat(repr)
+    override protected[this] def toCollection(repr: Array[Float]): WrappedArray[L, Float] = new WrappedArray.ofFloat(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofFloat
 
     def length: Int = repr.length
@@ -267,10 +267,10 @@ final class ofFloat(override val repr: Array[Float]) extends AnyVal with ArrayOp
   }
 
   /** A class of `ArrayOps` for arrays containing `double`s. */
-final class ofDouble(override val repr: Array[Double]) extends AnyVal with ArrayOps[Double] with ArrayLike[Double, Array[Double]] {
+final class ofDouble(override val repr: Array[Double]) extends AnyVal with ArrayOps[L, Double] with ArrayLike[L, Double, Array[Double]] {
 
-    override protected[this] def thisCollection: WrappedArray[Double] = new WrappedArray.ofDouble(repr)
-    override protected[this] def toCollection(repr: Array[Double]): WrappedArray[Double] = new WrappedArray.ofDouble(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Double] = new WrappedArray.ofDouble(repr)
+    override protected[this] def toCollection(repr: Array[Double]): WrappedArray[L, Double] = new WrappedArray.ofDouble(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofDouble
 
     def length: Int = repr.length
@@ -279,10 +279,10 @@ final class ofDouble(override val repr: Array[Double]) extends AnyVal with Array
   }
 
   /** A class of `ArrayOps` for arrays containing `boolean`s. */
-final class ofBoolean(override val repr: Array[Boolean]) extends AnyVal with ArrayOps[Boolean] with ArrayLike[Boolean, Array[Boolean]] {
+final class ofBoolean(override val repr: Array[Boolean]) extends AnyVal with ArrayOps[L, Boolean] with ArrayLike[L, Boolean, Array[Boolean]] {
 
-    override protected[this] def thisCollection: WrappedArray[Boolean] = new WrappedArray.ofBoolean(repr)
-    override protected[this] def toCollection(repr: Array[Boolean]): WrappedArray[Boolean] = new WrappedArray.ofBoolean(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Boolean] = new WrappedArray.ofBoolean(repr)
+    override protected[this] def toCollection(repr: Array[Boolean]): WrappedArray[L, Boolean] = new WrappedArray.ofBoolean(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofBoolean
 
     def length: Int = repr.length
@@ -291,10 +291,10 @@ final class ofBoolean(override val repr: Array[Boolean]) extends AnyVal with Arr
   }
 
   /** A class of `ArrayOps` for arrays of `Unit` types. */
-final class ofUnit(override val repr: Array[Unit]) extends AnyVal with ArrayOps[Unit] with ArrayLike[Unit, Array[Unit]] {
+final class ofUnit(override val repr: Array[Unit]) extends AnyVal with ArrayOps[L, Unit] with ArrayLike[L, Unit, Array[Unit]] {
 
-    override protected[this] def thisCollection: WrappedArray[Unit] = new WrappedArray.ofUnit(repr)
-    override protected[this] def toCollection(repr: Array[Unit]): WrappedArray[Unit] = new WrappedArray.ofUnit(repr)
+    override protected[this] def thisCollection: WrappedArray[L, Unit] = new WrappedArray.ofUnit(repr)
+    override protected[this] def toCollection(repr: Array[Unit]): WrappedArray[L, Unit] = new WrappedArray.ofUnit(repr)
     override protected[this] def newBuilder = new ArrayBuilder.ofUnit
 
     def length: Int = repr.length

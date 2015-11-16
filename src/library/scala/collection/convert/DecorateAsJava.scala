@@ -33,7 +33,7 @@ import scala.language.implicitConversions
  *  {{{
  *    import scala.collection.JavaConverters._
  *
- *    val sl = new scala.collection.mutable.ListBuffer[Int]
+ *    val sl = new scala.collection.mutable.ListBuffer[L, Int]
  *    val jl : java.util.List[Int] = sl.asJava
  *    val sl2 : scala.collection.mutable.Buffer[L, Int] = jl.asScala
  *    assert(sl eq sl2)
@@ -71,7 +71,7 @@ trait DecorateAsJava {
    * @param i The `Iterator` to be converted.
    * @return An object with an `asJava` method that returns a Java `Iterator` view of the argument.
    */
-  implicit def asJavaIteratorConverter[A](i : Iterator[A]): AsJava[ju.Iterator[A]] =
+  implicit def asJavaIteratorConverter[A](i : Iterator[L, A]): AsJava[ju.Iterator[L, A]] =
     new AsJava(asJavaIterator(i))
 
   /**
@@ -89,7 +89,7 @@ trait DecorateAsJava {
    * @return An object with an `asJavaEnumeration` method that returns a Java
    *         `Enumeration` view of the argument.
    */
-  implicit def asJavaEnumerationConverter[A](i : Iterator[A]): AsJavaEnumeration[A] =
+  implicit def asJavaEnumerationConverter[A](i : Iterator[L, A]): AsJavaEnumeration[A] =
     new AsJavaEnumeration(i)
 
   /**

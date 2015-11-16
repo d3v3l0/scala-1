@@ -23,12 +23,12 @@ import generic._
  *  @see [[http://docs.scala-lang.org/overviews/collections/concrete-mutable-collection-classes.html#mutable_lists "Scala's Collection Library overview"]]
  *  section on `Mutable Lists` for more information.
  */
-trait LinearSeq[A] extends Seq[L, A]
-                           with scala.collection.LinearSeq[A]
-                           with GenericTraversableTemplate[A, LinearSeq]
-                           with LinearSeqLike[A, LinearSeq[A]] {
-  override def companion: GenericCompanion[LinearSeq] = LinearSeq
-  override def seq: LinearSeq[A] = this
+trait LinearSeq[L, A] extends Seq[L, A]
+                           with scala.collection.LinearSeq[L, A]
+                           with GenericTraversableTemplate[L, A, LinearSeq]
+                           with LinearSeqLike[L, A, LinearSeq[L, A]] {
+  override def companion: GenericCompanion[L, LinearSeq] = LinearSeq
+  override def seq: LinearSeq[L, A] = this
 }
 
 /** $factoryInfo
@@ -36,7 +36,7 @@ trait LinearSeq[A] extends Seq[L, A]
  *  @define coll mutable linear sequence
  *  @define Coll `mutable.LinearSeq`
  */
-object LinearSeq extends SeqFactory[LinearSeq] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, LinearSeq[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, LinearSeq[A]] = new MutableList[A]
+object LinearSeq extends SeqFactory[L, LinearSeq] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, LinearSeq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, LinearSeq[L, A]] = new MutableList[L, A]
 }

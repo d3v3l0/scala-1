@@ -18,7 +18,7 @@ package collection
  *  @version 2.8
  *  @since   2.8
  */
-trait BufferedIterator[+A] extends Iterator[A] {
+trait BufferedIterator[L, +A] extends Iterator[L, A] {
 
   /** Returns next element of iterator without advancing beyond it.
    */

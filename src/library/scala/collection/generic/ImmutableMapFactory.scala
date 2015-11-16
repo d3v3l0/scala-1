@@ -18,4 +18,4 @@ import scala.language.higherKinds
  *    @version 2.8
  *    @since 2.8
  */
-abstract class ImmutableMapFactory[CC[A, +B] <: immutable.Map[L, A, B] with immutable.MapLike[L, A, B, CC[A, B]]] extends MapFactory[CC]
+abstract class ImmutableMapFactory[L, CC[A, +B] <: immutable.Map[L, A, B] with immutable.MapLike[L, A, B, CC[A, B]]] extends MapFactory[L, CC]

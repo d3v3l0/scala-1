@@ -56,7 +56,7 @@ import scala.annotation.tailrec
  *  }}}
  */
 @deprecated("Low-level linked lists are deprecated due to idiosyncrasies in interface and incomplete features.", "2.11.0")
-trait LinkedListLike[A, This <: Seq[L, A] with LinkedListLike[A, This]] extends SeqLike[L, A, This] { self =>
+trait LinkedListLike[L, A, This <: Seq[L, A] with LinkedListLike[L, A, This]] extends SeqLike[L, A, This] { self =>
 
   var elem: A = _
   var next: This = _
@@ -87,27 +87,27 @@ trait LinkedListLike[A, This <: Seq[L, A] with LinkedListLike[A, This]] extends 
    *
    * {{{
    *      scala> val a = LinkedList(1, 2)
-   *      a: scala.collection.mutable.LinkedList[Int] = LinkedList(1, 2)
+   *      a: scala.collection.mutable.LinkedList[L, Int] = LinkedList(1, 2)
    *
    *      scala> val b = LinkedList(1, 2)
-   *      b: scala.collection.mutable.LinkedList[Int] = LinkedList(1, 2)
+   *      b: scala.collection.mutable.LinkedList[L, Int] = LinkedList(1, 2)
    *
    *      scala> a.append(b)
-   *      res0: scala.collection.mutable.LinkedList[Int] = LinkedList(1, 2, 1, 2)
+   *      res0: scala.collection.mutable.LinkedList[L, Int] = LinkedList(1, 2, 1, 2)
    *
    *      scala> println(a)
    *      LinkedList(1, 2, 1, 2)
    * }}}
    *
    * {{{
-   *    scala> val a = new LinkedList[Int]()
-   *    a: scala.collection.mutable.LinkedList[Int] = LinkedList()
+   *    scala> val a = new LinkedList[L, Int]()
+   *    a: scala.collection.mutable.LinkedList[L, Int] = LinkedList()
    *
    *    scala> val b = LinkedList(1, 2)
-   *    b: scala.collection.mutable.LinkedList[Int] = LinkedList(1, 2)
+   *    b: scala.collection.mutable.LinkedList[L, Int] = LinkedList(1, 2)
    *
    *    scala> val c = a.append(b)
-   *    c: scala.collection.mutable.LinkedList[Int] = LinkedList(1, 2)
+   *    c: scala.collection.mutable.LinkedList[L, Int] = LinkedList(1, 2)
    *
    *    scala> println(a)
    *    LinkedList()
@@ -162,7 +162,7 @@ trait LinkedListLike[A, This <: Seq[L, A] with LinkedListLike[A, This]] extends 
     else None
   }
 
-  override def iterator: Iterator[A] = new AbstractIterator[A] {
+  override def iterator: Iterator[L, A] = new AbstractIterator[L, A] {
     var elems = self
     def hasNext = elems.nonEmpty
     def next = {

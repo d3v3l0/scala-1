@@ -18,12 +18,12 @@ import scala.collection.parallel.immutable.ParVector
 
 /** Companion object to the Vector class
  */
-object Vector extends IndexedSeqFactory[Vector] {
-  def newBuilder[A]: Builder[A, Vector[A]] = new VectorBuilder[A]
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Vector[A]] =
+object Vector extends IndexedSeqFactory[L, Vector] {
+  def newBuilder[A]: Builder[L, A, Vector[L, A]] = new VectorBuilder[L, A]
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Vector[L, A]] =
     ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  private[immutable] val NIL = new Vector[Nothing](0, 0, 0)
-  override def empty[A]: Vector[A] = NIL
+  private[immutable] val NIL = new Vector[L, Nothing](0, 0, 0)
+  override def empty[A]: Vector[L, A] = NIL
   
   // Constants governing concat strategy for performance
   private final val Log2ConcatFaster = 5
@@ -48,7 +48,7 @@ object Vector extends IndexedSeqFactory[Vector] {
  *  @define Coll `Vector`
  *  @define coll vector
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `Vector[B]` because an implicit of type `CanBuildFrom[Vector, B, That]`
+ *    `That` is always `Vector[L, B]` because an implicit of type `CanBuildFrom[L, Vector, B, That]`
  *    is defined in object `Vector`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -59,17 +59,17 @@ object Vector extends IndexedSeqFactory[Vector] {
  *  @define mayNotTerminateInf
  *  @define willNotTerminateInf
  */
-final class Vector[+A] private[immutable] (private[collection] val startIndex: Int, private[collection] val endIndex: Int, focus: Int)
+final class Vector[L, +A] private[immutable] (private[collection] val startIndex: Int, private[collection] val endIndex: Int, focus: Int)
 extends AbstractSeq[L, A]
-   with IndexedSeq[A]
-   with GenericTraversableTemplate[A, Vector]
-   with IndexedSeqLike[A, Vector[A]]
+   with IndexedSeq[L, A]
+   with GenericTraversableTemplate[L, A, Vector]
+   with IndexedSeqLike[L, A, Vector[L, A]]
    with VectorPointer[A @uncheckedVariance]
    with Serializable
-   with CustomParallelizable[A, ParVector[A]]
+   with CustomParallelizable[L, A, ParVector[L, A]]
 { self =>
 
-override def companion: GenericCompanion[Vector] = Vector
+override def companion: GenericCompanion[L, Vector] = Vector
 
   //assert(startIndex >= 0, startIndex+"<0")
   //assert(startIndex <= endIndex, startIndex+">"+endIndex)
@@ -82,18 +82,18 @@ override def companion: GenericCompanion[Vector] = Vector
 
   override def par = new ParVector(this)
 
-  override def toVector: Vector[A] = this
+  override def toVector: Vector[L, A] = this
 
   override def lengthCompare(len: Int): Int = length - len
 
-  private[collection] final def initIterator[B >: A](s: VectorIterator[B]) {
+  private[collection] final def initIterator[B >: A](s: VectorIterator[L, B]) {
     s.initFrom(this)
     if (dirty) s.stabilize(focus)
     if (s.depth > 1) s.gotoPos(startIndex, startIndex ^ focus)
   }
 
-  override def iterator: VectorIterator[A] = {
-    val s = new VectorIterator[A](startIndex, endIndex)
+  override def iterator: VectorIterator[L, A] = {
+    val s = new VectorIterator[L, A](startIndex, endIndex)
     initIterator(s)
     s
   }
@@ -101,7 +101,7 @@ override def companion: GenericCompanion[Vector] = Vector
 
   // can still be improved
   override /*SeqLike*/
-  def reverseIterator: Iterator[A] = new AbstractIterator[A] {
+  def reverseIterator: Iterator[L, A] = new AbstractIterator[L, A] {
     private var i = self.length
     def hasNext: Boolean = 0 < i
     def next(): A =
@@ -133,27 +133,27 @@ override def companion: GenericCompanion[Vector] = Vector
   }
 
   // If we have a default builder, there are faster ways to perform some operations
-  @inline private[this] def isDefaultCBF[A, B, That](bf: CanBuildFrom[Vector[A], B, That]): Boolean =
+  @inline private[this] def isDefaultCBF[A, B, That](bf: CanBuildFrom[L, Vector[L, A], B, That]): Boolean =
     (bf eq IndexedSeq.ReusableCBF) || (bf eq collection.immutable.Seq.ReusableCBF) || (bf eq collection.Seq.ReusableCBF)
     
   // SeqLike api
 
-  override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That]): That =
+  override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[L, Vector[L, A], B, That]): That =
     if (isDefaultCBF[A, B, That](bf))
       updateAt(index, elem).asInstanceOf[That] // ignore bf--it will just give a Vector, and slowly
     else super.updated(index, elem)(bf)
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That]): That =
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, Vector[L, A], B, That]): That =
     if (isDefaultCBF[A, B, That](bf))
       appendFront(elem).asInstanceOf[That] // ignore bf--it will just give a Vector, and slowly
     else super.+:(elem)(bf)
 
-  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That]): That =
+  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[L, Vector[L, A], B, That]): That =
     if (isDefaultCBF(bf))
       appendBack(elem).asInstanceOf[That] // ignore bf--it will just give a Vector, and slowly
     else super.:+(elem)(bf)
 
-  override def take(n: Int): Vector[A] = {
+  override def take(n: Int): Vector[L, A] = {
     if (n <= 0)
       Vector.empty
     else if (startIndex + n < endIndex)
@@ -162,7 +162,7 @@ override def companion: GenericCompanion[Vector] = Vector
       this
   }
 
-  override def drop(n: Int): Vector[A] = {
+  override def drop(n: Int): Vector[L, A] = {
     if (n <= 0)
       this
     else if (startIndex + n < endIndex)
@@ -171,7 +171,7 @@ override def companion: GenericCompanion[Vector] = Vector
       Vector.empty
   }
 
-  override def takeRight(n: Int): Vector[A] = {
+  override def takeRight(n: Int): Vector[L, A] = {
     if (n <= 0)
       Vector.empty
     else if (endIndex - n > startIndex)
@@ -180,7 +180,7 @@ override def companion: GenericCompanion[Vector] = Vector
       this
   }
 
-  override def dropRight(n: Int): Vector[A] = {
+  override def dropRight(n: Int): Vector[L, A] = {
     if (n <= 0)
       this
     else if (endIndex - n > startIndex)
@@ -194,7 +194,7 @@ override def companion: GenericCompanion[Vector] = Vector
     apply(0)
   }
 
-  override /*TraversableLike*/ def tail: Vector[A] = {
+  override /*TraversableLike*/ def tail: Vector[L, A] = {
     if (isEmpty) throw new UnsupportedOperationException("empty.tail")
     drop(1)
   }
@@ -204,19 +204,19 @@ override def companion: GenericCompanion[Vector] = Vector
     apply(length-1)
   }
 
-  override /*TraversableLike*/ def init: Vector[A] = {
+  override /*TraversableLike*/ def init: Vector[L, A] = {
     if (isEmpty) throw new UnsupportedOperationException("empty.init")
     dropRight(1)
   }
 
-  override /*IterableLike*/ def slice(from: Int, until: Int): Vector[A] =
+  override /*IterableLike*/ def slice(from: Int, until: Int): Vector[L, A] =
     take(until).drop(from)
 
-  override /*IterableLike*/ def splitAt(n: Int): (Vector[A], Vector[A]) = (take(n), drop(n))
+  override /*IterableLike*/ def splitAt(n: Int): (Vector[L, A], Vector[L, A]) = (take(n), drop(n))
 
 
   // concat (suboptimal but avoids worst performance gotchas)
-  override def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Vector[A], B, That]): That = {
+  override def ++[B >: A, That](that: GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, Vector[L, A], B, That]): That = {
     if (isDefaultCBF(bf)) {
       // We are sure we will create a Vector, so let's do it efficiently
       import Vector.{Log2ConcatFaster, TinyAppendFaster}
@@ -226,11 +226,11 @@ override def companion: GenericCompanion[Vector] = Vector
         again.size match {
           // Often it's better to append small numbers of elements (or prepend if RHS is a vector)
           case n if n <= TinyAppendFaster || n < (this.size >> Log2ConcatFaster) => 
-            var v: Vector[B] = this
+            var v: Vector[L, B] = this
             for (x <- again) v = v :+ x
             v.asInstanceOf[That]
-          case n if this.size < (n >> Log2ConcatFaster) && again.isInstanceOf[Vector[_]] =>
-            var v = again.asInstanceOf[Vector[B]]
+          case n if this.size < (n >> Log2ConcatFaster) && again.isInstanceOf[Vector[L, _]] =>
+            var v = again.asInstanceOf[Vector[L, B]]
             val ri = this.reverseIterator
             while (ri.hasNext) v = ri.next +: v
             v.asInstanceOf[That]
@@ -245,9 +245,9 @@ override def companion: GenericCompanion[Vector] = Vector
 
   // semi-private api
 
-  private[immutable] def updateAt[B >: A](index: Int, elem: B): Vector[B] = {
+  private[immutable] def updateAt[B >: A](index: Int, elem: B): Vector[L, B] = {
     val idx = checkRangeConvert(index)
-    val s = new Vector[B](startIndex, endIndex, idx)
+    val s = new Vector[L, B](startIndex, endIndex, idx)
     s.initFrom(this)
     s.dirty = dirty
     s.gotoPosWritable(focus, idx, focus ^ idx)  // if dirty commit changes; go to new pos and prepare for writing
@@ -270,7 +270,7 @@ override def companion: GenericCompanion[Vector] = Vector
     dirty = true
   }
 
-  private[immutable] def appendFront[B>:A](value: B): Vector[B] = {
+  private[immutable] def appendFront[B>:A](value: B): Vector[L, B] = {
     if (endIndex != startIndex) {
       val blockIndex = (startIndex - 1) & ~31
       val lo = (startIndex - 1) & 31
@@ -365,7 +365,7 @@ override def companion: GenericCompanion[Vector] = Vector
     }
   }
 
-  private[immutable] def appendBack[B>:A](value: B): Vector[B] = {
+  private[immutable] def appendBack[B>:A](value: B): Vector[L, B] = {
 //    //println("------- append " + value)
 //    debug()
     if (endIndex != startIndex) {
@@ -603,7 +603,7 @@ override def companion: GenericCompanion[Vector] = Vector
     else throw new IllegalArgumentException()
   }
 
-  private def dropFront0(cutIndex: Int): Vector[A] = {
+  private def dropFront0(cutIndex: Int): Vector[L, A] = {
     val blockIndex = cutIndex & ~31
     val xor = cutIndex ^ (endIndex - 1)
     val d = requiredDepth(xor)
@@ -633,7 +633,7 @@ override def companion: GenericCompanion[Vector] = Vector
     s
   }
 
-  private def dropBack0(cutIndex: Int): Vector[A] = {
+  private def dropBack0(cutIndex: Int): Vector[L, A] = {
     val blockIndex = (cutIndex - 1) & ~31
     val xor = startIndex ^ (cutIndex - 1)
     val d = requiredDepth(xor)
@@ -656,9 +656,9 @@ override def companion: GenericCompanion[Vector] = Vector
 }
 
 
-class VectorIterator[+A](_startIndex: Int, endIndex: Int)
-extends AbstractIterator[A]
-   with Iterator[A]
+class VectorIterator[L, +A](_startIndex: Int, endIndex: Int)
+extends AbstractIterator[L, A]
+   with Iterator[L, A]
    with VectorPointer[A @uncheckedVariance] {
 
   private var blockIndex: Int = _startIndex & ~31
@@ -697,7 +697,7 @@ extends AbstractIterator[A]
   /** Creates a new vector which consists of elements remaining in this iterator.
    *  Such a vector can then be split into several vectors using methods like `take` and `drop`.
    */
-  private[collection] def remainingVector: Vector[A] = {
+  private[collection] def remainingVector: Vector[L, A] = {
     val v = new Vector(blockIndex + lo, endIndex, blockIndex + lo)
     v.initFrom(this)
     v
@@ -705,7 +705,7 @@ extends AbstractIterator[A]
 }
 
 
-final class VectorBuilder[A]() extends Builder[A,Vector[A]] with VectorPointer[A @uncheckedVariance] {
+final class VectorBuilder[L, A]() extends Builder[L, A,Vector[L, A]] with VectorPointer[A @uncheckedVariance] {
 
   // possible alternative: start with display0 = null, blockIndex = -32, lo = 32
   // to avoid allocating initial array if the result will be empty anyways
@@ -731,11 +731,11 @@ final class VectorBuilder[A]() extends Builder[A,Vector[A]] with VectorPointer[A
   override def ++=(xs: TraversableOnce[L, A]): this.type =
     super.++=(xs)
 
-  def result: Vector[A] = {
+  def result: Vector[L, A] = {
     val size = blockIndex + lo
     if (size == 0)
       return Vector.empty
-    val s = new Vector[A](0, size, 0) // should focus front or back?
+    val s = new Vector[L, A](0, size, 0) // should focus front or back?
     s.initFrom(this)
     if (depth > 1) s.gotoPos(0, size - 1) // we're currently focused to size - 1, not size!
     s

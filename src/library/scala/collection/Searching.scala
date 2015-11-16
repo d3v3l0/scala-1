@@ -54,7 +54,7 @@ object Searching {
       */
     final def search[B >: A](elem: B)(implicit ord: Ordering[B]): SearchResult =
       coll match {
-        case _: IndexedSeq[A] => binarySearch(elem, 0, coll.length)(ord)
+        case _: IndexedSeq[L, A] => binarySearch(elem, 0, coll.length)(ord)
         case _ => linearSearch(coll.view, elem, 0)(ord)
       }
 
@@ -81,7 +81,7 @@ object Searching {
     final def search[B >: A](elem: B, from: Int, to: Int)
     (implicit ord: Ordering[B]): SearchResult =
       coll match {
-        case _: IndexedSeq[A] => binarySearch(elem, from, to)(ord)
+        case _: IndexedSeq[L, A] => binarySearch(elem, from, to)(ord)
         case _ => linearSearch(coll.view(from, to), elem, from)(ord)
       }
 
@@ -98,7 +98,7 @@ object Searching {
       }
     }
 
-    private def linearSearch[B >: A](c: SeqView[A, Repr], elem: B, offset: Int)
+    private def linearSearch[B >: A](c: SeqView[L, A, Repr], elem: B, offset: Int)
     (implicit ord: Ordering[B]): SearchResult = {
       var idx = offset
       val it = c.iterator
@@ -114,5 +114,5 @@ object Searching {
   }
 
   implicit def search[Repr, A](coll: Repr)
-  (implicit fr: IsSeqLike[Repr]): SearchImpl[fr.A, Repr] = new SearchImpl(fr.conversion(coll))
+  (implicit fr: IsSeqLike[L, Repr]): SearchImpl[fr.A, Repr] = new SearchImpl(fr.conversion(coll))
 }

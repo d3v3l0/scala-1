@@ -31,7 +31,7 @@ import scala.language.higherKinds
  *    @see CanBuildFrom
  *    @see GenericCanBuildFrom
  */
-abstract class GenMapFactory[CC[A, B] <: GenMap[A, B] with GenMapLike[A, B, CC[A, B]]] {
+abstract class GenMapFactory[L, CC[A, B] <: GenMap[L, A, B] with GenMapLike[L, A, B, CC[A, B]]] {
 
   /** The type constructor of the collection that can be built by this factory */
   type Coll = CC[_, _]
@@ -51,11 +51,11 @@ abstract class GenMapFactory[CC[A, B] <: GenMap[A, B] with GenMapLike[A, B, CC[A
    *  @tparam A      the type of the keys
    *  @tparam B      the type of the associated values
    */
-  def newBuilder[A, B]: Builder[(A, B), CC[A, B]] = new MapBuilder[A, B, CC[A, B]](empty[A, B])
+  def newBuilder[A, B]: Builder[L, (A, B), CC[A, B]] = new MapBuilder[L, A, B, CC[A, B]](empty[A, B])
 
   /** The standard `CanBuildFrom` class for maps.
    */
-  class MapCanBuildFrom[A, B] extends CanBuildFrom[Coll, (A, B), CC[A, B]] {
+  class MapCanBuildFrom[A, B] extends CanBuildFrom[L, Coll, (A, B), CC[A, B]] {
     def apply(from: Coll) = newBuilder[A, B]
     def apply() = newBuilder
   }

@@ -25,7 +25,7 @@ trait MapProxyLike[L, A, +B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
 {
   type LT = L
   override def get(key: A): Option[B] = self.get(key)
-  override def iterator: Iterator[(A, B)] = self.iterator
+  override def iterator: Iterator[L, (A, B)] = self.iterator
   override def + [B1 >: B] (kv: (A, B1)): Map[L, A, B1] = self.+(kv)
   override def - (key: A): This = self.-(key)
   override def isEmpty: Boolean = self.isEmpty
@@ -34,16 +34,16 @@ trait MapProxyLike[L, A, +B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
   override def contains(key: A): Boolean = self.contains(key)
   override def isDefinedAt(key: A) = self.isDefinedAt(key)
   override def keySet: Set[L, A] = self.keySet
-  override def keysIterator: Iterator[A] = self.keysIterator
+  override def keysIterator: Iterator[L, A] = self.keysIterator
   override def keys: Iterable[L, A] = self.keys
   override def values: Iterable[L, B] = self.values
-  override def valuesIterator: Iterator[B] = self.valuesIterator
+  override def valuesIterator: Iterator[L, B] = self.valuesIterator
   override def default(key: A): B = self.default(key)
   override def filterKeys(p: A => Boolean) = self.filterKeys(p)
   override def mapValues[C](f: B => C) = self.mapValues(f)
   override def updated [B1 >: B](key: A, value: B1): Map[L, A, B1] = self.updated(key, value)
   override def + [B1 >: B] (kv1: (A, B1), kv2: (A, B1), kvs: (A, B1) *): Map[L, A, B1] = self.+(kv1, kv2, kvs: _*)
-  override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): Map[L, A, B1] =  self.++(xs)
+  override def ++[B1 >: B](xs: GenTraversableOnce[L, (A, B1)]): Map[L, A, B1] =  self.++(xs)
   override def filterNot(@plocal p: ((A, B)) => Boolean) = self filterNot p
 
   override def addString(b: StringBuilder, start: String, sep: String, end: String): StringBuilder =

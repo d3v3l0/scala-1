@@ -23,7 +23,7 @@ package generic
  *  @define   coll collection
  *  @define   Coll Subtractable
  */
-trait Subtractable[A, +Repr <: Subtractable[A, Repr]] { self =>
+trait Subtractable[L, A, +Repr <: Subtractable[L, A, Repr]] { self =>
 
   /** The representation object of type `Repr` which contains the collection's elements
    */
@@ -57,5 +57,5 @@ trait Subtractable[A, +Repr <: Subtractable[A, Repr]] { self =>
    *  @return a new $coll that contains all elements of the current $coll
    *  except one less occurrence of each of the elements of `elems`.
    */
-  def --(xs: GenTraversableOnce[A]): Repr = (repr /: xs.seq) (_ - _)
+  def --(xs: GenTraversableOnce[L, A]): Repr = (repr /: xs.seq) (_ - _)
 }

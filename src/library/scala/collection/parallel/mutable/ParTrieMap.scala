@@ -33,24 +33,24 @@ import scala.collection.concurrent.TrieMapIterator
  *  @see  [[http://docs.scala-lang.org/overviews/parallel-collections/concrete-parallel-collections.html#parallel_concurrent_tries Scala's Parallel Collections Library overview]]
  *  section on `ParTrieMap` for more information.
  */
-final class ParTrieMap[K, V] private[collection] (private val ctrie: TrieMap[K, V])
-extends ParMap[K, V]
-   with GenericParMapTemplate[K, V, ParTrieMap]
-   with ParMapLike[K, V, ParTrieMap[K, V], TrieMap[K, V]]
+final class ParTrieMap[L, K, V] private[collection] (private val ctrie: TrieMap[L, K, V])
+extends ParMap[L, K, V]
+   with GenericParMapTemplate[L, K, V, ParTrieMap]
+   with ParMapLike[L, K, V, ParTrieMap[L, K, V], TrieMap[L, K, V]]
    with ParTrieMapCombiner[K, V]
    with Serializable
 {
   def this() = this(new TrieMap)
 
-  override def mapCompanion: GenericParMapCompanion[ParTrieMap] = ParTrieMap
+  override def mapCompanion: GenericParMapCompanion[L, ParTrieMap] = ParTrieMap
 
-  override def empty: ParTrieMap[K, V] = ParTrieMap.empty
+  override def empty: ParTrieMap[L, K, V] = ParTrieMap.empty
 
   protected[this] override def newCombiner = ParTrieMap.newCombiner
 
   override def seq = ctrie
 
-  def splitter = new ParTrieMapSplitter(0, ctrie.readOnlySnapshot().asInstanceOf[TrieMap[K, V]], true)
+  def splitter = new ParTrieMapSplitter(0, ctrie.readOnlySnapshot().asInstanceOf[TrieMap[L, K, V]], true)
 
   override def clear() = ctrie.clear()
 
@@ -91,7 +91,7 @@ extends ParMap[K, V]
   /* tasks */
 
   /** Computes TrieMap size in parallel. */
-  class Size(offset: Int, howmany: Int, array: Array[BasicNode]) extends Task[Int, Size] {
+  class Size(offset: Int, howmany: Int, array: Array[BasicNode]) extends Task[L, Int, Size] {
     var result = -1
     def leaf(prev: Option[Int]) = {
       var sz = 0
@@ -115,15 +115,15 @@ extends ParMap[K, V]
   }
 }
 
-private[collection] class ParTrieMapSplitter[K, V](lev: Int, ct: TrieMap[K, V], mustInit: Boolean)
+private[collection] class ParTrieMapSplitter[K, V](lev: Int, ct: TrieMap[L, K, V], mustInit: Boolean)
 extends TrieMapIterator[K, V](lev, ct, mustInit)
-   with IterableSplitter[(K, V)]
+   with IterableSplitter[L, (K, V)]
 {
   // only evaluated if `remaining` is invoked (which is not used by most tasks)
   lazy val totalsize = ct.par.size
   var iterated = 0
 
-  protected override def newIterator(_lev: Int, _ct: TrieMap[K, V], _mustInit: Boolean) = new ParTrieMapSplitter[K, V](_lev, _ct, _mustInit)
+  protected override def newIterator(_lev: Int, _ct: TrieMap[L, K, V], _mustInit: Boolean) = new ParTrieMapSplitter[K, V](_lev, _ct, _mustInit)
 
   override def shouldSplitFurther[S](coll: scala.collection.parallel.ParIterable[L, S], parallelismLevel: Int) = {
     val maxsplits = 3 + Integer.highestOneBit(parallelismLevel)
@@ -142,7 +142,7 @@ extends TrieMapIterator[K, V](lev, ct, mustInit)
     super.next()
   }
 
-  def split: Seq[L, IterableSplitter[(K, V)]] = subdivide().asInstanceOf[Seq[L, IterableSplitter[(K, V)]]]
+  def split: Seq[L, IterableSplitter[L, (K, V)]] = subdivide().asInstanceOf[Seq[L, IterableSplitter[L, (K, V)]]]
 
   override def isRemainingCheap = false
 
@@ -150,14 +150,14 @@ extends TrieMapIterator[K, V](lev, ct, mustInit)
 }
 
 /** Only used within the `ParTrieMap`. */
-private[mutable] trait ParTrieMapCombiner[K, V] extends Combiner[(K, V), ParTrieMap[K, V]] {
+private[mutable] trait ParTrieMapCombiner[K, V] extends Combiner[L, (K, V), ParTrieMap[L, K, V]] {
 
-  def combine[N <: (K, V), NewTo >: ParTrieMap[K, V]](other: Combiner[N, NewTo]): Combiner[N, NewTo] = if (this eq other) this else {
+  def combine[N <: (K, V), NewTo >: ParTrieMap[L, K, V]](other: Combiner[L, N, NewTo]): Combiner[L, N, NewTo] = if (this eq other) this else {
     throw new UnsupportedOperationException("This shouldn't have been called in the first place.")
 
-    val thiz = this.asInstanceOf[ParTrieMap[K, V]]
-    val that = other.asInstanceOf[ParTrieMap[K, V]]
-    val result = new ParTrieMap[K, V]
+    val thiz = this.asInstanceOf[ParTrieMap[L, K, V]]
+    val that = other.asInstanceOf[ParTrieMap[L, K, V]]
+    val result = new ParTrieMap[L, K, V]
 
     result ++= thiz.iterator
     result ++= that.iterator
@@ -168,9 +168,9 @@ private[mutable] trait ParTrieMapCombiner[K, V] extends Combiner[(K, V), ParTrie
   override def canBeShared = true
 }
 
-object ParTrieMap extends ParMapFactory[ParTrieMap] {
-  def empty[K, V]: ParTrieMap[K, V] = new ParTrieMap[K, V]
-  def newCombiner[K, V]: Combiner[(K, V), ParTrieMap[K, V]] = new ParTrieMap[K, V]
+object ParTrieMap extends ParMapFactory[L, ParTrieMap] {
+  def empty[K, V]: ParTrieMap[L, K, V] = new ParTrieMap[L, K, V]
+  def newCombiner[K, V]: Combiner[L, (K, V), ParTrieMap[L, K, V]] = new ParTrieMap[L, K, V]
 
-  implicit def canBuildFrom[K, V]: CanCombineFrom[Coll, (K, V), ParTrieMap[K, V]] = new CanCombineFromMap[K, V]
+  implicit def canBuildFrom[K, V]: CanCombineFrom[L, Coll, (K, V), ParTrieMap[L, K, V]] = new CanCombineFromMap[K, V]
 }

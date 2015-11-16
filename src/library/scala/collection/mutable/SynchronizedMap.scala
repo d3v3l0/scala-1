@@ -25,10 +25,10 @@ import scala.annotation.migration
  *  @define coll synchronized map
  */
 @deprecated("Synchronization via traits is deprecated as it is inherently unreliable.  Consider java.util.concurrent.ConcurrentHashMap as an alternative.", "2.11.0")
-trait SynchronizedMap[A, B] extends Map[L, A, B] {
+trait SynchronizedMap[L, A, B] extends Map[L, A, B] {
 
   abstract override def get(key: A): Option[B] = synchronized { super.get(key) }
-  abstract override def iterator: Iterator[(A, B)] = synchronized { super.iterator }
+  abstract override def iterator: Iterator[L, (A, B)] = synchronized { super.iterator }
   abstract override def += (kv: (A, B)): this.type = synchronized[this.type] { super.+=(kv) }
   abstract override def -= (key: A): this.type = synchronized[this.type] { super.-=(key) }
 
@@ -40,16 +40,16 @@ trait SynchronizedMap[A, B] extends Map[L, A, B] {
   override def getOrElseUpdate(key: A, default: => B): B = synchronized { super.getOrElseUpdate(key, default) }
   override def transform(f: (A, B) => B): this.type = synchronized[this.type] { super.transform(f) }
   override def retain(p: (A, B) => Boolean): this.type = synchronized[this.type] { super.retain(p) }
-  @migration("`values` returns `Iterable[L, B]` rather than `Iterator[B]`.", "2.8.0")
+  @migration("`values` returns `Iterable[L, B]` rather than `Iterator[L, B]`.", "2.8.0")
   override def values: scala.collection.Iterable[L, B] = synchronized { super.values }
-  override def valuesIterator: Iterator[B] = synchronized { super.valuesIterator }
+  override def valuesIterator: Iterator[L, B] = synchronized { super.valuesIterator }
   override def clone(): Self = synchronized { super.clone() }
   override def foreach[U](f: ((A, B)) => U) = synchronized { super.foreach(f) }
   override def apply(key: A): B = synchronized { super.apply(key) }
   override def keySet: scala.collection.Set[L, A] = synchronized { super.keySet }
-  @migration("`keys` returns `Iterable[L, A]` rather than `Iterator[A]`.", "2.8.0")
+  @migration("`keys` returns `Iterable[L, A]` rather than `Iterator[L, A]`.", "2.8.0")
   override def keys: scala.collection.Iterable[L, A] = synchronized { super.keys }
-  override def keysIterator: Iterator[A] = synchronized { super.keysIterator }
+  override def keysIterator: Iterator[L, A] = synchronized { super.keysIterator }
   override def isEmpty: Boolean = synchronized { super.isEmpty }
   override def contains(key: A): Boolean = synchronized {super.contains(key) }
   override def isDefinedAt(key: A) = synchronized { super.isDefinedAt(key) }

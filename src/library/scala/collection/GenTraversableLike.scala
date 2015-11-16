@@ -20,7 +20,7 @@ import scala.annotation.migration
  *  @define thatinfo the class of the returned collection. Where possible, `That` is
  *    the same class as the current collection class `Repr`, but this
  *    depends on the element type `B` being admissible for that class,
- *    which means that an implicit instance of type `CanBuildFrom[Repr, B, That]`
+ *    which means that an implicit instance of type `CanBuildFrom[L, Repr, B, That]`
  *    is found.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines
  *    the result class `That` from the current representation type `Repr` and
@@ -54,7 +54,7 @@ import scala.annotation.migration
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with Parallelizable[A, parallel.ParIterable[L, A]] {
+trait GenTraversableLike[L, +A, +Repr] extends Any with GenTraversableOnce[L, A] with Parallelizable[L, A, parallel.ParIterable[L, A]] {
 
   def repr: Repr
 
@@ -121,7 +121,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *
    *  @return           a new $coll containing the prefix scan of the elements in this $coll
    */
-  def scan[B >: A, That](z: B)(op: (B, B) => B)(implicit cbf: CanBuildFrom[Repr, B, That]): That
+  def scan[B >: A, That](z: B)(op: (B, B) => B)(implicit cbf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Produces a collection containing cumulative results of applying the
    *  operator going left to right.
@@ -136,7 +136,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @param bf      $bfinfo
    *  @return        collection with intermediate results
    */
-  def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Produces a collection containing cumulative results of applying the operator going right to left.
    *  The head of the collection is the last cumulative result.
@@ -156,7 +156,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return        collection with intermediate results
    */
   @migration("The behavior of `scanRight` has changed. The previous behavior can be reproduced with scanRight.reverse.", "2.9.0")
-  def scanRight[B, That](z: B)(@plocal @plocal op: (A, B) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def scanRight[B, That](z: B)(@plocal @plocal op: (A, B) => B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Applies a function `f` to all elements of this $coll.
    *
@@ -186,7 +186,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *    @return       a new $coll resulting from applying the given function
    *                  `f` to each element of this $coll and collecting the results.
    */
-  def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Builds a new collection by applying a partial function to all elements of this $coll
    *  on which the function is defined.
@@ -208,7 +208,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *                  `pf` to each element on which it is defined and collecting the results.
    *                  The order of the elements is preserved.
    */
-  def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Builds a new collection by applying a function to all elements of this $coll
    *  and using the elements of the resulting collections.
@@ -220,7 +220,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return       a new collection of type `That` resulting from applying the given collection-valued function
    *                `f` to each element of this $coll and concatenating the results.
    *
-   *  @usecase def flatMap[B](f: A => GenTraversableOnce[B]): $Coll[B]
+   *  @usecase def flatMap[B](f: A => GenTraversableOnce[L, B]): $Coll[B]
    *    @inheritdoc
    *
    *    For example:
@@ -249,7 +249,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *    @return       a new $coll resulting from applying the given collection-valued function
    *                  `f` to each element of this $coll and concatenating the results.
    */
-  def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def flatMap[B, That](f: A => GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Returns a new $coll containing the elements from the left hand operand followed by the elements from the
    *  right hand operand. The element type of the $coll is the most specific superclass encompassing
@@ -262,7 +262,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return       a new collection of type `That` which contains all elements
    *                of this $coll followed by all elements of `that`.
    *
-   *  @usecase def ++[B](that: GenTraversableOnce[B]): $Coll[B]
+   *  @usecase def ++[B](that: GenTraversableOnce[L, B]): $Coll[B]
    *    @inheritdoc
    *
    *    Example:
@@ -286,7 +286,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *    @return       a new $coll which contains all elements of this $coll
    *                  followed by all elements of `that`.
    */
-  def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def ++[B >: A, That](that: GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[L, Repr, B, That]): That
 
   /** Selects all elements of this $coll which satisfy a predicate.
    *
@@ -330,7 +330,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *               for which `f(x)` equals `k`.
    *
    */
-  def groupBy[K](f: A => K): GenMap[K, Repr]
+  def groupBy[K](f: A => K): GenMap[L, K, Repr]
 
   /** Selects first ''n'' elements.
    *  $orderDependent

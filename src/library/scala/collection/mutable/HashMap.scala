@@ -25,8 +25,8 @@ import scala.collection.parallel.mutable.ParHashMap
  *  @define Coll `mutable.HashMap`
  *  @define coll mutable hash map
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `HashMap[A, B]` if the elements contained in the resulting collection are
- *    pairs of type `(A, B)`. This is because an implicit of type `CanBuildFrom[HashMap, (A, B), HashMap[A, B]]`
+ *    `That` is always `HashMap[L, A, B]` if the elements contained in the resulting collection are
+ *    pairs of type `(A, B)`. This is because an implicit of type `CanBuildFrom[L, HashMap, (A, B), HashMap[L, A, B]]`
  *    is defined in object `HashMap`. Otherwise, `That` resolves to the most specific type that doesn't have
  *    to contain pairs of type `(A, B)`, which is `Iterable`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
@@ -37,26 +37,26 @@ import scala.collection.parallel.mutable.ParHashMap
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(1L)
-class HashMap[A, B] private[collection] (contents: HashTable.Contents[A, DefaultEntry[A, B]])
-extends AbstractMap[A, B]
+class HashMap[L, A, B] private[collection] (contents: HashTable.Contents[A, DefaultEntry[L, A, B]])
+extends AbstractMap[L, A, B]
    with Map[L, A, B]
-   with MapLike[L, A, B, HashMap[A, B]]
-   with HashTable[A, DefaultEntry[A, B]]
-   with CustomParallelizable[(A, B), ParHashMap[A, B]]
+   with MapLike[L, A, B, HashMap[L, A, B]]
+   with HashTable[L, A, DefaultEntry[L, A, B]]
+   with CustomParallelizable[L, (A, B), ParHashMap[L, A, B]]
    with Serializable
 {
   initWithContents(contents)
 
-  type Entry = DefaultEntry[A, B]
+  type Entry = DefaultEntry[L, A, B]
   override protected type plocal = local[LT]
 
-  override def empty: HashMap[A, B] = HashMap.empty[A, B]
+  override def empty: HashMap[L, A, B] = HashMap.empty[A, B]
   override def clear() { clearTable() }
   override def size: Int = tableSize
 
   def this() = this(null)
 
-  override def par = new ParHashMap[A, B](hashTableContents)
+  override def par = new ParHashMap[L, A, B](hashTableContents)
 
   // contains and apply overridden to avoid option allocations.
   override def contains(key: A): Boolean = findEntry(key) != null
@@ -110,14 +110,14 @@ extends AbstractMap[A, B]
   }
 
   /* Override to avoid tuple allocation */
-  override def keysIterator: Iterator[A] = new AbstractIterator[A] {
+  override def keysIterator: Iterator[L, A] = new AbstractIterator[L, A] {
     val iter    = entriesIterator
     def hasNext = iter.hasNext
     def next()  = iter.next().key
   }
 
   /* Override to avoid tuple allocation */
-  override def valuesIterator: Iterator[B] = new AbstractIterator[B] {
+  override def valuesIterator: Iterator[L, B] = new AbstractIterator[L, B] {
     val iter    = entriesIterator
     def hasNext = iter.hasNext
     def next()  = iter.next().value
@@ -155,7 +155,7 @@ extends AbstractMap[A, B]
  *  @define Coll `mutable.HashMap`
  *  @define coll mutable hash map
  */
-object HashMap extends MutableMapFactory[HashMap] {
-  implicit def canBuildFrom[A, B]: CanBuildFrom[Coll, (A, B), HashMap[A, B]] = new MapCanBuildFrom[A, B]
-  def empty[A, B]: HashMap[A, B] = new HashMap[A, B]
+object HashMap extends MutableMapFactory[L, HashMap] {
+  implicit def canBuildFrom[A, B]: CanBuildFrom[L, Coll, (A, B), HashMap[L, A, B]] = new MapCanBuildFrom[A, B]
+  def empty[A, B]: HashMap[L, A, B] = new HashMap[L, A, B]
 }

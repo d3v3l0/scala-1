@@ -22,12 +22,12 @@ package collection
  *  A map is a collection of bindings from keys to values, where there are
  *  no duplicate keys.
  */
-trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals with Parallelizable[(A, B), parallel.ParMap[A, B]] {
+trait GenMapLike[L, A, +B, +Repr] extends GenIterableLike[L, (A, B), Repr] with Equals with Parallelizable[L, (A, B), parallel.ParMap[L, A, B]] {
   def default(key: A): B
   def get(key: A): Option[B]
   def apply(key: A): B
   def seq: Map[L, A, B]
-  def +[B1 >: B](kv: (A, B1)): GenMap[A, B1]
+  def +[B1 >: B](kv: (A, B1)): GenMap[L, A, B1]
   def - (key: A): Repr
 
   // This hash code must be symmetric in the contents but ought not
@@ -62,7 +62,7 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
    */
   def isDefinedAt(key: A): Boolean
 
-  def keySet: GenSet[A]
+  def keySet: GenSet[L, A]
 
   /** Collects all keys of this map in an iterable collection.
    *
@@ -80,27 +80,27 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
    *
    *  @return an iterator over all keys.
    */
-  def keysIterator: Iterator[A]
+  def keysIterator: Iterator[L, A]
 
   /** Creates an iterator for all values in this map.
    *
    *  @return an iterator over all values that are associated with some key in this map.
    */
-  def valuesIterator: Iterator[B]
+  def valuesIterator: Iterator[L, B]
 
   /** Filters this map by retaining only keys satisfying a predicate.
    *  @param  p   the predicate used to test keys
    *  @return an immutable map consisting only of those key value pairs of this map where the key satisfies
    *          the predicate `p`. The resulting map wraps the original map without copying any elements.
    */
-  def filterKeys(p: A => Boolean): GenMap[A, B]
+  def filterKeys(p: A => Boolean): GenMap[L, A, B]
 
   /** Transforms this map by applying a function to every retrieved value.
    *  @param  f   the function used to transform values of this map.
    *  @return a map view which maps every key of this map
    *          to `f(this(key))`. The resulting map wraps the original map without copying any elements.
    */
-  def mapValues[C](f: B => C): GenMap[A, C]
+  def mapValues[C](f: B => C): GenMap[L, A, C]
 
   /** Compares two maps structurally; i.e., checks if all mappings
    *  contained in this map are also contained in the other map,
@@ -111,7 +111,7 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
    *              same mappings, `false` otherwise.
    */
   override def equals(that: Any): Boolean = that match {
-    case that: GenMap[b, _] =>
+    case that: GenMap[L, b, _] =>
       (this eq that) ||
       (that canEqual this) &&
       (this.size == that.size) && {

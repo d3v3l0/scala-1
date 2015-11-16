@@ -22,7 +22,7 @@ import generic._
  *  @define Coll `GrowingBuilder`
  *  @define coll growing builder
  */
-class GrowingBuilder[Elem, To <: Growable[Elem]](empty: To) extends Builder[Elem, To] {
+class GrowingBuilder[L, Elem, To <: Growable[L, Elem]](empty: To) extends Builder[L, Elem, To] {
   protected var elems: To = empty
   def +=(x: Elem): this.type = { elems += x; this }
   def clear() { elems = empty }

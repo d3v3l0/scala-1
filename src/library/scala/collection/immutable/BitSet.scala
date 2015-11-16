@@ -25,10 +25,10 @@ import mutable.{ Builder, SetBuilder }
  *  @define coll immutable bitset
  */
 @SerialVersionUID(1611436763290191562L)
-abstract class BitSet extends scala.collection.AbstractSet[Int]
-                         with SortedSet[Int]
+abstract class BitSet extends scala.collection.AbstractSet[L, Int]
+                         with SortedSet[L, Int]
                          with scala.collection.BitSet
-                         with BitSetLike[BitSet]
+                         with BitSetLike[L, BitSet]
                          with Serializable {
   override def empty = BitSet.empty
 
@@ -64,12 +64,12 @@ abstract class BitSet extends scala.collection.AbstractSet[Int]
  *  @define Coll `immutable.BitSet`
  *  @define coll immutable bitset
  */
-object BitSet extends BitSetFactory[BitSet] {
+object BitSet extends BitSetFactory[L, BitSet] {
   /** The empty bitset */
   val empty: BitSet = new BitSet1(0L)
 
   /** A builder that takes advantage of mutable BitSets. */
-  def newBuilder: Builder[Int, BitSet] = new Builder[Int, BitSet] {
+  def newBuilder: Builder[L, Int, BitSet] = new Builder[L, Int, BitSet] {
     private[this] val b = new mutable.BitSet
     def += (x: Int) = { b += x; this }
     def clear() = b.clear()
@@ -77,7 +77,7 @@ object BitSet extends BitSetFactory[BitSet] {
   }
 
   /** $bitsetCanBuildFrom */
-  implicit def canBuildFrom: CanBuildFrom[BitSet, Int, BitSet] = bitsetCanBuildFrom
+  implicit def canBuildFrom: CanBuildFrom[L, BitSet, Int, BitSet] = bitsetCanBuildFrom
 
   /** A bitset containing all the bits in an array */
   def fromBitMask(elems: Array[Long]): BitSet = {

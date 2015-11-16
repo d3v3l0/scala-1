@@ -27,7 +27,7 @@ import generic._
  *  @define Coll `LinkedHashSet`
  *  @define coll linked hash set
  *  @define thatinfo the class of the returned collection. In the standard library configuration,
- *    `That` is always `LinkedHashSet[B]` because an implicit of type `CanBuildFrom[LinkedHashSet, B, LinkedHashSet[B]]`
+ *    `That` is always `LinkedHashSet[L, B]` because an implicit of type `CanBuildFrom[L, LinkedHashSet, B, LinkedHashSet[L, B]]`
  *    is defined in object `LinkedHashSet`.
  *  @define bfinfo an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -39,17 +39,17 @@ import generic._
  *  @define orderDependentFold
  */
 @SerialVersionUID(1L)
-class LinkedHashSet[A] extends AbstractSet[A]
+class LinkedHashSet[L, A] extends AbstractSet[L, A]
                           with Set[L, A]
-                          with GenericSetTemplate[A, LinkedHashSet]
-                          with SetLike[L, A, LinkedHashSet[A]]
-                          with HashTable[A, LinkedHashSet.Entry[A]]
+                          with GenericSetTemplate[L, A, LinkedHashSet]
+                          with SetLike[L, A, LinkedHashSet[L, A]]
+                          with HashTable[L, A, LinkedHashSet.Entry[A]]
                           with Serializable
 {
   override protected type LT = Any
   override protected type plocal = local[LT]
 
-  override def companion: GenericCompanion[LinkedHashSet] = LinkedHashSet
+  override def companion: GenericCompanion[L, LinkedHashSet] = LinkedHashSet
 
   type Entry = LinkedHashSet.Entry[A]
 
@@ -80,7 +80,7 @@ class LinkedHashSet[A] extends AbstractSet[A]
     }
   }
 
-  def iterator: Iterator[A] = new AbstractIterator[A] {
+  def iterator: Iterator[L, A] = new AbstractIterator[L, A] {
     private var cur = firstEntry
     def hasNext = cur ne null
     def next =
@@ -135,9 +135,9 @@ class LinkedHashSet[A] extends AbstractSet[A]
  *  @define Coll `LinkedHashSet`
  *  @define coll linked hash set
  */
-object LinkedHashSet extends MutableSetFactory[LinkedHashSet] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, LinkedHashSet[A]] = setCanBuildFrom[A]
-  override def empty[A]: LinkedHashSet[A] = new LinkedHashSet[A]
+object LinkedHashSet extends MutableSetFactory[L, LinkedHashSet] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, LinkedHashSet[L, A]] = setCanBuildFrom[A]
+  override def empty[A]: LinkedHashSet[L, A] = new LinkedHashSet[L, A]
 
   /** Class for the linked hash set entry, used internally.
    *  @since 2.10

@@ -19,7 +19,7 @@ import scala.runtime.ScalaRunTime
  *
  *  @tparam T    the type of the elements for the builder.
  */
-abstract class ArrayBuilder[T] extends Builder[T, Array[T]] with Serializable
+abstract class ArrayBuilder[L, T] extends Builder[L, T, Array[T]] with Serializable
 
 /** A companion object for array builders.
  *
@@ -32,19 +32,19 @@ object ArrayBuilder {
    *  @tparam T     type of the elements for the array builder, with a `ClassTag` context bound.
    *  @return       a new empty array builder.
    */
-  def make[T: ClassTag](): ArrayBuilder[T] = {
+  def make[T: ClassTag](): ArrayBuilder[L, T] = {
     val tag = implicitly[ClassTag[T]]
     tag.runtimeClass match {
-      case java.lang.Byte.TYPE      => new ArrayBuilder.ofByte().asInstanceOf[ArrayBuilder[T]]
-      case java.lang.Short.TYPE     => new ArrayBuilder.ofShort().asInstanceOf[ArrayBuilder[T]]
-      case java.lang.Character.TYPE => new ArrayBuilder.ofChar().asInstanceOf[ArrayBuilder[T]]
-      case java.lang.Integer.TYPE   => new ArrayBuilder.ofInt().asInstanceOf[ArrayBuilder[T]]
-      case java.lang.Long.TYPE      => new ArrayBuilder.ofLong().asInstanceOf[ArrayBuilder[T]]
-      case java.lang.Float.TYPE     => new ArrayBuilder.ofFloat().asInstanceOf[ArrayBuilder[T]]
-      case java.lang.Double.TYPE    => new ArrayBuilder.ofDouble().asInstanceOf[ArrayBuilder[T]]
-      case java.lang.Boolean.TYPE   => new ArrayBuilder.ofBoolean().asInstanceOf[ArrayBuilder[T]]
-      case java.lang.Void.TYPE      => new ArrayBuilder.ofUnit().asInstanceOf[ArrayBuilder[T]]
-      case _                        => new ArrayBuilder.ofRef[T with AnyRef]()(tag.asInstanceOf[ClassTag[T with AnyRef]]).asInstanceOf[ArrayBuilder[T]]
+      case java.lang.Byte.TYPE      => new ArrayBuilder.ofByte().asInstanceOf[ArrayBuilder[L, T]]
+      case java.lang.Short.TYPE     => new ArrayBuilder.ofShort().asInstanceOf[ArrayBuilder[L, T]]
+      case java.lang.Character.TYPE => new ArrayBuilder.ofChar().asInstanceOf[ArrayBuilder[L, T]]
+      case java.lang.Integer.TYPE   => new ArrayBuilder.ofInt().asInstanceOf[ArrayBuilder[L, T]]
+      case java.lang.Long.TYPE      => new ArrayBuilder.ofLong().asInstanceOf[ArrayBuilder[L, T]]
+      case java.lang.Float.TYPE     => new ArrayBuilder.ofFloat().asInstanceOf[ArrayBuilder[L, T]]
+      case java.lang.Double.TYPE    => new ArrayBuilder.ofDouble().asInstanceOf[ArrayBuilder[L, T]]
+      case java.lang.Boolean.TYPE   => new ArrayBuilder.ofBoolean().asInstanceOf[ArrayBuilder[L, T]]
+      case java.lang.Void.TYPE      => new ArrayBuilder.ofUnit().asInstanceOf[ArrayBuilder[L, T]]
+      case _                        => new ArrayBuilder.ofRef[T with AnyRef]()(tag.asInstanceOf[ClassTag[T with AnyRef]]).asInstanceOf[ArrayBuilder[L, T]]
     }
   }
 
@@ -53,7 +53,7 @@ object ArrayBuilder {
    *  @tparam T     type of elements for the array builder, subtype of `AnyRef` with a `ClassTag` context bound.
    */
   @deprecatedInheritance("ArrayBuilder.ofRef is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofRef[T <: AnyRef : ClassTag] extends ArrayBuilder[T] {
+  class ofRef[T <: AnyRef : ClassTag] extends ArrayBuilder[L, T] {
 
     private var elems: Array[T] = _
     private var capacity: Int = 0
@@ -118,7 +118,7 @@ object ArrayBuilder {
 
   /** A class for array builders for arrays of `byte`s. */
   @deprecatedInheritance("ArrayBuilder.ofByte is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofByte extends ArrayBuilder[Byte] {
+  class ofByte extends ArrayBuilder[L, Byte] {
 
     private var elems: Array[Byte] = _
     private var capacity: Int = 0
@@ -183,7 +183,7 @@ object ArrayBuilder {
 
   /** A class for array builders for arrays of `short`s. */
   @deprecatedInheritance("ArrayBuilder.ofShort is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofShort extends ArrayBuilder[Short] {
+  class ofShort extends ArrayBuilder[L, Short] {
 
     private var elems: Array[Short] = _
     private var capacity: Int = 0
@@ -248,7 +248,7 @@ object ArrayBuilder {
 
   /** A class for array builders for arrays of `char`s. */
   @deprecatedInheritance("ArrayBuilder.ofChar is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofChar extends ArrayBuilder[Char] {
+  class ofChar extends ArrayBuilder[L, Char] {
 
     private var elems: Array[Char] = _
     private var capacity: Int = 0
@@ -313,7 +313,7 @@ object ArrayBuilder {
 
   /** A class for array builders for arrays of `int`s. */
   @deprecatedInheritance("ArrayBuilder.ofInt is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofInt extends ArrayBuilder[Int] {
+  class ofInt extends ArrayBuilder[L, Int] {
 
     private var elems: Array[Int] = _
     private var capacity: Int = 0
@@ -378,7 +378,7 @@ object ArrayBuilder {
 
   /** A class for array builders for arrays of `long`s. */
   @deprecatedInheritance("ArrayBuilder.ofLong is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofLong extends ArrayBuilder[Long] {
+  class ofLong extends ArrayBuilder[L, Long] {
 
     private var elems: Array[Long] = _
     private var capacity: Int = 0
@@ -443,7 +443,7 @@ object ArrayBuilder {
 
   /** A class for array builders for arrays of `float`s. */
   @deprecatedInheritance("ArrayBuilder.ofFloat is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofFloat extends ArrayBuilder[Float] {
+  class ofFloat extends ArrayBuilder[L, Float] {
 
     private var elems: Array[Float] = _
     private var capacity: Int = 0
@@ -508,7 +508,7 @@ object ArrayBuilder {
 
   /** A class for array builders for arrays of `double`s. */
   @deprecatedInheritance("ArrayBuilder.ofDouble is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofDouble extends ArrayBuilder[Double] {
+  class ofDouble extends ArrayBuilder[L, Double] {
 
     private var elems: Array[Double] = _
     private var capacity: Int = 0
@@ -572,7 +572,7 @@ object ArrayBuilder {
   }
 
   /** A class for array builders for arrays of `boolean`s. */
-  class ofBoolean extends ArrayBuilder[Boolean] {
+  class ofBoolean extends ArrayBuilder[L, Boolean] {
 
     private var elems: Array[Boolean] = _
     private var capacity: Int = 0
@@ -637,7 +637,7 @@ object ArrayBuilder {
 
   /** A class for array builders for arrays of `Unit` type. */
   @deprecatedInheritance("ArrayBuilder.ofUnit is an internal implementation not intended for subclassing.", "2.11.0")
-  class ofUnit extends ArrayBuilder[Unit] {
+  class ofUnit extends ArrayBuilder[L, Unit] {
 
     private var elems: Array[Unit] = _
     private var capacity: Int = 0

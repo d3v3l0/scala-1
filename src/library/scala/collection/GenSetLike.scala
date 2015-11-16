@@ -22,13 +22,13 @@ package collection
  *
  *  A set is a collection that contains no duplicate elements.
  */
-trait GenSetLike[A, +Repr]
-extends GenIterableLike[A, Repr]
+trait GenSetLike[L, A, +Repr]
+extends GenIterableLike[L, A, Repr]
    with (A => Boolean)
    with Equals
-   with Parallelizable[A, parallel.ParSet[A]] {
+   with Parallelizable[L, A, parallel.ParSet[L, A]] {
 
-  def iterator: Iterator[A]
+  def iterator: Iterator[L, A]
   def contains(elem: A): Boolean
   def +(elem: A): Repr
   def -(elem: A): Repr
@@ -49,7 +49,7 @@ extends GenIterableLike[A, Repr]
    *  @return  a new set consisting of all elements that are both in this
    *  set and in the given set `that`.
    */
-  def intersect(that: GenSet[A]): Repr = this filter that
+  def intersect(that: GenSet[L, A]): Repr = this filter that
 
   /** Computes the intersection between this set and another set.
    *
@@ -58,7 +58,7 @@ extends GenIterableLike[A, Repr]
    *  @return  a new set consisting of all elements that are both in this
    *  set and in the given set `that`.
    */
-  def &(that: GenSet[A]): Repr = this intersect that
+  def &(that: GenSet[L, A]): Repr = this intersect that
 
   /** Computes the union between of set and another set.
    *
@@ -66,7 +66,7 @@ extends GenIterableLike[A, Repr]
    *  @return  a new set consisting of all elements that are in this
    *  set or in the given set `that`.
    */
-  def union(that: GenSet[A]): Repr
+  def union(that: GenSet[L, A]): Repr
 
   /** Computes the union between this set and another set.
    *
@@ -75,7 +75,7 @@ extends GenIterableLike[A, Repr]
    *  @return  a new set consisting of all elements that are in this
    *  set or in the given set `that`.
    */
-  def | (that: GenSet[A]): Repr = this union that
+  def | (that: GenSet[L, A]): Repr = this union that
 
   /** Computes the difference of this set and another set.
    *
@@ -83,7 +83,7 @@ extends GenIterableLike[A, Repr]
    *  @return     a set containing those elements of this
    *              set that are not also contained in the given set `that`.
    */
-  def diff(that: GenSet[A]): Repr
+  def diff(that: GenSet[L, A]): Repr
 
   /** The difference of this set and another set.
    *
@@ -92,7 +92,7 @@ extends GenIterableLike[A, Repr]
    *  @return     a set containing those elements of this
    *              set that are not also contained in the given set `that`.
    */
-  def &~(that: GenSet[A]): Repr = this diff that
+  def &~(that: GenSet[L, A]): Repr = this diff that
 
   /** Tests whether this set is a subset of another set.
    *
@@ -100,7 +100,7 @@ extends GenIterableLike[A, Repr]
    *  @return     `true` if this set is a subset of `that`, i.e. if
    *              every element of this set is also an element of `that`.
    */
-  def subsetOf(that: GenSet[A]): Boolean = this forall that
+  def subsetOf(that: GenSet[L, A]): Boolean = this forall that
 
   /** Compares this set with another object for equality.
    *
@@ -113,11 +113,11 @@ extends GenIterableLike[A, Repr]
    *              as this set.
    */
   override def equals(that: Any): Boolean = that match {
-    case that: GenSet[_] =>
+    case that: GenSet[L, _] =>
       (this eq that) ||
       (that canEqual this) &&
       (this.size == that.size) &&
-      (try this subsetOf that.asInstanceOf[GenSet[A]]
+      (try this subsetOf that.asInstanceOf[GenSet[L, A]]
        catch { case ex: ClassCastException => false })
     case _ =>
       false

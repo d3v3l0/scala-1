@@ -21,7 +21,7 @@ import scala.collection.Seq
  *  @since 2.9
  *  @author Aleksandar Prokopec
  */
-trait PreciseSplitter[+T] extends Splitter[T] {
+trait PreciseSplitter[L, +T] extends Splitter[L, T] {
 
   /** Splits the splitter into disjunct views.
    *
@@ -51,7 +51,7 @@ trait PreciseSplitter[+T] extends Splitter[T] {
    *  @param sizes   the sizes used to split this split iterator into iterators that traverse disjunct subsets
    *  @return        a sequence of disjunct subsequence iterators of this parallel iterator
    */
-  def psplit(sizes: Int*): Seq[L, PreciseSplitter[T]]
+  def psplit(sizes: Int*): Seq[L, PreciseSplitter[L, T]]
 
-  def split: Seq[L, PreciseSplitter[T]]
+  def split: Seq[L, PreciseSplitter[L, T]]
 }

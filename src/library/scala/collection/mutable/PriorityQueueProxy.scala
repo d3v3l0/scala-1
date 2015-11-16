@@ -20,17 +20,17 @@ package mutable
  *  @since   1
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-abstract class PriorityQueueProxy[L, A](implicit ord: Ordering[A]) extends PriorityQueue[A]
+abstract class PriorityQueueProxy[L, A](implicit ord: Ordering[A]) extends PriorityQueue[L, A]
          with Proxy
 {
-  def self: PriorityQueue[A]
+  def self: PriorityQueue[L, A]
 
   /** Creates a new iterator over all elements contained in this
    *  object.
    *
    *  @return the new iterator
    */
-  override def iterator: Iterator[A] = self.iterator
+  override def iterator: Iterator[L, A] = self.iterator
 
   /** Returns the length of this priority queue.
    */
@@ -84,13 +84,13 @@ abstract class PriorityQueueProxy[L, A](implicit ord: Ordering[A]) extends Prior
 
   /** Returns a regular queue containing the same elements.
    */
-  override def toQueue: Queue[A] = self.toQueue
+  override def toQueue: Queue[L, A] = self.toQueue
 
   /** This method clones the priority queue.
    *
    *  @return  a priority queue with the same elements.
    */
-  override def clone(): PriorityQueue[A] = new PriorityQueueProxy[L, A] {
+  override def clone(): PriorityQueue[L, A] = new PriorityQueueProxy[L, A] {
     def self = PriorityQueueProxy.this.self.clone()
   }
 }

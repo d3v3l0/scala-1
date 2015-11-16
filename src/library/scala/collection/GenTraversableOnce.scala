@@ -47,7 +47,7 @@ import scala.language.higherKinds
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenTraversableOnce[+A] extends Any {
+trait GenTraversableOnce[L, +A] extends Any {
 
   protected type LT
   protected type plocal = local[LT]
@@ -506,19 +506,19 @@ trait GenTraversableOnce[+A] extends Any {
    *  $willNotTerminateInf
    *  @return an indexed sequence containing all elements of this $coll.
    */
-  def toIndexedSeq: immutable.IndexedSeq[A]
+  def toIndexedSeq: immutable.IndexedSeq[L, A]
 
   /** Converts this $coll to a stream.
    *  @return a stream containing all elements of this $coll.
    */
-  def toStream: Stream[A]
+  def toStream: Stream[L, A]
 
   /** Returns an Iterator over the elements in this $coll.  Will return
    *  the same Iterator if this instance is already an Iterator.
    *  $willNotTerminateInf
    *  @return an Iterator containing all elements of this $coll.
    */
-  def toIterator: Iterator[A]
+  def toIterator: Iterator[L, A]
 
   /** Uses the contents of this $coll to create a new mutable buffer.
    *  $willNotTerminateInf
@@ -556,7 +556,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  $willNotTerminateInf
    *  @return      a set containing all elements of this $coll.
    */
-  def toSet[A1 >: A]: GenSet[A1]
+  def toSet[A1 >: A]: GenSet[L, A1]
 
   /** Converts this $coll to a map.  This method is unavailable unless
    *  the elements are members of Tuple2, each ((T, U)) becoming a key-value
@@ -571,13 +571,13 @@ trait GenTraversableOnce[+A] extends Any {
    *    @return    a map of type `immutable.Map[L, T, U]`
    *               containing all key/value pairs of type `(T, U)` of this $coll.
    */
-  def toMap[K, V](implicit ev: A <:< (K, V)): GenMap[K, V]
+  def toMap[K, V](implicit ev: A <:< (K, V)): GenMap[L, K, V]
 
   /** Converts this $coll to a Vector.
    *  $willNotTerminateInf
    *  @return a vector containing all elements of this $coll.
    */
-  def toVector: Vector[A]
+  def toVector: Vector[L, A]
 
   /** Converts this $coll into another by copying all elements.
    *  @tparam Col  The collection type to build.
@@ -588,5 +588,5 @@ trait GenTraversableOnce[+A] extends Any {
    *    $willNotTerminateInf
    *    @return a new collection containing all elements of this $coll.
    */
-  def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]]): Col[A @uV]
+  def to[Col[_]](implicit cbf: CanBuildFrom[L, Nothing, A, Col[A @uV]]): Col[A @uV]
 }

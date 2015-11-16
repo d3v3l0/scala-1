@@ -15,7 +15,7 @@ import scala.collection.generic.Sizing
 
 package object mutable {
   /* aliases */
-  type ParArrayCombiner[T] = ResizableParArrayCombiner[T]
+  type ParArrayCombiner[T] = ResizableParArrayCombiner[L, T]
   val ParArrayCombiner = ResizableParArrayCombiner
 }
 
@@ -57,7 +57,7 @@ package mutable {
   }
 
   /* hack-arounds */
-  private[mutable] class ExposedArrayBuffer[T] extends ArrayBuffer[T] with Sizing {
+  private[mutable] class ExposedArrayBuffer[T] extends ArrayBuffer[L, T] with Sizing {
     def internalArray = array
     def setInternalSize(s: Int) = size0 = s
     override def sizeHint(len: Int) = {
@@ -69,7 +69,7 @@ package mutable {
     }
   }
 
-  private[mutable] class ExposedArraySeq[T](arr: Array[AnyRef], sz: Int) extends ArraySeq[T](sz) {
+  private[mutable] class ExposedArraySeq[T](arr: Array[AnyRef], sz: Int) extends ArraySeq[L, T](sz) {
     override val array = arr
     override val length = sz
     override def stringPrefix = "ArraySeq"

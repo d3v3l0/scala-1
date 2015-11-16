@@ -19,14 +19,14 @@ import scala.reflect.ClassTag
  *  @define coll array stack
  *  @define Coll `ArrayStack`
  */
-object ArrayStack extends SeqFactory[ArrayStack] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ArrayStack[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, ArrayStack[A]] = new ArrayStack[A]
-  def empty: ArrayStack[Nothing] = new ArrayStack()
-  def apply[A: ClassTag](elems: A*): ArrayStack[A] = {
+object ArrayStack extends SeqFactory[L, ArrayStack] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, ArrayStack[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, ArrayStack[L, A]] = new ArrayStack[L, A]
+  def empty: ArrayStack[L, Nothing] = new ArrayStack()
+  def apply[A: ClassTag](elems: A*): ArrayStack[L, A] = {
     val els: Array[AnyRef] = elems.reverseMap(_.asInstanceOf[AnyRef])(breakOut)
     if (els.length == 0) new ArrayStack()
-    else new ArrayStack[A](els, els.length)
+    else new ArrayStack[L, A](els, els.length)
   }
 
   private[mutable] def growArray(x: Array[AnyRef]) = {
@@ -61,14 +61,14 @@ object ArrayStack extends SeqFactory[ArrayStack] {
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(8565219180626620510L)
-class ArrayStack[T] private(private var table : Array[AnyRef],
+class ArrayStack[L, T] private(private var table : Array[AnyRef],
                             private var index : Int)
 extends AbstractSeq[L, T]
    with Seq[L, T]
-   with SeqLike[L, T, ArrayStack[T]]
-   with GenericTraversableTemplate[T, ArrayStack]
-   with Cloneable[ArrayStack[T]]
-   with Builder[T, ArrayStack[T]]
+   with SeqLike[L, T, ArrayStack[L, T]]
+   with GenericTraversableTemplate[L, T, ArrayStack]
+   with Cloneable[L, ArrayStack[L, T]]
+   with Builder[L, T, ArrayStack[L, T]]
    with Serializable
 {
   def this() = this(new Array[AnyRef](1), 0)
@@ -224,7 +224,7 @@ extends AbstractSeq[L, T]
   /** Creates and iterator over the stack in LIFO order.
    *  @return an iterator over the elements of the stack.
    */
-  def iterator: Iterator[T] = new AbstractIterator[T] {
+  def iterator: Iterator[L, T] = new AbstractIterator[L, T] {
     var currentIndex = index
     def hasNext = currentIndex > 0
     def next() = {
@@ -241,5 +241,5 @@ extends AbstractSeq[L, T]
     }
   }
 
-  override def clone() = new ArrayStack[T](ArrayStack.clone(table), index)
+  override def clone() = new ArrayStack[L, T](ArrayStack.clone(table), index)
 }

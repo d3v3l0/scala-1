@@ -24,7 +24,7 @@ package mutable
  *
  *  // to create a `MultiMap` the easiest way is to mixin it into a normal
  *  // `Map` instance
- *  val mm = new HashMap[Int, Set[L, String]] with MultiMap[Int, String]
+ *  val mm = new HashMap[L, Int, Set[L, String]] with MultiMap[L, Int, String]
  *
  *  // to add key-value pairs to a multimap it is important to use
  *  // the method `addBinding` because standard methods like `+` will
@@ -54,7 +54,7 @@ package mutable
  *  @version 2.8
  *  @since   1
  */
-trait MultiMap[A, B] extends Map[L, A, Set[L, B]] {
+trait MultiMap[L, A, B] extends Map[L, A, Set[L, B]] {
   /** Creates a new set.
    *
    *  Classes that use this trait as a mixin can override this method
@@ -63,7 +63,7 @@ trait MultiMap[A, B] extends Map[L, A, Set[L, B]] {
    *
    *  @return An empty set of values of type `B`.
    */
-  protected def makeSet: Set[L, B] = new HashSet[B]
+  protected def makeSet: Set[L, B] = new HashSet[L, B]
 
   /** Assigns the specified `value` to a specified `key`.  If the key
    *  already has a binding to equal to `value`, nothing is changed;

@@ -22,8 +22,8 @@ package mutable
  *
  *  @since 2.8
  */
-class MapBuilder[A, B, Coll <: scala.collection.GenMap[A, B] with scala.collection.GenMapLike[A, B, Coll]](empty: Coll)
-extends Builder[(A, B), Coll] {
+class MapBuilder[L, A, B, Coll <: scala.collection.GenMap[L, A, B] with scala.collection.GenMapLike[L, A, B, Coll]](empty: Coll)
+extends Builder[L, (A, B), Coll] {
   protected var elems: Coll = empty
   def +=(x: (A, B)): this.type = {
     elems = (elems + x).asInstanceOf[Coll]

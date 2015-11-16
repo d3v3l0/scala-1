@@ -19,12 +19,12 @@ import generic._
  *
  *  $indexedSeqInfo
  */
-trait IndexedSeq[A] extends Seq[L, A]
-                   with scala.collection.IndexedSeq[A]
-                   with GenericTraversableTemplate[A, IndexedSeq]
-                   with IndexedSeqLike[A, IndexedSeq[A]] {
-  override def companion: GenericCompanion[IndexedSeq]  = IndexedSeq
-  override def seq: IndexedSeq[A] = this
+trait IndexedSeq[L, A] extends Seq[L, A]
+                   with scala.collection.IndexedSeq[L, A]
+                   with GenericTraversableTemplate[L, A, IndexedSeq]
+                   with IndexedSeqLike[L, A, IndexedSeq[L, A]] {
+  override def companion: GenericCompanion[L, IndexedSeq]  = IndexedSeq
+  override def seq: IndexedSeq[L, A] = this
 }
 
 /** $factoryInfo
@@ -32,7 +32,7 @@ trait IndexedSeq[A] extends Seq[L, A]
  *  @define coll mutable indexed sequence
  *  @define Coll `mutable.IndexedSeq`
  */
-object IndexedSeq extends SeqFactory[IndexedSeq] {
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, IndexedSeq[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, IndexedSeq[A]] = new ArrayBuffer[A]
+object IndexedSeq extends SeqFactory[L, IndexedSeq] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, IndexedSeq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[L, A, IndexedSeq[L, A]] = new ArrayBuffer[L, A]
 }

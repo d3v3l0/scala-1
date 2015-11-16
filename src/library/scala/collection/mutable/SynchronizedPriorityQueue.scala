@@ -25,7 +25,7 @@ package mutable
  *  @define coll synchronized priority queue
  */
 @deprecated("Comprehensive synchronization via selective overriding of methods is inherently unreliable.  Consider java.util.concurrent.ConcurrentSkipListSet as an alternative.", "2.11.0")
-class SynchronizedPriorityQueue[A](implicit ord: Ordering[A]) extends PriorityQueue[A] {
+class SynchronizedPriorityQueue[L, A](implicit ord: Ordering[A]) extends PriorityQueue[L, A] {
 
   /** Checks if the queue is empty.
    *
@@ -85,7 +85,7 @@ class SynchronizedPriorityQueue[A](implicit ord: Ordering[A]) extends PriorityQu
    *
    *  @return  an iterator over all elements sorted in descending order.
    */
-  override def iterator: Iterator[A] = synchronized { super.iterator }
+  override def iterator: Iterator[L, A] = synchronized { super.iterator }
 
   /** Checks if two queues are structurally identical.
    *

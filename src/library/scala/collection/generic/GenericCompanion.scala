@@ -23,14 +23,14 @@ import scala.language.higherKinds
  *  @define coll  collection
  *  @define Coll  `CC`
  */
-abstract class GenericCompanion[+CC[X] <: GenTraversable[L, X]] {
+abstract class GenericCompanion[L, +CC[X] <: GenTraversable[L, X]] {
   /** The underlying collection type with unknown element type */
   protected[this] type Coll = CC[_]
 
   /** The default builder for `$Coll` objects.
    *  @tparam A      the type of the ${coll}'s elements
    */
-  def newBuilder[A]: Builder[A, CC[A]]
+  def newBuilder[A]: Builder[L, A, CC[A]]
 
   /** An empty collection of type `$Coll[A]`
    *  @tparam A      the type of the ${coll}'s elements

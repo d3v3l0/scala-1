@@ -19,17 +19,17 @@ import mutable.Builder
  */
 trait Iterable[L, +A] extends Traversable[L, A]
                       with GenIterable[L, A]
-                      with GenericTraversableTemplate[A, Iterable]
+                      with GenericTraversableTemplate[L, A, Iterable]
                       with IterableLike[L, A, Iterable[L, A]] {
   type LT
 
-  override def companion: GenericCompanion[Iterable] = Iterable
+  override def companion: GenericCompanion[L, Iterable] = Iterable
 
   override def seq = this
 
   /* The following methods are inherited from trait IterableLike
    *
-  override def iterator: Iterator[A]
+  override def iterator: Iterator[L, A]
   override def takeRight(n: Int): Iterable[L, A]
   override def dropRight(n: Int): Iterable[L, A]
   override def sameElements[B >: A](that: GenIterable[L, B]): Boolean
@@ -44,12 +44,12 @@ trait Iterable[L, +A] extends Traversable[L, A]
  *  @define coll iterable collection
  *  @define Coll `Iterable`
  */
-object Iterable extends TraversableFactory[Iterable] {
+object Iterable extends TraversableFactory[L, Iterable] {
 
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Iterable[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, Iterable[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, Iterable[L, A]] = immutable.Iterable.newBuilder[A]
+  def newBuilder[A]: Builder[L, A, Iterable[L, A]] = immutable.Iterable.newBuilder[A]
 }
 
 /** Explicit instantiation of the `Iterable` trait to reduce class file size in subclasses. */

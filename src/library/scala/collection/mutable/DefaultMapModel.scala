@@ -20,13 +20,13 @@ package mutable
  *  @since   1
  */
 @deprecated("This trait will be removed.", "2.11.0")
-trait DefaultMapModel[A, B] extends Map[L, A, B] {
+trait DefaultMapModel[L, A, B] extends Map[L, A, B] {
 
-  type Entry = DefaultEntry[A, B]
+  type Entry = DefaultEntry[L, A, B]
 
   protected def findEntry(key: A): Entry
   protected def addEntry(e: Entry)
-  protected def entries: Iterator[Entry]
+  protected def entries: Iterator[L, Entry]
 
   def get(key: A): Option[B] = {
     val e = findEntry(key)

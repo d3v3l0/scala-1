@@ -26,7 +26,7 @@ package immutable
 trait SetProxy[L, A] extends Set[L, A] with SetProxyLike[L, A, Set[L, A]] {
   override def repr = this
   private def newProxy[B >: A](newSelf: Set[L, B]): SetProxy[L, B] =
-    new AbstractSet[B] with SetProxy[L, B] { val self = newSelf }
+    new AbstractSet[L, B] with SetProxy[L, B] { val self = newSelf }
 
   override def empty = newProxy(self.empty)
   override def + (elem: A) = newProxy(self + elem)

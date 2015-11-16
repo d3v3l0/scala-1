@@ -26,9 +26,9 @@ import scala.collection.parallel.mutable.ParArrayCombiner
  */
 trait ParIterable[L, +T]
 extends GenIterable[L, T]
-   with GenericParTemplate[T, ParIterable]
+   with GenericParTemplate[L, T, ParIterable]
    with ParIterableLike[L, T, ParIterable[L, T], Iterable[L, T]] {
-  override def companion: GenericCompanion[ParIterable] with GenericParCompanion[ParIterable] = ParIterable
+  override def companion: GenericCompanion[L, ParIterable] with GenericParCompanion[L, ParIterable] = ParIterable
   //protected[this] override def newBuilder = ParIterable.newBuilder[T]
 
   def stringPrefix = "ParIterable"
@@ -36,11 +36,11 @@ extends GenIterable[L, T]
 
 /** $factoryInfo
  */
-object ParIterable extends ParFactory[ParIterable] {
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParIterable[L, T]] = new GenericCanCombineFrom[T]
+object ParIterable extends ParFactory[L, ParIterable] {
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParIterable[L, T]] = new GenericCanCombineFrom[T]
 
-  def newBuilder[T]: Combiner[T, ParIterable[L, T]] = ParArrayCombiner[T]
+  def newBuilder[T]: Combiner[L, T, ParIterable[L, T]] = ParArrayCombiner[T]
 
-  def newCombiner[T]: Combiner[T, ParIterable[L, T]] = ParArrayCombiner[T]
+  def newCombiner[T]: Combiner[L, T, ParIterable[L, T]] = ParArrayCombiner[T]
 }
 

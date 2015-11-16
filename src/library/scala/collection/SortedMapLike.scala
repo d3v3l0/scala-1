@@ -20,7 +20,7 @@ import generic._
  *  @version 2.8
  *  @since   2.8
  */
-trait SortedMapLike[A, +B, +This <: SortedMapLike[A, B, This] with SortedMap[A, B]] extends Sorted[A, This] with MapLike[L, A, B, This] {
+trait SortedMapLike[L, A, +B, +This <: SortedMapLike[L, A, B, This] with SortedMap[L, A, B]] extends Sorted[L, A, This] with MapLike[L, A, B, This] {
 self =>
 
   def firstKey : A = head._1
@@ -31,13 +31,13 @@ self =>
   // XXX: implement default version
   def rangeImpl(from : Option[A], until : Option[A]) : This
 
-  override def keySet : SortedSet[A] = new DefaultKeySortedSet
+  override def keySet : SortedSet[L, A] = new DefaultKeySortedSet
 
-  protected class DefaultKeySortedSet extends super.DefaultKeySet with SortedSet[A] {
+  protected class DefaultKeySortedSet extends super.DefaultKeySet with SortedSet[L, A] {
     implicit def ordering = self.ordering
-    override def + (elem: A): SortedSet[A] = (SortedSet[A]() ++ this + elem)
-    override def - (elem: A): SortedSet[A] = (SortedSet[A]() ++ this - elem)
-    override def rangeImpl(from : Option[A], until : Option[A]) : SortedSet[A] = {
+    override def + (elem: A): SortedSet[L, A] = (SortedSet[L, A]() ++ this + elem)
+    override def - (elem: A): SortedSet[L, A] = (SortedSet[L, A]() ++ this - elem)
+    override def rangeImpl(from : Option[A], until : Option[A]) : SortedSet[L, A] = {
       val map = self.rangeImpl(from, until)
       new map.DefaultKeySortedSet
     }
@@ -49,13 +49,13 @@ self =>
    *  @param    value the value
    *  @return   A new map with the new binding added to this map
    */
-  override def updated[B1 >: B](key: A, value: B1): SortedMap[A, B1] = this+((key, value))
+  override def updated[B1 >: B](key: A, value: B1): SortedMap[L, A, B1] = this+((key, value))
 
   /** Add a key/value pair to this map.
    *  @param    kv the key/value pair
    *  @return   A new map with the new binding added to this map
    */
-  def + [B1 >: B] (kv: (A, B1)): SortedMap[A, B1]
+  def + [B1 >: B] (kv: (A, B1)): SortedMap[L, A, B1]
 
   // todo: Add generic +,-, and so on.
 
@@ -67,23 +67,23 @@ self =>
    *  @param elem2 the second element to add.
    *  @param elems the remaining elements to add.
    */
-  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): SortedMap[A, B1] = {
+  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): SortedMap[L, A, B1] = {
     var m = this + elem1 + elem2
     for (e <- elems) m = m + e
     m
   }
 
-  override def filterKeys(p: A => Boolean): SortedMap[A, B] = new FilteredKeys(p) with SortedMap.Default[A, B] {
+  override def filterKeys(p: A => Boolean): SortedMap[L, A, B] = new FilteredKeys(p) with SortedMap.Default[A, B] {
     implicit def ordering: Ordering[A] = self.ordering
-    override def rangeImpl(from : Option[A], until : Option[A]): SortedMap[A, B] = self.rangeImpl(from, until).filterKeys(p)
+    override def rangeImpl(from : Option[A], until : Option[A]): SortedMap[L, A, B] = self.rangeImpl(from, until).filterKeys(p)
     override def iteratorFrom(start: A) = self iteratorFrom start filter {case (k, _) => p(k)}
     override def keysIteratorFrom(start: A) = self keysIteratorFrom start filter p
     override def valuesIteratorFrom(start: A) = self iteratorFrom start collect {case (k,v) if p(k) => v}
   }
 
-  override def mapValues[C](f: B => C): SortedMap[A, C] = new MappedValues(f) with SortedMap.Default[A, C] {
+  override def mapValues[C](f: B => C): SortedMap[L, A, C] = new MappedValues(f) with SortedMap.Default[A, C] {
     implicit def ordering: Ordering[A] = self.ordering
-    override def rangeImpl(from : Option[A], until : Option[A]): SortedMap[A, C] = self.rangeImpl(from, until).mapValues(f)
+    override def rangeImpl(from : Option[A], until : Option[A]): SortedMap[L, A, C] = self.rangeImpl(from, until).mapValues(f)
     override def iteratorFrom(start: A) = (self iteratorFrom start) map {case (k,v) => (k, f(v))}
     override def keysIteratorFrom(start: A) = self keysIteratorFrom start
     override def valuesIteratorFrom(start: A) = self valuesIteratorFrom start map f
@@ -94,8 +94,8 @@ self =>
    *
    *  @param xs     the traversable object.
    */
-  override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): SortedMap[A, B1] =
-    ((repr: SortedMap[A, B1]) /: xs.seq) (_ + _)
+  override def ++[B1 >: B](xs: GenTraversableOnce[L, (A, B1)]): SortedMap[L, A, B1] =
+    ((repr: SortedMap[L, A, B1]) /: xs.seq) (_ + _)
 
   /**
    * Creates an iterator over all the key/value pairs
@@ -107,7 +107,7 @@ self =>
    * @param start The lower bound (inclusive)
    * on the keys to be returned
    */
-  def iteratorFrom(start: A): Iterator[(A, B)]
+  def iteratorFrom(start: A): Iterator[L, (A, B)]
   /**
    * Creates an iterator over all the values contained in this
    * map that are associated with a key greater than or equal to `start`
@@ -118,5 +118,5 @@ self =>
    * @param start The lower bound (inclusive)
    * on the keys to be returned
    */
-  def valuesIteratorFrom(start: A): Iterator[B]
+  def valuesIteratorFrom(start: A): Iterator[L, B]
 }

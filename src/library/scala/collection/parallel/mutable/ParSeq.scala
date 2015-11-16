@@ -22,20 +22,20 @@ import scala.collection.parallel.Combiner
  *  @define Coll `mutable.ParSeq`
  *  @define coll mutable parallel sequence
  */
-trait ParSeq[T] extends scala.collection/*.mutable*/.GenSeq[L, T] // was: scala.collection.mutable.Seq[L, T]
+trait ParSeq[L, T] extends scala.collection/*.mutable*/.GenSeq[L, T] // was: scala.collection.mutable.Seq[L, T]
                    with ParIterable[L, T]
-                   with scala.collection.parallel.ParSeq[T]
-                   with GenericParTemplate[T, ParSeq]
-                   with ParSeqLike[T, ParSeq[T], scala.collection.mutable.Seq[L, T]] {
+                   with scala.collection.parallel.ParSeq[L, T]
+                   with GenericParTemplate[L, T, ParSeq]
+                   with ParSeqLike[L, T, ParSeq[L, T], scala.collection.mutable.Seq[L, T]] {
 self =>
-  override def companion: GenericCompanion[ParSeq] with GenericParCompanion[ParSeq] = ParSeq
+  override def companion: GenericCompanion[L, ParSeq] with GenericParCompanion[L, ParSeq] = ParSeq
   //protected[this] override def newBuilder = ParSeq.newBuilder[T]
 
   def update(i: Int, elem: T): Unit
 
   def seq: scala.collection.mutable.Seq[L, T]
 
-  override def toSeq: ParSeq[T] = this
+  override def toSeq: ParSeq[L, T] = this
 }
 
 
@@ -43,10 +43,10 @@ self =>
  *  @define Coll `mutable.ParSeq`
  *  @define coll mutable parallel sequence
  */
-object ParSeq extends ParFactory[ParSeq] {
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParSeq[T]] = new GenericCanCombineFrom[T]
+object ParSeq extends ParFactory[L, ParSeq] {
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParSeq[L, T]] = new GenericCanCombineFrom[T]
 
-  def newBuilder[T]: Combiner[T, ParSeq[T]] = ParArrayCombiner[T]
+  def newBuilder[T]: Combiner[L, T, ParSeq[L, T]] = ParArrayCombiner[T]
 
-  def newCombiner[T]: Combiner[T, ParSeq[T]] = ParArrayCombiner[T]
+  def newCombiner[T]: Combiner[L, T, ParSeq[L, T]] = ParArrayCombiner[T]
 }

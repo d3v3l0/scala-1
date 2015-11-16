@@ -19,8 +19,8 @@ import parallel.mutable.ParSeq
  */
 trait SeqLike[L, A, +This <: SeqLike[L, A, This] with Seq[L, A]]
   extends scala.collection.SeqLike[L, A, This]
-     with Cloneable[This]
-     with Parallelizable[A, ParSeq[A]]
+     with Cloneable[L, This]
+     with Parallelizable[L, A, ParSeq[L, A]]
 {
   self =>
 

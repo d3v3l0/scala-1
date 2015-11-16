@@ -54,10 +54,10 @@ package object parallel {
   }
 
   /** Adds toParArray method to collection classes. */
-  implicit class CollectionsHaveToParArray[C, T](c: C)(implicit asGto: C => scala.collection.GenTraversableOnce[T]) {
+  implicit class CollectionsHaveToParArray[C, T](c: C)(implicit asGto: C => scala.collection.GenTraversableOnce[L, T]) {
     def toParArray = {
       val t = asGto(c)
-      if (t.isInstanceOf[ParArray[_]]) t.asInstanceOf[ParArray[T]]
+      if (t.isInstanceOf[ParArray[L, _]]) t.asInstanceOf[ParArray[L, T]]
       else {
         val it = t.toIterator
         val cb = mutable.ParArrayCombiner[T]()
@@ -72,20 +72,20 @@ package object parallel {
 package parallel {
   /** Implicit conversions used in the implementation of parallel collections. */
   private[collection] object ParallelCollectionImplicits {
-    implicit def factory2ops[From, Elem, To](bf: CanBuildFrom[From, Elem, To]) = new FactoryOps[From, Elem, To] {
+    implicit def factory2ops[From, Elem, To](bf: CanBuildFrom[L, From, Elem, To]) = new FactoryOps[From, Elem, To] {
       def isParallel = bf.isInstanceOf[Parallel]
-      def asParallel = bf.asInstanceOf[CanCombineFrom[From, Elem, To]]
-      def ifParallel[R](isbody: CanCombineFrom[From, Elem, To] => R) = new Otherwise[R] {
+      def asParallel = bf.asInstanceOf[CanCombineFrom[L, From, Elem, To]]
+      def ifParallel[R](isbody: CanCombineFrom[L, From, Elem, To] => R) = new Otherwise[R] {
         def otherwise(notbody: => R) = if (isParallel) isbody(asParallel) else notbody
       }
     }
-    implicit def traversable2ops[T](t: scala.collection.GenTraversableOnce[T]) = new TraversableOps[T] {
+    implicit def traversable2ops[T](t: scala.collection.GenTraversableOnce[L, T]) = new TraversableOps[T] {
       def isParallel = t.isInstanceOf[Parallel]
       def isParIterable = t.isInstanceOf[ParIterable[L, _]]
       def asParIterable = t.asInstanceOf[ParIterable[L, T]]
-      def isParSeq = t.isInstanceOf[ParSeq[_]]
-      def asParSeq = t.asInstanceOf[ParSeq[T]]
-      def ifParSeq[R](isbody: ParSeq[T] => R) = new Otherwise[R] {
+      def isParSeq = t.isInstanceOf[ParSeq[L, _]]
+      def asParSeq = t.asInstanceOf[ParSeq[L, T]]
+      def ifParSeq[R](isbody: ParSeq[L, T] => R) = new Otherwise[R] {
         def otherwise(notbody: => R) = if (isParallel) isbody(asParSeq) else notbody
       }
     }
@@ -105,8 +105,8 @@ package parallel {
     }
 
     def isParallel: Boolean
-    def asParallel: CanCombineFrom[From, Elem, To]
-    def ifParallel[R](isbody: CanCombineFrom[From, Elem, To] => R): Otherwise[R]
+    def asParallel: CanCombineFrom[L, From, Elem, To]
+    def ifParallel[R](isbody: CanCombineFrom[L, From, Elem, To] => R): Otherwise[R]
   }
 
   trait TraversableOps[T] {
@@ -118,8 +118,8 @@ package parallel {
     def isParIterable: Boolean
     def asParIterable: ParIterable[L, T]
     def isParSeq: Boolean
-    def asParSeq: ParSeq[T]
-    def ifParSeq[R](isbody: ParSeq[T] => R): Otherwise[R]
+    def asParSeq: ParSeq[L, T]
+    def ifParSeq[R](isbody: ParSeq[L, T] => R): Otherwise[R]
   }
 
   @deprecated("This trait will be removed.", "2.11.0")
@@ -132,7 +132,7 @@ package parallel {
 
   trait CombinerFactory[U, Repr] {
     /** Provides a combiner used to construct a collection. */
-    def apply(): Combiner[U, Repr]
+    def apply(): Combiner[L, U, Repr]
     /** The call to the `apply` method can create a new combiner each time.
      *  If it does, this method returns `false`.
      *  The same combiner factory may be used each time (typically, this is
@@ -154,8 +154,8 @@ package parallel {
    *  Automatically forwards the signal delegate when splitting.
    */
   private[parallel] class BufferSplitter[T]
-  (private val buffer: scala.collection.mutable.ArrayBuffer[T], private var index: Int, private val until: Int, _sigdel: scala.collection.generic.Signalling)
-  extends IterableSplitter[T] {
+  (private val buffer: scala.collection.mutable.ArrayBuffer[L, T], private var index: Int, private val until: Int, _sigdel: scala.collection.generic.Signalling)
+  extends IterableSplitter[L, T] {
     signalDelegate = _sigdel
     def hasNext = index < until
     def next = {
@@ -165,7 +165,7 @@ package parallel {
     }
     def remaining = until - index
     def dup = new BufferSplitter(buffer, index, until, signalDelegate)
-    def split: Seq[L, IterableSplitter[T]] = if (remaining > 1) {
+    def split: Seq[L, IterableSplitter[L, T]] = if (remaining > 1) {
       val divsz = (until - index) / 2
       Seq(
         new BufferSplitter(buffer, index, index + divsz, signalDelegate),
@@ -211,23 +211,23 @@ package parallel {
    */
   private[parallel] abstract class BucketCombiner[-Elem, +To, Buck, +CombinerType <: BucketCombiner[Elem, To, Buck, CombinerType]]
   (private val bucketnumber: Int)
-  extends Combiner[Elem, To] {
+  extends Combiner[L, Elem, To] {
   //self: EnvironmentPassingCombiner[Elem, To] =>
-    protected var buckets: Array[UnrolledBuffer[Buck]] @uncheckedVariance = new Array[UnrolledBuffer[Buck]](bucketnumber)
+    protected var buckets: Array[UnrolledBuffer[L, Buck]] @uncheckedVariance = new Array[UnrolledBuffer[L, Buck]](bucketnumber)
     protected var sz: Int = 0
 
     def size = sz
 
     def clear() = {
-      buckets = new Array[UnrolledBuffer[Buck]](bucketnumber)
+      buckets = new Array[UnrolledBuffer[L, Buck]](bucketnumber)
       sz = 0
     }
 
-    def beforeCombine[N <: Elem, NewTo >: To](other: Combiner[N, NewTo]) {}
+    def beforeCombine[N <: Elem, NewTo >: To](other: Combiner[L, N, NewTo]) {}
 
-    def afterCombine[N <: Elem, NewTo >: To](other: Combiner[N, NewTo]) {}
+    def afterCombine[N <: Elem, NewTo >: To](other: Combiner[L, N, NewTo]) {}
 
-    def combine[N <: Elem, NewTo >: To](other: Combiner[N, NewTo]): Combiner[N, NewTo] = {
+    def combine[N <: Elem, NewTo >: To](other: Combiner[L, N, NewTo]): Combiner[L, N, NewTo] = {
       if (this eq other) this
       else other match {
         case _: BucketCombiner[_, _, _, _] =>

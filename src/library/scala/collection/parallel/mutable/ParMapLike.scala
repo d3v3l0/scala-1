@@ -28,15 +28,15 @@ import scala.collection.generic.Shrinkable
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait ParMapLike[K,
+trait ParMapLike[L, K,
                  V,
-                 +Repr <: ParMapLike[K, V, Repr, Sequential] with ParMap[K, V],
+                 +Repr <: ParMapLike[L, K, V, Repr, Sequential] with ParMap[L, K, V],
                  +Sequential <: scala.collection.mutable.Map[L, K, V] with scala.collection.mutable.MapLike[L, K, V, Sequential]]
-extends scala.collection.GenMapLike[K, V, Repr]
-   with scala.collection.parallel.ParMapLike[K, V, Repr, Sequential]
-   with Growable[(K, V)]
-   with Shrinkable[K]
-   with Cloneable[Repr]
+extends scala.collection.GenMapLike[L, K, V, Repr]
+   with scala.collection.parallel.ParMapLike[L, K, V, Repr, Sequential]
+   with Growable[L, (K, V)]
+   with Shrinkable[L, K]
+   with Cloneable[L, Repr]
 {
   // note: should not override toMap
 
@@ -46,7 +46,7 @@ extends scala.collection.GenMapLike[K, V, Repr]
 
   def -=(key: K): this.type
 
-  def +[U >: V](kv: (K, U)) = this.clone().asInstanceOf[ParMap[K, U]] += kv
+  def +[U >: V](kv: (K, U)) = this.clone().asInstanceOf[ParMap[L, K, U]] += kv
 
   def -(key: K) = this.clone() -= key
 

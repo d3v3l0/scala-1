@@ -69,7 +69,7 @@ trait TraversableForwarder[L, +A] extends Traversable[L, A] {
   override def toSeq: Seq[L, A] = underlying.toSeq
   override def toIndexedSeq = underlying.toIndexedSeq
   override def toBuffer[B >: A] = underlying.toBuffer
-  override def toStream: Stream[A] = underlying.toStream
+  override def toStream: Stream[L, A] = underlying.toStream
   override def toSet[B >: A]: immutable.Set[L, B] = underlying.toSet
   override def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[L, T, U] = underlying.toMap(ev)
   override def mkString(start: String, sep: String, end: String): String = underlying.mkString(start, sep, end)

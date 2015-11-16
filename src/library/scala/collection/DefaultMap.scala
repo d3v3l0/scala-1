@@ -11,10 +11,10 @@ package collection
 
 /** A default map which implements the `+` and `-` methods of maps.
  *
- *  Instances that inherit from `DefaultMap[A, B]` still have to define:
+ *  Instances that inherit from `DefaultMap[L, A, B]` still have to define:
  *  {{{
  *    def get(key: A): Option[B]
- *    def iterator: Iterator[(A, B)]
+ *    def iterator: Iterator[L, (A, B)]
  *  }}}
  *  It refers back to the original map.
  *
@@ -23,7 +23,7 @@ package collection
  *
  *  @since 2.8
  */
-trait DefaultMap[A, +B] extends Map[L, A, B] { self =>
+trait DefaultMap[L, A, +B] extends Map[L, A, B] { self =>
 
   /** A default implementation which creates a new immutable map.
    */

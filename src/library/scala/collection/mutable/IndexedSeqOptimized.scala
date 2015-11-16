@@ -15,4 +15,4 @@ package mutable
  *
  *  @since 2.8
  */
-trait IndexedSeqOptimized[A, +Repr] extends Any with IndexedSeqLike[A, Repr] with scala.collection.IndexedSeqOptimized[A, Repr]
+trait IndexedSeqOptimized[L, A, +Repr] extends Any with IndexedSeqLike[L, A, Repr] with scala.collection.IndexedSeqOptimized[L, A, Repr]

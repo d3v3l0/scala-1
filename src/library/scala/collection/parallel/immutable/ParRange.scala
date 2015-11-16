@@ -33,7 +33,7 @@ import scala.collection.Iterator
  */
 @SerialVersionUID(1L)
 class ParRange(val range: Range)
-extends ParSeq[Int]
+extends ParSeq[L, Int]
    with Serializable
 {
 self =>
@@ -47,7 +47,7 @@ self =>
   def splitter = new ParRangeIterator
 
   class ParRangeIterator(range: Range = self.range)
-  extends SeqSplitter[Int] {
+  extends SeqSplitter[L, Int] {
     override def toString = "ParRangeIterator(over: " + range + ")"
     private var ind = 0
     private val len = range.length
@@ -100,7 +100,7 @@ self =>
 
     /* transformers */
 
-    override def map2combiner[S, That](f: Int => S, cb: Combiner[S, That]): Combiner[S, That] = {
+    override def map2combiner[S, That](f: Int => S, cb: Combiner[L, S, That]): Combiner[L, S, That] = {
       while (hasNext) {
         cb += f(next)
       }

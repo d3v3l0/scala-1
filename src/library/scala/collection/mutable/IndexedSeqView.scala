@@ -28,17 +28,17 @@ import scala.language.implicitConversions
  *  @tparam A    the element type of the view
  *  @tparam Coll the type of the underlying collection containing the elements.
  */
-trait IndexedSeqView[A, +Coll] extends IndexedSeq[A]
-                                  with IndexedSeqOptimized[A, IndexedSeqView[A, Coll]]
-                                  with SeqView[A, Coll]
-                                  with SeqViewLike[A, Coll, IndexedSeqView[A, Coll]] {
+trait IndexedSeqView[L, A, +Coll] extends IndexedSeq[L, A]
+                                  with IndexedSeqOptimized[L, A, IndexedSeqView[L, A, Coll]]
+                                  with SeqView[L, A, Coll]
+                                  with SeqViewLike[L, A, Coll, IndexedSeqView[L, A, Coll]] {
 self =>
 
-  private[this] type This = IndexedSeqView[A, Coll]
+  private[this] type This = IndexedSeqView[L, A, Coll]
 
   def update(idx: Int, elem: A): Unit
 
-  trait Transformed[B] extends IndexedSeqView[B, Coll] with super.Transformed[B] {
+  trait Transformed[B] extends IndexedSeqView[L, B, Coll] with super.Transformed[B] {
     def update(idx: Int, elem: B): Unit
     override def toString = viewToString
   }
@@ -93,7 +93,7 @@ self =>
   override def span(@plocal p: A => Boolean): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
   override def splitAt(n: Int): (This, This) = (take(n), drop(n)) // !!!
   override def reverse: This = newReversed
-  override def tail: IndexedSeqView[A, Coll] = if (isEmpty) super.tail else slice(1, length)
+  override def tail: IndexedSeqView[L, A, Coll] = if (isEmpty) super.tail else slice(1, length)
 }
 
 /** An object containing the necessary implicit definitions to make
@@ -106,13 +106,13 @@ self =>
  */
 object IndexedSeqView {
   type Coll = TraversableView[L, _, C] forSome {type C <: Traversable[L, _]}
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, SeqView[A, Seq[L, _]]] =
-    new CanBuildFrom[Coll, A, SeqView[A, Seq[L, _]]] {
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, SeqView[L, A, Seq[L, _]]] =
+    new CanBuildFrom[L, Coll, A, SeqView[L, A, Seq[L, _]]] {
       def apply(from: Coll) = new NoBuilder
       def apply() = new NoBuilder
     }
-  implicit def arrCanBuildFrom[A]: CanBuildFrom[TraversableView[L, _, Array[_]], A, SeqView[A, Array[A]]] =
-    new CanBuildFrom[TraversableView[L, _, Array[_]], A, SeqView[A, Array[A]]] {
+  implicit def arrCanBuildFrom[A]: CanBuildFrom[L, TraversableView[L, _, Array[_]], A, SeqView[L, A, Array[A]]] =
+    new CanBuildFrom[L, TraversableView[L, _, Array[_]], A, SeqView[L, A, Array[A]]] {
       def apply(from: TraversableView[L, _, Array[_]]) = new NoBuilder
       def apply() = new NoBuilder
     }

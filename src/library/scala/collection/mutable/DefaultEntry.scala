@@ -13,8 +13,8 @@ package mutable
 /** Class used internally for default map model.
  *  @since 2.3
  */
-final class DefaultEntry[A, B](val key: A, var value: B)
-      extends HashEntry[A, DefaultEntry[A, B]] with Serializable
+final class DefaultEntry[L, A, B](val key: A, var value: B)
+      extends HashEntry[A, DefaultEntry[L, A, B]] with Serializable
 {
   override def toString = chainString
 

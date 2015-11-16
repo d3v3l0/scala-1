@@ -18,17 +18,17 @@ import generic._
  *  @version 2.8
  *  @since   2.4
  */
-trait SortedSet[A] extends Set[L, A] with SortedSetLike[A, SortedSet[A]] {
+trait SortedSet[L, A] extends Set[L, A] with SortedSetLike[L, A, SortedSet[L, A]] {
   /** Needs to be overridden in subclasses. */
-  override def empty: SortedSet[A] = SortedSet.empty[A]
+  override def empty: SortedSet[L, A] = SortedSet.empty[A]
 }
 
 /**
  * @since 2.8
  */
-object SortedSet extends SortedSetFactory[SortedSet] {
-  def empty[A](implicit ord: Ordering[A]): immutable.SortedSet[A] = immutable.SortedSet.empty[A](ord)
-  def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[Coll, A, SortedSet[A]] = newCanBuildFrom[A]
+object SortedSet extends SortedSetFactory[L, SortedSet] {
+  def empty[A](implicit ord: Ordering[A]): immutable.SortedSet[L, A] = immutable.SortedSet.empty[A](ord)
+  def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[L, Coll, A, SortedSet[L, A]] = newCanBuildFrom[A]
   // Force a declaration here so that BitSet's (which does not inherit from SortedSetFactory) can be more specific
-  override implicit def newCanBuildFrom[A](implicit ord : Ordering[A]) : CanBuildFrom[Coll, A, SortedSet[A]] = super.newCanBuildFrom
+  override implicit def newCanBuildFrom[A](implicit ord : Ordering[A]) : CanBuildFrom[L, Coll, A, SortedSet[L, A]] = super.newCanBuildFrom
 }

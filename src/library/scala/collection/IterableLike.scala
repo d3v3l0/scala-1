@@ -21,7 +21,7 @@ import scala.annotation.unchecked.uncheckedVariance
  *    Implementations of this trait need to provide a concrete method with
  *    signature:
  *    {{{
- *       def iterator: Iterator[A]
+ *       def iterator: Iterator[L, A]
  *    }}}
  *    They also need to provide a method `newBuilder`
  *    which creates a builder for collections of the same kind.
@@ -48,7 +48,7 @@ import scala.annotation.unchecked.uncheckedVariance
  *  @define Coll Iterable
  *  @define coll iterable collection
  */
-trait IterableLike[L, +A, +Repr] extends Any with Equals with TraversableLike[L, A, Repr] with GenIterableLike[A, Repr] {
+trait IterableLike[L, +A, +Repr] extends Any with Equals with TraversableLike[L, A, Repr] with GenIterableLike[L, A, Repr] {
 self =>
 
   type LT
@@ -60,7 +60,7 @@ self =>
    *
    *  @return the new iterator
    */
-  def iterator: Iterator[A]
+  def iterator: Iterator[L, A]
 
   /** Applies a function `f` to all elements of this $coll.
    *
@@ -103,7 +103,7 @@ self =>
    *  @return an Iterator containing all elements of this $coll.
    */
   @deprecatedOverriding("toIterator should stay consistent with iterator for all Iterables: override iterator instead.", "2.11.0")
-  override def toIterator: Iterator[A] = iterator
+  override def toIterator: Iterator[L, A] = iterator
 
   override /*TraversableLike*/ def head: A =
     iterator.next()
@@ -172,7 +172,7 @@ self =>
    *  @return An iterator producing ${coll}s of size `size`, except the
    *          last will be less than size `size` if the elements don't divide evenly.
    */
-  def grouped(size: Int): Iterator[Repr] =
+  def grouped(size: Int): Iterator[L, Repr] =
     for (xs <- iterator grouped size) yield {
       val b = newBuilder
       b ++= xs
@@ -189,7 +189,7 @@ self =>
    *          last and the only element will be truncated if there are
    *          fewer elements than size.
    */
-  def sliding(size: Int): Iterator[Repr] = sliding(size, 1)
+  def sliding(size: Int): Iterator[L, Repr] = sliding(size, 1)
 
   /** Groups elements in fixed size blocks by passing a "sliding window"
    *  over them (as opposed to partitioning them, as is done in grouped.)
@@ -202,7 +202,7 @@ self =>
    *          last and the only element will be truncated if there are
    *          fewer elements than size.
    */
-  def sliding(size: Int, step: Int): Iterator[Repr] =
+  def sliding(size: Int, step: Int): Iterator[L, Repr] =
     for (xs <- iterator.sliding(size, step)) yield {
       val b = newBuilder
       b ++= xs
@@ -258,7 +258,7 @@ self =>
     }
   }
 
-  def zip[A1 >: A, B, That](that: GenIterable[L, B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = {
+  def zip[A1 >: A, B, That](that: GenIterable[L, B])(implicit bf: CanBuildFrom[L, Repr, (A1, B), That]): That = {
     val b = bf(repr)
     val these = this.iterator
     val those = that.iterator
@@ -267,7 +267,7 @@ self =>
     b.result()
   }
 
-  def zipAll[B, A1 >: A, That](that: GenIterable[L, B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = {
+  def zipAll[B, A1 >: A, That](that: GenIterable[L, B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[L, Repr, (A1, B), That]): That = {
     val b = bf(repr)
     val these = this.iterator
     val those = that.iterator
@@ -280,7 +280,7 @@ self =>
     b.result()
   }
 
-  def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Repr, (A1, Int), That]): That = {
+  def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[L, Repr, (A1, Int), That]): That = {
     val b = bf(repr)
     var i = 0
     for (x <- this) {
@@ -300,7 +300,7 @@ self =>
     !these.hasNext && !those.hasNext
   }
 
-  override /*TraversableLike*/ def toStream: Stream[A] = iterator.toStream
+  override /*TraversableLike*/ def toStream: Stream[L, A] = iterator.toStream
 
   /** Method called from equality methods, so that user-defined subclasses can
    *  refuse to be equal to other collections of the same kind.

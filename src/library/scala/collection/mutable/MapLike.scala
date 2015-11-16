@@ -32,7 +32,7 @@ import scala.collection.parallel.mutable.ParMap
  *    implementations of the following methods:
  *    {{{
  *       def get(key: A): Option[B]
- *       def iterator: Iterator[(A, B)]
+ *       def iterator: Iterator[L, (A, B)]
  *       def += (kv: (A, B)): This
  *       def -= (key: A): This
  *    }}}
@@ -46,11 +46,11 @@ import scala.collection.parallel.mutable.ParMap
  */
 trait MapLike[L, A, B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
   extends scala.collection.MapLike[L, A, B, This]
-     with Builder[(A, B), This]
-     with Growable[(A, B)]
-     with Shrinkable[A]
-     with Cloneable[This]
-     with Parallelizable[(A, B), ParMap[A, B]]
+     with Builder[L, (A, B), This]
+     with Growable[L, (A, B)]
+     with Shrinkable[L, A]
+     with Cloneable[L, This]
+     with Parallelizable[L, (A, B), ParMap[L, A, B]]
 { self =>
 
   /** A common implementation of `newBuilder` for all mutable maps
@@ -58,7 +58,7 @@ trait MapLike[L, A, B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
    *
    *    Overrides `MapLike` implementation for better efficiency.
    */
-  override protected[this] def newBuilder: Builder[(A, B), This] = empty
+  override protected[this] def newBuilder: Builder[L, (A, B), This] = empty
 
   protected[this] override def parCombiner = ParMap.newCombiner[A, B]
 
@@ -139,7 +139,7 @@ trait MapLike[L, A, B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
    *  @return       a new map containing mappings of this map and those provided by `xs`.
    */
   @migration("`++` creates a new map. Use `++=` to add an element to this map and return that map itself.", "2.8.0")
-  override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): Map[L, A, B1] =
+  override def ++[B1 >: B](xs: GenTraversableOnce[L, (A, B1)]): Map[L, A, B1] =
     clone().asInstanceOf[Map[L, A, B1]] ++= xs.seq
 
   /** Removes a key from this map, returning the value associated previously
@@ -248,5 +248,5 @@ trait MapLike[L, A, B, +This <: MapLike[L, A, B, This] with Map[L, A, B]]
    *                  with a key equal to a key from `xs`.
    */
   @migration("`--` creates a new map. Use `--=` to remove an element from this map and return that map itself.", "2.8.0")
-  override def --(xs: GenTraversableOnce[A]): This = clone() --= xs.seq
+  override def --(xs: GenTraversableOnce[L, A]): This = clone() --= xs.seq
 }

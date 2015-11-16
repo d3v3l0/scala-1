@@ -32,7 +32,7 @@ trait DecorateAsScala {
    * @return An object with an `asScala` method that returns a Scala
    *         `Iterator` view of the argument.
    */
-  implicit def asScalaIteratorConverter[A](i : ju.Iterator[A]): AsScala[Iterator[A]] =
+  implicit def asScalaIteratorConverter[A](i : ju.Iterator[L, A]): AsScala[Iterator[L, A]] =
     new AsScala(asScalaIterator(i))
 
   /**
@@ -51,7 +51,7 @@ trait DecorateAsScala {
    * @return An object with an `asScala` method that returns a Scala
    *         `Iterator` view of the argument.
    */
-  implicit def enumerationAsScalaIteratorConverter[A](i : ju.Enumeration[A]): AsScala[Iterator[A]] =
+  implicit def enumerationAsScalaIteratorConverter[A](i : ju.Enumeration[A]): AsScala[Iterator[L, A]] =
     new AsScala(enumerationAsScalaIterator(i))
 
   /**

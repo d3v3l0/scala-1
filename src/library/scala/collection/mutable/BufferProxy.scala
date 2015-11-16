@@ -33,7 +33,7 @@ trait BufferProxy[L, A] extends Buffer[L, A] with Proxy {
 
   def length: Int = self.length
 
-  override def iterator: Iterator[A] = self.iterator
+  override def iterator: Iterator[L, A] = self.iterator
 
   def apply(n: Int): A = self.apply(n)
 
@@ -133,7 +133,7 @@ trait BufferProxy[L, A] extends Buffer[L, A] with Proxy {
    *  @param cmd  the message to send.
    */
   @deprecated("Scripting is deprecated.", "2.11.0")
-  override def <<(cmd: Message[A]) { self << cmd }
+  override def <<(cmd: Message[L, A]) { self << cmd }
 
   /** Return a clone of this buffer.
    *

@@ -34,11 +34,11 @@ import scala.collection.parallel.Task
  *  section on Parallel Hash Tables for more information.
  */
 @SerialVersionUID(1L)
-class ParHashSet[T] private[collection] (contents: FlatHashTable.Contents[T])
-extends ParSet[T]
-   with GenericParTemplate[T, ParHashSet]
-   with ParSetLike[T, ParHashSet[T], scala.collection.mutable.HashSet[T]]
-   with ParFlatHashTable[T]
+class ParHashSet[L, T] private[collection] (contents: FlatHashTable.Contents[T])
+extends ParSet[L, T]
+   with GenericParTemplate[L, T, ParHashSet]
+   with ParSetLike[L, T, ParHashSet[L, T], scala.collection.mutable.HashSet[L, T]]
+   with ParFlatHashTable[L, T]
    with Serializable
 {
   initWithContents(contents)
@@ -113,19 +113,19 @@ extends ParSet[T]
  *  @define Coll `mutable.ParHashSet`
  *  @define coll parallel hash set
  */
-object ParHashSet extends ParSetFactory[ParHashSet] {
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParHashSet[T]] = new GenericCanCombineFrom[T]
+object ParHashSet extends ParSetFactory[L, ParHashSet] {
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParHashSet[L, T]] = new GenericCanCombineFrom[T]
 
-  override def newBuilder[T]: Combiner[T, ParHashSet[T]] = newCombiner
+  override def newBuilder[T]: Combiner[L, T, ParHashSet[L, T]] = newCombiner
 
-  override def newCombiner[T]: Combiner[T, ParHashSet[T]] = ParHashSetCombiner.apply[T]
+  override def newCombiner[T]: Combiner[L, T, ParHashSet[L, T]] = ParHashSetCombiner.apply[T]
 }
 
 
 private[mutable] abstract class ParHashSetCombiner[T](private val tableLoadFactor: Int)
-extends scala.collection.parallel.BucketCombiner[T, ParHashSet[T], AnyRef, ParHashSetCombiner[T]](ParHashSetCombiner.numblocks)
+extends scala.collection.parallel.BucketCombiner[T, ParHashSet[L, T], AnyRef, ParHashSetCombiner[T]](ParHashSetCombiner.numblocks)
 with scala.collection.mutable.FlatHashTable.HashUtils[T] {
-//self: EnvironmentPassingCombiner[T, ParHashSet[T]] =>
+//self: EnvironmentPassingCombiner[T, ParHashSet[L, T]] =>
   private val nonmasklen = ParHashSetCombiner.nonmasklength
   private val seedvalue = 27
 
@@ -136,14 +136,14 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
     val pos = hc >>> nonmasklen
     if (buckets(pos) eq null) {
       // initialize bucket
-      buckets(pos) = new UnrolledBuffer[AnyRef]
+      buckets(pos) = new UnrolledBuffer[L, AnyRef]
     }
     // add to bucket
     buckets(pos) += entry
     this
   }
 
-  def result: ParHashSet[T] = {
+  def result: ParHashSet[L, T] = {
     val contents = if (size >= ParHashSetCombiner.numblocks * sizeMapBucketSize) parPopulate else seqPopulate
     new ParHashSet(contents)
   }
@@ -161,7 +161,7 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
   private def seqPopulate: FlatHashTable.Contents[T] = {
     // construct it sequentially
     // TODO parallelize by keeping separate size maps and merging them
-    val tbl = new FlatHashTable[T] {
+    val tbl = new FlatHashTable[L, T] {
       sizeMapInit(table.length)
       seedvalue = ParHashSetCombiner.this.seedvalue
       for {
@@ -180,7 +180,7 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
    *  Elements can only be added to it. The final size has to be adjusted manually.
    *  It is internal to `ParHashSet` combiners.
    */
-  class AddingFlatHashTable(numelems: Int, lf: Int, inseedvalue: Int) extends FlatHashTable[T] {
+  class AddingFlatHashTable(numelems: Int, lf: Int, inseedvalue: Int) extends FlatHashTable[L, T] {
     _loadFactor = lf
     table = new Array[AnyRef](capacity(FlatHashTable.sizeForThreshold(numelems, _loadFactor)))
     tableSize = 0
@@ -239,14 +239,14 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
 
   /* tasks */
 
-  class FillBlocks(buckets: Array[UnrolledBuffer[AnyRef]], table: AddingFlatHashTable, val offset: Int, val howmany: Int)
-  extends Task[(Int, UnrolledBuffer[AnyRef]), FillBlocks] {
-    var result = (Int.MinValue, new UnrolledBuffer[AnyRef])
+  class FillBlocks(buckets: Array[UnrolledBuffer[L, AnyRef]], table: AddingFlatHashTable, val offset: Int, val howmany: Int)
+  extends Task[L, (Int, UnrolledBuffer[L, AnyRef]), FillBlocks] {
+    var result = (Int.MinValue, new UnrolledBuffer[L, AnyRef])
 
-    def leaf(prev: Option[(Int, UnrolledBuffer[AnyRef])]) {
+    def leaf(prev: Option[(Int, UnrolledBuffer[L, AnyRef])]) {
       var i = offset
       var totalinserts = 0
-      var leftover = new UnrolledBuffer[AnyRef]()
+      var leftover = new UnrolledBuffer[L, AnyRef]()
       while (i < (offset + howmany)) {
         val (inserted, intonextblock) = fillBlock(i, buckets(i), leftover)
         totalinserts += inserted
@@ -258,11 +258,11 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
     private val blocksize = table.tableLength >> ParHashSetCombiner.discriminantbits
     private def blockStart(block: Int) = block * blocksize
     private def nextBlockStart(block: Int) = (block + 1) * blocksize
-    private def fillBlock(block: Int, elems: UnrolledBuffer[AnyRef], leftovers: UnrolledBuffer[AnyRef]): (Int, UnrolledBuffer[AnyRef]) = {
+    private def fillBlock(block: Int, elems: UnrolledBuffer[L, AnyRef], leftovers: UnrolledBuffer[L, AnyRef]): (Int, UnrolledBuffer[L, AnyRef]) = {
       val beforePos = nextBlockStart(block)
 
       // store the elems
-      val (elemsIn, elemsLeft) = if (elems != null) insertAll(-1, beforePos, elems) else (0, UnrolledBuffer[AnyRef]())
+      val (elemsIn, elemsLeft) = if (elems != null) insertAll(-1, beforePos, elems) else (0, UnrolledBuffer[L, AnyRef]())
 
       // store the leftovers
       val (leftoversIn, leftoversLeft) = insertAll(blockStart(block), beforePos, leftovers)
@@ -270,8 +270,8 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
       // return the no. of stored elements tupled with leftovers
       (elemsIn + leftoversIn, elemsLeft concat leftoversLeft)
     }
-    private def insertAll(atPos: Int, beforePos: Int, elems: UnrolledBuffer[AnyRef]): (Int, UnrolledBuffer[AnyRef]) = {
-      val leftovers = new UnrolledBuffer[AnyRef]
+    private def insertAll(atPos: Int, beforePos: Int, elems: UnrolledBuffer[L, AnyRef]): (Int, UnrolledBuffer[L, AnyRef]) = {
+      val leftovers = new UnrolledBuffer[L, AnyRef]
       var inserted = 0
 
       var unrolled = elems.headPtr
@@ -329,5 +329,5 @@ private[parallel] object ParHashSetCombiner {
   private[mutable] val discriminantmask = ((1 << discriminantbits) - 1)
   private[mutable] val nonmasklength = 32 - discriminantbits
 
-  def apply[T] = new ParHashSetCombiner[T](FlatHashTable.defaultLoadFactor) {} //with EnvironmentPassingCombiner[T, ParHashSet[T]]
+  def apply[T] = new ParHashSetCombiner[T](FlatHashTable.defaultLoadFactor) {} //with EnvironmentPassingCombiner[T, ParHashSet[L, T]]
 }

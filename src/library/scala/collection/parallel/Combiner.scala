@@ -29,7 +29,7 @@ import scala.collection.generic.Sizing
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait Combiner[-Elem, +To] extends Builder[Elem, To] with Sizing with Parallel {
+trait Combiner[L, -Elem, +To] extends Builder[L, Elem, To] with Sizing with Parallel {
 
   @transient
   @volatile
@@ -70,7 +70,7 @@ trait Combiner[-Elem, +To] extends Builder[Elem, To] with Sizing with Parallel {
    *  @param other   the other builder
    *  @return        the parallel builder containing both the elements of this and the `other` builder
    */
-  def combine[N <: Elem, NewTo >: To](other: Combiner[N, NewTo]): Combiner[N, NewTo]
+  def combine[N <: Elem, NewTo >: To](other: Combiner[L, N, NewTo]): Combiner[L, N, NewTo]
 
   /** Returns `true` if this combiner has a thread-safe `+=` and is meant to be shared
    *  across several threads constructing the collection.
@@ -89,7 +89,7 @@ trait Combiner[-Elem, +To] extends Builder[Elem, To] with Sizing with Parallel {
 }
 
 /*
-private[collection] trait EnvironmentPassingCombiner[-Elem, +To] extends Combiner[Elem, To] {
+private[collection] trait EnvironmentPassingCombiner[-Elem, +To] extends Combiner[L, Elem, To] {
   abstract override def result = {
     val res = super.result
     res

@@ -19,24 +19,24 @@ import mutable.{ ListBuffer, Builder }
  *  @define coll immutable list set
  *  @since 1
  */
-object ListSet extends ImmutableSetFactory[ListSet] {
+object ListSet extends ImmutableSetFactory[L, ListSet] {
   /** setCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ListSet[A]] = setCanBuildFrom[A]
+  implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, ListSet[L, A]] = setCanBuildFrom[A]
 
-  override def newBuilder[A]: Builder[A, ListSet[A]] = new ListSetBuilder[A]
+  override def newBuilder[A]: Builder[L, A, ListSet[L, A]] = new ListSetBuilder[A]
 
-  private object EmptyListSet extends ListSet[Any] { }
-  private[collection] def emptyInstance: ListSet[Any] = EmptyListSet
+  private object EmptyListSet extends ListSet[L, Any] { }
+  private[collection] def emptyInstance: ListSet[L, Any] = EmptyListSet
 
   /** A custom builder because forgetfully adding elements one at
    *  a time to a list backed set puts the "squared" in N^2.  There is a
    *  temporary space cost, but it's improbable a list backed set could
    *  become large enough for this to matter given its pricy element lookup.
    */
-  class ListSetBuilder[Elem](initial: ListSet[Elem]) extends Builder[Elem, ListSet[Elem]] {
+  class ListSetBuilder[Elem](initial: ListSet[L, Elem]) extends Builder[L, Elem, ListSet[L, Elem]] {
     def this() = this(empty[Elem])
-    protected val elems = (new mutable.ListBuffer[Elem] ++= initial).reverse
-    protected val seen  = new mutable.HashSet[Elem] ++= initial
+    protected val elems = (new mutable.ListBuffer[L, Elem] ++= initial).reverse
+    protected val seen  = new mutable.HashSet[L, Elem] ++= initial
 
     def +=(x: Elem): this.type = {
       if (!seen(x)) {
@@ -66,12 +66,12 @@ object ListSet extends ImmutableSetFactory[ListSet] {
  *  @define willNotTerminateInf
  */
 @deprecatedInheritance("The semantics of immutable collections makes inheriting from ListSet error-prone.", "2.11.0")
-class ListSet[A] extends AbstractSet[A]
+class ListSet[L, A] extends AbstractSet[L, A]
                     with Set[L, A]
-                    with GenericSetTemplate[A, ListSet]
-                    with SetLike[L, A, ListSet[A]]
+                    with GenericSetTemplate[L, A, ListSet]
+                    with SetLike[L, A, ListSet[L, A]]
                     with Serializable{ self =>
-  override def companion: GenericCompanion[ListSet] = ListSet
+  override def companion: GenericCompanion[L, ListSet] = ListSet
 
   /** Returns the number of elements in this set.
    *
@@ -89,11 +89,11 @@ class ListSet[A] extends AbstractSet[A]
 
   /** This method creates a new set with an additional element.
    */
-  def + (elem: A): ListSet[A] = new Node(elem)
+  def + (elem: A): ListSet[L, A] = new Node(elem)
 
   /** `-` can be used to remove a single element.
    */
-  def - (elem: A): ListSet[A] = this
+  def - (elem: A): ListSet[L, A] = this
 
   /** If we are bulk adding elements and desire a runtime measured in
    *  sub-interstellar time units, we better find a way to avoid traversing
@@ -101,12 +101,12 @@ class ListSet[A] extends AbstractSet[A]
    *  so we take the easy way out and add ourselves and the argument to
    *  a new builder.
    */
-  override def ++(xs: GenTraversableOnce[A]): ListSet[A] =
+  override def ++(xs: GenTraversableOnce[L, A]): ListSet[L, A] =
     if (xs.isEmpty) this
     else (new ListSet.ListSetBuilder(this) ++= xs.seq).result()
 
-  private[ListSet] def unchecked_+(e: A): ListSet[A] = new Node(e)
-  private[ListSet] def unchecked_outer: ListSet[A] =
+  private[ListSet] def unchecked_+(e: A): ListSet[L, A] = new Node(e)
+  private[ListSet] def unchecked_outer: ListSet[L, A] =
     throw new NoSuchElementException("Empty ListSet has no outer pointer")
 
   /** Creates a new iterator over all elements contained in this set.
@@ -114,8 +114,8 @@ class ListSet[A] extends AbstractSet[A]
    *  @throws java.util.NoSuchElementException
    *  @return the new iterator
    */
-  def iterator: Iterator[A] = new AbstractIterator[A] {
-    var that: ListSet[A] = self
+  def iterator: Iterator[L, A] = new AbstractIterator[L, A] {
+    var that: ListSet[L, A] = self
     def hasNext = that.nonEmpty
     def next: A =
       if (hasNext) {
@@ -134,7 +134,7 @@ class ListSet[A] extends AbstractSet[A]
   /**
    *  @throws java.util.NoSuchElementException
    */
-  override def tail: ListSet[A] = throw new NoSuchElementException("Next of an empty set")
+  override def tail: ListSet[L, A] = throw new NoSuchElementException("Next of an empty set")
 
   override def stringPrefix = "ListSet"
 
@@ -147,7 +147,7 @@ class ListSet[A] extends AbstractSet[A]
 
   /** Represents an entry in the `ListSet`.
    */
-  protected class Node(override val head: A) extends ListSet[A] with Serializable {
+  protected class Node(override val head: A) extends ListSet[L, A] with Serializable {
     override private[ListSet] def unchecked_outer = self
 
     /** Returns the number of elements in this set.
@@ -155,7 +155,7 @@ class ListSet[A] extends AbstractSet[A]
      *  @return number of set elements.
      */
     override def size = sizeInternal(this, 0)
-    @tailrec private def sizeInternal(n: ListSet[A], acc: Int): Int =
+    @tailrec private def sizeInternal(n: ListSet[L, A], acc: Int): Int =
       if (n.isEmpty) acc
       else sizeInternal(n.unchecked_outer, acc + 1)
 
@@ -171,19 +171,19 @@ class ListSet[A] extends AbstractSet[A]
      *  @return `'''true'''`, iff `elem` is contained in this set.
      */
     override def contains(e: A) = containsInternal(this, e)
-    @tailrec private def containsInternal(n: ListSet[A], e: A): Boolean =
+    @tailrec private def containsInternal(n: ListSet[L, A], e: A): Boolean =
       !n.isEmpty && (n.head == e || containsInternal(n.unchecked_outer, e))
 
     /** This method creates a new set with an additional element.
      */
-    override def +(e: A): ListSet[A] = if (contains(e)) this else new Node(e)
+    override def +(e: A): ListSet[L, A] = if (contains(e)) this else new Node(e)
 
     /** `-` can be used to remove a single element from a set.
      */
-    override def -(e: A): ListSet[A] = if (e == head) self else {
+    override def -(e: A): ListSet[L, A] = if (e == head) self else {
       val tail = self - e; new tail.Node(head)
     }
 
-    override def tail: ListSet[A] = self
+    override def tail: ListSet[L, A] = self
   }
 }

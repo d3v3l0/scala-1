@@ -26,7 +26,7 @@ import generic.{ CanBuildFrom => CBF }
  *  @define zipthatinfo the class of the returned collection. Where possible, `That` is
  *    the same class as the current collection class `Repr`, but this
  *    depends on the element type `(A1, B)` being admissible for that class,
- *    which means that an implicit instance of type `CanBuildFrom[Repr, (A1, B), That]`.
+ *    which means that an implicit instance of type `CanBuildFrom[L, Repr, (A1, B), That]`.
  *    is found.
  *  @define zipbfinfo  an implicit value of class `CanBuildFrom` which determines the
  *    result class `That` from the current representation type `Repr`
@@ -35,9 +35,9 @@ import generic.{ CanBuildFrom => CBF }
  *    This is a base trait for all Scala collections that define an `iterator`
  *    method to step through one-by-one the collection's elements.
  */
-trait GenIterableLike[+A, +Repr] extends Any with GenTraversableLike[A, Repr] {
+trait GenIterableLike[L, +A, +Repr] extends Any with GenTraversableLike[L, A, Repr] {
 
-  def iterator: Iterator[A]
+  def iterator: Iterator[L, A]
 
   /** Checks if the other iterable collection contains the same elements in the same order as this $coll.
    *
@@ -90,7 +90,7 @@ trait GenIterableLike[+A, +Repr] extends Any with GenTraversableLike[A, Repr] {
    *  @tparam  That  the class of the returned collection. Where possible, `That` is
    *                 the same class as the current collection class `Repr`, but this
    *                 depends on the element type `(A1, Int)` being admissible for that class,
-   *                 which means that an implicit instance of type `CanBuildFrom[Repr, (A1, Int), That]`.
+   *                 which means that an implicit instance of type `CanBuildFrom[L, Repr, (A1, Int), That]`.
    *                 is found.
    *  @param  bf     an implicit value of class `CanBuildFrom` which determines the
    *                 result class `That` from the current representation type `Repr`

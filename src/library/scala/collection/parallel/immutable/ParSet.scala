@@ -19,30 +19,30 @@ import scala.collection.parallel.Combiner
  *  @define Coll `mutable.ParSet`
  *  @define coll mutable parallel set
  */
-trait ParSet[T]
-extends scala.collection/*.immutable*/.GenSet[T]
-   with GenericParTemplate[T, ParSet]
-   with parallel.ParSet[T]
+trait ParSet[L, T]
+extends scala.collection/*.immutable*/.GenSet[L, T]
+   with GenericParTemplate[L, T, ParSet]
+   with parallel.ParSet[L, T]
    with ParIterable[L, T]
-   with ParSetLike[T, ParSet[T], scala.collection.immutable.Set[L, T]]
+   with ParSetLike[L, T, ParSet[L, T], scala.collection.immutable.Set[L, T]]
 {
 self =>
-  override def empty: ParSet[T] = ParHashSet[T]()
+  override def empty: ParSet[L, T] = ParHashSet[L, T]()
 
-  override def companion: GenericCompanion[ParSet] with GenericParCompanion[ParSet] = ParSet
+  override def companion: GenericCompanion[L, ParSet] with GenericParCompanion[L, ParSet] = ParSet
 
   override def stringPrefix = "ParSet"
 
   // ok, because this could only violate `apply` and we can live with that
-  override def toSet[U >: T]: ParSet[U] = this.asInstanceOf[ParSet[U]]
+  override def toSet[U >: T]: ParSet[L, U] = this.asInstanceOf[ParSet[L, U]]
 }
 
 /** $factoryInfo
  *  @define Coll `mutable.ParSet`
  *  @define coll mutable parallel set
  */
-object ParSet extends ParSetFactory[ParSet] {
-  def newCombiner[T]: Combiner[T, ParSet[T]] = HashSetCombiner[T]
+object ParSet extends ParSetFactory[L, ParSet] {
+  def newCombiner[T]: Combiner[L, T, ParSet[L, T]] = HashSetCombiner[T]
 
-  implicit def canBuildFrom[T]: CanCombineFrom[Coll, T, ParSet[T]] = new GenericCanCombineFrom[T]
+  implicit def canBuildFrom[T]: CanCombineFrom[L, Coll, T, ParSet[L, T]] = new GenericCanCombineFrom[T]
 }
