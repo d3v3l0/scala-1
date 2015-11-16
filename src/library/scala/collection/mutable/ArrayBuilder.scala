@@ -26,6 +26,7 @@ abstract class ArrayBuilder[L, T] extends Builder[L, T, Array[T]] with Serializa
  *  @since 2.8
  */
 object ArrayBuilder {
+  private type L = Any
 
   /** Creates a new arraybuilder of type `T`.
    *

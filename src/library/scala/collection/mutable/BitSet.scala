@@ -37,12 +37,13 @@ import BitSetLike.{LogWL, MaxSize, updateArray}
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(8483111450368547763L)
-class BitSet(protected final var elems: Array[Long]) extends AbstractSet[L, Int]
-                                                  with SortedSet[L, Int]
+class BitSet(protected final var elems: Array[Long]) extends AbstractSet[Any, Int]
+                                                  with SortedSet[Any, Int]
                                                   with scala.collection.BitSet
-                                                  with BitSetLike[L, BitSet]
-                                                  with SetLike[L, Int, BitSet]
+                                                  with BitSetLike[Any, BitSet]
+                                                  with SetLike[Any, Int, BitSet]
                                                   with Serializable {
+  private
 
   override def empty = BitSet.empty
 
@@ -56,7 +57,7 @@ class BitSet(protected final var elems: Array[Long]) extends AbstractSet[L, Int]
 
   @deprecatedOverriding("Internal implementation does not admit sensible overriding of this method.", "2.11.0")
   protected def nwords = elems.length
-  
+
   @deprecatedOverriding("Internal implementation does not admit sensible overriding of this method.", "2.11.0")
   protected def word(idx: Int): Long =
     if (idx < nwords) elems(idx) else 0L
@@ -100,7 +101,7 @@ class BitSet(protected final var elems: Array[Long]) extends AbstractSet[L, Int]
 
   @deprecatedOverriding("Override add to prevent += and add from exhibiting different behavior.", "2.11.0")
   def += (elem: Int): this.type = { add(elem); this }
-  
+
   @deprecatedOverriding("Override add to prevent += and add from exhibiting different behavior.", "2.11.0")
   def -= (elem: Int): this.type = { remove(elem); this }
 
@@ -178,7 +179,8 @@ class BitSet(protected final var elems: Array[Long]) extends AbstractSet[L, Int]
  *  @define coll bitset
  *  @define Coll `BitSet`
  */
-object BitSet extends BitSetFactory[L, BitSet] {
+object BitSet extends BitSetFactory[Any, BitSet] {
+  private type L = Any
   def empty: BitSet = new BitSet
 
   /** A growing builder for mutable Sets. */

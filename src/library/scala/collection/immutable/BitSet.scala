@@ -25,11 +25,12 @@ import mutable.{ Builder, SetBuilder }
  *  @define coll immutable bitset
  */
 @SerialVersionUID(1611436763290191562L)
-abstract class BitSet extends scala.collection.AbstractSet[L, Int]
-                         with SortedSet[L, Int]
+abstract class BitSet extends scala.collection.AbstractSet[Any, Int]
+                         with SortedSet[Any, Int]
                          with scala.collection.BitSet
-                         with BitSetLike[L, BitSet]
+                         with BitSetLike[Any, BitSet]
                          with Serializable {
+  private type L = Any
   override def empty = BitSet.empty
 
   protected def fromBitMaskNoCopy(elems: Array[Long]): BitSet = BitSet.fromBitMaskNoCopy(elems)
@@ -64,7 +65,8 @@ abstract class BitSet extends scala.collection.AbstractSet[L, Int]
  *  @define Coll `immutable.BitSet`
  *  @define coll immutable bitset
  */
-object BitSet extends BitSetFactory[L, BitSet] {
+object BitSet extends BitSetFactory[Any, BitSet] {
+  private type L = Any
   /** The empty bitset */
   val empty: BitSet = new BitSet1(0L)
 

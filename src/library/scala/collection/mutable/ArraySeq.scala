@@ -103,7 +103,8 @@ extends AbstractSeq[L, A]
  *  @define coll array sequence
  *  @define Coll `ArraySeq`
  */
-object ArraySeq extends SeqFactory[L, ArraySeq] {
+object ArraySeq extends SeqFactory[Any, ArraySeq] {
+  private type L = Any
   /** $genericCanBuildFromInfo */
   implicit def canBuildFrom[A]: CanBuildFrom[L, Coll, A, ArraySeq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
   def newBuilder[A]: Builder[L, A, ArraySeq[L, A]] =

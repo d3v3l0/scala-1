@@ -81,13 +81,14 @@ import java.io._
  *  @define willNotTerminateInf
  */
 @SerialVersionUID(-6084104484083858598L) // value computed by serialver for 2.11.2, annotation added in 2.11.4
-sealed abstract class List[+A] extends AbstractSeq[L, A]
-                                  with LinearSeq[L, A]
+sealed abstract class List[+A] extends AbstractSeq[Any, A]
+                                  with LinearSeq[Any, A]
                                   with Product
-                                  with GenericTraversableTemplate[L, A, List]
-                                  with LinearSeqOptimized[L, A, List[A]]
+                                  with GenericTraversableTemplate[Any, A, List]
+                                  with LinearSeqOptimized[Any, A, List[A]]
                                   with Serializable {
   override protected type LT = Any
+  private type L = Any
 
   override def companion: GenericCompanion[L, List] = List
 
