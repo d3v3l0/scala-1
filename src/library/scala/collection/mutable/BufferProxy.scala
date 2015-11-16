@@ -27,7 +27,7 @@ import script._
  *  @define coll buffer proxy
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait BufferProxy[A] extends Buffer[A] with Proxy {
+trait BufferProxy[L, A] extends Buffer[A] with Proxy {
 
   def self: Buffer[A]
 
@@ -139,7 +139,7 @@ trait BufferProxy[A] extends Buffer[A] with Proxy {
    *
    *  @return a `Buffer` with the same elements.
    */
-  override def clone(): Buffer[A] = new BufferProxy[A] {
+  override def clone(): Buffer[A] = new BufferProxy[L, A] {
     def self = BufferProxy.this.self.clone()
   }
 }

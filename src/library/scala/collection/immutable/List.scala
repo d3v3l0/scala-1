@@ -462,7 +462,7 @@ object List extends SeqFactory[List] {
   private[collection] val partialNotApplied = new Function1[Any, Any] { def apply(x: Any): Any = this }
 
   @SerialVersionUID(1L)
-  private class SerializationProxy[A](@transient private var orig: List[A]) extends Serializable {
+  private class SerializationProxy[L, A](@transient private var orig: List[A]) extends Serializable {
 
     private def writeObject(out: ObjectOutputStream) {
     ESC.NO{

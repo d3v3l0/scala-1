@@ -21,12 +21,12 @@ package mutable
  *  @since   1
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait MapProxy[A, B] extends Map[A, B] with MapProxyLike[A, B, Map[A, B]] {
-  private def newProxy[B1 >: B](newSelf: Map[A, B1]): MapProxy[A, B1] =
-    new MapProxy[A, B1] { val self = newSelf }
+trait MapProxy[L, A, B] extends Map[A, B] with MapProxyLike[L, A, B, Map[A, B]] {
+  private def newProxy[B1 >: B](newSelf: Map[A, B1]): MapProxy[L, A, B1] =
+    new MapProxy[L, A, B1] { val self = newSelf }
 
   override def repr = this
-  override def empty: MapProxy[A, B] = new MapProxy[A, B] { val self = MapProxy.this.self.empty }
+  override def empty: MapProxy[L, A, B] = new MapProxy[L, A, B] { val self = MapProxy.this.self.empty }
   override def updated [B1 >: B](key: A, value: B1) = newProxy(self.updated(key, value))
 
   override def + [B1 >: B] (kv: (A, B1)): Map[A, B1] = newProxy(self + kv)

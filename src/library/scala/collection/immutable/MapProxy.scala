@@ -24,10 +24,10 @@ package immutable
  *  @since   2.8
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-trait MapProxy[A, +B] extends Map[A, B] with MapProxyLike[A, B, Map[A, B]] {
+trait MapProxy[L, A, +B] extends Map[A, B] with MapProxyLike[L, A, B, Map[A, B]] {
   override def repr = this
-  private def newProxy[B1 >: B](newSelf: Map[A, B1]): MapProxy[A, B1] =
-    new MapProxy[A, B1] { val self = newSelf }
+  private def newProxy[B1 >: B](newSelf: Map[A, B1]): MapProxy[L, A, B1] =
+    new MapProxy[L, A, B1] { val self = newSelf }
 
   override def empty = newProxy(self.empty)
   override def updated [B1 >: B](key: A, value: B1) = newProxy(self.updated(key, value))
@@ -37,7 +37,7 @@ trait MapProxy[A, +B] extends Map[A, B] with MapProxyLike[A, B, Map[A, B]] {
   override def + [B1 >: B](elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *) = newProxy(self.+(elem1, elem2, elems: _*))
   override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]) = newProxy(self ++ xs.seq)
 
-  override def keySet: immutable.Set[A] = new SetProxy[A] { val self = MapProxy.this.self.keySet }
+  override def keySet: immutable.Set[A] = new SetProxy[L, A] { val self = MapProxy.this.self.keySet }
   override def filterKeys(p: A => Boolean) = self.filterKeys(p)
   override def mapValues[C](f: B => C) = self.mapValues(f)
 }

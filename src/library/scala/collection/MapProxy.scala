@@ -18,4 +18,4 @@ package collection
  *  @since   1
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.3")
-trait MapProxy[A, +B] extends Map[A, B] with MapProxyLike[A, B, Map[A, B]]
+trait MapProxy[L, A, +B] extends Map[A, B] with MapProxyLike[L, A, B, Map[A, B]]

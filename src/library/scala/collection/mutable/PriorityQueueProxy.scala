@@ -20,7 +20,7 @@ package mutable
  *  @since   1
  */
 @deprecated("Proxying is deprecated due to lack of use and compiler-level support.", "2.11.0")
-abstract class PriorityQueueProxy[A](implicit ord: Ordering[A]) extends PriorityQueue[A]
+abstract class PriorityQueueProxy[L, A](implicit ord: Ordering[A]) extends PriorityQueue[A]
          with Proxy
 {
   def self: PriorityQueue[A]
@@ -90,7 +90,7 @@ abstract class PriorityQueueProxy[A](implicit ord: Ordering[A]) extends Priority
    *
    *  @return  a priority queue with the same elements.
    */
-  override def clone(): PriorityQueue[A] = new PriorityQueueProxy[A] {
+  override def clone(): PriorityQueue[A] = new PriorityQueueProxy[L, A] {
     def self = PriorityQueueProxy.this.self.clone()
   }
 }
