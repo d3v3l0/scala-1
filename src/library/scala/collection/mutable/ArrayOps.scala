@@ -76,7 +76,7 @@ trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParalleliza
    *  @param asTrav    A function that converts elements of this array to rows - arrays of type `U`.
    *  @return          An array obtained by concatenating rows of this array.
    */
-  def flatten[U](implicit asTrav: T => scala.collection.Traversable[L, U], m: ClassTag[U]): Array[U] = {
+  def flatten[U](implicit asTrav: T => scala.collection.Traversable[Any, U], m: ClassTag[U]): Array[U] = {
     val b = Array.newBuilder[U]
     b.sizeHint(map{case is: scala.collection.IndexedSeq[_] => is.size case _ => 0}.sum)
     for (xs <- this)

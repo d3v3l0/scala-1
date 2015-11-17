@@ -55,10 +55,10 @@ object Stack extends SeqFactory[Stack] {
  *  @define willNotTerminateInf
  */
 class Stack[A] private (var elems: List[A])
-extends AbstractSeq[L, A]
-   with Seq[L, A]
-   with SeqLike[L, A, Stack[A]]
-   with GenericTraversableTemplate[L, A, Stack]
+extends AbstractSeq[Any, A]
+   with Seq[Any, A]
+   with SeqLike[Any, A, Stack[A]]
+   with GenericTraversableTemplate[Any, A, Stack]
    with Cloneable[Stack[A]]
    with Serializable
 {
@@ -119,7 +119,7 @@ extends AbstractSeq[L, A]
    *  @param xs the traversable object.
    *  @return the stack with the new elements on top.
    */
-  def pushAll(xs: TraversableOnce[L, A]): this.type = { xs foreach push ; this }
+  def pushAll(xs: TraversableOnce[Any, A]): this.type = { xs foreach push ; this }
 
   /** Returns the top element of the stack. This method will not remove
    *  the element from the stack. An error is signaled if there is no

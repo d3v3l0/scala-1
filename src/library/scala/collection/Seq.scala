@@ -32,9 +32,9 @@ trait Seq[L, +A] extends PartialFunction[Int, A]
  */
 object Seq extends SeqFactory[Seq] {
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Seq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Seq[Any, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, Seq[L, A]] = immutable.Seq.newBuilder[A]
+  def newBuilder[A]: Builder[A, Seq[Any, A]] = immutable.Seq.newBuilder[A]
 }
 
 /** Explicit instantiation of the `Seq` trait to reduce class file size in subclasses. */

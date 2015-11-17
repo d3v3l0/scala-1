@@ -41,8 +41,8 @@ package generic
 trait IsTraversableOnce[Repr] {
   /** The type of elements we can traverse over. */
   type A
-  /** A conversion from the representation type `Repr` to a `GenTraversableOnce[L, A]`. */
-  val conversion: Repr => GenTraversableOnce[L, A]
+  /** A conversion from the representation type `Repr` to a `GenTraversableOnce[Any, A]`. */
+  val conversion: Repr => GenTraversableOnce[Any, A]
 }
 
 object IsTraversableOnce {
@@ -51,10 +51,10 @@ object IsTraversableOnce {
   implicit val stringRepr: IsTraversableOnce[String] { type A = Char } =
     new IsTraversableOnce[String] {
       type A = Char
-      val conversion = implicitly[String => GenTraversableOnce[L, Char]]
+      val conversion = implicitly[String => GenTraversableOnce[Any, Char]]
     }
 
-  implicit def genTraversableLikeRepr[C[_], A0](implicit conv: C[A0] => GenTraversableOnce[L, A0]): IsTraversableOnce[C[A0]] { type A = A0 } =
+  implicit def genTraversableLikeRepr[C[_], A0](implicit conv: C[A0] => GenTraversableOnce[Any, A0]): IsTraversableOnce[C[A0]] { type A = A0 } =
     new IsTraversableOnce[C[A0]] {
       type A = A0
       val conversion = conv

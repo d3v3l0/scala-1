@@ -37,8 +37,8 @@ package generic
 trait IsSeqLike[Repr] {
   /** The type of elements we can traverse over. */
   type A
-  /** A conversion from the representation type `Repr` to a `SeqLike[L, A,Repr]`. */
-  val conversion: Repr => SeqLike[L, A, Repr]
+  /** A conversion from the representation type `Repr` to a `SeqLike[Any, A,Repr]`. */
+  val conversion: Repr => SeqLike[Any, A, Repr]
 }
 
 object IsSeqLike {
@@ -47,10 +47,10 @@ object IsSeqLike {
   implicit val stringRepr: IsSeqLike[String] { type A = Char } =
     new IsSeqLike[String] {
       type A = Char
-      val conversion = implicitly[String => SeqLike[L, Char, String]]
+      val conversion = implicitly[String => SeqLike[Any, Char, String]]
     }
 
-  implicit def seqLikeRepr[C[_], A0](implicit conv: C[A0] => SeqLike[L, A0,C[A0]]): IsSeqLike[C[A0]] { type A = A0 } =
+  implicit def seqLikeRepr[C[_], A0](implicit conv: C[A0] => SeqLike[Any, A0,C[A0]]): IsSeqLike[C[A0]] { type A = A0 } =
     new IsSeqLike[C[A0]] {
       type A = A0
       val conversion = conv

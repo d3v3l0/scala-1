@@ -20,7 +20,7 @@ import WrapAsJava._
  */
 private[collection] trait Wrappers {
   trait IterableWrapperTrait[A] extends ju.AbstractCollection[A] {
-    val underlying: Iterable[L, A]
+    val underlying: Iterable[Any, A]
     def size = underlying.size
     override def iterator = IteratorWrapper(underlying.iterator)
     override def isEmpty = underlying.isEmpty
@@ -48,25 +48,25 @@ private[collection] trait Wrappers {
     def next() = underlying.nextElement
   }
 
-  case class IterableWrapper[A](underlying: Iterable[L, A]) extends ju.AbstractCollection[A] with IterableWrapperTrait[A] { }
+  case class IterableWrapper[A](underlying: Iterable[Any, A]) extends ju.AbstractCollection[A] with IterableWrapperTrait[A] { }
 
-  case class JIterableWrapper[A](underlying: jl.Iterable[L, A]) extends AbstractIterable[L, A] with Iterable[L, A] {
+  case class JIterableWrapper[A](underlying: jl.Iterable[Any, A]) extends AbstractIterable[Any, A] with Iterable[Any, A] {
     def iterator = underlying.iterator
     def newBuilder[B] = new mutable.ArrayBuffer[B]
   }
 
-  case class JCollectionWrapper[A](underlying: ju.Collection[A]) extends AbstractIterable[L, A] with Iterable[L, A] {
+  case class JCollectionWrapper[A](underlying: ju.Collection[A]) extends AbstractIterable[Any, A] with Iterable[Any, A] {
     def iterator = underlying.iterator
     override def size = underlying.size
     override def isEmpty = underlying.isEmpty
     def newBuilder[B] = new mutable.ArrayBuffer[B]
   }
 
-  case class SeqWrapper[A](underlying: Seq[L, A]) extends ju.AbstractList[A] with IterableWrapperTrait[A] {
+  case class SeqWrapper[A](underlying: Seq[Any, A]) extends ju.AbstractList[A] with IterableWrapperTrait[A] {
     def get(i: Int) = underlying(i)
   }
 
-  case class MutableSeqWrapper[A](underlying: mutable.Seq[L, A]) extends ju.AbstractList[A] with IterableWrapperTrait[A] {
+  case class MutableSeqWrapper[A](underlying: mutable.Seq[Any, A]) extends ju.AbstractList[A] with IterableWrapperTrait[A] {
     def get(i: Int) = underlying(i)
     override def set(i: Int, elem: A) = {
       val p = underlying(i)
@@ -90,7 +90,7 @@ private[collection] trait Wrappers {
     def update(i: Int, elem: A) = underlying.set(i, elem)
     def +=:(elem: A) = { underlying.subList(0, 0) add elem; this }
     def +=(elem: A): this.type = { underlying add elem; this }
-    def insertAll(i: Int, elems: Traversable[L, A]) = {
+    def insertAll(i: Int, elems: Traversable[Any, A]) = {
       val ins = underlying.subList(0, i)
       elems.seq.foreach(ins.add(_))
     }

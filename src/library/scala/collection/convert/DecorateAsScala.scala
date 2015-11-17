@@ -70,7 +70,7 @@ trait DecorateAsScala {
    * @return An object with an `asScala` method that returns a Scala `Iterable`
    *         view of the argument.
    */
-  implicit def iterableAsScalaIterableConverter[A](i : jl.Iterable[L, A]): AsScala[Iterable[L, A]] =
+  implicit def iterableAsScalaIterableConverter[A](i : jl.Iterable[Any, A]): AsScala[Iterable[Any, A]] =
     new AsScala(iterableAsScalaIterable(i))
 
   /**
@@ -85,7 +85,7 @@ trait DecorateAsScala {
    * @return An object with an `asScala` method that returns a Scala
    *        `SizedIterable` view of the argument.
    */
-  implicit def collectionAsScalaIterableConverter[A](i : ju.Collection[A]): AsScala[Iterable[L, A]] =
+  implicit def collectionAsScalaIterableConverter[A](i : ju.Collection[A]): AsScala[Iterable[Any, A]] =
     new AsScala(collectionAsScalaIterable(i))
 
   /**

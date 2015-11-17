@@ -27,12 +27,12 @@ import scala.collection.parallel.mutable.ParArrayCombiner
  *
  *  @author Aleksandar Prokopec
  */
-trait ParSeq[+T] extends GenSeq[L, T]
+trait ParSeq[+T] extends GenSeq[Any, T]
                     with ParIterable[T]
                     with GenericParTemplate[T, ParSeq]
-                    with ParSeqLike[T, ParSeq[T], Seq[L, T]]
+                    with ParSeqLike[T, ParSeq[T], Seq[Any, T]]
 {
-  override def companion: GenericCompanion[L, ParSeq] with GenericParCompanion[ParSeq] = ParSeq
+  override def companion: GenericCompanion[Any, ParSeq] with GenericParCompanion[ParSeq] = ParSeq
   //protected[this] override def newBuilder = ParSeq.newBuilder[T]
 
   def apply(i: Int): T

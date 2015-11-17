@@ -42,6 +42,6 @@ trait Seq[L, +A] extends Iterable[L, A]
  */
 object Seq extends SeqFactory[Seq] {
   /** genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Seq[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
-  def newBuilder[A]: Builder[A, Seq[L, A]] = new mutable.ListBuffer
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Seq[Any, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  def newBuilder[A]: Builder[A, Seq[Any, A]] = new mutable.ListBuffer
 }

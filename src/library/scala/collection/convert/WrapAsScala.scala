@@ -66,7 +66,7 @@ trait WrapAsScala {
    * @param i The Iterable to be converted.
    * @return A Scala Iterable view of the argument.
    */
-  implicit def iterableAsScalaIterable[A](i: jl.Iterable[L, A]): Iterable[L, A] = i match {
+  implicit def iterableAsScalaIterable[A](i: jl.Iterable[Any, A]): Iterable[Any, A] = i match {
     case IterableWrapper(wrapped) => wrapped
     case _ => JIterableWrapper(i)
   }
@@ -81,7 +81,7 @@ trait WrapAsScala {
    * @param i The Collection to be converted.
    * @return A Scala Iterable view of the argument.
    */
-  implicit def collectionAsScalaIterable[A](i: ju.Collection[A]): Iterable[L, A] = i match {
+  implicit def collectionAsScalaIterable[A](i: ju.Collection[A]): Iterable[Any, A] = i match {
     case IterableWrapper(wrapped) => wrapped
     case _ => JCollectionWrapper(i)
   }

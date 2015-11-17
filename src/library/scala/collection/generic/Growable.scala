@@ -47,15 +47,15 @@ trait Growable[-A] extends Clearable {
    *  @param xs   the TraversableOnce producing the elements to $add.
    *  @return  the $coll itself.
    */
-  def ++=(xs: TraversableOnce[L, A]): this.type = {
-    @tailrec def loop(xs: scala.collection.LinearSeq[L, A]) {
+  def ++=(xs: TraversableOnce[Any, A]): this.type = {
+    @tailrec def loop(xs: scala.collection.LinearSeq[Any, A]) {
       if (xs.nonEmpty) {
         this += xs.head
         loop(xs.tail)
       }
     }
     xs match {
-      case xs: scala.collection.LinearSeq[L, _] => loop(xs)
+      case xs: scala.collection.LinearSeq[_, _] => loop(xs)
       case xs                                => xs foreach +=
     }
     this

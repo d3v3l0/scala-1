@@ -63,10 +63,10 @@ object ArrayStack extends SeqFactory[ArrayStack] {
 @SerialVersionUID(8565219180626620510L)
 class ArrayStack[T] private(private var table : Array[AnyRef],
                             private var index : Int)
-extends AbstractSeq[L, T]
-   with Seq[L, T]
-   with SeqLike[L, T, ArrayStack[T]]
-   with GenericTraversableTemplate[L, T, ArrayStack]
+extends AbstractSeq[Any, T]
+   with Seq[Any, T]
+   with SeqLike[Any, T, ArrayStack[T]]
+   with GenericTraversableTemplate[Any, T, ArrayStack]
    with Cloneable[ArrayStack[T]]
    with Builder[T, ArrayStack[T]]
    with Serializable
@@ -157,7 +157,7 @@ extends AbstractSeq[L, T]
    *  @param xs The source of elements to push.
    *  @return   A reference to this stack.
    */
-  override def ++=(xs: TraversableOnce[L, T]): this.type = { xs foreach += ; this }
+  override def ++=(xs: TraversableOnce[Any, T]): this.type = { xs foreach += ; this }
 
   /** Does the same as `push`, but returns the updated stack.
    *

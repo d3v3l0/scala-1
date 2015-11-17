@@ -97,9 +97,9 @@ object Traversable extends TraversableFactory[Traversable] { self =>
   private[collection] val breaks: Breaks = new Breaks
 
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Traversable[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Traversable[Any, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, Traversable[L, A]] = immutable.Traversable.newBuilder[A]
+  def newBuilder[A]: Builder[A, Traversable[Any, A]] = immutable.Traversable.newBuilder[A]
 }
 
 /** Explicit instantiation of the `Traversable` trait to reduce class file size in subclasses. */

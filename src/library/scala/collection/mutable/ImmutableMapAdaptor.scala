@@ -48,13 +48,13 @@ extends AbstractMap[A, B]
 
   override def keysIterator: Iterator[A] = imap.keysIterator
 
-  @migration("`keys` returns Iterable[L, A] rather than Iterator[A].", "2.8.0")
-  override def keys: scala.collection.Iterable[L, A] = imap.keys
+  @migration("`keys` returns Iterable[Any, A] rather than Iterator[A].", "2.8.0")
+  override def keys: scala.collection.Iterable[Any, A] = imap.keys
 
   override def valuesIterator: Iterator[B] = imap.valuesIterator
 
-  @migration("`values` returns Iterable[L, B] rather than Iterator[B].", "2.8.0")
-  override def values: scala.collection.Iterable[L, B] = imap.values
+  @migration("`values` returns Iterable[Any, B] rather than Iterator[B].", "2.8.0")
+  override def values: scala.collection.Iterable[Any, B] = imap.values
 
   def iterator: Iterator[(A, B)] = imap.iterator
 

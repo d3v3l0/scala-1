@@ -71,7 +71,7 @@ class ListSet[A] extends AbstractSet[A]
                     with GenericSetTemplate[A, ListSet]
                     with SetLike[A, ListSet[A]]
                     with Serializable{ self =>
-  override def companion: GenericCompanion[L, ListSet] = ListSet
+  override def companion: GenericCompanion[Any, ListSet] = ListSet
 
   /** Returns the number of elements in this set.
    *
@@ -101,7 +101,7 @@ class ListSet[A] extends AbstractSet[A]
    *  so we take the easy way out and add ourselves and the argument to
    *  a new builder.
    */
-  override def ++(xs: GenTraversableOnce[L, A]): ListSet[A] =
+  override def ++(xs: GenTraversableOnce[Any, A]): ListSet[A] =
     if (xs.isEmpty) this
     else (new ListSet.ListSetBuilder(this) ++= xs.seq).result()
 

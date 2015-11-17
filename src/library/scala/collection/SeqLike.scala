@@ -698,22 +698,22 @@ object SeqLike {
    *  @param  n1   The far end of the target sequence that we should use (exclusive)
    *  @return Target packed in an IndexedSeq (taken from iterator unless W already is an IndexedSeq)
    */
-  private def kmpOptimizeWord[B](W: Seq[L, B], n0: Int, n1: Int, forward: Boolean) = W match {
+  private def kmpOptimizeWord[B](W: Seq[Any, B], n0: Int, n1: Int, forward: Boolean) = W match {
     case iso: IndexedSeq[_] =>
       // Already optimized for indexing--use original (or custom view of original)
       if (forward && n0==0 && n1==W.length) iso.asInstanceOf[IndexedSeq[B]]
-      else if (forward) new AbstractSeq[L, B] with IndexedSeq[B] {
+      else if (forward) new AbstractSeq[Any, B] with IndexedSeq[B] {
         val length = n1 - n0
         def apply(x: Int) = iso(n0 + x).asInstanceOf[B]
       }
-      else new AbstractSeq[L, B] with IndexedSeq[B] {
+      else new AbstractSeq[Any, B] with IndexedSeq[B] {
         def length = n1 - n0
         def apply(x: Int) = iso(n1 - 1 - x).asInstanceOf[B]
       }
     case _ =>
       // W is probably bad at indexing.  Pack in array (in correct orientation)
       // Would be marginally faster to special-case each direction
-      new AbstractSeq[L, B] with IndexedSeq[B] {
+      new AbstractSeq[Any, B] with IndexedSeq[B] {
         private[this] val Warr = new Array[AnyRef](n1-n0)
         private[this] val delta = if (forward) 1 else -1
         private[this] val done = if (forward) n1-n0 else -1
@@ -774,7 +774,7 @@ object SeqLike {
    *  @param  forward Direction of search (from beginning==true, from end==false)
    *  @return Index of start of sequence if found, -1 if not (relative to beginning of S, not m0).
    */
-  private def kmpSearch[B](S: Seq[L, B], m0: Int, m1: Int, W: Seq[L, B], n0: Int, n1: Int, forward: Boolean): Int = {
+  private def kmpSearch[B](S: Seq[Any, B], m0: Int, m1: Int, W: Seq[Any, B], n0: Int, n1: Int, forward: Boolean): Int = {
     // Check for redundant case when target has single valid element
     def clipR(x: Int, y: Int) = if (x < y) x else -1
     def clipL(x: Int, y: Int) = if (x > y) x else -1
@@ -869,8 +869,8 @@ object SeqLike {
    *  @return the applicable index in source where target exists, or -1 if not found
    */
   def indexOf[B](
-    source: Seq[L, B], sourceOffset: Int, sourceCount: Int,
-    target: Seq[L, B], targetOffset: Int, targetCount: Int,
+    source: Seq[Any, B], sourceOffset: Int, sourceCount: Int,
+    target: Seq[Any, B], targetOffset: Int, targetCount: Int,
     fromIndex: Int
   ): Int = {
     // Fiddle with variables to match previous behavior and use kmpSearch
@@ -900,8 +900,8 @@ object SeqLike {
    *  @see  [[scala.collection.SeqLike]], method `indexOf`
    */
   def lastIndexOf[B](
-    source: Seq[L, B], sourceOffset: Int, sourceCount: Int,
-    target: Seq[L, B], targetOffset: Int, targetCount: Int,
+    source: Seq[Any, B], sourceOffset: Int, sourceCount: Int,
+    target: Seq[Any, B], targetOffset: Int, targetCount: Int,
     fromIndex: Int
   ): Int = {
     // Fiddle with variables to match previous behavior and use kmpSearch

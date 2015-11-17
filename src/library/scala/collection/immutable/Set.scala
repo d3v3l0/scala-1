@@ -25,14 +25,14 @@ import parallel.immutable.ParSet
  *  @define Coll `immutable.Set`
  *  @define coll immutable set
  */
-trait Set[A] extends Iterable[L, A]
+trait Set[A] extends Iterable[Any, A]
 //                with GenSet[A]
                 with scala.collection.Set[A]
                 with GenericSetTemplate[A, Set]
                 with SetLike[A, Set[A]]
                 with Parallelizable[A, ParSet[A]]
 {
-  override def companion: GenericCompanion[L, Set] = Set
+  override def companion: GenericCompanion[Any, Set] = Set
 
 
   override def toSet[B >: A]: Set[B] = to[({type l[a] = immutable.Set[B]})#l] // for bincompat; remove in dev

@@ -47,9 +47,9 @@ trait Iterable[L, +A] extends Traversable[L, A]
 object Iterable extends TraversableFactory[Iterable] {
 
   /** $genericCanBuildFromInfo */
-  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Iterable[L, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
+  implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Iterable[Any, A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
 
-  def newBuilder[A]: Builder[A, Iterable[L, A]] = immutable.Iterable.newBuilder[A]
+  def newBuilder[A]: Builder[A, Iterable[Any, A]] = immutable.Iterable.newBuilder[A]
 }
 
 /** Explicit instantiation of the `Iterable` trait to reduce class file size in subclasses. */
