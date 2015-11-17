@@ -33,12 +33,12 @@ import generic._
  */
 class Queue[A]
 extends MutableList[A]
-   with LinearSeqOptimized[A, Queue[A]]
-   with GenericTraversableTemplate[A, Queue]
+   with LinearSeqOptimized[L, A, Queue[A]]
+   with GenericTraversableTemplate[L, A, Queue]
    with Cloneable[Queue[A]]
    with Serializable
 {
-  override def companion: GenericCompanion[Queue] = Queue
+  override def companion: GenericCompanion[L, Queue] = Queue
 
   override protected[this] def newBuilder = companion.newBuilder[A]
 
@@ -112,7 +112,7 @@ extends MutableList[A]
    *  @return    a sequence of all elements in the queue for which
    *             p yields true.
    */
-  def dequeueAll(p: A => Boolean): Seq[A] = {
+  def dequeueAll(p: A => Boolean): Seq[L, A] = {
     if (first0.isEmpty)
       Seq.empty
     else {

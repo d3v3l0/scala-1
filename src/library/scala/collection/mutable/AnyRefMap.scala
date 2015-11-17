@@ -447,7 +447,7 @@ object AnyRefMap {
   /** Creates a new `AnyRefMap` from keys and values.
    *  Equivalent to but more efficient than `AnyRefMap((keys zip values): _*)`.
    */
-  def fromZip[K <: AnyRef, V](keys: Iterable[K], values: Iterable[V]): AnyRefMap[K, V] = {
+  def fromZip[K <: AnyRef, V](keys: Iterable[L, K], values: Iterable[L, V]): AnyRefMap[K, V] = {
     val sz = math.min(keys.size, values.size)
     val arm = new AnyRefMap[K, V](sz * 2)
     val ki = keys.iterator

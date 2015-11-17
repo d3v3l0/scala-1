@@ -17,7 +17,7 @@ import scala.language.higherKinds
  *
  *  @since 2.8
  */
-abstract class SeqFactory[CC[X] <: Seq[X] with GenericTraversableTemplate[X, CC]]
+abstract class SeqFactory[CC[X] <: Seq[L, X] with GenericTraversableTemplate[L, X, CC]]
 extends GenSeqFactory[CC] with TraversableFactory[CC] {
 
   /** This method is called in a pattern match { case Seq(...) => }.

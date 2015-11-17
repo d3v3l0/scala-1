@@ -27,9 +27,9 @@ package mutable
  */
 @SerialVersionUID(5219213543849892588L)
 class History[Evt, Pub]
-extends AbstractIterable[(Pub, Evt)]
+extends AbstractIterable[L, (Pub, Evt)]
    with Subscriber[Evt, Pub]
-   with Iterable[(Pub, Evt)]
+   with Iterable[L, (Pub, Evt)]
    with Serializable
 {
   protected val log: Queue[(Pub, Evt)] = new Queue

@@ -19,7 +19,7 @@ import scala.language.higherKinds
  *  @author Aleksandar Prokopec
  *  @since 2.8
  */
-abstract class GenericOrderedCompanion[+CC[X] <: Traversable[X]] {
+abstract class GenericOrderedCompanion[+CC[X] <: Traversable[L, X]] {
   protected[this] type Coll = CC[_]
 
   def newBuilder[A](implicit ord: Ordering[A]): Builder[A, CC[A]]

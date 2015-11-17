@@ -36,8 +36,8 @@ import scala.language.higherKinds
  *    @see CanBuildFrom
  *    @see GenericCanBuildFrom
  */
-abstract class GenTraversableFactory[CC[X] <: GenTraversable[X] with GenericTraversableTemplate[X, CC]]
-extends GenericCompanion[CC] {
+abstract class GenTraversableFactory[CC[X] <: GenTraversable[L, X] with GenericTraversableTemplate[L, X, CC]]
+extends GenericCompanion[L, CC] {
 
   private[this] val ReusableCBFInstance: GenericCanBuildFrom[Nothing] = new GenericCanBuildFrom[Nothing] {
     override def apply() = newBuilder[Nothing]
@@ -67,7 +67,7 @@ extends GenericCompanion[CC] {
    *  @param xss the collections that are to be concatenated.
    *  @return the concatenation of all the collections.
    */
-  def concat[A](xss: Traversable[A]*): CC[A] = {
+  def concat[A](xss: Traversable[L, A]*): CC[A] = {
     val b = newBuilder[A]
     // At present we're using IndexedSeq as a proxy for "has a cheap size method".
     if (xss forall (_.isInstanceOf[IndexedSeq[_]]))

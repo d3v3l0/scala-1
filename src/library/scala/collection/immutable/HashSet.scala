@@ -41,7 +41,7 @@ class HashSet[A] extends AbstractSet[A]
 {
   import HashSet.{nullToEmpty, bufferSize, LeafHashSet}
 
-  override def companion: GenericCompanion[HashSet] = HashSet
+  override def companion: GenericCompanion[L, HashSet] = HashSet
 
   //class HashSet[A] extends Set[A] with SetLike[A, HashSet[A]] {
 
@@ -968,7 +968,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
       }
     }
 
-    override def iterator = new TrieIterator[A](elems.asInstanceOf[Array[Iterable[A]]]) {
+    override def iterator = new TrieIterator[A](elems.asInstanceOf[Array[Iterable[L, A]]]) {
       final override def getElem(cc: AnyRef): A = cc.asInstanceOf[HashSet1[A]].key
     }
 

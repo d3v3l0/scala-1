@@ -23,10 +23,10 @@ import generic._
  */
 trait GenSet[A]
 extends GenSetLike[A, GenSet[A]]
-   with GenIterable[A]
+   with GenIterable[L, A]
    with GenericSetTemplate[A, GenSet]
 {
-  override def companion: GenericCompanion[GenSet] = GenSet
+  override def companion: GenericCompanion[L, GenSet] = GenSet
   def seq: Set[A]
 }
 

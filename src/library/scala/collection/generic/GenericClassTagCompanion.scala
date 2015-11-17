@@ -19,7 +19,7 @@ import scala.reflect.ClassTag
  *
  *  @author Aleksandar Prokopec
  */
-abstract class GenericClassTagCompanion[+CC[X] <: Traversable[X]] {
+abstract class GenericClassTagCompanion[+CC[X] <: Traversable[L, X]] {
   protected[this] type Coll = CC[_]
 
   def newBuilder[A](implicit ord: ClassTag[A]): Builder[A, CC[A]]

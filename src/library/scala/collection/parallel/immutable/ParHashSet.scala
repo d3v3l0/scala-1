@@ -53,7 +53,7 @@ self =>
 
   def this() = this(HashSet.empty[T])
 
-  override def companion: GenericCompanion[ParHashSet] with GenericParCompanion[ParHashSet] = ParHashSet
+  override def companion: GenericCompanion[L, ParHashSet] with GenericParCompanion[ParHashSet] = ParHashSet
 
   override def empty: ParHashSet[T] = new ParHashSet[T]
 
@@ -90,7 +90,7 @@ self =>
       phit.i = i
       phit
     }
-    def split: Seq[IterableSplitter[T]] = if (remaining < 2) Seq(this) else triter match {
+    def split: Seq[L, IterableSplitter[T]] = if (remaining < 2) Seq(this) else triter match {
       case t: TrieIterator[_] =>
         val previousRemaining = remaining
         val ((fst, fstlength), snd) = t.split

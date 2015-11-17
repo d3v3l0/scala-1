@@ -60,16 +60,16 @@ object Vector extends IndexedSeqFactory[Vector] {
  *  @define willNotTerminateInf
  */
 final class Vector[+A] private[immutable] (private[collection] val startIndex: Int, private[collection] val endIndex: Int, focus: Int)
-extends AbstractSeq[A]
+extends AbstractSeq[L, A]
    with IndexedSeq[A]
-   with GenericTraversableTemplate[A, Vector]
+   with GenericTraversableTemplate[L, A, Vector]
    with IndexedSeqLike[A, Vector[A]]
    with VectorPointer[A @uncheckedVariance]
    with Serializable
    with CustomParallelizable[A, ParVector[A]]
 { self =>
 
-override def companion: GenericCompanion[Vector] = Vector
+override def companion: GenericCompanion[L, Vector] = Vector
 
   //assert(startIndex >= 0, startIndex+"<0")
   //assert(startIndex <= endIndex, startIndex+">"+endIndex)
@@ -216,7 +216,7 @@ override def companion: GenericCompanion[Vector] = Vector
 
 
   // concat (suboptimal but avoids worst performance gotchas)
-  override def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Vector[A], B, That]): That = {
+  override def ++[B >: A, That](that: GenTraversableOnce[L, B])(implicit bf: CanBuildFrom[Vector[A], B, That]): That = {
     if (isDefaultCBF(bf)) {
       // We are sure we will create a Vector, so let's do it efficiently
       import Vector.{Log2ConcatFaster, TinyAppendFaster}
@@ -728,7 +728,7 @@ final class VectorBuilder[A]() extends Builder[A,Vector[A]] with VectorPointer[A
     this
   }
 
-  override def ++=(xs: TraversableOnce[A]): this.type =
+  override def ++=(xs: TraversableOnce[L, A]): this.type =
     super.++=(xs)
 
   def result: Vector[A] = {

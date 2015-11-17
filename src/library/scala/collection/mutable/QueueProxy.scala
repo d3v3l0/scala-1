@@ -53,7 +53,7 @@ trait QueueProxy[A] extends Queue[A] with Proxy {
    *
    *  @param  it        an iterator
    */
-  override def ++=(it: TraversableOnce[A]): this.type = {
+  override def ++=(it: TraversableOnce[L, A]): this.type = {
     self ++= it
     this
   }

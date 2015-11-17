@@ -44,15 +44,15 @@ import parallel.mutable.ParArray
  */
 @SerialVersionUID(1530165946227428979L)
 class ArraySeq[A](override val length: Int)
-extends AbstractSeq[A]
+extends AbstractSeq[L, A]
    with IndexedSeq[A]
-   with GenericTraversableTemplate[A, ArraySeq]
+   with GenericTraversableTemplate[L, A, ArraySeq]
    with IndexedSeqOptimized[A, ArraySeq[A]]
    with CustomParallelizable[A, ParArray[A]]
    with Serializable
 {
 
-  override def companion: GenericCompanion[ArraySeq] = ArraySeq
+  override def companion: GenericCompanion[L, ArraySeq] = ArraySeq
 
   val array: Array[AnyRef] = new Array[AnyRef](length)
 

@@ -33,7 +33,7 @@ import scala.language.higherKinds
  *    @see GenericCanBuildFrom
  */
 abstract class GenSetFactory[CC[X] <: GenSet[X] with GenSetLike[X, CC[X]]]
-  extends GenericCompanion[CC] {
+  extends GenericCompanion[L, CC] {
 
   def newBuilder[A]: Builder[A, CC[A]]
 

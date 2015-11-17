@@ -24,13 +24,13 @@ import scala.collection.parallel.Combiner
  *  @define coll mutable parallel sequence
  */
 trait ParSeq[+T]
-extends scala.collection/*.immutable*/.GenSeq[T]
+extends scala.collection/*.immutable*/.GenSeq[L, T]
    with scala.collection.parallel.ParSeq[T]
    with ParIterable[T]
    with GenericParTemplate[T, ParSeq]
-   with ParSeqLike[T, ParSeq[T], scala.collection.immutable.Seq[T]]
+   with ParSeqLike[T, ParSeq[T], scala.collection.immutable.Seq[L, T]]
 {
-  override def companion: GenericCompanion[ParSeq] with GenericParCompanion[ParSeq] = ParSeq
+  override def companion: GenericCompanion[L, ParSeq] with GenericParCompanion[ParSeq] = ParSeq
   override def toSeq: ParSeq[T] = this
 }
 
