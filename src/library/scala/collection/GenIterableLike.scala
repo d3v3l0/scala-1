@@ -35,7 +35,11 @@ import generic.{ CanBuildFrom => CBF }
  *    This is a base trait for all Scala collections that define an `iterator`
  *    method to step through one-by-one the collection's elements.
  */
-trait GenIterableLike[+A, +Repr] extends Any with GenTraversableLike[A, Repr] {
+trait GenIterableLike[+A, +PreRepr] extends Any with GenTraversableLike[A, PreRepr] { self =>
+
+  type LT
+
+  type Repr = PreRepr { type LT = self.LT }
 
   def iterator: Iterator[A]
 

@@ -19,8 +19,10 @@ trait Seq[+A] extends PartialFunction[Int, A]
                       with Iterable[A]
                       with GenSeq[A]
                       with GenericTraversableTemplate[A, Seq]
-                      with SeqLike[A, Seq[A]] {
+                      with SeqLike[A, Seq[A]] { self =>
   override def companion: GenericCompanion[Seq] = Seq
+
+  type Repr = Seq[A] { type LT = self.LT }
 
   override def seq: Seq[A] = this
 }
