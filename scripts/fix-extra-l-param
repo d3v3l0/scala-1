@@ -78,6 +78,8 @@ def fix_src(path, out):
             if all(s not in outer.tp for s in ("Map", "Set", "Par")):
                 if not body_beg:
                     out_line = re.sub(r"CC\[([^JL])", r"CC[J, \1", out_line)
+                else:
+                    out_line = re.sub(r"CC\[(?!/\*\*/)", "CC[/**/_, ", out_line)
 
             if not body_beg and "{" in line:
                 body_beg = line_num
