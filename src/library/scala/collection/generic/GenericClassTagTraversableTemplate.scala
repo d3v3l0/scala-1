@@ -21,7 +21,7 @@ import scala.reflect.ClassTag
  *  @author Aleksandar Prokopec
  *  @since 2.8
  */
-trait GenericClassTagTraversableTemplate[+A, +CC[X] <: Traversable[Any, X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
+trait GenericClassTagTraversableTemplate[+A, +CC[J, X] <: Traversable[Any, X]] extends HasNewBuilder[A, CC[J, A] @uncheckedVariance] {
   implicit protected[this] val tag: ClassTag[A]
   def classTagCompanion: GenericClassTagCompanion[CC]
   def genericClassTagBuilder[B](implicit tag: ClassTag[B]): Builder[B, CC[B]] = classTagCompanion.newBuilder[B]
