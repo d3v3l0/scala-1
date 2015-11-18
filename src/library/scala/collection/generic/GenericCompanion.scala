@@ -25,24 +25,24 @@ import scala.language.higherKinds
  */
 abstract class GenericCompanion[L, +CC[J, X] <: GenTraversable[L, X]] {
   /** The underlying collection type with unknown element type */
-  protected[this] type Coll = CC[/**/_, _]
+  protected[this] type Coll = CC[_]
 
   /** The default builder for `$Coll` objects.
    *  @tparam A      the type of the ${coll}'s elements
    */
-  def newBuilder[A]: Builder[A, CC[/**/_, A]]
+  def newBuilder[A]: Builder[A, CC[A]]
 
   /** An empty collection of type `$Coll[A]`
    *  @tparam A      the type of the ${coll}'s elements
    */
-  def empty[A]: CC[/**/_, A] = newBuilder[A].result()
+  def empty[A]: CC[A] = newBuilder[A].result()
 
   /** Creates a $coll with the specified elements.
    *  @tparam A      the type of the ${coll}'s elements
    *  @param elems  the elements of the created $coll
    *  @return a new $coll with elements `elems`
    */
-  def apply[A](elems: A*): CC[/**/_, A] = {
+  def apply[A](elems: A*): CC[A] = {
     if (elems.isEmpty) empty[A]
     else {
       val b = newBuilder[A]

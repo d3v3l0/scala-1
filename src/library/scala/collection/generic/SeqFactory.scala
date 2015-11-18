@@ -25,7 +25,7 @@ extends GenSeqFactory[CC] with TraversableFactory[CC] {
    *  @param x the selector value
    *  @return  sequence wrapped in an option, if this is a Seq, otherwise none
    */
-  def unapplySeq[A](x: CC[/**/_, A]): Some[CC[/**/_, A]] = Some(x)
+  def unapplySeq[A](x: CC[A]): Some[CC[A]] = Some(x)
 
 }
 
