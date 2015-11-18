@@ -418,21 +418,21 @@ trait TraversableOnce[L, +A] extends Any with GenTraversableOnce[L, A] {
 
 object TraversableOnce {
   implicit def alternateImplicit[A](trav: TraversableOnce[Any, A]) = new ForceImplicitAmbiguity
-  implicit def flattenTraversableOnce[A, CC[_]](travs: TraversableOnce[Any, CC[A]])(implicit ev: CC[A] => TraversableOnce[Any, A]) =
+  implicit def flattenTraversableOnce[A, CC[/**/_, _]](travs: TraversableOnce[Any, CC[/**/_, A]])(implicit ev: CC[/**/_, A] => TraversableOnce[Any, A]) =
     new FlattenOps[A](travs map ev)
 
   /* Functionality reused in Iterator.CanBuildFrom */
-  private[collection] abstract class BufferedCanBuildFrom[A, CC[X] <: TraversableOnce[Any, X]] extends generic.CanBuildFrom[CC[_], A, CC[A]] {
-    def bufferToColl[B](buff: ArrayBuffer[B]): CC[B]
-    def traversableToColl[B](t: GenTraversable[Any, B]): CC[B]
+  private[collection] abstract class BufferedCanBuildFrom[A, CC[/**/_, X] <: TraversableOnce[Any, X]] extends generic.CanBuildFrom[CC[/**/_, _], A, CC[/**/_, A]] {
+    def bufferToColl[B](buff: ArrayBuffer[B]): CC[/**/_, B]
+    def traversableToColl[B](t: GenTraversable[Any, B]): CC[/**/_, B]
 
-    def newIterator: Builder[A, CC[A]] = new ArrayBuffer[A] mapResult bufferToColl
+    def newIterator: Builder[A, CC[/**/_, A]] = new ArrayBuffer[A] mapResult bufferToColl
 
     /** Creates a new builder on request of a collection.
      *  @param from  the collection requesting the builder to be created.
      *  @return the result of invoking the `genericBuilder` method on `from`.
      */
-    def apply(from: CC[_]): Builder[A, CC[A]] = from match {
+    def apply(from: CC[/**/_, _]): Builder[A, CC[/**/_, A]] = from match {
       case xs: generic.GenericTraversableTemplate[_, _, _] => xs.genericBuilder.asInstanceOf[Builder[A, Traversable[Any, A]]] mapResult {
         case res => traversableToColl(res.asInstanceOf[GenTraversable[Any, A]])
       }
