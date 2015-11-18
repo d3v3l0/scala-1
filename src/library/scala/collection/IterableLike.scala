@@ -48,7 +48,7 @@ import scala.annotation.unchecked.uncheckedVariance
  *  @define Coll Iterable
  *  @define coll iterable collection
  */
-trait IterableLike[L, +A, +Repr] extends Any with Equals with TraversableLike[L, A, Repr] with GenIterableLike[L, A, Repr] {
+trait IterableLike[-L, +A, +Repr] extends Any with Equals with TraversableLike[L, A, Repr] with GenIterableLike[L, A, Repr] {
 self =>
 
   type LT

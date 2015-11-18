@@ -23,7 +23,7 @@ import scala.language.higherKinds
  *  @define coll  collection
  *  @define Coll  `CC`
  */
-abstract class GenericCompanion[L, +CC[J, X] <: GenTraversable[L, X]] {
+abstract class GenericCompanion[-L, +CC[J, X] <: GenTraversable[L, X]] {
   /** The underlying collection type with unknown element type */
   protected[this] type Coll = CC[L, _]
 

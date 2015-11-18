@@ -18,7 +18,7 @@ import scala.util.control.Breaks
  *
  *  $traversableInfo
  */
-trait Traversable[L, +A] extends TraversableLike[L, A, Traversable[L, A]]
+trait Traversable[-L, +A] extends TraversableLike[L, A, Traversable[L, A]]
                          with GenTraversable[L, A]
                          with TraversableOnce[L, A]
                          with GenericTraversableTemplate[L, A, Traversable] {
@@ -103,4 +103,4 @@ object Traversable extends TraversableFactory[Traversable] { self =>
 }
 
 /** Explicit instantiation of the `Traversable` trait to reduce class file size in subclasses. */
-abstract class AbstractTraversable[L, +A] extends Traversable[L, A]
+abstract class AbstractTraversable[-L, +A] extends Traversable[L, A]

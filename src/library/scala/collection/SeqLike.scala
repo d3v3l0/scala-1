@@ -59,7 +59,7 @@ import scala.math.{ min, max, Ordering }
  *  @define orderDependent
  *  @define orderDependentFold
  */
-trait SeqLike[L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSeqLike[L, A, Repr] with Parallelizable[A, ParSeq[A]] { self =>
+trait SeqLike[-L, +A, +Repr] extends Any with IterableLike[L, A, Repr] with GenSeqLike[L, A, Repr] with Parallelizable[A, ParSeq[A]] { self =>
 
   type LT
 

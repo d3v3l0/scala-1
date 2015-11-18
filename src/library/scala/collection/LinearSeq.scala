@@ -24,7 +24,7 @@ import mutable.Builder
  *  collection `Coll` that extends this trait should also extend
  *  `LinearSeqOptimized[L, A, Coll[A]]`.
  */
-trait LinearSeq[L, +A] extends Seq[L, A]
+trait LinearSeq[-L, +A] extends Seq[L, A]
                             with GenericTraversableTemplate[L, A, LinearSeq]
                             with LinearSeqLike[L, A, LinearSeq[L, A]] {
   override def companion: GenericCompanion[L, LinearSeq] = LinearSeq

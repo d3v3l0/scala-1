@@ -25,7 +25,7 @@ import generic._
  *  @define Coll `mutable.Seq`
  *  @define coll mutable sequence
  */
-trait Seq[L, A] extends Iterable[L, A]
+trait Seq[-L, A] extends Iterable[L, A]
 //                with GenSeq[L, A]
                 with scala.collection.Seq[L, A]
                 with GenericTraversableTemplate[L, A, Seq]
@@ -45,4 +45,4 @@ object Seq extends SeqFactory[Seq] {
 }
 
 /** Explicit instantiation of the `Seq` trait to reduce class file size in subclasses. */
-abstract class AbstractSeq[L, A] extends scala.collection.AbstractSeq[L, A] with Seq[L, A]
+abstract class AbstractSeq[-L, A] extends scala.collection.AbstractSeq[L, A] with Seq[L, A]

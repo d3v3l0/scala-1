@@ -20,7 +20,7 @@ import generic._
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenIterable[L, +A]
+trait GenIterable[-L, +A]
 extends GenIterableLike[L, A, GenIterable[L, A]]
    with GenTraversable[L, A]
    with GenericTraversableTemplate[L, A, GenIterable]

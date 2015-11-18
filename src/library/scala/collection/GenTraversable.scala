@@ -18,7 +18,7 @@ import generic._
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenTraversable[L, +A]
+trait GenTraversable[-L, +A]
 extends GenTraversableLike[L, A, GenTraversable[L, A]]
    with GenTraversableOnce[L, A]
    with GenericTraversableTemplate[L, A, GenTraversable]

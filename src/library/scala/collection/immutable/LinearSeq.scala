@@ -19,7 +19,7 @@ import mutable.Builder
  *  are guaranteed immutable.
  *  $linearSeqInfo
  */
-trait LinearSeq[L, +A] extends Seq[L, A]
+trait LinearSeq[-L, +A] extends Seq[L, A]
                             with scala.collection.LinearSeq[L, A]
                             with GenericTraversableTemplate[L, A, LinearSeq]
                             with LinearSeqLike[L, A, LinearSeq[L, A]] {

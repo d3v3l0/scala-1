@@ -20,7 +20,7 @@ import generic._
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenSeq[L, +A]
+trait GenSeq[-L, +A]
 extends GenSeqLike[L, A, GenSeq[L, A]]
    with GenIterable[L, A]
    with Equals

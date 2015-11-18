@@ -17,7 +17,7 @@ import parallel.mutable.ParSeq
  *  @tparam This the type of the set itself.
  *
  */
-trait SeqLike[L, A, +This <: SeqLike[L, A, This] with Seq[L, A]]
+trait SeqLike[-L, A, +This <: SeqLike[L, A, This] with Seq[L, A]]
   extends scala.collection.SeqLike[L, A, This]
      with Cloneable[This]
      with Parallelizable[A, ParSeq[A]]

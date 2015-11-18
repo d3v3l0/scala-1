@@ -15,7 +15,7 @@ import parallel.mutable.ParIterable
 /** A base trait for iterable collections that can be mutated.
  *  $iterableInfo
  */
-trait Iterable[L, A] extends Traversable[L, A]
+trait Iterable[-L, A] extends Traversable[L, A]
 //                     with GenIterable[L, A]
                      with scala.collection.Iterable[L, A]
                      with GenericTraversableTemplate[L, A, Iterable]
@@ -38,4 +38,4 @@ object Iterable extends TraversableFactory[Iterable] {
 }
 
 /** Explicit instantiation of the `Iterable` trait to reduce class file size in subclasses. */
-abstract class AbstractIterable[L, A] extends scala.collection.AbstractIterable[L, A] with Iterable[L, A]
+abstract class AbstractIterable[-L, A] extends scala.collection.AbstractIterable[L, A] with Iterable[L, A]

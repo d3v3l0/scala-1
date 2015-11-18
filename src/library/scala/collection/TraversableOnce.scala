@@ -58,7 +58,7 @@ import scala.reflect.ClassTag
  *
  *    Note: will not terminate for infinite-sized collections.
  */
-trait TraversableOnce[L, +A] extends Any with GenTraversableOnce[L, A] {
+trait TraversableOnce[-L, +A] extends Any with GenTraversableOnce[L, A] {
   self =>
 
   type LT

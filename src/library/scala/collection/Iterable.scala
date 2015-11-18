@@ -17,7 +17,7 @@ import mutable.Builder
 /** A base trait for iterable collections.
  *  $iterableInfo
  */
-trait Iterable[L, +A] extends Traversable[L, A]
+trait Iterable[-L, +A] extends Traversable[L, A]
                       with GenIterable[L, A]
                       with GenericTraversableTemplate[L, A, Iterable]
                       with IterableLike[L, A, Iterable[L, A]] {
@@ -53,4 +53,4 @@ object Iterable extends TraversableFactory[Iterable] {
 }
 
 /** Explicit instantiation of the `Iterable` trait to reduce class file size in subclasses. */
-abstract class AbstractIterable[L, +A] extends AbstractTraversable[L, A] with Iterable[L, A]
+abstract class AbstractIterable[-L, +A] extends AbstractTraversable[L, A] with Iterable[L, A]

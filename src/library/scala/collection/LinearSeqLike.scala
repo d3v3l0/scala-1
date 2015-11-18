@@ -27,7 +27,7 @@ import scala.annotation.tailrec
  *  @tparam A    the element type of the $coll
  *  @tparam Repr the type of the actual $coll containing the elements.
  */
-trait LinearSeqLike[L, +A, +Repr <: LinearSeqLike[L, A, Repr]] extends SeqLike[L, A, Repr] {
+trait LinearSeqLike[-L, +A, +Repr <: LinearSeqLike[L, A, Repr]] extends SeqLike[L, A, Repr] {
   self: Repr =>
 
   override protected[this] def thisCollection: LinearSeq[L, A] = this.asInstanceOf[LinearSeq[L, A]]

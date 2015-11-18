@@ -32,7 +32,7 @@ import scala.annotation.tailrec
  *
  *
  */
-trait LinearSeqOptimized[L, +A, +Repr <: LinearSeqOptimized[L, A, Repr]] extends LinearSeqLike[L, A, Repr] { self: Repr =>
+trait LinearSeqOptimized[-L, +A, +Repr <: LinearSeqOptimized[L, A, Repr]] extends LinearSeqLike[L, A, Repr] { self: Repr =>
 
   type LT
 

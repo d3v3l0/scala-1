@@ -50,7 +50,7 @@ def get_srcs(dir_rel_paths):
                     yield os.path.join(dirpath, filename)
 
 def fix_src(path, out):
-    OUTER_RE = re.compile(r"\b(.*(?:class|trait|object)) ([^ [(]+)((?:\[L))?")
+    OUTER_RE = re.compile(r"\b(.*(?:class|trait|object)) ([^ [(]+)((?:\[-?L))?")
     Outer = namedtuple("Outer", ["tp", "is_ob", "has_l"])
     outer = None
     for line_num, line in enumerate(open(path), 1):
@@ -66,8 +66,11 @@ def fix_src(path, out):
                 has_l=m.group(3) is not None)
             body_beg = 0
             v_print(2, "<", outer, loc_str)
+
+            if outer.has_l:
+                out_line = OUTER_RE.sub(r"\1 \2[-L", out_line)
         if outer:
-            m_tp_l = re.search(r"(\w+)\[L,", line)
+            m_tp_l = re.search(r"(\w+)\[(?:-)?L,", line)
             if m_tp_l and (m_tp_l.group(1) != outer.tp or body_beg):
                 if not outer.has_l:
                     out_line = line.replace(

@@ -47,7 +47,7 @@ import scala.language.higherKinds
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenTraversableOnce[L, +A] extends Any {
+trait GenTraversableOnce[-L, +A] extends Any {
 
   protected type LT
   protected type plocal = local[LT]

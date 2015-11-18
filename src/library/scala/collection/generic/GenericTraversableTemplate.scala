@@ -27,7 +27,7 @@ import scala.language.higherKinds
  *  @define coll  collection
  *  @define Coll  Traversable
  */
-trait GenericTraversableTemplate[L, +A, +CC[J, X] <: GenTraversable[L, X]] extends HasNewBuilder[A, CC[L, A] @uncheckedVariance] {
+trait GenericTraversableTemplate[-L, +A, +CC[J, X] <: GenTraversable[L, X]] extends HasNewBuilder[A, CC[L, A] @uncheckedVariance] {
   type LT
 
   /** Applies a function `f` to all elements of this $coll.
@@ -207,7 +207,7 @@ trait GenericTraversableTemplate[L, +A, +CC[J, X] <: GenTraversable[L, X]] exten
    *          are not of the same size.
    */
   @migration("`transpose` throws an `IllegalArgumentException` if collections are not uniformly sized.", "2.9.0")
-  def transpose[B](implicit asTraversable: A => /*<:<!!!*/ GenTraversableOnce[L, B]): CC[L, CC[B] @uncheckedVariance] = {
+  def transpose[B](implicit asTraversable: A => /*<:<!!!*/ GenTraversableOnce[L, B]): CC[L, CC[L, B] @uncheckedVariance] = {
     if (isEmpty)
       return genericBuilder[CC[L, B]].result()
 
