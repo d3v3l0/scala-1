@@ -26,7 +26,7 @@ extends GenIterableLike[L, A, GenIterable[L, A]]
    with GenericTraversableTemplate[L, A, GenIterable]
 {
   def seq: Iterable[L, A]
-  override def companion: GenericCompanion[L, GenIterable] = GenIterable
+  override def companion: GenericCompanion[_ >: L, GenIterable] = GenIterable
 }
 
 
@@ -34,4 +34,3 @@ object GenIterable extends GenTraversableFactory[GenIterable] {
   implicit def canBuildFrom[A] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
   def newBuilder[A] = Iterable.newBuilder
 }
-
