@@ -23,7 +23,7 @@ trait Iterable[L, +A] extends Traversable[L, A]
                       with IterableLike[L, A, Iterable[L, A]] {
   type LT
 
-  override def companion: GenericCompanion[_ >: L, Iterable] = Iterable
+  override def companion: GenericCompanion[L, Iterable] = Iterable
 
   override def seq = this
 

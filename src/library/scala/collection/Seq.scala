@@ -20,7 +20,7 @@ trait Seq[L, +A] extends PartialFunction[Int, A]
                       with GenSeq[L, A]
                       with GenericTraversableTemplate[L, A, Seq]
                       with SeqLike[L, A, Seq[L, A]] {
-  override def companion: GenericCompanion[_ >: L, Seq] = Seq
+  override def companion: GenericCompanion[L, Seq] = Seq
 
   override def seq: Seq[L, A] = this
 }

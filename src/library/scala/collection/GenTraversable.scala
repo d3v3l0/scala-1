@@ -25,7 +25,7 @@ extends GenTraversableLike[L, A, GenTraversable[L, A]]
 {
 
   def seq: Traversable[L, A]
-  def companion: GenericCompanion[_ >: L, GenTraversable] = GenTraversable
+  def companion: GenericCompanion[L, GenTraversable] = GenTraversable
 }
 
 object GenTraversable extends GenTraversableFactory[GenTraversable] {

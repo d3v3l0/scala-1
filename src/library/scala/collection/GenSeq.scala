@@ -27,7 +27,7 @@ extends GenSeqLike[L, A, GenSeq[L, A]]
    with GenericTraversableTemplate[L, A, GenSeq]
 {
   def seq: Seq[L, A]
-  override def companion: GenericCompanion[_ >: L, GenSeq] = GenSeq
+  override def companion: GenericCompanion[L, GenSeq] = GenSeq
 }
 
 

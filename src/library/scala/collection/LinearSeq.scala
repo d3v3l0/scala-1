@@ -27,7 +27,7 @@ import mutable.Builder
 trait LinearSeq[L, +A] extends Seq[L, A]
                             with GenericTraversableTemplate[L, A, LinearSeq]
                             with LinearSeqLike[L, A, LinearSeq[L, A]] {
-  override def companion: GenericCompanion[_ >: L, LinearSeq] = LinearSeq
+  override def companion: GenericCompanion[L, LinearSeq] = LinearSeq
   override def seq: LinearSeq[L, A] = this
 }
 
