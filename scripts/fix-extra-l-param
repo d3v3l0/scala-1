@@ -73,9 +73,12 @@ def fix_src(path, out):
                     out_line = line.replace(
                         "[L, _", "[_, _").replace(
                             "[L,", "[Any,")
-                    v_print(1, loc_str)
-                    v_print(1, "-", line, end="")
-                    v_print(1, "+", out_line, end="")
+
+            # {Map,Set,Par} -like are not parametrized with type param L
+            if all(s not in outer.tp for s in ("Map", "Set", "Par")):
+                if not body_beg:
+                    out_line = re.sub(r"CC\[([^JL])", r"CC[J, \1", out_line)
+
             if not body_beg and "{" in line:
                 body_beg = line_num
 
@@ -86,6 +89,11 @@ def fix_src(path, out):
             if outer is None:
                 raise ValueError("No outer type to close", loc_str)
             outer = None
+
+        if out_line != line:
+            v_print(1, loc_str)
+            v_print(1, "-", line, end="")
+            if out_line is not None: v_print(1, "+", out_line, end="")
 
         if out_line is not None: print(out_line, end="", file=out)
 
