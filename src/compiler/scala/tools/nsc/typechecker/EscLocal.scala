@@ -116,13 +116,25 @@ abstract class EscLocal extends PluginComponent with Transform with
         if (!isFstSym(tree.symbol)) {
           if (!(symMode(tree.symbol) <:< m)) {
             // 2nd class vars are not 1st class
-            reporter.error(tree.pos, tree.symbol + " cannot be used as 1st class value @local["+m+"]")
+            val n = symMode(tree.symbol)
+            // need to use asSeenFrom when inside the same class
+            val a1 = n.asSeenFrom(ThisType(n.typeSymbol.owner),n.typeSymbol.owner)
+            val b1 = m.asSeenFrom(ThisType(n.typeSymbol.owner),m.typeSymbol.owner)
+            if (!(a1 <:< b1))
+              reporter.error(tree.pos, tree.symbol + " @local["+a1+"] cannot be used as 1st class value @local["+b1+"]")
           } else {
             // cannot reach beyond 1st class boundary
             for (b <- boundary) {
               if (!tree.symbol.hasTransOwner(b))
-                if (!(symMode(tree.symbol) <:< symMode(b)))
-                  reporter.error(tree.pos, tree.symbol + s" cannot be used inside $b")
+                if (!(symMode(tree.symbol) <:< symMode(b))) {
+                  // need to use asSeenFrom when inside the same class
+                  val n = symMode(tree.symbol)
+                  val m = symMode(b)
+                  val a1 = n.asSeenFrom(ThisType(n.typeSymbol.owner),n.typeSymbol.owner)
+                  val b1 = m.asSeenFrom(ThisType(n.typeSymbol.owner),m.typeSymbol.owner)
+                  if (!(a1 <:< b1))
+                    reporter.error(tree.pos, tree.symbol + s" cannot be used inside $b")
+                }
             }
           }
         }
