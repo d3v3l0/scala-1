@@ -64,6 +64,8 @@ extends scala.collection.AbstractSeq[Int]
    with scala.collection.CustomParallelizable[Int, ParRange]
    with Serializable
 {
+  type LT = Any
+
   override def par = new ParRange(this)
 
   private def gap           = end.toLong - start.toLong

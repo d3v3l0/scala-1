@@ -21,9 +21,11 @@ import scala.annotation.tailrec
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { self =>
+trait IndexedSeqOptimized[+A, +PreRepr] extends Any with IndexedSeqLike[A, PreRepr] { self =>
 
   type LT
+
+  type Repr = PreRepr 
 
   override /*IterableLike*/
   def isEmpty: Boolean = { length == 0 }

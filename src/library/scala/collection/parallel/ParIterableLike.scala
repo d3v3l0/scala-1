@@ -163,7 +163,7 @@ self: ParIterableLike[T, PreRepr, Sequential] =>
 
   type LT = Nothing // Arguments to ParIterable.map are always first-class!
 
-  type Repr = PreRepr { type LT = self.LT }
+  type Repr = PreRepr 
 
   @transient
   @volatile

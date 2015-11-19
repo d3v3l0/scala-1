@@ -32,7 +32,7 @@ trait LinearSeqLike[+A, +PreRepr <: LinearSeqLike[A, PreRepr]] extends SeqLike[A
 
   type LT
 
-  type Repr = PreRepr { type LT = self.LT }
+  type Repr = PreRepr 
 
   override protected[this] def thisCollection: LinearSeq[A] = this.asInstanceOf[LinearSeq[A]]
   override protected[this] def toCollection(repr: Repr): LinearSeq[A] = repr.asInstanceOf[LinearSeq[A]]
