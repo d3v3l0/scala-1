@@ -33,10 +33,10 @@ trait Set[A] extends Iterable[A]
                 with Parallelizable[A, ParSet[A]]
 {
   override def companion: GenericCompanion[Set] = Set
-  
-  
+
+
   override def toSet[B >: A]: Set[B] = to[({type l[a] = immutable.Set[B]})#l] // for bincompat; remove in dev
-  
+
   override def seq: Set[A] = this
   protected override def parCombiner = ParSet.newCombiner[A] // if `immutable.SetLike` gets introduced, please move this there!
 }
@@ -48,7 +48,7 @@ trait Set[A] extends Iterable[A]
 object Set extends ImmutableSetFactory[Set] {
   /** $setCanBuildFromInfo */
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Set[A]] = setCanBuildFrom[A]
-  
+
   /** An optimized representation for immutable empty sets */
   private object EmptySet extends AbstractSet[Any] with Set[Any] with Serializable {
     override def size: Int = 0
