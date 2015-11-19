@@ -93,7 +93,7 @@ abstract class EscLocal extends PluginComponent with Transform with
     def symMode(s:Symbol) = 
       s.getAnnotation(MarkerLocal) match { 
         case None => FstMode 
-        case Some(s) => s.atp.typeArgs(0).asSeenFrom(currentOwner.thisType, currentOwner)
+        case Some(s) => s.atp.typeArgs(0)//.asSeenFrom(currentOwner.thisType, currentOwner)
       }
 
     lazy val FstMode = NothingTpe
