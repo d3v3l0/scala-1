@@ -265,7 +265,7 @@ import Iterator.empty
 trait Iterator[+A] extends TraversableOnce[A] {
   self =>
 
-  type LT
+  type LT = Any
 
   def seq: Iterator[A] = this
 
