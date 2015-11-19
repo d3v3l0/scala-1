@@ -155,6 +155,8 @@ extends AbstractMap[Long, T]
    with Map[Long, T]
    with MapLike[Long, T, LongMap[T]] {
 
+  type LT = Any
+
   override def empty: LongMap[T] = LongMap.Nil
 
   override def toList = {

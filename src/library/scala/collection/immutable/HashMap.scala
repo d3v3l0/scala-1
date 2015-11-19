@@ -42,7 +42,7 @@ class HashMap[A, +B] extends AbstractMap[A, B]
 {
   import HashMap.{nullToEmpty, bufferSize}
 
-  type LT
+  type LT = Any
 
   override def size: Int = 0
 

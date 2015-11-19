@@ -93,7 +93,7 @@ abstract class EscLocal extends PluginComponent with Transform with
     def symMode(s:Symbol) = 
       s.getAnnotation(MarkerLocal) match { 
         case None => FstMode 
-        case Some(s) => s.atp.typeArgs(0)
+        case Some(s) => s.atp.typeArgs(0).asSeenFrom(currentOwner.thisType, currentOwner)
       }
 
     lazy val FstMode = NothingTpe
@@ -110,18 +110,27 @@ abstract class EscLocal extends PluginComponent with Transform with
 */
 
     // in general: 1st class is more specific than 2nd class
-    def traverse(tree: Tree, m: Type, boundary: List[Symbol]): Unit = tree match {
+    def traverse(tree: Tree, m: Type, boundary: List[Symbol]): Unit = {
+      curTree = tree
+      tree match {
       case Literal(x) =>
       case Ident(x) =>
         if (!isFstSym(tree.symbol)) {
           if (!(symMode(tree.symbol) <:< m)) {
             // 2nd class vars are not 1st class
             val n = symMode(tree.symbol)
-            // need to use asSeenFrom when inside the same class
-            val a1 = n.asSeenFrom(ThisType(n.typeSymbol.owner),n.typeSymbol.owner)
-            val b1 = m.asSeenFrom(ThisType(n.typeSymbol.owner),m.typeSymbol.owner)
-            if (!(a1 <:< b1))
+            // // need to use asSeenFrom when inside the same class
+            // println("---")
+            // println(tree.symbol)
+            // println(tree.symbol.owner)
+            // println(tree.symbol.getAnnotation(MarkerLocal).get.atp)
+            // println(symMode(tree.symbol))
+            // println(currentOwner)
+            val a1 = n//.asSeenFrom(currentOwner.thisType,AnyRefTpe.typeSymbol)
+            val b1 = m//m.asSeenFrom(currentOwner.thisType,AnyRefTpe.typeSymbol) // not clear that it is the same owner!
+            if (!(a1 <:< b1)) {
               reporter.error(tree.pos, tree.symbol + " @local["+a1+"] cannot be used as 1st class value @local["+b1+"]")
+            }
           } else {
             // cannot reach beyond 1st class boundary
             for (b <- boundary) {
@@ -130,10 +139,10 @@ abstract class EscLocal extends PluginComponent with Transform with
                   // need to use asSeenFrom when inside the same class
                   val n = symMode(tree.symbol)
                   val m = symMode(b)
-                  val a1 = n.asSeenFrom(ThisType(n.typeSymbol.owner),n.typeSymbol.owner)
-                  val b1 = m.asSeenFrom(ThisType(n.typeSymbol.owner),m.typeSymbol.owner)
+                  val a1 = n//.asSeenFrom(ThisType(m.typeSymbol.owner),m.typeSymbol.owner)
+                  val b1 = m//.asSeenFrom(ThisType(m.typeSymbol.owner),m.typeSymbol.owner)
                   if (!(a1 <:< b1))
-                    reporter.error(tree.pos, tree.symbol + s" cannot be used inside $b")
+                    reporter.error(tree.pos, tree.symbol + " @local["+a1+"] cannot be used inside "+b+" @local["+b1+"]")
                 }
             }
           }
@@ -163,6 +172,8 @@ abstract class EscLocal extends PluginComponent with Transform with
               params.map(symMode)
             case _ => Nil
           }
+          // FIXME/TODO asSeenFrom
+
           // check argument expressions according to mode
           // for varargs, assume 1st class (pad to args.length)
           map2(args,modes.padTo(args.length,FstMode))((a,m) => if (!(m <:< FstMode)) traverse(a,m,boundary))
@@ -175,9 +186,31 @@ abstract class EscLocal extends PluginComponent with Transform with
           // find out mode to use for each argument (1st or 2nd)
           val modes = fun.tpe match {
             case mt @ MethodType(params,restpe) =>
-              params.map(symMode)
+              fun match { 
+                case Apply(TypeApply(Select(qual,name),_),_) => // TBD correct or need to apply type manually?
+                  params.map(s => symMode(s).asSeenFrom(qual.tpe, fun.symbol.owner))
+                case TypeApply(Select(qual,name),_) => // TBD correct or need to apply type manually?
+                  params.map(s => symMode(s).asSeenFrom(qual.tpe, fun.symbol.owner))
+                case Select(qual,name) =>
+                  params.map(s => symMode(s).asSeenFrom(qual.tpe, fun.symbol.owner))
+                case Ident(_) =>
+                  params.map(s => symMode(s))
+                case _ =>
+                  //println("---> other: "+ fun.getClass + "/"+fun +"/"+fun.symbol.owner)
+                  params.map(s => symMode(s))
+              }
             case _ => Nil
           }
+/*          if (modes.exists(e => e.toString != "Nothing")) {
+            println(fun.tpe + " ---> " + modes + "/" + fun.symbol + 
+              "/" + fun.symbol.owner + "/" + fun.symbol.tpe.prefix)
+            fun match { 
+              case Select(qual,name) =>
+                println(qual.tpe)
+              case _ => 
+            }
+          }
+*/
           // check argument expressions according to mode
           // for varargs, assume 1st class (pad to args.length)
           map2(args,modes.padTo(args.length,FstMode))((a,m) => traverse(a,m,boundary))
@@ -314,9 +347,12 @@ abstract class EscLocal extends PluginComponent with Transform with
 
       case ClassDef(mods, name, params, impl) =>
         //println(s"--- recurse $m class: ${tree.symbol}")
-        traverse(impl,FstMode,boundary)
-       
+        atOwner(tree.symbol) { 
+          traverse(impl,FstMode,boundary)
+        }
+
       case Template(parents, self, body) =>
+        atOwner(currentOwner) {
         // perform a crude RefChecks run:
         // subclasses are only allowed to _add_ @local annotations on
         // method parameters, not to remove them.
@@ -367,18 +403,19 @@ abstract class EscLocal extends PluginComponent with Transform with
 
         // now check body (TODO: 2? 1?)
         body.foreach(s => traverse(s,SndMode,boundary))
-
+      }
 
       case ModuleDef(mods, name, impl) =>
         traverse(impl,FstMode,boundary)
 
       case PackageDef(pid, stats) =>
-        stats.foreach(s => traverse(s,SndMode,boundary))
-
+        atOwner(tree.symbol) {
+          stats.foreach(s => traverse(s,SndMode,boundary))
+        }
 
       case _ =>
         println(s"don't know how to handle ${tree.getClass}")
-    }
+    }}
 
     // TODO: need to check ClassDefs that are not in Defs!
     override def transform(tree: Tree): Tree = tree match {

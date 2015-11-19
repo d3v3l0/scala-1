@@ -163,6 +163,8 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
    with Map[Int, T]
    with MapLike[Int, T, IntMap[T]] {
 
+  type LT = Any
+
   override def empty: IntMap[T] = IntMap.Nil
 
   override def toList = {
