@@ -32,11 +32,11 @@ import scala.annotation.tailrec
  *
  *
  */
-trait LinearSeqOptimized[+A, +PreRepr <: LinearSeqOptimized[A, PreRepr]] extends LinearSeqLike[A, PreRepr] { self: PreRepr =>
+trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends LinearSeqLike[A, Repr] { self: Repr =>
 
   type LT
 
-  type Repr = PreRepr 
+  ////type Repr = Reprs 
 
   def isEmpty: Boolean
 

@@ -11,9 +11,9 @@ package generic
 
 import mutable.Builder
 
-trait HasNewBuilder[+A, +PreRepr] extends Any { self =>
+trait HasNewBuilder[+A, +Repr] extends Any { self =>
   type LT
-  type Repr = PreRepr 
+  //type Repr = Reprs 
   /** The builder that builds instances of Repr */
   protected[this] def newBuilder: Builder[A, Repr]
 }

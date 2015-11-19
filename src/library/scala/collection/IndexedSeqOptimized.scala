@@ -21,11 +21,11 @@ import scala.annotation.tailrec
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait IndexedSeqOptimized[+A, +PreRepr] extends Any with IndexedSeqLike[A, PreRepr] { self =>
+trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { self =>
 
   type LT
 
-  type Repr = PreRepr 
+  ////type Repr = Reprs 
 
   override /*IterableLike*/
   def isEmpty: Boolean = { length == 0 }
@@ -51,7 +51,8 @@ trait IndexedSeqOptimized[+A, +PreRepr] extends Any with IndexedSeqLike[A, PreRe
 
   override /*IterableLike*/
   def find(@plocal p: A => Boolean): Option[A] = {
-    val i = prefixLength(!p(_))
+    @plocal val q = (x: A) => !p(x)
+    val i = prefixLength(q)
     if (i < length) Some(this(i)) else None
   }
 

@@ -153,17 +153,17 @@ import scala.collection.parallel.ParallelCollectionImplicits._
  *  @define Coll `ParIterable`
  *  @define coll parallel iterable
  */
-trait ParIterableLike[+T, +PreRepr <: ParIterable[T], +Sequential <: Iterable[T] with IterableLike[T, Sequential]]
-extends GenIterableLike[T, PreRepr]
-   with CustomParallelizable[T, PreRepr]
+trait ParIterableLike[+T, +Repr <: ParIterable[T], +Sequential <: Iterable[T] with IterableLike[T, Sequential]]
+extends GenIterableLike[T, Repr]
+   with CustomParallelizable[T, Repr]
    with Parallel
-   with HasNewCombiner[T, PreRepr]
+   with HasNewCombiner[T, Repr]
 {
-self: ParIterableLike[T, PreRepr, Sequential] =>
+self: ParIterableLike[T, Repr, Sequential] =>
 
   type LT = Nothing // Arguments to ParIterable.map are always first-class!
 
-  type Repr = PreRepr 
+  //type Repr = Reprs 
 
   @transient
   @volatile

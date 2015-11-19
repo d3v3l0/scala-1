@@ -28,11 +28,11 @@ import scala.reflect.ClassTag
  *  @since   2.8
  */
 @deprecated("Forwarding is inherently unreliable since it is not automated and new methods can be forgotten.", "2.11.0")
-trait TraversableForwarder[+A] extends Traversable[A] {
+trait TraversableForwarder[+A] extends Traversable[A] { self =>
   type LT
 
   /** The traversable object to which calls are forwarded. */
-  protected def underlying: Traversable[A]
+  protected def underlying: Traversable[A] { type LT = self.LT }
 
   override def foreach[B](f: A => B): Unit = underlying foreach f
   override def isEmpty: Boolean = underlying.isEmpty

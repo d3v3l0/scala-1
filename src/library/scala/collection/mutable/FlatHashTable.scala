@@ -22,8 +22,6 @@ package mutable
 trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
   import FlatHashTable._
 
-  protected type plocal = local[Any]
-
   private final def tableDebug = false
 
   @transient private[collection] var _loadFactor = defaultLoadFactor
@@ -67,7 +65,7 @@ trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
    *
    * The serialization format expected is the one produced by `serializeTo`.
    */
-  private[collection] def init(in: java.io.ObjectInputStream, @plocal f: A => Unit)(@plocal cc: CanThrow) {
+  private[collection] def init(in: java.io.ObjectInputStream, @local f: A => Unit)(@local cc: CanThrow) {
   ESC.THROW{
     in.defaultReadObject
 
@@ -100,7 +98,7 @@ trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
    * size and collection elements. `foreach` determines the order in which the elements are saved
    * to the stream. To deserialize, `init` should be used.
    */
-  private[collection] def serializeTo(out: java.io.ObjectOutputStream)(@plocal cc: CanThrow) {
+  private[collection] def serializeTo(out: java.io.ObjectOutputStream)(@local cc: CanThrow) {
   ESC.THROW{
     out.defaultWriteObject
     out.writeInt(_loadFactor)

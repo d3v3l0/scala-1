@@ -34,6 +34,8 @@ trait IndexedSeqView[A, +Coll] extends IndexedSeq[A]
                                   with SeqViewLike[A, Coll, IndexedSeqView[A, Coll]] {
 self =>
 
+  type LT = Nothing
+
   private[this] type This = IndexedSeqView[A, Coll]
 
   def update(idx: Int, elem: A): Unit

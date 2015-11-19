@@ -59,11 +59,11 @@ import scala.math.{ min, max, Ordering }
  *  @define orderDependent
  *  @define orderDependentFold
  */
-trait SeqLike[+A, +PreRepr] extends Any with IterableLike[A, PreRepr] with GenSeqLike[A, PreRepr] with Parallelizable[A, ParSeq[A]] { self =>
+trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[A, Repr] with Parallelizable[A, ParSeq[A]] { self =>
 
   type LT
 
-  type Repr = PreRepr 
+  //type Repr = Reprs 
 
   override protected[this] def thisCollection: Seq[A] = this.asInstanceOf[Seq[A]]
   override protected[this] def toCollection(repr: Repr): Seq[A] = repr.asInstanceOf[Seq[A]]

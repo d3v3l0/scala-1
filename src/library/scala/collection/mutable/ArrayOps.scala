@@ -36,7 +36,7 @@ import parallel.mutable.ParArray
 @deprecatedInheritance("ArrayOps will be sealed to facilitate greater flexibility with array/collections integration in future releases.", "2.11.0")
 trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParallelizable[T, ParArray[T]] {
   type LT = Any
-  type Repr = Array[T] //PreRepr 
+  type Repr = Array[T] //Repr 
 
   private def elementClass: Class[_] =
     arrayElementClass(repr.getClass)

@@ -30,11 +30,12 @@ import generic._
  *  Sequences are special cases of iterable collections of class `Iterable`.
  *  Unlike iterables, sequences always have a defined order of elements.
  */
-trait GenSeqLike[+A, +PreRepr] extends Any with GenIterableLike[A, PreRepr] with Equals with Parallelizable[A, parallel.ParSeq[A]] { self =>
+trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equals with Parallelizable[A, parallel.ParSeq[A]] { self =>
 
   type LT
+  //type plocal = local[LT]
 
-  type Repr = PreRepr 
+  ////type Repr = Reprs 
 
   def seq: Seq[A]
 
