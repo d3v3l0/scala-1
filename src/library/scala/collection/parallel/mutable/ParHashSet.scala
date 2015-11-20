@@ -82,14 +82,12 @@ extends ParSet[T]
   }
 
   private def writeObject(s: java.io.ObjectOutputStream) {
-  ESC.TRY{cc=>
-    serializeTo(s)(cc)
-  }}
+    serializeTo(s)
+  }
 
   private def readObject(in: java.io.ObjectInputStream) {
-  ESC.TRY{cc=>
-    init(in, x => ())(cc)
-  }}
+    init(in, x => ())
+  }
 
   import scala.collection.DebugUtils._
   override def debugInformation = buildString {

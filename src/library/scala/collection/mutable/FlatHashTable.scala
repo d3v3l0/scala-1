@@ -65,8 +65,7 @@ trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
    *
    * The serialization format expected is the one produced by `serializeTo`.
    */
-  private[collection] def init(in: java.io.ObjectInputStream, @local f: A => Unit)(@local cc: CanThrow) {
-  ESC.THROW{
+  private[collection] def init(in: java.io.ObjectInputStream, f: A => Unit) {
     in.defaultReadObject
 
     _loadFactor = in.readInt()
@@ -91,22 +90,20 @@ trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
       addElem(elem)
       index += 1
     }
-  }(cc)}
+  }
 
   /**
    * Serializes the collection to the output stream by saving the load factor, collection
    * size and collection elements. `foreach` determines the order in which the elements are saved
    * to the stream. To deserialize, `init` should be used.
    */
-  private[collection] def serializeTo(out: java.io.ObjectOutputStream)(@local cc: CanThrow) {
-  ESC.THROW{
+  private[collection] def serializeTo(out: java.io.ObjectOutputStream) {
     out.defaultWriteObject
     out.writeInt(_loadFactor)
     out.writeInt(tableSize)
     out.writeInt(seedvalue)
     out.writeBoolean(isSizeMapDefined)
-  }(cc)
-    iterator.foreach(x=>ESC.THROW(out.writeObject(x))(cc))
+    iterator.foreach(out.writeObject)
   }
 
   /** Finds an entry in the hash table if such an element exists. */

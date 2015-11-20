@@ -119,16 +119,14 @@ class LinkedHashSet[A] extends AbstractSet[A]
   }
 
   private def writeObject(out: java.io.ObjectOutputStream) {
-  ESC.TRY{cc=>
-    serializeTo(out, { e => ESC.THROW(out.writeObject(e.key))(cc) })(cc)
-  }}
+    serializeTo(out, { e => out.writeObject(e.key) })
+  }
 
   private def readObject(in: java.io.ObjectInputStream) {
-  ESC.TRY{cc=>
     firstEntry = null
     lastEntry = null
-    init(in, createNewEntry(ESC.THROW(in.readObject().asInstanceOf[A])(cc), null))(cc)
-  }}
+    init(in, createNewEntry(in.readObject().asInstanceOf[A], null))
+  }
 }
 
 /** $factoryInfo

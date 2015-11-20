@@ -177,16 +177,12 @@ extends scala.collection.mutable.AbstractBuffer[T]
     } else throw new IndexOutOfBoundsException(idx.toString)
 
   private def writeObject(out: java.io.ObjectOutputStream) {
-  ESC.TRY{cc=>
-  ESC.THROW{
     out.defaultWriteObject
     out writeInt sz
-  }(cc)
-    for (elem <- this) ESC.THROW{out writeObject elem}(cc)
-  }}
+    for (elem <- this) out writeObject elem
+  }
 
   private def readObject(in: java.io.ObjectInputStream) {
-  ESC.NO{
     in.defaultReadObject
 
     val num = in.readInt
@@ -199,7 +195,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
       this += in.readObject.asInstanceOf[T]
       i += 1
     }
-  }}
+  }
 
   override def clone(): UnrolledBuffer[T] = new UnrolledBuffer[T] ++= this
 

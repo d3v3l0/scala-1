@@ -1031,23 +1031,21 @@ object HashSet extends ImmutableSetFactory[HashSet] {
 
   @SerialVersionUID(2L) private class SerializationProxy[A,B](@transient private var orig: HashSet[A]) extends Serializable {
     private def writeObject(out: java.io.ObjectOutputStream) {
-    ESC.NO{
       val s = orig.size
       out.writeInt(s)
       for (e <- orig) {
         out.writeObject(e)
       }
-    }}
+    }
 
     private def readObject(in: java.io.ObjectInputStream) {
-    ESC.NO{
       orig = empty
       val s = in.readInt()
       for (i <- 0 until s) {
         val e = in.readObject().asInstanceOf[A]
         orig = orig + e
       }
-    }}
+    }
 
     private def readResolve(): AnyRef = orig
   }

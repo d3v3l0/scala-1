@@ -72,7 +72,6 @@ final class ListBuffer[A]
   protected def underlying: List[A] = start
 
   private def writeObject(out: ObjectOutputStream) {
-  ESC.NO{
     // write start
     var xs: List[A] = start
     while (!xs.isEmpty) { out.writeObject(xs.head); xs = xs.tail }
@@ -85,10 +84,9 @@ final class ListBuffer[A]
 
     // write the length
     out.writeInt(len)
-  }}
+  }
 
   private def readObject(in: ObjectInputStream) {
-  ESC.NO{
     // read start, set last0 appropriately
     var elem: A = in.readObject.asInstanceOf[A]
     if (elem == ListSerializeEnd) {
@@ -113,7 +111,7 @@ final class ListBuffer[A]
 
     // read the length
     len = in.readInt()
-  }}
+  }
 
   /** The current length of the buffer.
    *

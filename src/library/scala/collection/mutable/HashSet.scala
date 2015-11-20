@@ -85,11 +85,11 @@ extends AbstractSet[A]
   override def clone() = new HashSet[A] ++= this
 
   private def writeObject(s: java.io.ObjectOutputStream) {
-    ESC.TRY(cc=>serializeTo(s)(cc))
+    serializeTo(s)
   }
 
   private def readObject(in: java.io.ObjectInputStream) {
-    ESC.TRY(cc=>init(in, x => ())(cc))
+    init(in, x => ())
   }
 
   /** Toggles whether a size map is used to track hash map statistics.

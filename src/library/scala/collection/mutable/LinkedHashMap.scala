@@ -165,19 +165,15 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
   }
 
   private def writeObject(out: java.io.ObjectOutputStream) {
-  ESC.TRY{cc =>
     serializeTo(out, { entry =>
-      ESC.THROW(out.writeObject(entry.key))(cc)
-      ESC.THROW(out.writeObject(entry.value))(cc)
-    })(cc)
-  }}
+      out.writeObject(entry.key)
+      out.writeObject(entry.value)
+    })
+  }
 
   private def readObject(in: java.io.ObjectInputStream) {
-  ESC.TRY{cc =>
     firstEntry = null
     lastEntry = null
-    init(in, createNewEntry(
-      ESC.THROW(in.readObject().asInstanceOf[A])(cc),
-      ESC.THROW(in.readObject())(cc)))(cc)
-  }}
+    init(in, createNewEntry(in.readObject().asInstanceOf[A], in.readObject()))
+  }
 }

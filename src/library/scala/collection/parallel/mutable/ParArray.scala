@@ -668,11 +668,11 @@ self =>
   /* serialization */
 
   private def writeObject(out: java.io.ObjectOutputStream) {
-    ESC.NO{out.defaultWriteObject}
+    out.defaultWriteObject
   }
 
   private def readObject(in: java.io.ObjectInputStream) {
-    ESC.NO{in.defaultReadObject}
+    in.defaultReadObject
 
     // get raw array from arrayseq
     array = arrayseq.array.asInstanceOf[Array[Any]]
