@@ -27,7 +27,7 @@ private[process] trait ProcessImpl {
     }
   }
   private[process] object Future {
-    def apply[T](f: => T): () => T = {
+    def apply[T](f: => T): CanThrow -> T = {
       val result = new SyncVar[Either[Throwable, T]]
       def run(): Unit =
         try result set Right(f)
@@ -35,9 +35,9 @@ private[process] trait ProcessImpl {
 
       Spawn(run())
 
-      () => ESC.TRY(result.get) match { // TODO(leo)
+      cc => result.get(cc) match {
         case Right(value)    => value
-        case Left(exception) => throw exception
+        case Left(exception) => ESC.THROW { throw exception }(cc)
       }
     }
   }
@@ -69,10 +69,10 @@ private[process] trait ProcessImpl {
 
     protected[this] override def runAndExitValue()(@local cc: CanThrow) = {
       val first = a.run(io)
-      runInterruptible(first.exitValue()(cc))(first.destroy()) flatMap { codeA =>
+      runInterruptible(first.exitValue()(cc))(first.destroy()(cc)) flatMap { codeA =>
         if (evaluateSecondProcess(codeA)) {
           val second = b.run(io)
-          runInterruptible(second.exitValue()(cc))(second.destroy())
+          runInterruptible(second.exitValue()(cc))(second.destroy()(cc))
         }
         else Some(codeA)
       }
@@ -84,23 +84,23 @@ private[process] trait ProcessImpl {
   }
 
   private[process] abstract class CompoundProcess extends BasicProcess {
-    def destroy()   = destroyer()
-    def exitValue() = getExitValue() getOrElse scala.sys.error("No exit code: process destroyed.")
-    def start()     = getExitValue
+    def destroy()(@local cc: CanThrow)   = destroyer()
+    def exitValue()(@local cc: CanThrow) = getExitValue(cc) getOrElse scala.sys.error("No exit code: process destroyed.")
+    def start()     = () => ESC.TRY(getExitValue) // TODO(leo) not sure this is right (initial type: () => T)
 
     protected lazy val (getExitValue, destroyer) = {
       val code = new SyncVar[Option[Int]]()
       code set None
-      val thread = Spawn(code set (ESC.TRY { cc => runAndExitValue() })) // TODO(leo)
+      val thread = Spawn(code set (ESC.TRY { cc => runAndExitValue()(cc) })) // TODO(leo)
 
       (
-        Future { thread.join(); ESC.TRY(code.get) }, // TODO(leo)
+        Future { thread.join(); ESC.TRY(code.get) }, // TODO(leo) use "CanThrow ->" instead of by-value arg in Future?
         () => thread.interrupt()
       )
     }
 
     /** Start and block until the exit value is available and then return it in Some.  Return None if destroyed (use 'run')*/
-    protected[this] def runAndExitValue(): Option[Int]
+    protected[this] def runAndExitValue()(@local cc: CanThrow): Option[Int]
 
     protected[this] def runInterruptible[T](action: => T)(destroyImpl: => Unit): Option[T] = {
       try   Some(action)
@@ -141,8 +141,8 @@ private[process] trait ProcessImpl {
           // we ignore its exit value so cmd #> file doesn't always return 0.
           if (b.hasExitValue) exit2 else exit1
         } {
-          first.destroy()
-          second.destroy()
+          first.destroy()(cc)
+          second.destroy()(cc)
         }
       }
       finally {
@@ -206,7 +206,7 @@ private[process] trait ProcessImpl {
   * The implementation of `exitValue` waits until these threads die before returning. */
   private[process] class DummyProcess(action: => Int) extends Process {
     private[this] val exitCode = Future(action)
-    override def exitValue() = exitCode()
+    override def exitValue()(@local cc: CanThrow) = exitCode(cc)
     override def destroy() { }
   }
   /** A thin wrapper around a java.lang.Process.  `outputThreads` are the Threads created to read from the
@@ -215,26 +215,26 @@ private[process] trait ProcessImpl {
   * The implementation of `exitValue` interrupts `inputThread` and then waits until all I/O threads die before
   * returning. */
   private[process] class SimpleProcess(p: JProcess, inputThread: Thread, outputThreads: List[Thread]) extends Process {
-    override def exitValue() = {
+    override def exitValue()(@local cc: CanThrow) = ESC.THROW {
       try p.waitFor()                   // wait for the process to terminate
       finally inputThread.interrupt()   // we interrupt the input thread to notify it that it can terminate
       outputThreads foreach (_.join())  // this ensures that all output is complete before returning (waitFor does not ensure this)
 
       p.exitValue()
-    }
-    override def destroy() = {
+    }(cc)
+    override def destroy()(@local cc: CanThrow) = ESC.THROW {
       try {
         outputThreads foreach (_.interrupt()) // on destroy, don't bother consuming any more output
         p.destroy()
       }
       finally inputThread.interrupt()
-    }
+    }(cc)
   }
   private[process] final class ThreadProcess(thread: Thread, success: SyncVar[Boolean]) extends Process {
     override def exitValue()(@local cc: CanThrow) = {
-      thread.join()
+      ESC.THROW { thread.join() }(cc)
       if (success.get(cc)) 0 else 1
     }
-    override def destroy() { thread.interrupt() }
+    override def destroy()(@local cc: CanThrow) { thread.interrupt() }
   }
 }
