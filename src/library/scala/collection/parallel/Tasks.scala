@@ -512,9 +512,7 @@ private[parallel] final class FutureTasks(executor: ExecutionContext) extends Ta
 
   def execute[R, Tp](task: Task[R, Tp]): CanThrow -> R = {
     val future = exec(task)
-    cc => {
-      Await.result(future, scala.concurrent.duration.Duration.Inf)
-    }
+    Await.result(future, scala.concurrent.duration.Duration.Inf)
   }
 
   def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R = {

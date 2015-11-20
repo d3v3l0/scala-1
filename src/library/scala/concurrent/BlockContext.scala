@@ -45,12 +45,12 @@ trait BlockContext {
    *
    * Clients must use `scala.concurrent.blocking` or `scala.concurrent.Await` instead.
    */
-  def blockOn[T](thunk: =>T)(implicit permission: CanAwait): T
+  def blockOn[T](thunk: =>T)(@local cc: CanThrow)(implicit permission: CanAwait): T
 }
 
 object BlockContext {
   private object DefaultBlockContext extends BlockContext {
-    override def blockOn[T](thunk: =>T)(implicit permission: CanAwait): T = thunk
+    override def blockOn[T](thunk: =>T)(@local cc: CanThrow)(implicit permission: CanAwait): T = thunk
   }
 
   private val contextLocal = new ThreadLocal[BlockContext]()
