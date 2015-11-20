@@ -50,51 +50,51 @@ object Source {
   /** creates Source from file with given name, setting its description to
    *  filename.
    */
-  def fromFile(name: String)(implicit codec: Codec): BufferedSource =
-    fromFile(new JFile(name))(codec)
+  def fromFile(name: String)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource =
+    fromFile(new JFile(name))(cc)(codec)
 
   /** creates Source from file with given name, using given encoding, setting
    *  its description to filename.
    */
-  def fromFile(name: String, enc: String): BufferedSource =
-    fromFile(name)(Codec(enc))
+  def fromFile(name: String, enc: String)(@local cc: CanThrow): BufferedSource =
+    fromFile(name)(cc)(Codec(enc))
 
   /** creates `ource` from file with given file `URI`.
    */
-  def fromFile(uri: URI)(implicit codec: Codec): BufferedSource =
-    fromFile(new JFile(uri))(codec)
+  def fromFile(uri: URI)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource =
+    fromFile(new JFile(uri))(cc)(codec)
 
   /** creates Source from file with given file: URI
    */
-  def fromFile(uri: URI, enc: String): BufferedSource =
-    fromFile(uri)(Codec(enc))
+  def fromFile(uri: URI, enc: String)(@local cc: CanThrow): BufferedSource =
+    fromFile(uri)(cc)(Codec(enc))
 
   /** creates Source from file, using default character encoding, setting its
    *  description to filename.
    */
-  def fromFile(file: JFile)(implicit codec: Codec): BufferedSource =
-    fromFile(file, Source.DefaultBufSize)(codec)
+  def fromFile(file: JFile)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource =
+    fromFile(file, Source.DefaultBufSize)(cc)(codec)
 
   /** same as fromFile(file, enc, Source.DefaultBufSize)
    */
-  def fromFile(file: JFile, enc: String): BufferedSource =
-    fromFile(file)(Codec(enc))
+  def fromFile(file: JFile, enc: String)(@local cc: CanThrow): BufferedSource =
+    fromFile(file)(cc)(Codec(enc))
 
-  def fromFile(file: JFile, enc: String, bufferSize: Int): BufferedSource =
-    fromFile(file, bufferSize)(Codec(enc))
+  def fromFile(file: JFile, enc: String, bufferSize: Int)(@local cc: CanThrow): BufferedSource =
+    fromFile(file, bufferSize)(cc)(Codec(enc))
 
   /** Creates Source from `file`, using given character encoding, setting
    *  its description to filename. Input is buffered in a buffer of size
    *  `bufferSize`.
    */
-  def fromFile(file: JFile, bufferSize: Int)(implicit codec: Codec): BufferedSource = {
-    val inputStream = new FileInputStream(file)
+  def fromFile(file: JFile, bufferSize: Int)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource = {
+    val inputStream = ESC.THROW { new FileInputStream(file) }(cc)
 
     createBufferedSource(
       inputStream,
       bufferSize,
-      () => fromFile(file, bufferSize)(codec),
-      () => inputStream.close()
+      () => ESC.TRY { cc => fromFile(file, bufferSize)(cc)(codec) }, // TODO(leo) see if "{ cc =>" would work
+      () => ESC.NO(inputStream.close()) // TODO(leo) see if "CanThrow ->" would work
     )(codec) withDescription ("file:" + file.getAbsolutePath)
   }
 
@@ -103,42 +103,42 @@ object Source {
    *
    *  @return      the created `Source` instance.
    */
-  def fromBytes(bytes: Array[Byte])(implicit codec: Codec): Source =
-    fromString(new String(bytes, codec.name))
+  def fromBytes(bytes: Array[Byte])(@local cc: CanThrow)(implicit codec: Codec): Source =
+    fromString(ESC.THROW(new String(bytes, codec.name))(cc))
 
-  def fromBytes(bytes: Array[Byte], enc: String): Source =
-    fromBytes(bytes)(Codec(enc))
+  def fromBytes(bytes: Array[Byte], enc: String)(@local cc: CanThrow): Source =
+    fromBytes(bytes)(cc)(Codec(enc))
 
   /** Create a `Source` from array of bytes, assuming
    *  one byte per character (ISO-8859-1 encoding.)
    */
-  def fromRawBytes(bytes: Array[Byte]): Source =
-    fromString(new String(bytes, Codec.ISO8859.name))
+  def fromRawBytes(bytes: Array[Byte])(@local cc: CanThrow): Source =
+    fromString(ESC.THROW(new String(bytes, Codec.ISO8859.name))(cc))
 
   /** creates `Source` from file with given file: URI
    */
-  def fromURI(uri: URI)(implicit codec: Codec): BufferedSource =
-    fromFile(new JFile(uri))(codec)
+  def fromURI(uri: URI)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource =
+    fromFile(new JFile(uri))(cc)(codec)
 
   /** same as fromURL(new URL(s))(Codec(enc))
    */
-  def fromURL(s: String, enc: String): BufferedSource =
-    fromURL(s)(Codec(enc))
+  def fromURL(s: String, enc: String)(@local cc: CanThrow): BufferedSource =
+    fromURL(s)(cc)(Codec(enc))
 
   /** same as fromURL(new URL(s))
    */
-  def fromURL(s: String)(implicit codec: Codec): BufferedSource =
-    fromURL(new URL(s))(codec)
+  def fromURL(s: String)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource =
+    fromURL(ESC.THROW(new URL(s))(cc))(cc)(codec)
 
   /** same as fromInputStream(url.openStream())(Codec(enc))
    */
-  def fromURL(url: URL, enc: String): BufferedSource =
-    fromURL(url)(Codec(enc))
+  def fromURL(url: URL, enc: String)(@local cc: CanThrow): BufferedSource =
+    fromURL(url)(cc)(Codec(enc))
 
   /** same as fromInputStream(url.openStream())(codec)
    */
-  def fromURL(url: URL)(implicit codec: Codec): BufferedSource =
-    fromInputStream(url.openStream())(codec)
+  def fromURL(url: URL)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource =
+    fromInputStream(ESC.THROW(url.openStream())(cc))(codec)
 
   /** Reads data from inputStream with a buffered reader, using the encoding
    *  in implicit parameter codec.
