@@ -171,11 +171,11 @@ trait ProcessBuilder extends Source with Sink {
     * with a non-zero value, the Stream will provide all lines up to termination
     * and then throw an exception.
     */
-  def lineStream: Stream[String]
-  
+  def lineStream(@local cc: CanThrow): Stream[String]
+
   /** Deprecated (renamed). Use `lineStream` instead. */
   @deprecated("Use lineStream instead.", "2.11.0")
-  def lines: Stream[String] = lineStream
+  def lines(@local cc: CanThrow): Stream[String] = lineStream(cc)
 
   /** Starts the process represented by this builder.  The output is returned as
     * a Stream that blocks when lines are not available but the process has not
@@ -183,11 +183,11 @@ trait ProcessBuilder extends Source with Sink {
     * process exits with a non-zero value, the Stream will provide all lines up
     * to termination and then throw an exception.
     */
-  def lineStream(log: ProcessLogger): Stream[String]
-  
+  def lineStream(log: ProcessLogger)(@local cc: CanThrow): Stream[String]
+
   /** Deprecated (renamed).  Use `lineStream(log: ProcessLogger)` instead. */
   @deprecated("Use stream instead.", "2.11.0")
-  def lines(log: ProcessLogger): Stream[String] = lineStream(log)
+  def lines(log: ProcessLogger)(@local cc: CanThrow): Stream[String] = lineStream(log)(cc)
 
   /** Starts the process represented by this builder.  The output is returned as
     * a Stream that blocks when lines are not available but the process has not
@@ -196,9 +196,9 @@ trait ProcessBuilder extends Source with Sink {
     * but will not throw an exception.
     */
   def lineStream_! : Stream[String]
-  
+
   /** Deprecated (renamed).  Use `lineStream_!` instead. */
-  @deprecated("Use lineStream_! instead.", "2.11.0")  
+  @deprecated("Use lineStream_! instead.", "2.11.0")
   def lines_! : Stream[String] = lineStream_!
 
   /** Starts the process represented by this builder.  The output is returned as
@@ -208,7 +208,7 @@ trait ProcessBuilder extends Source with Sink {
     * to termination but will not throw an exception.
     */
   def lineStream_!(log: ProcessLogger): Stream[String]
-  
+
   /** Deprecated (renamed).  Use `lineStream_!(log: ProcessLogger)` instead. */
   @deprecated("Use stream_! instead.", "2.11.0")
   def lines_!(log: ProcessLogger): Stream[String] = lineStream_!(log)

@@ -27,17 +27,17 @@ class SyncVar[A] {
    *
    * @return value that is held in this container
    */
-  def get: A = synchronized {
-    while (!isDefined) wait()
+  def get(@local cc: CanThrow): A = synchronized {
+    ESC.THROW { while (!isDefined) wait() }(cc)
     value.get
   }
 
   /** Waits `timeout` millis. If `timeout <= 0` just returns 0.
     * It never returns negative results.
     */
-  private def waitMeasuringElapsed(timeout: Long): Long = if (timeout <= 0) 0 else {
+  private def waitMeasuringElapsed(timeout: Long)(@local cc: CanThrow): Long = if (timeout <= 0) 0 else {
     val start = System.nanoTime()
-    wait(timeout)
+    ESC.THROW { wait(timeout) }(cc)
     val elapsed = System.nanoTime() - start
     // nanoTime should be monotonic, but it's not possible to rely on that.
     // See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6458294.
@@ -51,14 +51,14 @@ class SyncVar[A] {
    *  @param timeout     the amount of milliseconds to wait, 0 means forever
    *  @return            `None` if variable is undefined after `timeout`, `Some(value)` otherwise
    */
-  def get(timeout: Long): Option[A] = synchronized {
+  def get(timeout: Long)(@local cc: CanThrow): Option[A] = synchronized {
     /* Defending against the system clock going backward
      * by counting time elapsed directly.  Loop required
      * to deal with spurious wakeups.
      */
     var rest = timeout
     while (!isDefined && rest > 0) {
-      val elapsed = waitMeasuringElapsed(rest)
+      val elapsed = waitMeasuringElapsed(rest)(cc)
       rest -= elapsed
     }
     value
@@ -70,8 +70,8 @@ class SyncVar[A] {
    *
    * @return value that was held in this container
    */
-  def take(): A = synchronized {
-    try get
+  def take()(@local cc: CanThrow): A = synchronized {
+    try get(cc)
     finally unsetVal()
   }
 
@@ -84,8 +84,8 @@ class SyncVar[A] {
    *  @return            the value or a throws an exception if the timeout occurs
    *  @throws NoSuchElementException on timeout
    */
-  def take(timeout: Long): A = synchronized {
-    try get(timeout).get
+  def take(timeout: Long)(@local cc: CanThrow): A = synchronized {
+    try get(timeout)(cc).get
     finally unsetVal()
   }
 
@@ -99,8 +99,8 @@ class SyncVar[A] {
 
   /** Places a value in the SyncVar. If the SyncVar already has a stored value,
    * it waits until another thread takes it */
-  def put(x: A): Unit = synchronized {
-    while (isDefined) wait()
+  def put(x: A)(@local cc: CanThrow): Unit = synchronized {
+    ESC.THROW { while (isDefined) wait() }(cc)
     setVal(x)
   }
 

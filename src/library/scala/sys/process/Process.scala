@@ -32,7 +32,7 @@ import scala.language.implicitConversions
  */
 trait Process {
   /** Blocks until this process exits and returns the exit code.*/
-  def exitValue(): Int
+  def exitValue()(@local cc: CanThrow): Int
   /** Destroys this process. */
   def destroy(): Unit
 }
