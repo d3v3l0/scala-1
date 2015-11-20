@@ -1,0 +1,29 @@
+##!/bin/bash
+fork=1fbce4612c21a4d0c553ea489b4765494828c09f  # TODO: use git command?
+root=src/library/scala/collection
+
+src_pat="$root/**.scala"
+
+# Count both added & changed but not removed lines (+++ is file boundary)
+show_changes() {
+    git diff -b $fork HEAD $root | \
+	grep '^+' | grep -v -e '^+++' -e '^+[[:space:]]*$'
+}
+
+show_source_nocomment() {
+    git ls-files $fork 'src/library/scala/collection/*.scala' | \
+	sed "s/.*/$fork:&/" | xargs git show | \
+	grep -v '^[[:space:]]*\(\*\|\*\*\|[/\\]\*\)'  # code comment // OK (1k)
+}
+
+sloc_affected=$(show_changes | wc -l)
+echo "Affected SLOC (excluding deletions): $sloc_affected"
+# show_changes
+
+sloc_nocomment=$(show_source_nocomment | wc -l)
+echo "$src_pat SLOC (no comments): $sloc_nocomment"
+# show_source_nocomment
+
+echo "Affected code ratio: $(echo $sloc_affected / $sloc_nocomment | bc -l)"
+sloc_annot=$(show_changes | grep "@p\?local" | wc -l)
+echo "@[p]local annotations: $sloc_annot ($(echo $sloc_annot / $sloc_affected | bc -l))"
