@@ -15,7 +15,7 @@ private[scala] trait StdIn {
    *
    * @return the string read from the terminal or null if the end of stream was reached.
    */
-  def readLine(): String = in.readLine()
+  def readLine()(@local cc: CanThrow): String = ESC.THROW { in.readLine() }(cc)
 
   /** Print and flush formatted text to the default output, and read a full line from the default input.
    *  Returns `null` if the end of the input stream has been reached.
@@ -24,10 +24,10 @@ private[scala] trait StdIn {
    *  @param args the parameters used to instantiate the format, as in `printf`.
    *  @return the string read from the default input
    */
-  def readLine(text: String, args: Any*): String = {
+  def readLine(text: String, args: Any*)(@local cc: CanThrow): String = {
     printf(text, args: _*)
     out.flush()
-    readLine()
+    readLine()(cc)
   }
 
   /** Reads a boolean value from an entire line of the default input.
@@ -36,10 +36,10 @@ private[scala] trait StdIn {
    *  @return the boolean value read, or false if it couldn't be converted to a boolean
    *  @throws java.io.EOFException if the end of the input stream has been reached.
    */
-  def readBoolean(): Boolean = {
-    val s = readLine()
+  def readBoolean()(@local cc: CanThrow): Boolean = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
       s.toLowerCase() match {
         case "true" => true
@@ -57,10 +57,10 @@ private[scala] trait StdIn {
    *  input stream has been reached.
    *  @throws java.lang.NumberFormatException if the value couldn't be converted to a Byte
    */
-  def readByte(): Byte = {
-    val s = readLine()
+  def readByte()(@local cc: CanThrow): Byte = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
       s.toByte
   }
@@ -72,10 +72,10 @@ private[scala] trait StdIn {
    *  input stream has been reached.
    *  @throws java.lang.NumberFormatException if the value couldn't be converted to a Short
    */
-  def readShort(): Short = {
-    val s = readLine()
+  def readShort()(@local cc: CanThrow): Short = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
       s.toShort
   }
@@ -87,10 +87,10 @@ private[scala] trait StdIn {
    *  input stream has been reached.
    *  @throws java.lang.StringIndexOutOfBoundsException if the line read from default input was empty
    */
-  def readChar(): Char = {
-    val s = readLine()
+  def readChar()(@local cc: CanThrow): Char = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
       s charAt 0
   }
@@ -102,10 +102,10 @@ private[scala] trait StdIn {
    *  input stream has been reached.
    *  @throws java.lang.NumberFormatException if the value couldn't be converted to an Int
    */
-  def readInt(): Int = {
-    val s = readLine()
+  def readInt()(@local cc: CanThrow): Int = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
       s.toInt
   }
@@ -117,10 +117,10 @@ private[scala] trait StdIn {
    *  input stream has been reached.
    *  @throws java.lang.NumberFormatException if the value couldn't be converted to a Long
    */
-  def readLong(): Long = {
-    val s = readLine()
+  def readLong()(@local cc: CanThrow): Long = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
       s.toLong
   }
@@ -132,10 +132,10 @@ private[scala] trait StdIn {
    *  @throws java.lang.NumberFormatException if the value couldn't be converted to a Float
    *
    */
-  def readFloat(): Float = {
-    val s = readLine()
+  def readFloat()(@local cc: CanThrow): Float = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
       s.toFloat
   }
@@ -147,10 +147,10 @@ private[scala] trait StdIn {
    *  input stream has been reached.
    *  @throws java.lang.NumberFormatException if the value couldn't be converted to a Float
    */
-  def readDouble(): Double = {
-    val s = readLine()
+  def readDouble()(@local cc: CanThrow): Double = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
       s.toDouble
   }
@@ -164,12 +164,12 @@ private[scala] trait StdIn {
    *  @throws java.io.EOFException if the end of the input stream has been
    *          reached.
    */
-  def readf(format: String): List[Any] = {
-    val s = readLine()
+  def readf(format: String)(@local cc: CanThrow): List[Any] = {
+    val s = readLine()(cc)
     if (s == null)
-      throw new java.io.EOFException("Console has reached end of input")
+      ESC.THROW { throw new java.io.EOFException("Console has reached end of input") }(cc)
     else
-      textComponents(new MessageFormat(format).parse(s))
+      textComponents(ESC.THROW(new MessageFormat(format).parse(s))(cc))
   }
 
   /** Reads in some structured input (from the default input), specified by
@@ -179,7 +179,7 @@ private[scala] trait StdIn {
    *  @param format format string, as accepted by `readf`.
    *  @return The first value that was extracted from the input
    */
-  def readf1(format: String): Any = readf(format).head
+  def readf1(format: String)(@local cc: CanThrow): Any = readf(format)(cc).head
 
   /** Reads in some structured input (from the default input), specified
    *  by a format specifier, returning only the first two values extracted,
@@ -188,8 +188,8 @@ private[scala] trait StdIn {
    *  @param format format string, as accepted by `readf`.
    *  @return A [[scala.Tuple2]] containing the first two values extracted
    */
-  def readf2(format: String): (Any, Any) = {
-    val res = readf(format)
+  def readf2(format: String)(@local cc: CanThrow): (Any, Any) = {
+    val res = readf(format)(cc)
     (res.head, res.tail.head)
   }
 
@@ -200,8 +200,8 @@ private[scala] trait StdIn {
    *  @param format format string, as accepted by `readf`.
    *  @return A [[scala.Tuple3]] containing the first three values extracted
    */
-  def readf3(format: String): (Any, Any, Any) = {
-    val res = readf(format)
+  def readf3(format: String)(@local cc: CanThrow): (Any, Any, Any) = {
+    val res = readf(format)(cc)
     (res.head, res.tail.head, res.tail.tail.head)
   }
 
