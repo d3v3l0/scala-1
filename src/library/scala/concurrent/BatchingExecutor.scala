@@ -70,7 +70,7 @@ private[concurrent] trait BatchingExecutor extends Executor {
                   val remaining = _tasksLocal.get
                   _tasksLocal set Nil
                   unbatchedExecute(new Batch(remaining)) //TODO what if this submission fails?
-                  throw t // rethrow
+                  ESC.NO { throw t /* rethrow */ } // XXX(leo) Runnable.run() doesn't throw, nowhere to propagate?
               }
               processBatch(_tasksLocal.get) // since head.run() can add entries, always do _tasksLocal.get here
           }
@@ -83,7 +83,7 @@ private[concurrent] trait BatchingExecutor extends Executor {
       }
     }
 
-    override def blockOn[T](thunk: => T)(implicit permission: CanAwait): T = {
+    override def blockOn[T](thunk: => T)(@local cc: CanThrow)(implicit permission: CanAwait): T = {
       // if we know there will be blocking, we don't want to keep tasks queued up because it could deadlock.
       {
         val tasks = _tasksLocal.get
@@ -94,7 +94,7 @@ private[concurrent] trait BatchingExecutor extends Executor {
 
       // now delegate the blocking to the previous BC
       require(parentBlockContext ne null)
-      parentBlockContext.blockOn(thunk)
+      parentBlockContext.blockOn(thunk)(cc)
     }
   }
 

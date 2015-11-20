@@ -40,16 +40,16 @@ private[scala] class ExecutionContextImpl private[impl] (es: Executor, reporter:
     def newThread(runnable: Runnable): Thread = wire(new Thread(runnable))
 
     def newThread(fjp: ForkJoinPool): ForkJoinWorkerThread = wire(new ForkJoinWorkerThread(fjp) with BlockContext {
-      override def blockOn[T](thunk: =>T)(implicit permission: CanAwait): T = {
+      override def blockOn[T](thunk: =>T)(@local cc: CanThrow)(implicit permission: CanAwait): T = {
         var result: T = null.asInstanceOf[T]
-        ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker {
+        ESC.THROW(ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker {
           @volatile var isdone = false
           override def block(): Boolean = {
             result = try thunk finally { isdone = true }
             true
           }
           override def isReleasable = isdone
-        })
+        }))(cc)
         result
       }
     })
