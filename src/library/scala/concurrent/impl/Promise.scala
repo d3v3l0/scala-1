@@ -191,7 +191,7 @@ private[concurrent] object Promise {
 
     /** Try waiting for this promise to be completed.
      */
-    protected final def tryAwait(atMost: Duration): Boolean = if (!isCompleted) {
+    protected final def tryAwait(atMost: Duration)(@local cc: CanThrow): Boolean = if (!isCompleted) {
       import Duration.Undefined
       import scala.concurrent.Future.InternalCallbackExecutor
       atMost match {
@@ -199,13 +199,13 @@ private[concurrent] object Promise {
         case Duration.Inf        =>
           val l = new CompletionLatch[T]()
           onComplete(l)(InternalCallbackExecutor)
-          l.acquireSharedInterruptibly(1)
+          ESC.THROW { l.acquireSharedInterruptibly(1) }(cc)
         case Duration.MinusInf   => // Drop out
         case f: FiniteDuration   =>
           if (f > Duration.Zero) {
             val l = new CompletionLatch[T]()
             onComplete(l)(InternalCallbackExecutor)
-            l.tryAcquireSharedNanos(1, f.toNanos)
+            ESC.THROW { l.tryAcquireSharedNanos(1, f.toNanos) }(cc)
           }
       }
 
@@ -214,13 +214,13 @@ private[concurrent] object Promise {
 
     @throws(classOf[TimeoutException])
     @throws(classOf[InterruptedException])
-    def ready(atMost: Duration)(implicit permit: CanAwait): this.type =
-      if (tryAwait(atMost)) this
-      else throw new TimeoutException("Futures timed out after [" + atMost + "]")
+    def ready(atMost: Duration)(@local cc: CanThrow)(implicit permit: CanAwait): this.type =
+      if (tryAwait(atMost)(cc)) this
+      else ESC.THROW { throw new TimeoutException("Futures timed out after [" + atMost + "]") }(cc)
 
     @throws(classOf[Exception])
-    def result(atMost: Duration)(implicit permit: CanAwait): T =
-      ready(atMost).value.get.get // ready throws TimeoutException if timeout so value.get is safe here
+    def result(atMost: Duration)(@local cc: CanThrow)(implicit permit: CanAwait): T =
+      ESC.NO { ready(atMost)(cc).value.get.get(cc) /* TODO(leo) what is wrong here? */ } // ready throws TimeoutException if timeout so value.get is safe here
 
     def value: Option[Try[T]] = value0
 
@@ -335,7 +335,7 @@ private[concurrent] object Promise {
 
     def ready(atMost: Duration)(implicit permit: CanAwait): this.type = this
 
-    def result(atMost: Duration)(implicit permit: CanAwait): T = value.get.get
+    def result(atMost: Duration)(@local cc: CanThrow)(implicit permit: CanAwait): T = value.get.get(cc) // TODO(leo) not sure (this one cannot throw exception)
   }
 
 }

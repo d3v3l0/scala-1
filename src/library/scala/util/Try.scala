@@ -75,8 +75,8 @@ sealed abstract class Try[+T] {
    *
    * ''Note:'': This will throw an exception if it is not a success and default throws an exception.
    */
-  def getOrElse[U >: T](default: => U): U =
-    if (isSuccess) get else default
+  def getOrElse[U >: T](default: => U)(@local cc: CanThrow): U =
+    if (isSuccess) get(cc) else default // TODO(leo) not sure
 
   /** Returns this `Try` if it's a `Success` or the given `default` argument if this is a `Failure`.
    */
@@ -88,7 +88,7 @@ sealed abstract class Try[+T] {
 
   /** Returns the value from this `Success` or throws the exception if this is a `Failure`.
    */
-  def get: T
+  def get(@local cc: CanThrow): T // TODO(leo) not sure
 
   /**
    * Applies the given function `f` if this is a `Success`, otherwise returns `Unit` if this is a `Failure`.
@@ -156,7 +156,7 @@ sealed abstract class Try[+T] {
   /**
    * Returns `None` if this is a `Failure` or a `Some` containing the value if this is a `Success`.
    */
-  def toOption: Option[T] = if (isSuccess) Some(get) else None
+  def toOption: Option[T] = if (isSuccess) ESC.TRY { cc => Some(get(cc)) } else None // TODO(leo)
 
   /**
    * Transforms a nested `Try`, ie, a `Try` of type `Try[Try[T]]`,
@@ -204,7 +204,7 @@ final case class Failure[+T](exception: Throwable) extends Try[T] {
     } catch {
       case NonFatal(e) => Failure(e)
     }
-  def get: T = throw exception
+  def get(@local cc: CanThrow): T = ESC.THROW { throw exception }(cc) // TODO(leo) not sure what is the right thing here
   def flatMap[U](f: T => Try[U]): Try[U] = this.asInstanceOf[Try[U]]
   def flatten[U](implicit ev: T <:< Try[U]): Try[U] = this.asInstanceOf[Try[U]]
   def foreach[U](f: T => U): Unit = ()
