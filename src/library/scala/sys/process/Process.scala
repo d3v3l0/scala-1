@@ -34,7 +34,7 @@ trait Process {
   /** Blocks until this process exits and returns the exit code.*/
   def exitValue()(@local cc: CanThrow): Int
   /** Destroys this process. */
-  def destroy(): Unit
+  def destroy()(@local cc: CanThrow): Unit
 }
 
 /** Methods for constructing simple commands that can then be combined. */
