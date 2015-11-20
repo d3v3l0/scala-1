@@ -40,7 +40,7 @@ trait Task[R, +Tp] {
 
   // exception handling mechanism
   @volatile var throwable: Throwable = null
-  def forwardThrowable() = if (throwable != null) throw throwable
+  def forwardThrowable()(@local cc: CanThrow) = ESC.THROW { if (throwable != null) throw throwable }(cc)
 
   // tries to do the leaf computation, storing the possible exception
   private[parallel] def tryLeaf(lastres: Option[R]) {
@@ -122,7 +122,7 @@ trait Tasks {
   val environment: AnyRef
 
   /** Executes a task and returns a future. Forwards an exception if some task threw it. */
-  def execute[R, Tp](fjtask: Task[R, Tp]): () => R
+  def execute[R, Tp](fjtask: Task[R, Tp]): CanThrow -> R
 
   /** Executes a result task, waits for it to finish, then returns its result. Forwards an exception if some task threw it. */
   def executeAndWaitResult[R, Tp](task: Task[R, Tp]): R
@@ -230,7 +230,7 @@ trait ThreadPoolTasks extends Tasks {
         executor.submit(this)
       }
     }
-    def sync() = synchronized {
+    def sync()(@local cc: CanThrow) = synchronized {
       // debuglog("Syncing on " + body)
       // utb: future.get()
       executor.synchronized {
@@ -240,7 +240,7 @@ trait ThreadPoolTasks extends Tasks {
           //assert(executor.getCorePoolSize == (coresize + 1))
         }
       }
-      while (!completed) this.wait
+      ESC.THROW { while (!completed) this.wait }(cc)
     }
     def tryCancel() = synchronized {
       // utb: future.cancel(false)
@@ -292,27 +292,27 @@ trait ThreadPoolTasks extends Tasks {
     totaltasks -= 1
   }
 
-  def execute[R, Tp](task: Task[R, Tp]): () => R = {
+  def execute[R, Tp](task: Task[R, Tp]): CanThrow -> R = {
     val t = newWrappedTask(task)
 
     // debuglog("-----------> Executing without wait: " + task)
     t.start()
 
-    () => {
-      t.sync()
-      t.body.forwardThrowable()
+    { cc =>
+      t.sync()(cc)
+      t.body.forwardThrowable()(cc)
       t.body.result
     }
   }
 
-  def executeAndWaitResult[R, Tp](task: Task[R, Tp]): R = {
+  def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R = {
     val t = newWrappedTask(task)
 
     // debuglog("-----------> Executing with wait: " + task)
     t.start()
 
-    t.sync()
-    t.body.forwardThrowable()
+    t.sync()(cc)
+    t.body.forwardThrowable()(cc)
     t.body.result
   }
 
@@ -391,7 +391,7 @@ trait ForkJoinTasks extends Tasks with HavingForkJoinPool {
    *
    *  $fjdispatch
    */
-  def execute[R, Tp](task: Task[R, Tp]): () => R = {
+  def execute[R, Tp](task: Task[R, Tp]): CanThrow -> R = {
     val fjtask = newWrappedTask(task)
 
     if (Thread.currentThread.isInstanceOf[ForkJoinWorkerThread]) {
@@ -400,9 +400,9 @@ trait ForkJoinTasks extends Tasks with HavingForkJoinPool {
       forkJoinPool.execute(fjtask)
     }
 
-    () => {
+    { cc =>
       fjtask.sync()
-      fjtask.body.forwardThrowable()
+      fjtask.body.forwardThrowable()(cc)
       fjtask.body.result
     }
   }
@@ -414,7 +414,7 @@ trait ForkJoinTasks extends Tasks with HavingForkJoinPool {
    *
    *  @return    the result of the task
    */
-  def executeAndWaitResult[R, Tp](task: Task[R, Tp]): R = {
+  def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R = {
     val fjtask = newWrappedTask(task)
 
     if (Thread.currentThread.isInstanceOf[ForkJoinWorkerThread]) {
@@ -425,7 +425,7 @@ trait ForkJoinTasks extends Tasks with HavingForkJoinPool {
 
     fjtask.sync()
     // if (fjtask.body.throwable != null) println("throwing: " + fjtask.body.throwable + " at " + fjtask.body)
-    fjtask.body.forwardThrowable()
+    fjtask.body.forwardThrowable()(cc)
     fjtask.body.result
   }
 
@@ -505,21 +505,20 @@ private[parallel] final class FutureTasks(executor: ExecutionContext) extends Ta
     }
 
     compute(topLevelTask, 0) map { t =>
-      t.forwardThrowable()
+      ESC.TRY { cc => t.forwardThrowable()(cc) } // TODO(leo)
       t.result
     }
   }
 
-  def execute[R, Tp](task: Task[R, Tp]): () => R = {
+  def execute[R, Tp](task: Task[R, Tp]): CanThrow -> R = {
     val future = exec(task)
-    val callback = () => {
+    cc => {
       Await.result(future, scala.concurrent.duration.Duration.Inf)
     }
-    callback
   }
 
-  def executeAndWaitResult[R, Tp](task: Task[R, Tp]): R = {
-    execute(task)()
+  def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R = {
+    execute(task)(cc)
   }
 
   def parallelismLevel = Runtime.getRuntime.availableProcessors
@@ -553,9 +552,9 @@ trait ExecutionContextTasks extends Tasks {
     case _ => new FutureTasks(environment)
   }
 
-  def execute[R, Tp](task: Task[R, Tp]): () => R = driver execute task
+  def execute[R, Tp](task: Task[R, Tp]): CanThrow -> R = driver execute task
 
-  def executeAndWaitResult[R, Tp](task: Task[R, Tp]): R = driver executeAndWaitResult task
+  def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R = driver executeAndWaitResult task
 
   def parallelismLevel = driver.parallelismLevel
 }
