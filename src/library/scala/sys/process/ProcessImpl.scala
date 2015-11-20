@@ -35,7 +35,7 @@ private[process] trait ProcessImpl {
 
       Spawn(run())
 
-      () => result.get match {
+      () => ESC.TRY(result.get) match { // TODO(leo)
         case Right(value)    => value
         case Left(exception) => throw exception
       }
@@ -67,12 +67,12 @@ private[process] trait ProcessImpl {
     evaluateSecondProcess: Int => Boolean
   ) extends CompoundProcess {
 
-    protected[this] override def runAndExitValue() = {
+    protected[this] override def runAndExitValue()(@local cc: CanThrow) = {
       val first = a.run(io)
-      runInterruptible(first.exitValue())(first.destroy()) flatMap { codeA =>
+      runInterruptible(first.exitValue()(cc))(first.destroy()) flatMap { codeA =>
         if (evaluateSecondProcess(codeA)) {
           val second = b.run(io)
-          runInterruptible(second.exitValue())(second.destroy())
+          runInterruptible(second.exitValue()(cc))(second.destroy())
         }
         else Some(codeA)
       }
@@ -91,10 +91,10 @@ private[process] trait ProcessImpl {
     protected lazy val (getExitValue, destroyer) = {
       val code = new SyncVar[Option[Int]]()
       code set None
-      val thread = Spawn(code set runAndExitValue())
+      val thread = Spawn(code set (ESC.TRY { cc => runAndExitValue() })) // TODO(leo)
 
       (
-        Future { thread.join(); code.get },
+        Future { thread.join(); ESC.TRY(code.get) }, // TODO(leo)
         () => thread.interrupt()
       )
     }
@@ -109,7 +109,7 @@ private[process] trait ProcessImpl {
   }
 
   private[process] class PipedProcesses(a: ProcessBuilder, b: ProcessBuilder, defaultIO: ProcessIO, toError: Boolean) extends CompoundProcess {
-    protected[this] override def runAndExitValue() = {
+    protected[this] override def runAndExitValue()(@local cc: CanThrow) = {
       val currentSource = new SyncVar[Option[InputStream]]
       val pipeOut       = new PipedOutputStream
       val source        = new PipeSource(currentSource, pipeOut, a.toString)
@@ -120,23 +120,23 @@ private[process] trait ProcessImpl {
       val sink        = new PipeSink(pipeIn, currentSink, b.toString)
       sink.start()
 
-      def handleOutOrError(fromOutput: InputStream) = currentSource put Some(fromOutput)
+      def handleOutOrError(fromOutput: InputStream) = ESC.TRY { cc => currentSource.put(Some(fromOutput))(cc) } // TODO(leo)
 
       val firstIO =
         if (toError)
           defaultIO.withError(handleOutOrError)
         else
           defaultIO.withOutput(handleOutOrError)
-      val secondIO = defaultIO.withInput(toInput => currentSink put Some(toInput))
+      val secondIO = defaultIO.withInput(toInput => ESC.TRY { cc => currentSink.put(Some(toInput))(cc) }) // TODO(leo)
 
       val second = b.run(secondIO)
       val first = a.run(firstIO)
       try {
         runInterruptible {
-          val exit1 = first.exitValue()
-          currentSource put None
-          currentSink put None
-          val exit2 = second.exitValue()
+          val exit1 = first.exitValue()(cc)
+          currentSource.put(None)(cc)
+          currentSink.put(None)(cc)
+          val exit2 = second.exitValue()(cc)
           // Since file redirection (e.g. #>) is implemented as a piped process,
           // we ignore its exit value so cmd #> file doesn't always return 0.
           if (b.hasExitValue) exit2 else exit1
@@ -153,7 +153,7 @@ private[process] trait ProcessImpl {
   }
 
   private[process] abstract class PipeThread(isSink: Boolean, labelFn: () => String) extends Thread {
-    def run(): Unit
+    def run()(@local cc: CanThrow): Unit
 
     private[process] def runloop(src: InputStream, dst: OutputStream): Unit = {
       try     BasicIO.transferFully(src, dst)
@@ -174,12 +174,12 @@ private[process] trait ProcessImpl {
     label: => String
   ) extends PipeThread(false, () => label) {
 
-    final override def run(): Unit = currentSource.get match {
+    final override def run()(@local cc: CanThrow): Unit = currentSource.get(cc) match {
       case Some(source) =>
         try runloop(source, pipe)
         finally currentSource.unset()
 
-        run()
+        run()(cc)
       case None =>
         currentSource.unset()
         BasicIO close pipe
@@ -191,12 +191,12 @@ private[process] trait ProcessImpl {
     label: => String
   ) extends PipeThread(true, () => label) {
 
-    final override def run(): Unit = currentSink.get match {
+    final override def run()(@local cc: CanThrow): Unit = currentSink.get(cc) match {
       case Some(sink) =>
         try runloop(pipe, sink)
         finally currentSink.unset()
 
-        run()
+        run()(cc)
       case None =>
         currentSink.unset()
     }
@@ -231,9 +231,9 @@ private[process] trait ProcessImpl {
     }
   }
   private[process] final class ThreadProcess(thread: Thread, success: SyncVar[Boolean]) extends Process {
-    override def exitValue() = {
+    override def exitValue()(@local cc: CanThrow) = {
       thread.join()
-      if (success.get) 0 else 1
+      if (success.get(cc)) 0 else 1
     }
     override def destroy() { thread.interrupt() }
   }

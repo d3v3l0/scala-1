@@ -53,7 +53,7 @@ private[process] trait ProcessBuilderImpl {
 
     override def run(io: ProcessIO): Process = {
       val success = new SyncVar[Boolean]
-      success put false
+      ESC.TRY { cc => success.put(false)(cc) } // TODO(leo)
       val t = Spawn({
         runImpl(io)
         success set true
@@ -104,16 +104,16 @@ private[process] trait ProcessBuilderImpl {
     def !!<                     = slurp(None, withIn = true)
     def !!<(log: ProcessLogger) = slurp(Some(log), withIn = true)
 
-    def lineStream: Stream[String]                       = lineStream(withInput = false, nonZeroException = true, None)
-    def lineStream(log: ProcessLogger): Stream[String]   = lineStream(withInput = false, nonZeroException = true, Some(log))
-    def lineStream_! : Stream[String]                    = lineStream(withInput = false, nonZeroException = false, None)
-    def lineStream_!(log: ProcessLogger): Stream[String] = lineStream(withInput = false, nonZeroException = false, Some(log))
+    def lineStream: Stream[String]                       = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = true, None)(cc) } // TODO(leo)
+    def lineStream(log: ProcessLogger): Stream[String]   = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = true, Some(log))(cc) } // TODO(leo)
+    def lineStream_! : Stream[String]                    = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = false, None)(cc) } // TODO(leo)
+    def lineStream_!(log: ProcessLogger): Stream[String] = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = false, Some(log))(cc) } // TODO(leo)
 
-    def !                      = run(connectInput = false).exitValue()
-    def !(io: ProcessIO)       = run(io).exitValue()
-    def !(log: ProcessLogger)  = runBuffered(log, connectInput = false)
-    def !<                     = run(connectInput = true).exitValue()
-    def !<(log: ProcessLogger) = runBuffered(log, connectInput = true)
+    def !                      = ESC.TRY { cc => run(connectInput = false).exitValue()(cc) } // TODO(leo)
+    def !(io: ProcessIO)       = ESC.TRY { cc => run(io).exitValue()(cc) } // TODO(leo)
+    def !(log: ProcessLogger)  = ESC.TRY { cc => runBuffered(log, connectInput = false)(cc) } // TODO(leo)
+    def !<                     = ESC.TRY { cc => run(connectInput = true).exitValue()(cc) } // TODO(leo)
+    def !<(log: ProcessLogger) = ESC.TRY { cc => runBuffered(log, connectInput = true)(cc) } // TODO(leo)
 
     /** Constructs a new builder which runs this command with all input/output threads marked
      *  as daemon threads.  This allows the creation of a long running process while still
@@ -136,16 +136,16 @@ private[process] trait ProcessBuilderImpl {
       withInput: Boolean,
       nonZeroException: Boolean,
       log: Option[ProcessLogger]
-    ): Stream[String] = {
+    )(@local cc: CanThrow): Stream[String] = {
       val streamed = Streamed[String](nonZeroException)
       val process  = run(BasicIO(withInput, streamed.process, log))
 
-      Spawn(streamed done process.exitValue())
+      Spawn(streamed done process.exitValue()(cc))
       streamed.stream()
     }
 
-    private[this] def runBuffered(log: ProcessLogger, connectInput: Boolean) =
-      log buffer run(log, connectInput).exitValue()
+    private[this] def runBuffered(log: ProcessLogger, connectInput: Boolean)(@local cc: CanThrow) =
+      log buffer run(log, connectInput).exitValue()(cc)
 
     def canPipeTo = false
     def hasExitValue = true
