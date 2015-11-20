@@ -25,7 +25,6 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
 
   type LT
 
-  ////type Repr = Reprs
 
   override /*IterableLike*/
   def isEmpty: Boolean = { length == 0 }

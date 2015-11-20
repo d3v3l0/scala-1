@@ -79,7 +79,6 @@ trait TraversableLike[+A, +Repr] extends Any
 
   type LT
 
-  //type Repr = Reprs
 
   /** The type implementing this traversable */
   protected[this] type Self = Repr
@@ -710,7 +709,6 @@ trait TraversableLike[+A, +Repr] extends Any
 
     // TR not sure about this -- previous version: WithFilter extends FilterMonadic[A, Repr] {
     type LT
-    //type Repr = Reprs
 
     /** Builds a new collection by applying a function to all elements of the
      *  outer $coll containing this `WithFilter` instance that satisfy predicate `p`.

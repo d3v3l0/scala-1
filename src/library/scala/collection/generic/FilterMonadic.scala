@@ -15,7 +15,6 @@ package generic
  */
 trait FilterMonadic[+A, +Repr] extends Any { self =>
   type LT
-  //type Repr = Reprs
   def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
   def flatMap[B, That](f: A => scala.collection.GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That
   def foreach[U](f: A => U): Unit
