@@ -19,8 +19,8 @@ package scala.concurrent
 class Lock {
   var available = true
 
-  def acquire() = synchronized {
-    while (!available) wait()
+  def acquire()(@local cc: CanThrow) = synchronized {
+    ESC.THROW { while (!available) wait() }(cc)
     available = false
   }
 

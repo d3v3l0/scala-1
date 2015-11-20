@@ -43,11 +43,11 @@ class Channel[A] {
    *
    * @return next object dequeued from this channel
    */
-  def read: A = synchronized {
+  def read(@local cc: CanThrow): A = synchronized {
     while (written.next == null) {
       try {
         nreaders += 1
-        wait()
+        ESC.THROW { wait() }(cc)
       }
       finally nreaders -= 1
     }

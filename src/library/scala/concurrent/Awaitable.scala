@@ -40,7 +40,7 @@ trait Awaitable[+T] {
    */
   @throws(classOf[TimeoutException])
   @throws(classOf[InterruptedException])
-  def ready(atMost: Duration)(implicit permit: CanAwait): this.type
+  def ready(atMost: Duration)(@local cc: CanThrow)(implicit permit: CanAwait): this.type
 
   /**
    * Await and return the result (of type `T`) of this `Awaitable`.
@@ -57,8 +57,5 @@ trait Awaitable[+T] {
    * @throws IllegalArgumentException if `atMost` is [[scala.concurrent.duration.Duration.Undefined Duration.Undefined]]
    */
   @throws(classOf[Exception])
-  def result(atMost: Duration)(implicit permit: CanAwait): T
+  def result(atMost: Duration)(@local cc: CanThrow)(implicit permit: CanAwait): T
 }
-
-
-

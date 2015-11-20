@@ -20,11 +20,11 @@ import scala.annotation.implicitNotFound
  * [[http://docs.scala-lang.org/overviews/core/futures.html]].
  *
  * == Common Imports ==
- * 
+ *
  * When working with Futures, you will often find that importing the whole concurrent
  * package is convenient, furthermore you are likely to need an implicit ExecutionContext
  * in scope for many operations involving Futures and Promises:
- * 
+ *
  * {{{
  * import scala.concurrent._
  * import ExecutionContext.Implicits.global
@@ -41,7 +41,7 @@ import scala.annotation.implicitNotFound
  * }}}
  *
  * == Using Futures For Non-blocking Computation ==
- * 
+ *
  * Basic use of futures is easy with the factory method on Future, which executes a
  * provided function asynchronously, handing you back a future result of that function
  * without blocking the current thread. In order to create the Future you will need
@@ -50,7 +50,7 @@ import scala.annotation.implicitNotFound
  * {{{
  * import scala.concurrent._
  * import ExecutionContext.Implicits.global  // implicit execution context
- * 
+ *
  * val firstZebra: Future[Int] = Future {
  *   val source = scala.io.Source.fromFile("/etc/dictionaries-common/words")
  *   source.toSeq.indexOfSlice("zebra")
@@ -80,7 +80,7 @@ import scala.annotation.implicitNotFound
  * animalRange.onSuccess {
  *   case x if x > 500000 => println("It's a long way from Aardvark to Zebra")
  * }
- * }}} 
+ * }}}
  */
 package object concurrent {
   type ExecutionException =    java.util.concurrent.ExecutionException
@@ -120,7 +120,7 @@ package object concurrent {
    *  @throws InterruptedException in the case that a wait within the blocking `body` was interrupted
    */
   @throws(classOf[Exception])
-  def blocking[T](body: =>T): T = BlockContext.current.blockOn(body)(scala.concurrent.AwaitPermission)
+  def blocking[T](body: =>T): T = ESC.TRY { cc => BlockContext.current.blockOn(body)(cc)(scala.concurrent.AwaitPermission) } // XXX(leo) adding (@local cc: CanThrow) breaks the type checking of singleton type in Await.ready (see TODO)
 }
 
 package concurrent {
@@ -165,8 +165,8 @@ package concurrent {
      */
     @throws(classOf[TimeoutException])
     @throws(classOf[InterruptedException])
-    def ready[T](awaitable: Awaitable[T], atMost: Duration): awaitable.type =
-      blocking(awaitable.ready(atMost)(AwaitPermission))
+    def ready[T](awaitable: Awaitable[T], atMost: Duration)(@local cc: CanThrow): awaitable.type =
+      ESC.NO { blocking(awaitable.ready(atMost)(cc)(AwaitPermission)) } // TODO(leo) when I add cc to blocking, this gives error: "required type: awaitable.type; found: Awaitable[T]"
 
     /**
      * Await and return the result (of type `T`) of an `Awaitable`.
@@ -186,7 +186,7 @@ package concurrent {
      * @throws IllegalArgumentException if `atMost` is [[scala.concurrent.duration.Duration.Undefined Duration.Undefined]]
      */
     @throws(classOf[Exception])
-    def result[T](awaitable: Awaitable[T], atMost: Duration): T =
-      blocking(awaitable.result(atMost)(AwaitPermission))
+    def result[T](awaitable: Awaitable[T], atMost: Duration)(@local cc: CanThrow): T =
+      ESC.NO { blocking(awaitable.result(atMost)(cc)(AwaitPermission)) } // XXX(leo)
   }
 }

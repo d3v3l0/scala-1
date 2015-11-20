@@ -37,12 +37,12 @@ class BufferedSource(inputStream: InputStream, bufferSize: Int)(implicit val cod
 
   override lazy val iter = (
     Iterator
-    continually (codec wrap charReader.read())
+    continually (codec wrap ESC.NO(charReader.read()))
     takeWhile (_ != -1)
     map (_.toChar)
   )
 
-  private def decachedReader: BufferedReader = {
+  private def decachedReader(@local cc: CanThrow): BufferedReader = {
     // Don't want to lose a buffered char sitting in iter either. Yes,
     // this is ridiculous, but if I can't get rid of Source, and all the
     // Iterator bits are designed into Source, and people create Sources
@@ -56,7 +56,7 @@ class BufferedSource(inputStream: InputStream, bufferSize: Int)(implicit val cod
     // immediately on the source.
     if (charReaderCreated && iter.hasNext) {
       val pb = new PushbackReader(charReader)
-      pb unread iter.next().toInt
+      ESC.THROW { pb unread iter.next().toInt }(cc)
       new BufferedReader(pb, bufferSize)
     }
     else charReader
@@ -64,18 +64,18 @@ class BufferedSource(inputStream: InputStream, bufferSize: Int)(implicit val cod
 
 
   class BufferedLineIterator extends AbstractIterator[String] with Iterator[String] {
-    private val lineReader = decachedReader
+    private val lineReader = ESC.TRY(decachedReader)
     var nextLine: String = null
 
     override def hasNext = {
       if (nextLine == null)
-        nextLine = lineReader.readLine
+        nextLine = ESC.NO { lineReader.readLine }
 
       nextLine != null
     }
     override def next(): String = {
       val result = {
-        if (nextLine == null) lineReader.readLine
+        if (nextLine == null) ESC.NO{ lineReader.readLine }
         else try nextLine finally nextLine = null
       }
       if (result == null) Iterator.empty.next()
@@ -88,12 +88,12 @@ class BufferedSource(inputStream: InputStream, bufferSize: Int)(implicit val cod
   /** Efficiently converts the entire remaining input into a string. */
   override def mkString = {
     // Speed up slurping of whole data set in the simplest cases.
-    val allReader = decachedReader
+    val allReader = ESC.TRY(decachedReader)
     val sb = new StringBuilder
     val buf = new Array[Char](bufferSize)
     var n = 0
     while (n != -1) {
-      n = allReader.read(buf)
+      n = ESC.NO(allReader.read(buf))
       if (n>0) sb.appendAll(buf, 0, n)
     }
     sb.result

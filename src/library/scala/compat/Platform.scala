@@ -100,7 +100,7 @@ object Platform {
    *  }}}
    */
   @inline
-  def getClassForName(name: String): Class[_] = java.lang.Class.forName(name)
+  def getClassForName(name: String): Class[_] = ESC.NO { java.lang.Class.forName(name) }
 
   /** The default line separator.
    *

@@ -163,7 +163,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   type LT = Nothing // Arguments to ParIterable.map are always first-class!
 
-  //type Repr = Reprs 
+  //type Repr = Reprs
 
   @transient
   @volatile
@@ -946,10 +946,10 @@ self: ParIterableLike[T, Repr, Sequential] =>
   protected[this] abstract class ParComposite[FR, SR, R, First <: StrictSplitterCheckTask[FR, _], Second <: StrictSplitterCheckTask[SR, _]]
   (f: First, s: Second)
   extends Composite[FR, SR, R, First, Second](f, s) {
-    def leaf(prevr: Option[R]) = {
-      val ftfuture: () => Any = tasksupport.execute(ft)
+    def leaf(prevr: Option[R])(@local cc: CanThrow) = {
+      val ftfuture: CanThrow -> Any = tasksupport.execute(ft)
       tasksupport.executeAndWaitResult(st) : Any
-      ftfuture()
+      ESC.THROW { ESC.TRY(ftfuture) }(cc)
       mergeSubtasks()
     }
   }
