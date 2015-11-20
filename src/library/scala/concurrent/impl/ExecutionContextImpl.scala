@@ -118,7 +118,7 @@ private[concurrent] object ExecutionContextImpl {
   final class AdaptedForkJoinTask(runnable: Runnable) extends ForkJoinTask[Unit] {
           final override def setRawResult(u: Unit): Unit = ()
           final override def getRawResult(): Unit = ()
-          final override def exec(): Boolean = try { runnable.run(); true } catch {
+          final override def exec(): Boolean = ESC.NO { try { runnable.run(); true } catch {
             case anything: Throwable ⇒
               val t = Thread.currentThread
               t.getUncaughtExceptionHandler match {
@@ -126,7 +126,7 @@ private[concurrent] object ExecutionContextImpl {
                 case some ⇒ some.uncaughtException(t, anything)
               }
               throw anything
-          }
+          }}
         }
 
   def fromExecutor(e: Executor, reporter: Throwable => Unit = ExecutionContext.defaultReporter): ExecutionContextImpl = new ExecutionContextImpl(e, reporter)
@@ -138,15 +138,13 @@ private[concurrent] object ExecutionContextImpl {
       override def shutdownNow() = asExecutorService.shutdownNow()
       override def isShutdown = asExecutorService.isShutdown
       override def isTerminated = asExecutorService.isTerminated
-      override def awaitTermination(l: Long, timeUnit: TimeUnit) = asExecutorService.awaitTermination(l, timeUnit)
+      override def awaitTermination(l: Long, timeUnit: TimeUnit) = ESC.NO(asExecutorService.awaitTermination(l, timeUnit))
       override def submit[T](callable: Callable[T]) = asExecutorService.submit(callable)
       override def submit[T](runnable: Runnable, t: T) = asExecutorService.submit(runnable, t)
       override def submit(runnable: Runnable) = asExecutorService.submit(runnable)
-      override def invokeAll[T](callables: Collection[_ <: Callable[T]]) = asExecutorService.invokeAll(callables)
-      override def invokeAll[T](callables: Collection[_ <: Callable[T]], l: Long, timeUnit: TimeUnit) = asExecutorService.invokeAll(callables, l, timeUnit)
-      override def invokeAny[T](callables: Collection[_ <: Callable[T]]) = asExecutorService.invokeAny(callables)
-      override def invokeAny[T](callables: Collection[_ <: Callable[T]], l: Long, timeUnit: TimeUnit) = asExecutorService.invokeAny(callables, l, timeUnit)
+      override def invokeAll[T](callables: Collection[_ <: Callable[T]]) = ESC.NO(asExecutorService.invokeAll(callables))
+      override def invokeAll[T](callables: Collection[_ <: Callable[T]], l: Long, timeUnit: TimeUnit) = ESC.NO(asExecutorService.invokeAll(callables, l, timeUnit))
+      override def invokeAny[T](callables: Collection[_ <: Callable[T]]) = ESC.NO(asExecutorService.invokeAny(callables))
+      override def invokeAny[T](callables: Collection[_ <: Callable[T]], l: Long, timeUnit: TimeUnit) = ESC.NO(asExecutorService.invokeAny(callables, l, timeUnit))
     }
 }
-
-
