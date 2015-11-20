@@ -39,7 +39,6 @@ trait GenIterableLike[+A, +Repr] extends Any with GenTraversableLike[A, Repr] { 
 
   type LT
 
-  ////type Repr = Reprs
 
   def iterator: Iterator[A]
 

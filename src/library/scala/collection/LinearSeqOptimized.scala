@@ -36,7 +36,6 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
 
   type LT
 
-  ////type Repr = Reprs
 
   def isEmpty: Boolean
 
