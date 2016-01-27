@@ -85,18 +85,18 @@ object PagedSeq {
 
   /** Constructs a paged character sequence from an input reader
    */
-  def fromReader(source: Reader): PagedSeq[Char] =
-    new PagedSeq(source.read(_: Array[Char], _: Int, _: Int))
+  def fromReader(source: Reader)(@local cc: CanThrow): PagedSeq[Char] =
+    ESC.THROW { new PagedSeq(source.read(_: Array[Char], _: Int, _: Int)) }(cc)
 
   /** Constructs a paged character sequence from an input file
    */
-  def fromFile(source: File): PagedSeq[Char] =
-    fromReader(new FileReader(source))
+  def fromFile(source: File)(@local cc: CanThrow): PagedSeq[Char] =
+    ESC.THROW { fromReader(new FileReader(source))(cc) }(cc)
 
   /** Constructs a paged character sequence from a file with given name
    */
-  def fromFile(source: String): PagedSeq[Char] =
-    fromFile(new File(source))
+  def fromFile(source: String)(@local cc: CanThrow): PagedSeq[Char] =
+    fromFile(new File(source))(cc)
 
   /** Constructs a paged character sequence from a scala.io.Source value
    */

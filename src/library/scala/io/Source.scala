@@ -24,7 +24,7 @@ object Source {
 
   /** Creates a `Source` from System.in.
    */
-  def stdin = fromInputStream(System.in)
+  def stdin(@local cc: CanThrow) = fromInputStream(System.in)(cc)
 
   /** Creates a Source from an Iterable.
    *
@@ -138,7 +138,7 @@ object Source {
   /** same as fromInputStream(url.openStream())(codec)
    */
   def fromURL(url: URL)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource =
-    fromInputStream(ESC.THROW(url.openStream())(cc))(codec)
+    fromInputStream(ESC.THROW(url.openStream())(cc))(cc)(codec)
 
   /** Reads data from inputStream with a buffered reader, using the encoding
    *  in implicit parameter codec.
@@ -162,11 +162,11 @@ object Source {
     new BufferedSource(inputStream, bufferSize)(codec) withReset resetFn withClose close
   }
 
-  def fromInputStream(is: InputStream, enc: String): BufferedSource =
-    fromInputStream(is)(Codec(enc))
+  def fromInputStream(is: InputStream, enc: String)(@local cc: CanThrow): BufferedSource =
+    fromInputStream(is)(cc)(Codec(enc))
 
-  def fromInputStream(is: InputStream)(implicit codec: Codec): BufferedSource =
-    createBufferedSource(is, reset = () => fromInputStream(is)(codec), close = () => is.close())(codec)
+  def fromInputStream(is: InputStream)(@local cc: CanThrow)(implicit codec: Codec): BufferedSource =
+    ESC.THROW { createBufferedSource(is, reset = () => fromInputStream(is)(cc)(codec), close = () => is.close())(codec) }(cc)
 }
 
 /** An iterable representation of source data.
