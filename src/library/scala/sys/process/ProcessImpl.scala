@@ -120,14 +120,14 @@ private[process] trait ProcessImpl {
       val sink        = new PipeSink(pipeIn, currentSink, b.toString)
       sink.start()
 
-      def handleOutOrError(fromOutput: InputStream) = ESC.TRY { cc => currentSource.put(Some(fromOutput))(cc) } // TODO(leo)
+      def handleOutOrError(fromOutput: InputStream): CanThrow -> Unit = currentSource.put(Some(fromOutput))(_)
 
       val firstIO =
         if (toError)
           defaultIO.withError(handleOutOrError)
         else
           defaultIO.withOutput(handleOutOrError)
-      val secondIO = defaultIO.withInput(toInput => ESC.TRY { cc => currentSink.put(Some(toInput))(cc) }) // TODO(leo)
+      val secondIO = defaultIO.withInput(toInput => currentSink.put(Some(toInput)))
 
       val second = b.run(secondIO)
       val first = a.run(firstIO)
@@ -155,8 +155,8 @@ private[process] trait ProcessImpl {
   private[process] abstract class PipeThread(isSink: Boolean, labelFn: () => String) extends Thread {
     def run()(@local cc: CanThrow): Unit
 
-    private[process] def runloop(src: InputStream, dst: OutputStream): Unit = {
-      try     BasicIO.transferFully(src, dst)
+    private[process] def runloop(src: InputStream, dst: OutputStream)(@local cc: CanThrow): Unit = {
+      try     BasicIO.transferFully(src, dst)(cc)
       catch   ioFailure(ioHandler)
       finally BasicIO close {
         if (isSink) dst else src
@@ -176,7 +176,7 @@ private[process] trait ProcessImpl {
 
     final override def run()(@local cc: CanThrow): Unit = currentSource.get(cc) match {
       case Some(source) =>
-        try runloop(source, pipe)
+        try runloop(source, pipe)(cc)
         finally currentSource.unset()
 
         run()(cc)
@@ -193,7 +193,7 @@ private[process] trait ProcessImpl {
 
     final override def run()(@local cc: CanThrow): Unit = currentSink.get(cc) match {
       case Some(sink) =>
-        try runloop(pipe, sink)
+        try runloop(pipe, sink)(cc)
         finally currentSink.unset()
 
         run()(cc)
