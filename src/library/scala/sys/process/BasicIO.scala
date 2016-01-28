@@ -80,7 +80,7 @@ object BasicIO {
     *               sent. If `None`, output will be sent to stderr.
     * @return A `ProcessIO` with the characteristics above.
     */
-  def apply(withIn: Boolean, output: String => Unit, log: Option[ProcessLogger]) =
+  def apply(withIn: Boolean, output: String => Unit, log: Option[ProcessLogger])(@local cc: CanThrow) =
     new ProcessIO(input(withIn), processFully(output), getErr(log))
 
   /** Creates a `ProcessIO` that appends its output to a `StringBuffer`. It can
@@ -103,7 +103,7 @@ object BasicIO {
     *               sent. If `None`, output will be sent to stderr.
     * @return A `ProcessIO` with the characteristics above.
     */
-  def apply(withIn: Boolean, buffer: StringBuffer, log: Option[ProcessLogger]) =
+  def apply(withIn: Boolean, buffer: StringBuffer, log: Option[ProcessLogger])(@local cc: CanThrow) =
     new ProcessIO(input(withIn), processFully(buffer), getErr(log))
 
   /** Creates a `ProcessIO` from a `ProcessLogger` . It can attach the
@@ -113,7 +113,7 @@ object BasicIO {
     * @param log    A `ProcessLogger` to receive all output, normal and error.
     * @return A `ProcessIO` with the characteristics above.
     */
-  def apply(withIn: Boolean, log: ProcessLogger) =
+  def apply(withIn: Boolean, log: ProcessLogger)(@local cc: CanThrow) =
     new ProcessIO(input(withIn), processOutFully(log), processErrFully(log))
 
   /** Returns a function `InputStream => Unit` given an optional
@@ -147,7 +147,7 @@ object BasicIO {
     *          [[scala.sys.process.ProcessIO]] which will append all data read
     *          from the stream to the buffer.
     */
-  def processFully(buffer: Appendable): InputStream => Unit = processFully(appendLine(buffer))
+  def processFully(buffer: Appendable): InputStream => (CanThrow -> Unit) = processFully(appendLine(buffer))
 
   /** Returns a function `InputStream => Unit` that will call the passed
     * function with all data read. This function can be used to create a
@@ -160,7 +160,7 @@ object BasicIO {
     *          [[scala.sys.process.ProcessIO]] which will call `processLine`
     *          with all data read from the stream.
     */
-  def processFully(processLine: String => Unit): InputStream => Unit = in => {
+  def processFully(processLine: String => Unit): InputStream => (CanThrow -> Unit) = in => { cc =>
     val reader = new BufferedReader(new InputStreamReader(in))
     try processLinesFully(processLine)(reader.readLine)
     finally reader.close()
@@ -189,22 +189,22 @@ object BasicIO {
   }
 
   /** Copy contents of stdin to the `OutputStream`. */
-  def connectToIn(o: OutputStream): Unit = transferFully(Uncloseable protect stdin, o)
+  def connectToIn(o: OutputStream) = transferFully(Uncloseable protect stdin, o)
 
   /** Returns a function `OutputStream => Unit` that either reads the content
     * from stdin or does nothing. This function can be used by
     * [[scala.sys.process.ProcessIO]].
     */
-  def input(connect: Boolean): OutputStream => Unit = { outputToProcess =>
-    if (connect) connectToIn(outputToProcess)
+  def input(connect: Boolean): OutputStream => (CanThrow -> Unit) = { outputToProcess => { cc =>
+    if (connect) connectToIn(outputToProcess)(cc)
     outputToProcess.close()
-  }
+  }}
 
   /** Returns a `ProcessIO` connected to stdout and stderr, and, optionally, stdin. */
   def standard(connectInput: Boolean): ProcessIO = standard(input(connectInput))
 
   /** Returns a `ProcessIO` connected to stdout, stderr and the provided `in` */
-  def standard(in: OutputStream => Unit): ProcessIO = new ProcessIO(in, toStdOut, toStdErr)
+  def standard(in: OutputStream => (CanThrow -> Unit)): ProcessIO = new ProcessIO(in, toStdOut, toStdErr)
 
   /** Send all the input from the stream to stderr, and closes the input stream
    * afterwards.
@@ -219,16 +219,17 @@ object BasicIO {
   /** Copy all input from the input stream to the output stream. Closes the
     * input stream once it's all read.
     */
-  def transferFully(in: InputStream, out: OutputStream): Unit =
-    try transferFullyImpl(in, out)
+  def transferFully(in: InputStream, out: OutputStream): CanThrow -> Unit = { cc =>
+    try transferFullyImpl(in, out)(cc)
     catch onInterrupt(())
+  }
 
   private[this] def appendLine(buffer: Appendable): String => Unit = line => {
     buffer append line
     buffer append Newline
   }
 
-  private[this] def transferFullyImpl(in: InputStream, out: OutputStream) {
+  private[this] def transferFullyImpl(in: InputStream, out: OutputStream): CanThrow -> Unit = {
     val buffer = new Array[Byte](BufferSize)
     @tailrec def loop() {
       val byteCount = in.read(buffer)
@@ -240,6 +241,7 @@ object BasicIO {
       }
     }
     loop()
-    in.close()
+
+    { cc => ESC.THROW { in.close() }(cc) } // XXX
   }
 }
