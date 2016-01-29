@@ -25,7 +25,7 @@ class ReferenceQueue[+T <: AnyRef] {
     }
 
   def poll: Option[Reference[T]] = Wrapper(underlying.poll)
-  def remove: Option[Reference[T]] = Wrapper(underlying.remove)
-  def remove(timeout: Long): Option[Reference[T]] = Wrapper(underlying.remove(timeout))
+  def remove: CanThrow -> Option[Reference[T]] = ESC.THROW { Wrapper(underlying.remove) }(_)
+  def remove(timeout: Long): CanThrow -> Option[Reference[T]] = ESC.THROW { Wrapper(underlying.remove(timeout)) }(_)
 
 }
