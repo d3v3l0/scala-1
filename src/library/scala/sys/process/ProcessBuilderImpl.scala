@@ -141,7 +141,7 @@ private[process] trait ProcessBuilderImpl {
       val process  = run(BasicIO(withInput, (s: String) => ESC.THROW { streamed.process(s) }, log))(cc)
 
       Spawn(streamed done process.exitValue()(cc))
-      streamed.stream()
+      streamed.stream()(cc)
     }
 
     private[this] def runBuffered(log: ProcessLogger, connectInput: Boolean)(@local cc: CanThrow) =

@@ -94,7 +94,7 @@ private[process] trait ProcessImpl {
       val thread = Spawn(code set (ESC.TRY { cc => runAndExitValue()(cc) })) // TODO(leo)
 
       (
-        Future { thread.join(); ESC.TRY(code.get) }, // TODO(leo) use "CanThrow ->" instead of by-value arg in Future?
+        Future { ESC.NO(thread.join()); ESC.TRY(code.get) }, // TODO(leo) use "CanThrow ->" instead of by-value arg in Future?
         () => thread.interrupt()
       )
     }

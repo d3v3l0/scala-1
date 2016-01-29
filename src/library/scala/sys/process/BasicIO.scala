@@ -36,20 +36,20 @@ object BasicIO {
   final val Newline    = props("line.separator")
 
   private[process] final class Streamed[T](
-    val process:   T => Unit,
-    val    done: Int => Unit,
-    val  stream:  () => Stream[T]
+    val process:   T => (CanThrow -> Unit),
+    val    done: Int => (CanThrow -> Unit),
+    val  stream:  () => (CanThrow -> Stream[T])
   )
 
   private[process] object Streamed {
     def apply[T](nonzeroException: Boolean): Streamed[T] = {
       val q = new LinkedBlockingQueue[Either[Int, T]]
-      def next(): Stream[T] = q.take match {
+      def next()(@local cc: CanThrow): Stream[T] = ESC.THROW(q.take)(cc) match {
         case Left(0)    => Stream.empty
         case Left(code) => if (nonzeroException) scala.sys.error("Nonzero exit code: " + code) else Stream.empty
-        case Right(s)   => Stream.cons(s, next())
+        case Right(s)   => Stream.cons(s, next()(cc))
       }
-      new Streamed((s: T) => q put Right(s), code => q put Left(code), () => next())
+      new Streamed((s: T) => ESC.THROW(q put Right(s))(_), code => ESC.THROW(q put Left(code))(_), () => next())
     }
   }
 
