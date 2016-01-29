@@ -30,15 +30,15 @@ package object sys {
    *
    *  @return   Nothing.
    */
-  def exit(): Nothing = exit(0)
+  def exit(): CanThrow -> Nothing = exit(0)(_)
 
   /** Exit the JVM with the given status code.
    *
    *  @return   Nothing.
    */
-  def exit(status: Int): Nothing = {
+  def exit(status: Int)(@local cc: CanThrow): Nothing = {
     java.lang.System.exit(status)
-    throw new Throwable()
+    ESC.THROW(throw new Throwable())(cc)
   }
 
   /** A convenience method to get the current Runtime instance.
