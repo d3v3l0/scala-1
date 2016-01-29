@@ -35,7 +35,7 @@ private[scala] trait PropertiesTrait {
     val props = new java.util.Properties
     val stream = pickJarBasedOn getResourceAsStream propFilename
     if (stream ne null)
-      quietlyDispose(props load stream, stream.close)
+      ESC.NO(quietlyDispose(props load stream, stream.close)) // TODO(leo) lazy
 
     props
   }
