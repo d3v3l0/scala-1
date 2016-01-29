@@ -60,7 +60,7 @@ class FileProcessLogger(file: File) extends ProcessLogger with Closeable with Fl
     new PrintWriter(
       new BufferedWriter(
         new OutputStreamWriter(
-          new FileOutputStream(file, true)
+          ESC.NO(new FileOutputStream(file, true)) // TODO(leo) rewrite ctor
         )
       )
     )

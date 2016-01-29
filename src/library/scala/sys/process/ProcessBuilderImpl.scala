@@ -94,10 +94,10 @@ private[process] trait ProcessBuilderImpl {
     def #&&(other: ProcessBuilder): ProcessBuilder = new AndBuilder(this, other)
     def ###(other: ProcessBuilder): ProcessBuilder = new SequenceBuilder(this, other)
 
-    def run()(@local cc: CanThrow): Process                                          = run(connectInput = false)(cc)
-    def run(connectInput: Boolean)(@local cc: CanThrow): Process                     = run(BasicIO.standard(connectInput))
-    def run(log: ProcessLogger)(@local cc: CanThrow): Process                        = run(log, connectInput = false)(cc)
-    def run(log: ProcessLogger, connectInput: Boolean)(@local cc: CanThrow): Process = run(BasicIO(connectInput, log)(cc))
+    def run(): Process                                          = run(connectInput = false)
+    def run(connectInput: Boolean): Process                     = run(BasicIO.standard(connectInput))
+    def run(log: ProcessLogger): Process                        = run(log, connectInput = false)
+    def run(log: ProcessLogger, connectInput: Boolean): Process = run(BasicIO(connectInput, log))
 
     def !!                      = ESC.TRY { cc => slurp(None, withIn = false)(cc) } // TODO(leo)
     def !!(log: ProcessLogger)(@local cc: CanThrow)  = slurp(Some(log), withIn = false)(cc)
@@ -109,10 +109,10 @@ private[process] trait ProcessBuilderImpl {
     def lineStream_! : Stream[String]                    = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = false, None)(cc) } // TODO(leo)
     def lineStream_!(log: ProcessLogger): Stream[String] = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = false, Some(log))(cc) } // TODO(leo)
 
-    def !(@local cc: CanThrow)                      = run(connectInput = false)(cc).exitValue()(cc)
+    def !(@local cc: CanThrow)                      = run(connectInput = false).exitValue()(cc)
     def !(io: ProcessIO)(@local cc: CanThrow)       = run(io).exitValue()(cc)
     def !(log: ProcessLogger)(@local cc: CanThrow)  = runBuffered(log, connectInput = false)(cc)
-    def !<(@local cc: CanThrow)                     = run(connectInput = true)(cc).exitValue()(cc)
+    def !<(@local cc: CanThrow)                     = run(connectInput = true).exitValue()(cc)
     def !<(log: ProcessLogger)(@local cc: CanThrow) = runBuffered(log, connectInput = true)(cc)
 
     /** Constructs a new builder which runs this command with all input/output threads marked
@@ -126,7 +126,7 @@ private[process] trait ProcessBuilderImpl {
 
     private[this] def slurp(log: Option[ProcessLogger], withIn: Boolean)(@local cc: CanThrow): String = {
       val buffer = new StringBuffer
-      val code   = (this ! BasicIO(withIn, buffer, log)(cc))(cc)
+      val code   = (this ! BasicIO(withIn, buffer, log))(cc)
 
       if (code == 0) buffer.toString
       else scala.sys.error("Nonzero exit value: " + code)
@@ -138,14 +138,14 @@ private[process] trait ProcessBuilderImpl {
       log: Option[ProcessLogger]
     )(@local cc: CanThrow): Stream[String] = {
       val streamed = Streamed[String](nonZeroException)
-      val process  = run(BasicIO(withInput, streamed.process, log)(cc))
+      val process  = run(BasicIO(withInput, (s: String) => ESC.THROW { streamed.process(s) }, log)) // TODO(leo)
 
       Spawn(streamed done process.exitValue()(cc))
       streamed.stream()
     }
 
     private[this] def runBuffered(log: ProcessLogger, connectInput: Boolean)(@local cc: CanThrow) =
-      log buffer run(log, connectInput)(cc).exitValue()(cc)
+      log buffer run(log, connectInput).exitValue()(cc)
 
     def canPipeTo = false
     def hasExitValue = true

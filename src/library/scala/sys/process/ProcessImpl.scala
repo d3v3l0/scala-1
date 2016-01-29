@@ -69,10 +69,10 @@ private[process] trait ProcessImpl {
 
     protected[this] override def runAndExitValue()(@local cc: CanThrow) = {
       val first = a.run(io)
-      runInterruptible(first.exitValue()(cc))(first.destroy()(cc)) flatMap { codeA =>
+      runInterruptible(first.exitValue()(cc))(first.destroy()(cc))(cc) flatMap { codeA =>
         if (evaluateSecondProcess(codeA)) {
           val second = b.run(io)
-          runInterruptible(second.exitValue()(cc))(second.destroy()(cc))
+          runInterruptible(second.exitValue()(cc))(second.destroy()(cc))(cc)
         }
         else Some(codeA)
       }
@@ -102,10 +102,10 @@ private[process] trait ProcessImpl {
     /** Start and block until the exit value is available and then return it in Some.  Return None if destroyed (use 'run')*/
     protected[this] def runAndExitValue()(@local cc: CanThrow): Option[Int]
 
-    protected[this] def runInterruptible[T](action: => T)(destroyImpl: => Unit): Option[T] = {
+    protected[this] def runInterruptible[T](action: => T)(destroyImpl: => Unit)(@local cc: CanThrow): Option[T] = ESC.THROW {
       try   Some(action)
       catch onInterrupt { destroyImpl; None }
-    }
+    }(cc)
   }
 
   private[process] class PipedProcesses(a: ProcessBuilder, b: ProcessBuilder, defaultIO: ProcessIO, toError: Boolean) extends CompoundProcess {
@@ -115,7 +115,7 @@ private[process] trait ProcessImpl {
       val source        = new PipeSource(currentSource, pipeOut, a.toString)
       source.start()
 
-      val pipeIn      = new PipedInputStream(pipeOut)
+      val pipeIn      = ESC.THROW(new PipedInputStream(pipeOut))(cc)
       val currentSink = new SyncVar[Option[OutputStream]]
       val sink        = new PipeSink(pipeIn, currentSink, b.toString)
       sink.start()
@@ -143,7 +143,7 @@ private[process] trait ProcessImpl {
         } {
           first.destroy()(cc)
           second.destroy()(cc)
-        }
+        }(cc)
       }
       finally {
         BasicIO close pipeIn
@@ -155,13 +155,13 @@ private[process] trait ProcessImpl {
   private[process] abstract class PipeThread(isSink: Boolean, labelFn: () => String) extends Thread {
     def run()(@local cc: CanThrow): Unit
 
-    private[process] def runloop(src: InputStream, dst: OutputStream)(@local cc: CanThrow): Unit = {
+    private[process] def runloop(src: InputStream, dst: OutputStream)(@local cc: CanThrow): Unit = ESC.THROW {
       try     BasicIO.transferFully(src, dst)(cc)
       catch   ioFailure(ioHandler)
       finally BasicIO close {
         if (isSink) dst else src
       }
-    }
+    }(cc)
     private def ioHandler(e: IOException) {
       println("I/O error " + e.getMessage + " for process: " + labelFn())
       e.printStackTrace()
