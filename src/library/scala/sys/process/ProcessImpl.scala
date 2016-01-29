@@ -68,10 +68,10 @@ private[process] trait ProcessImpl {
   ) extends CompoundProcess {
 
     protected[this] override def runAndExitValue()(@local cc: CanThrow) = {
-      val first = a.run(io)
+      val first = a.run(io)(cc)
       runInterruptible(first.exitValue()(cc))(first.destroy()(cc))(cc) flatMap { codeA =>
         if (evaluateSecondProcess(codeA)) {
-          val second = b.run(io)
+          val second = b.run(io)(cc)
           runInterruptible(second.exitValue()(cc))(second.destroy()(cc))(cc)
         }
         else Some(codeA)
@@ -129,8 +129,8 @@ private[process] trait ProcessImpl {
           defaultIO.withOutput(handleOutOrError)
       val secondIO = defaultIO.withInput(toInput => currentSink.put(Some(toInput)))
 
-      val second = b.run(secondIO)
-      val first = a.run(firstIO)
+      val second = b.run(secondIO)(cc)
+      val first = a.run(firstIO)(cc)
       try {
         runInterruptible {
           val exit1 = first.exitValue()(cc)

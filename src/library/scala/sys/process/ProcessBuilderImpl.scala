@@ -20,11 +20,11 @@ private[process] trait ProcessBuilderImpl {
   self: ProcessBuilder.type =>
 
   private[process] class DaemonBuilder(underlying: ProcessBuilder) extends AbstractBuilder {
-    final def run(io: ProcessIO): Process = underlying.run(io.daemonized())
+    final def run(io: ProcessIO)(@local cc: CanThrow): Process = underlying.run(io.daemonized())(cc)
   }
 
   private[process] class Dummy(override val toString: String, exitValue: => Int) extends AbstractBuilder {
-    override def run(io: ProcessIO): Process = new DummyProcess(exitValue)
+    override def run(io: ProcessIO)(@local cc: CanThrow): Process = new DummyProcess(exitValue)
     override def canPipeTo = true
   }
 
@@ -51,9 +51,9 @@ private[process] trait ProcessBuilderImpl {
     runImpl: ProcessIO => Unit
   ) extends AbstractBuilder {
 
-    override def run(io: ProcessIO): Process = {
+    override def run(io: ProcessIO)(@local cc: CanThrow): Process = {
       val success = new SyncVar[Boolean]
-      ESC.TRY { cc => success.put(false)(cc) } // TODO(leo)
+      success.put(false)(cc)
       val t = Spawn({
         runImpl(io)
         success set true
@@ -65,8 +65,8 @@ private[process] trait ProcessBuilderImpl {
 
   /** Represents a simple command without any redirection or combination. */
   private[process] class Simple(p: JProcessBuilder) extends AbstractBuilder {
-    override def run(io: ProcessIO): Process = {
-      val process = p.start() // start the external process
+    override def run(io: ProcessIO)(@local cc: CanThrow): Process = {
+      val process = ESC.THROW(p.start())(cc) // start the external process
       import io._
 
       // spawn threads that process the input, output, and error streams using the functions defined in `io`
@@ -95,24 +95,24 @@ private[process] trait ProcessBuilderImpl {
     def ###(other: ProcessBuilder): ProcessBuilder = new SequenceBuilder(this, other)
 
     def run(): Process                                          = run(connectInput = false)
-    def run(connectInput: Boolean): Process                     = run(BasicIO.standard(connectInput))
-    def run(log: ProcessLogger): Process                        = run(log, connectInput = false)
-    def run(log: ProcessLogger, connectInput: Boolean): Process = run(BasicIO(connectInput, log))
+    def run(connectInput: Boolean)(@local cc: CanThrow): Process                     = run(BasicIO.standard(connectInput))(cc)
+    def run(log: ProcessLogger)(@local cc: CanThrow): Process                        = run(log, connectInput = false)(cc)
+    def run(log: ProcessLogger, connectInput: Boolean)(@local cc: CanThrow): Process = run(BasicIO(connectInput, log))(cc)
 
-    def !!                      = ESC.TRY { cc => slurp(None, withIn = false)(cc) } // TODO(leo)
+    def !!(@local cc: CanThrow)                      = slurp(None, withIn = false)(cc)
     def !!(log: ProcessLogger)(@local cc: CanThrow)  = slurp(Some(log), withIn = false)(cc)
-    def !!<                     = ESC.TRY { cc => slurp(None, withIn = true)(cc) } // TODO(leo)
+    def !!<(@local cc: CanThrow)                     = slurp(None, withIn = true)(cc)
     def !!<(log: ProcessLogger)(@local cc: CanThrow) = slurp(Some(log), withIn = true)(cc)
 
-    def lineStream: Stream[String]                       = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = true, None)(cc) } // TODO(leo)
-    def lineStream(log: ProcessLogger): Stream[String]   = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = true, Some(log))(cc) } // TODO(leo)
-    def lineStream_! : Stream[String]                    = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = false, None)(cc) } // TODO(leo)
-    def lineStream_!(log: ProcessLogger): Stream[String] = ESC.TRY { cc => lineStream(withInput = false, nonZeroException = false, Some(log))(cc) } // TODO(leo)
+    def lineStream(@local cc: CanThrow): Stream[String]                       = lineStream(withInput = false, nonZeroException = true, None)(cc)
+    def lineStream(log: ProcessLogger)(@local cc: CanThrow): Stream[String]   = lineStream(withInput = false, nonZeroException = true, Some(log))(cc)
+    def lineStream_!(@local cc: CanThrow): Stream[String]                     = lineStream(withInput = false, nonZeroException = false, None)(cc)
+    def lineStream_!(log: ProcessLogger)(@local cc: CanThrow): Stream[String] = lineStream(withInput = false, nonZeroException = false, Some(log))(cc)
 
-    def !(@local cc: CanThrow)                      = run(connectInput = false).exitValue()(cc)
-    def !(io: ProcessIO)(@local cc: CanThrow)       = run(io).exitValue()(cc)
+    def !(@local cc: CanThrow)                      = run(connectInput = false)(cc).exitValue()(cc)
+    def !(io: ProcessIO)(@local cc: CanThrow)       = run(io)(cc).exitValue()(cc)
     def !(log: ProcessLogger)(@local cc: CanThrow)  = runBuffered(log, connectInput = false)(cc)
-    def !<(@local cc: CanThrow)                     = run(connectInput = true).exitValue()(cc)
+    def !<(@local cc: CanThrow)                     = run(connectInput = true)(cc).exitValue()(cc)
     def !<(log: ProcessLogger)(@local cc: CanThrow) = runBuffered(log, connectInput = true)(cc)
 
     /** Constructs a new builder which runs this command with all input/output threads marked
@@ -138,14 +138,14 @@ private[process] trait ProcessBuilderImpl {
       log: Option[ProcessLogger]
     )(@local cc: CanThrow): Stream[String] = {
       val streamed = Streamed[String](nonZeroException)
-      val process  = run(BasicIO(withInput, (s: String) => ESC.THROW { streamed.process(s) }, log)) // TODO(leo)
+      val process  = run(BasicIO(withInput, (s: String) => ESC.THROW { streamed.process(s) }, log))(cc)
 
       Spawn(streamed done process.exitValue()(cc))
       streamed.stream()
     }
 
     private[this] def runBuffered(log: ProcessLogger, connectInput: Boolean)(@local cc: CanThrow) =
-      log buffer run(log, connectInput).exitValue()(cc)
+      log buffer run(log, connectInput)(cc).exitValue()(cc)
 
     def canPipeTo = false
     def hasExitValue = true
@@ -166,7 +166,7 @@ private[process] trait ProcessBuilderImpl {
 
   private[process] abstract class BasicBuilder extends AbstractBuilder {
     protected[this] def checkNotThis(a: ProcessBuilder) = require(a != this, "Compound process '" + a + "' cannot contain itself.")
-    final def run(io: ProcessIO): Process = {
+    final def run(io: ProcessIO)(@local cc: CanThrow): Process = {
       val p = createProcess(io)
       p.start()
       p

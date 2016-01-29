@@ -249,7 +249,7 @@ trait ProcessBuilder extends Source with Sink {
   /** Starts the process represented by this builder.  I/O is handled by the
     * given ProcessIO instance.
     */
-  def run(io: ProcessIO): Process
+  def run(io: ProcessIO)(@local cc: CanThrow): Process
 
   /** Starts the process represented by this builder.  Standard output and error
     * are sent to the console.  The newly started process reads from standard
