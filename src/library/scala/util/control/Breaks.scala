@@ -37,8 +37,7 @@ class Breaks {
     try {
       op
     } catch {
-      case ex: BreakControl =>
-        if (ex ne breakException) throw ex
+      case ex: BreakControl if ex eq breakException =>
     }
   }
 
@@ -62,9 +61,7 @@ class Breaks {
     def catchBreak(onBreak: =>T) = try {
       op
     } catch {
-      case ex: BreakControl =>
-        if (ex ne breakException) throw ex
-        onBreak
+      case ex: BreakControl if ex eq breakException => onBreak
     }
   }
 
