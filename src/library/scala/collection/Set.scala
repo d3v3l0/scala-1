@@ -26,7 +26,7 @@ trait Set[A] extends (A => Boolean)
                 with GenSet[A]
                 with GenericSetTemplate[A, Set]
                 with SetLike[A, Set[A]] {
-  type LT = Any
+  override protected type LT = Any
 
   override def companion: GenericCompanion[Set] = Set
 

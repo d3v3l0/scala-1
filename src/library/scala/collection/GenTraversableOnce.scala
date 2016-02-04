@@ -49,8 +49,8 @@ import scala.language.higherKinds
  */
 trait GenTraversableOnce[+A] extends Any {
 
-  type LT
-  type plocal = local[LT]
+  protected type LT
+  protected type plocal = local[LT]
 
   def foreach[U](@plocal f: A => U): Unit
 

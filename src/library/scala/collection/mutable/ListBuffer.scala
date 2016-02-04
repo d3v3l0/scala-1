@@ -48,12 +48,10 @@ final class ListBuffer[A]
          with GenericTraversableTemplate[A, ListBuffer]
          with BufferLike[A, ListBuffer[A]]
          with Builder[A, List[A]]
-         with SeqForwarder[A] /*TR deprecated */
+         /*with SeqForwarder[A] TR deprecated */
          with Serializable
 {
   override def companion: GenericCompanion[ListBuffer] = ListBuffer
-
-  type LT = Any
 
   import scala.collection.Traversable
   import scala.collection.immutable.ListSerializeEnd

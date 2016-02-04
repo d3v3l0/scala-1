@@ -37,12 +37,12 @@ import scala.annotation.tailrec
  *  @define willNotTerminateInf
  *  @define mayNotTerminateInf
  */
-trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[A, Repr] {
+trait IndexedSeqLike[+A, +PreRepr] extends Any with SeqLike[A, PreRepr] {
   self =>
 
   type LT
 
-  ////type Repr = Reprs 
+  type Repr = PreRepr 
 
   def seq: IndexedSeq[A]
   override def hashCode()= scala.util.hashing.MurmurHash3.seqHash(seq)  // TODO - can we get faster via "indexedSeqHash" ?

@@ -48,7 +48,7 @@ extends AbstractSet[A]
 {
   initWithContents(contents)
 
-  override type plocal = local[LT]
+  override protected type plocal = local[LT]
 
   def this() = this(null)
 

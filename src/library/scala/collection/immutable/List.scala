@@ -87,7 +87,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
                                   with GenericTraversableTemplate[A, List]
                                   with LinearSeqOptimized[A, List[A]]
                                   with Serializable {
-  type LT = Any
+  override protected type LT = Any
 
   override def companion: GenericCompanion[List] = List
 

@@ -54,11 +54,11 @@ import scala.annotation.migration
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with Parallelizable[A, parallel.ParIterable[A]] { self =>
+trait GenTraversableLike[+A, +PreRepr] extends Any with GenTraversableOnce[A] with Parallelizable[A, parallel.ParIterable[A]] { self =>
 
   type LT
 
-  ////type Repr = Reprs 
+  type Repr = PreRepr 
 
   def repr: Repr
 
