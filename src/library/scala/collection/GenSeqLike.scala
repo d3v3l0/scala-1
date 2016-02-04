@@ -34,7 +34,7 @@ trait GenSeqLike[+A, +PreRepr] extends Any with GenIterableLike[A, PreRepr] with
 
   type LT
 
-  type Repr = PreRepr 
+  type Repr = PreRepr { type LT = self.LT }
 
   def seq: Seq[A]
 

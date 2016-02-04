@@ -42,7 +42,7 @@ trait IndexedSeqLike[+A, +PreRepr] extends Any with SeqLike[A, PreRepr] {
 
   type LT
 
-  type Repr = PreRepr 
+  type Repr = PreRepr { type LT = self.LT }
 
   def seq: IndexedSeq[A]
   override def hashCode()= scala.util.hashing.MurmurHash3.seqHash(seq)  // TODO - can we get faster via "indexedSeqHash" ?

@@ -13,7 +13,7 @@ import mutable.Builder
 
 trait HasNewBuilder[+A, +PreRepr] extends Any { self =>
   type LT
-  type Repr = PreRepr 
+  type Repr = PreRepr { type LT = self.LT }
   /** The builder that builds instances of Repr */
   protected[this] def newBuilder: Builder[A, Repr]
 }

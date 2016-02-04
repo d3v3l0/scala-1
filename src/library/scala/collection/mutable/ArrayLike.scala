@@ -21,10 +21,7 @@ package mutable
  *  @version 2.8
  *  @since   2.8
  */
-trait ArrayLike[A, +PreRepr] extends Any with IndexedSeqOptimized[A, PreRepr] { self =>
-
-  type LT
-  type Repr = PreRepr 
+trait ArrayLike[A, +Repr] extends Any with IndexedSeqOptimized[A, Repr] { self =>
 
   /** Creates a possible nested `IndexedSeq` which consists of all the elements
    *  of this array. If the elements are arrays themselves, the `deep` transformation

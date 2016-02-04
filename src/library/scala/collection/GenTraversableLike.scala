@@ -58,7 +58,7 @@ trait GenTraversableLike[+A, +PreRepr] extends Any with GenTraversableOnce[A] wi
 
   type LT
 
-  type Repr = PreRepr 
+  type Repr = PreRepr { type LT = self.LT }
 
   def repr: Repr
 

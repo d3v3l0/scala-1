@@ -29,7 +29,7 @@ trait TraversableProxyLike[+A, +PreRepr <: TraversableLike[A, PreRepr] with Trav
 
   type LT
 
-  type Repr = PreRepr //{ type LT = z.LT }
+  type Repr = PreRepr { type LT = z.LT }
 
   def self: Repr
 

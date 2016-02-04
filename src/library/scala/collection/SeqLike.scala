@@ -63,7 +63,7 @@ trait SeqLike[+A, +PreRepr] extends Any with IterableLike[A, PreRepr] with GenSe
 
   type LT
 
-  type Repr = PreRepr 
+  type Repr = PreRepr { type LT = self.LT }
 
   override protected[this] def thisCollection: Seq[A] = this.asInstanceOf[Seq[A]]
   override protected[this] def toCollection(repr: Repr): Seq[A] = repr.asInstanceOf[Seq[A]]

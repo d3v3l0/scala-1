@@ -53,7 +53,7 @@ self =>
 
   type LT
 
-  type Repr = PreRepr 
+  type Repr = PreRepr { type LT = self.LT }
 
   override protected[this] def thisCollection: Iterable[A] = this.asInstanceOf[Iterable[A]]
   override protected[this] def toCollection(repr: Repr): Iterable[A] = repr.asInstanceOf[Iterable[A]]
