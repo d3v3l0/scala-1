@@ -24,6 +24,7 @@ package mutable
 trait ArrayLike[A, +Repr] extends Any with IndexedSeqOptimized[A, Repr] { self =>
 
   type LT
+  //type Repr = Reprs
 
   /** Creates a possible nested `IndexedSeq` which consists of all the elements
    *  of this array. If the elements are arrays themselves, the `deep` transformation
