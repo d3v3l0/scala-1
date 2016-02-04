@@ -514,7 +514,7 @@ self =>
    * // produces
    * }}}
    */
-  override def filter(@plocal p: A => Boolean): Stream[A] = {
+  override def filter(@local p: A => Boolean): Stream[A] = {
     // optimization: drop leading prefix of elems for which f returns false
     // var rest = this dropWhile (!p(_)) - forget DRY principle - GC can't collect otherwise
     var rest = this
@@ -524,7 +524,7 @@ self =>
     else Stream.Empty
   }
 
-  override final def withFilter(@plocal p: A => Boolean): StreamWithFilter = new StreamWithFilter(p)
+  override final def withFilter(@local p: A => Boolean): StreamWithFilter = new StreamWithFilter(p)
 
   /** A lazier implementation of WithFilter than TraversableLike's.
    */
@@ -572,7 +572,7 @@ self =>
       for (x <- self)
         if (p(x)) f(x)
 
-    override def withFilter(@plocal q: A => Boolean): StreamWithFilter =
+    override def withFilter(@local q: A => Boolean): StreamWithFilter =
       new StreamWithFilter(x => p(x) && q(x))
   }
 
@@ -607,7 +607,7 @@ self =>
    * @return The accumulated value from successive applications of `op`.
    */
   @tailrec
-  override final def foldLeft[B](z: B)(@plocal op: (B, A) => B): B = {
+  override final def foldLeft[B](z: B)(@local op: (B, A) => B): B = {
     if (this.isEmpty) z
     else tail.foldLeft(op(z, head))(op)
   }
@@ -619,7 +619,7 @@ self =>
    * @param f The operation to perform on successive elements of the `Stream`.
    * @return The accumulated value from successive applications of `f`.
    */
-  override final def reduceLeft[B >: A](@plocal f: (B, A) => B): B = {
+  override final def reduceLeft[B >: A](@local f: (B, A) => B): B = {
     if (this.isEmpty) throw new UnsupportedOperationException("empty.reduceLeft")
     else {
       var reducedRes: B = this.head
@@ -649,7 +649,7 @@ self =>
    * }}}
    *
    */
-  override def partition(@plocal p: A => Boolean): (Stream[A], Stream[A]) = (filter(p(_)), filterNot(p(_)))
+  override def partition(@local p: A => Boolean): (Stream[A], Stream[A]) = (filter(p(_)), filterNot(p(_)))
 
   /** Returns a stream formed from this stream and the specified stream `that`
    * by associating each element of the former with the element at the same
@@ -939,7 +939,7 @@ self =>
    * produces: "0, 1, 2, 3, 4"
    * }}}
    */
-  override def takeWhile(@plocal p: A => Boolean): Stream[A] =
+  override def takeWhile(@local p: A => Boolean): Stream[A] =
     if (!isEmpty && p(head)) cons(head, tail takeWhile p)
     else Stream.Empty
 
@@ -960,7 +960,7 @@ self =>
    * // produces: "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20"
    * }}}
    */
-  override def dropWhile(@plocal p: A => Boolean): Stream[A] = {
+  override def dropWhile(@local p: A => Boolean): Stream[A] = {
     var these: Stream[A] = this
     while (!these.isEmpty && p(these.head)) these = these.tail
     these

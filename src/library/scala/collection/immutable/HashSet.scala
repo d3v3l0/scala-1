@@ -169,17 +169,17 @@ class HashSet[A] extends AbstractSet[A]
   @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
   override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
 
-  override def filter(@plocal p: A => Boolean) = {
+  override def filter(@local p: A => Boolean) = {
     val buffer = new Array[HashSet[A]](bufferSize(size))
     nullToEmpty(filter0(p, false, 0, buffer, 0))
   }
 
-  override def filterNot(@plocal p: A => Boolean) = {
+  override def filterNot(@local p: A => Boolean) = {
     val buffer = new Array[HashSet[A]](bufferSize(size))
     nullToEmpty(filter0(p, true, 0, buffer, 0))
   }
 
-  protected def filter0(@plocal p: A => Boolean, negate: Boolean, level: Int, buffer: Array[HashSet[A]], offset0: Int): HashSet[A] = null
+  protected def filter0(@local p: A => Boolean, negate: Boolean, level: Int, buffer: Array[HashSet[A]], offset0: Int): HashSet[A] = null
 
   protected def elemHashCode(key: A) = key.##
 
@@ -315,7 +315,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
     override def removed0(key: A, hash: Int, level: Int): HashSet[A] =
       if (hash == this.hash && key == this.key) null else this
 
-    override protected def filter0(@plocal p: A => Boolean, negate: Boolean, level: Int, buffer: Array[HashSet[A]], offset0: Int): HashSet[A] =
+    override protected def filter0(@local p: A => Boolean, negate: Boolean, level: Int, buffer: Array[HashSet[A]], offset0: Int): HashSet[A] =
       if (negate ^ p(key)) this else null
 
     override def iterator: Iterator[A] = Iterator(key)
@@ -450,7 +450,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
         }
       } else this
 
-    override protected def filter0(@plocal p: A => Boolean, negate: Boolean, level: Int, buffer: Array[HashSet[A]], offset0: Int): HashSet[A] = {
+    override protected def filter0(@local p: A => Boolean, negate: Boolean, level: Int, buffer: Array[HashSet[A]], offset0: Int): HashSet[A] = {
       val ks1 = if(negate) ks.filterNot(p) else ks.filter(p)
       ks1.size match {
         case 0 =>
@@ -922,7 +922,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
         false
     }
 
-    override protected def filter0(@plocal p: A => Boolean, negate: Boolean, level: Int, buffer: Array[HashSet[A]], offset0: Int): HashSet[A] = {
+    override protected def filter0(@local p: A => Boolean, negate: Boolean, level: Int, buffer: Array[HashSet[A]], offset0: Int): HashSet[A] = {
       // current offset
       var offset = offset0
       // result size

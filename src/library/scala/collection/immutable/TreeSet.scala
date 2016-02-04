@@ -91,15 +91,15 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
   override def takeRight(n: Int) = drop(size - math.max(n, 0))
   override def splitAt(n: Int) = (take(n), drop(n))
 
-  private[this] def countWhile(@plocal p: A => Boolean): Int = {
+  private[this] def countWhile(@local p: A => Boolean): Int = {
     var result = 0
     val it = iterator
     while (it.hasNext && p(it.next())) result += 1
     result
   }
-  override def dropWhile(@plocal p: A => Boolean) = drop(countWhile(p))
-  override def takeWhile(@plocal p: A => Boolean) = take(countWhile(p))
-  override def span(@plocal p: A => Boolean) = splitAt(countWhile(p))
+  override def dropWhile(@local p: A => Boolean) = drop(countWhile(p))
+  override def takeWhile(@local p: A => Boolean) = take(countWhile(p))
+  override def span(@local p: A => Boolean) = splitAt(countWhile(p))
 
   def this()(implicit ordering: Ordering[A]) = this(null)(ordering)
 

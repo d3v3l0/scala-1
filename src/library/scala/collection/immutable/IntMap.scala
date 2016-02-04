@@ -230,7 +230,7 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
 
   override def isEmpty = this == IntMap.Nil
 
-  override def filter(@plocal f: ((Int, T)) => Boolean): IntMap[T] = this match {
+  override def filter(@local f: ((Int, T)) => Boolean): IntMap[T] = this match {
     case IntMap.Bin(prefix, mask, left, right) => {
       val (newleft, newright) = (left.filter(f), right.filter(f))
       if ((left eq newleft) && (right eq newright)) this

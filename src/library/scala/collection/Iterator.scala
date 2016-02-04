@@ -741,7 +741,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *  @usecase def foreach(f: A => Unit): Unit
    *    @inheritdoc
    */
-  def foreach[U](@plocal f: A =>  U) { while (hasNext) f(next()) }
+  def foreach[U](@local f: A =>  U) { while (hasNext) f(next()) }
 
   /** Tests whether a predicate holds for all values produced by this iterator.
    *  $mayNotTerminateInf
@@ -751,7 +751,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *                 produced by this iterator, otherwise `false`.
    *  @note          Reuse: $consumesIterator
    */
-  def forall(@plocal p: A => Boolean): Boolean = {
+  def forall(@local p: A => Boolean): Boolean = {
     var res = true
     while (res && hasNext) res = p(next())
     res
@@ -765,7 +765,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *                 produced by this iterator, otherwise `false`.
    *  @note          Reuse: $consumesIterator
    */
-  def exists(@plocal p: A => Boolean): Boolean = {
+  def exists(@local p: A => Boolean): Boolean = {
     var res = false
     while (!res && hasNext) res = p(next())
     res
@@ -790,7 +790,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           predicate `p`, or `None` if none exists.
    *  @note    Reuse: $consumesIterator
    */
-  def find(@plocal p: A => Boolean): Option[A] = {
+  def find(@local p: A => Boolean): Option[A] = {
     var res: Option[A] = None
     while (res.isEmpty && hasNext) {
       val e = next()
@@ -807,7 +807,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           or -1 if such an element does not exist until the end of the iterator is reached.
    *  @note    Reuse: $consumesIterator
    */
-  def indexWhere(@plocal p: A => Boolean): Int = {
+  def indexWhere(@local p: A => Boolean): Int = {
     var i = 0
     var found = false
     while (!found && hasNext) {

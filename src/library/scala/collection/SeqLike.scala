@@ -107,7 +107,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
    */
   override def size = length
 
-  def segmentLength(@plocal p: A => Boolean, from: Int): Int = {
+  def segmentLength(@local p: A => Boolean, from: Int): Int = {
     var i = 0
     val it = iterator.drop(from)
     while (it.hasNext && p(it.next()))

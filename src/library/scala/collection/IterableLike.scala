@@ -73,11 +73,11 @@ self =>
   def foreach[U](f: A => U): Unit =
     iterator.foreach(f)
 
-  override /*TraversableLike*/ def forall(@plocal p: A => Boolean): Boolean =
+  override /*TraversableLike*/ def forall(@local p: A => Boolean): Boolean =
     iterator.forall(p)
-  override /*TraversableLike*/ def exists(@plocal p: A => Boolean): Boolean =
+  override /*TraversableLike*/ def exists(@local p: A => Boolean): Boolean =
     iterator.exists(p)
-  override /*TraversableLike*/ def find(@plocal p: A => Boolean): Option[A] =
+  override /*TraversableLike*/ def find(@local p: A => Boolean): Option[A] =
     iterator.find(p)
   override /*TraversableLike*/ def isEmpty: Boolean =
     !iterator.hasNext
@@ -154,7 +154,7 @@ self =>
     (b ++= it).result()
   }
 
-  override /*TraversableLike*/ def takeWhile(@plocal p: A => Boolean): Repr = {
+  override /*TraversableLike*/ def takeWhile(@local p: A => Boolean): Repr = {
     val b = newBuilder
     val it = iterator
     while (it.hasNext) {

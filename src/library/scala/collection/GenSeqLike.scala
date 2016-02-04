@@ -82,7 +82,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the length of the longest segment of this $coll starting from index `from`
    *           such that every element of the segment satisfies the predicate `p`.
    */
-  def segmentLength(@plocal p: A => Boolean, from: Int): Int
+  def segmentLength(@local p: A => Boolean, from: Int): Int
 
   /** Returns the length of the longest prefix whose elements all satisfy some predicate.
    *
@@ -92,7 +92,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the length of the longest prefix of this $coll
    *           such that every element of the segment satisfies the predicate `p`.
    */
-  def prefixLength(@plocal p: A => Boolean): Int = segmentLength(p, 0)
+  def prefixLength(@local p: A => Boolean): Int = segmentLength(p, 0)
 
   /** Finds index of the first element satisfying some predicate after or at some start index.
    *

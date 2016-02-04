@@ -222,7 +222,7 @@ extends AbstractMap[Long, T]
 
   override def isEmpty = this == LongMap.Nil
 
-  override def filter(@plocal f: ((Long, T)) => Boolean): LongMap[T] = this match {
+  override def filter(@local f: ((Long, T)) => Boolean): LongMap[T] = this match {
     case LongMap.Bin(prefix, mask, left, right) => {
       val (newleft, newright) = (left.filter(f), right.filter(f))
       if ((left eq newleft) && (right eq newright)) this

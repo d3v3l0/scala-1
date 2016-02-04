@@ -85,7 +85,7 @@ trait HashTable[A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashU
    * Initializes the collection from the input stream. `readEntry` will be called for each
    * entry to be read from the input stream.
    */
-  private[collection] def init(in: java.io.ObjectInputStream, @plocal readEntry: => Entry)(@plocal cc: CanThrow) {
+  private[collection] def init(in: java.io.ObjectInputStream, @local readEntry: => Entry)(@local cc: CanThrow) {
   ESC.THROW{
     in.defaultReadObject
 
@@ -119,7 +119,7 @@ trait HashTable[A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashU
    * `foreachEntry` determines the order in which the key/value pairs are saved to the stream. To
    * deserialize, `init` should be used.
    */
-  private[collection] def serializeTo(out: java.io.ObjectOutputStream, @plocal writeEntry: Entry => Unit)(@plocal cc: CanThrow) {
+  private[collection] def serializeTo(out: java.io.ObjectOutputStream, @local writeEntry: Entry => Unit)(@local cc: CanThrow) {
   ESC.THROW{
     out.defaultWriteObject
     out.writeInt(_loadFactor)
@@ -226,7 +226,7 @@ trait HashTable[A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashU
   }
 
   /** Avoid iterator for a 2x faster traversal. */
-  protected def foreachEntry[U](@plocal f: Entry => U) {
+  protected def foreachEntry[U](@local f: Entry => U) {
     val iterTable = table
     var idx       = lastPopulatedIndex
     var es        = iterTable(idx)

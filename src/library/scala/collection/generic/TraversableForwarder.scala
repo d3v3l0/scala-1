@@ -39,15 +39,15 @@ trait TraversableForwarder[+A] extends Traversable[A] {
   override def nonEmpty: Boolean = underlying.nonEmpty
   override def size: Int = underlying.size
   override def hasDefiniteSize = underlying.hasDefiniteSize
-  override def forall(@plocal p: A => Boolean): Boolean = underlying forall p
-  override def exists(@plocal p: A => Boolean): Boolean = underlying exists p
-  override def count(@plocal p: A => Boolean): Int = underlying count p
-  override def find(@plocal p: A => Boolean): Option[A] = underlying find p
-  override def foldLeft[B](z: B)(@plocal op: (B, A) => B): B = underlying.foldLeft(z)(op)
+  override def forall(@local p: A => Boolean): Boolean = underlying forall p
+  override def exists(@local p: A => Boolean): Boolean = underlying exists p
+  override def count(@local p: A => Boolean): Int = underlying count p
+  override def find(@local p: A => Boolean): Option[A] = underlying find p
+  override def foldLeft[B](z: B)(@local op: (B, A) => B): B = underlying.foldLeft(z)(op)
   override def /: [B](z: B)(op: (B, A) => B): B = underlying./:(z)(op)
   override def foldRight[B](z: B)(op: (A, B) => B): B = underlying.foldRight(z)(op)
   override def :\ [B](z: B)(op: (A, B) => B): B = underlying.:\(z)(op)
-  override def reduceLeft[B >: A](@plocal op: (B, A) => B): B = underlying.reduceLeft(op)
+  override def reduceLeft[B >: A](@local op: (B, A) => B): B = underlying.reduceLeft(op)
   override def reduceLeftOption[B >: A](op: (B, A) => B): Option[B] = underlying.reduceLeftOption(op)
   override def reduceRight[B >: A](op: (A, B) => B): B = underlying.reduceRight(op)
   override def reduceRightOption[B >: A](op: (A, B) => B): Option[B] = underlying.reduceRightOption(op)

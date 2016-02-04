@@ -105,15 +105,15 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
   override def takeRight(n: Int) = drop(size - math.max(n, 0))
   override def splitAt(n: Int) = (take(n), drop(n))
 
-  private[this] def countWhile(@plocal p: ((A, B)) => Boolean): Int = {
+  private[this] def countWhile(@local p: ((A, B)) => Boolean): Int = {
     var result = 0
     val it = iterator
     while (it.hasNext && p(it.next())) result += 1
     result
   }
-  override def dropWhile(@plocal p: ((A, B)) => Boolean) = drop(countWhile(p))
-  override def takeWhile(@plocal p: ((A, B)) => Boolean) = take(countWhile(p))
-  override def span(@plocal p: ((A, B)) => Boolean) = splitAt(countWhile(p))
+  override def dropWhile(@local p: ((A, B)) => Boolean) = drop(countWhile(p))
+  override def takeWhile(@local p: ((A, B)) => Boolean) = take(countWhile(p))
+  override def span(@local p: ((A, B)) => Boolean) = splitAt(countWhile(p))
 
   /** A factory to create empty maps of the same type of keys.
    */

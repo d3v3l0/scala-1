@@ -442,7 +442,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     tasksupport.executeAndWaitResult(new Aggregate(() => z, seqop, combop, splitter))
   }
 
-  def foldLeft[S](z: S)(@plocal op: (S, T) => S): S = seq.foldLeft(z)(op)
+  def foldLeft[S](z: S)(@local op: (S, T) => S): S = seq.foldLeft(z)(op)
 
   def foldRight[S](z: S)(op: (T, S) => S): S = seq.foldRight(z)(op)
 
@@ -523,7 +523,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param pred    a predicate used to test elements
    *  @return        true if `p` holds for all elements, false otherwise
    */
-  def forall(@plocal pred: T => Boolean): Boolean = {
+  def forall(@local pred: T => Boolean): Boolean = {
     tasksupport.executeAndWaitResult(new Forall(pred, splitter assign new DefaultSignalling with VolatileAbort))
   }
 
@@ -549,7 +549,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param pred     predicate used to test the elements
    *  @return         an option value with the element if such an element exists, or `None` otherwise
    */
-  def find(@plocal pred: T => Boolean): Option[T] = {
+  def find(@local pred: T => Boolean): Option[T] = {
     tasksupport.executeAndWaitResult(new Find(pred, splitter assign new DefaultSignalling with VolatileAbort))
   }
 

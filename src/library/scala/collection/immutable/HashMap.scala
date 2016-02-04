@@ -67,17 +67,17 @@ class HashMap[A, +B] extends AbstractMap[A, B]
   def - (key: A): HashMap[A, B] =
     removed0(key, computeHash(key), 0)
 
-  override def filter(@plocal p: ((A, B)) => Boolean) = {
+  override def filter(@local p: ((A, B)) => Boolean) = {
     val buffer = new Array[HashMap[A, B]](bufferSize(size))
     nullToEmpty(filter0(p, false, 0, buffer, 0))
   }
 
-  override def filterNot(@plocal p: ((A, B)) => Boolean) = {
+  override def filterNot(@local p: ((A, B)) => Boolean) = {
     val buffer = new Array[HashMap[A, B]](bufferSize(size))
     nullToEmpty(filter0(p, true, 0, buffer, 0))
   }
 
-  protected def filter0(@plocal p: ((A, B)) => Boolean, negate: Boolean, level: Int, buffer: Array[HashMap[A, B @uV]], offset0: Int): HashMap[A, B] = null
+  protected def filter0(@local p: ((A, B)) => Boolean, negate: Boolean, level: Int, buffer: Array[HashMap[A, B @uV]], offset0: Int): HashMap[A, B] = null
 
   protected def elemHashCode(key: A) = key.##
 
@@ -216,7 +216,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
     override def removed0(key: A, hash: Int, level: Int): HashMap[A, B] =
       if (hash == this.hash && key == this.key) HashMap.empty[A,B] else this
 
-    override protected def filter0(@plocal p: ((A, B)) => Boolean, negate: Boolean, level: Int, buffer: Array[HashMap[A, B @uV]], offset0: Int): HashMap[A, B] =
+    override protected def filter0(@local p: ((A, B)) => Boolean, negate: Boolean, level: Int, buffer: Array[HashMap[A, B @uV]], offset0: Int): HashMap[A, B] =
       if (negate ^ p(ensurePair)) this else null
 
     override def iterator: Iterator[(A,B)] = Iterator(ensurePair)
@@ -262,7 +262,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
         }
       } else this
 
-    override protected def filter0(@plocal p: ((A, B)) => Boolean, negate: Boolean, level: Int, buffer: Array[HashMap[A, B @uV]], offset0: Int): HashMap[A, B] = {
+    override protected def filter0(@local p: ((A, B)) => Boolean, negate: Boolean, level: Int, buffer: Array[HashMap[A, B @uV]], offset0: Int): HashMap[A, B] = {
       val kvs1 = if(negate) kvs.filterNot(p) else kvs.filter(p)
       kvs1.size match {
         case 0 =>
@@ -374,7 +374,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
       }
     }
 
-    override protected def filter0(@plocal p: ((A, B)) => Boolean, negate: Boolean, level: Int, buffer: Array[HashMap[A, B @uV]], offset0: Int): HashMap[A, B] = {
+    override protected def filter0(@local p: ((A, B)) => Boolean, negate: Boolean, level: Int, buffer: Array[HashMap[A, B @uV]], offset0: Int): HashMap[A, B] = {
       // current offset
       var offset = offset0
       // result size

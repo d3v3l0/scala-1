@@ -257,24 +257,24 @@ trait TraversableViewLike[+A,
   protected def newAppended[B >: A](that: GenTraversable[B]): Transformed[B] = new { val rest = that } with AbstractTransformed[B] with Appended[B]
   protected def newMapped[B](f: A => B): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with Mapped[B]
   protected def newFlatMapped[B](f: A => GenTraversableOnce[B]): Transformed[B] = new { val mapping = f } with AbstractTransformed[B] with FlatMapped[B]
-  protected def newFiltered(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with Filtered
+  protected def newFiltered(@local p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with Filtered
   protected def newSliced(_endpoints: SliceInterval): Transformed[A] = new { val endpoints = _endpoints } with AbstractTransformed[A] with Sliced
-  protected def newDroppedWhile(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with DroppedWhile
-  protected def newTakenWhile(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with TakenWhile
+  protected def newDroppedWhile(@local p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with DroppedWhile
+  protected def newTakenWhile(@local p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with TakenWhile
 
   protected def newTaken(n: Int): Transformed[A] = newSliced(SliceInterval(0, n))
   protected def newDropped(n: Int): Transformed[A] = newSliced(SliceInterval(n, Int.MaxValue))
 
-  override def filter(@plocal p: A => Boolean): This = newFiltered(p)
-  override def withFilter(@plocal p: A => Boolean): This = newFiltered(p)
-  override def partition(@plocal p: A => Boolean): (This, This) = (newFiltered(p), newFiltered(!p(_)))
+  override def filter(@local p: A => Boolean): This = newFiltered(p)
+  override def withFilter(@local p: A => Boolean): This = newFiltered(p)
+  override def partition(@local p: A => Boolean): (This, This) = (newFiltered(p), newFiltered(!p(_)))
   override def init: This = newSliced(SliceInterval(0, size - 1)) // !!! can't call size here.
   override def drop(n: Int): This = newDropped(n)
   override def take(n: Int): This = newTaken(n)
   override def slice(from: Int, until: Int): This = newSliced(SliceInterval(from, until))
-  override def dropWhile(@plocal p: A => Boolean): This = newDroppedWhile(p)
-  override def takeWhile(@plocal p: A => Boolean): This = newTakenWhile(p)
-  override def span(@plocal p: A => Boolean): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
+  override def dropWhile(@local p: A => Boolean): This = newDroppedWhile(p)
+  override def takeWhile(@local p: A => Boolean): This = newTakenWhile(p)
+  override def span(@local p: A => Boolean): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
   override def splitAt(n: Int): (This, This) = (newTaken(n), newDropped(n))
 
   override def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[This, B, That]): That =
@@ -293,7 +293,7 @@ trait TraversableViewLike[+A,
   override def unzip3[A1, A2, A3](implicit asTriple: A => (A1, A2, A3)) =
     (newMapped(x => asTriple(x)._1), newMapped(x => asTriple(x)._2), newMapped(x => asTriple(x)._3))  // TODO - Performance improvements.
 
-  override def filterNot(@plocal p: (A) => Boolean): This =
+  override def filterNot(@local p: (A) => Boolean): This =
     newFiltered(a => !(p(a)))
 
   override def inits: Iterator[This] =

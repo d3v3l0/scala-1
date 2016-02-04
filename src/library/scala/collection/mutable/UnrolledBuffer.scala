@@ -144,7 +144,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
   }
 
   // this should be faster than the iterator
-  override def foreach[U](@plocal f: T => U) = headptr.foreach(f)
+  override def foreach[U](@local f: T => U) = headptr.foreach(f)
 
   def result = this
 

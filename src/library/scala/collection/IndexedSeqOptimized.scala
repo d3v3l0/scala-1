@@ -29,32 +29,32 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def isEmpty: Boolean = { length == 0 }
 
   override /*IterableLike*/
-  def foreach[U](@plocal f: A => U): Unit = {
+  def foreach[U](@local f: A => U): Unit = {
     var i = 0
     val len = length
     while (i < len) { f(this(i)); i += 1 }
   }
 
-  private def prefixLengthImpl(@plocal p: A => Boolean, expectTrue: Boolean): Int = {
+  private def prefixLengthImpl(@local p: A => Boolean, expectTrue: Boolean): Int = {
     var i = 0
     while (i < length && p(apply(i)) == expectTrue) i += 1
     i
   }
 
   override /*IterableLike*/
-  def forall(@plocal p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = true) == length
+  def forall(@local p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = true) == length
 
   override /*IterableLike*/
-  def exists(@plocal p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = false) != length
+  def exists(@local p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = false) != length
 
   override /*IterableLike*/
-  def find(@plocal p: A => Boolean): Option[A] = {
+  def find(@local p: A => Boolean): Option[A] = {
     val i = prefixLength(!p(_))
     if (i < length) Some(this(i)) else None
   }
 
   @tailrec
-  private def foldl[B](start: Int, end: Int, z: B, @plocal op: (B, A) => B): B =
+  private def foldl[B](start: Int, end: Int, z: B, @local op: (B, A) => B): B =
     if (start == end) z
     else foldl(start + 1, end, op(z, this(start)), op)
 
@@ -64,7 +64,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
     else foldr(start, end - 1, op(this(end - 1), z), op)
 
   override /*TraversableLike*/
-  def foldLeft[B](z: B)(@plocal op: (B, A) => B): B =
+  def foldLeft[B](z: B)(@local op: (B, A) => B): B =
     foldl(0, length, z, op)
 
   override /*IterableLike*/
@@ -72,7 +72,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
     foldr(0, length, z, op)
 
   override /*TraversableLike*/
-  def reduceLeft[B >: A](@plocal op: (B, A) => B): B =
+  def reduceLeft[B >: A](@local op: (B, A) => B): B =
     if (length > 0) foldl(1, length, this(0), op) else super.reduceLeft(op)
 
   override /*IterableLike*/
@@ -152,13 +152,13 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def splitAt(n: Int): (Repr, Repr) = (take(n), drop(n))
 
   override /*IterableLike*/
-  def takeWhile(@plocal p: A => Boolean): Repr = take(prefixLength(p))
+  def takeWhile(@local p: A => Boolean): Repr = take(prefixLength(p))
 
   override /*TraversableLike*/
-  def dropWhile(@plocal p: A => Boolean): Repr = drop(prefixLength(p))
+  def dropWhile(@local p: A => Boolean): Repr = drop(prefixLength(p))
 
   override /*TraversableLike*/
-  def span(@plocal p: A => Boolean): (Repr, Repr) = splitAt(prefixLength(p))
+  def span(@local p: A => Boolean): (Repr, Repr) = splitAt(prefixLength(p))
 
   override /*IterableLike*/
   def sameElements[B >: A](that: GenIterable[B]): Boolean = that match {
@@ -191,7 +191,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def lengthCompare(len: Int): Int = length - len
 
   override /*SeqLike*/
-  def segmentLength(@plocal p: A => Boolean, from: Int): Int = {
+  def segmentLength(@local p: A => Boolean, from: Int): Int = {
     val len = length
     var i = from
     while (i < len && p(this(i))) i += 1
