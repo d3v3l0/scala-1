@@ -333,7 +333,7 @@ private[concurrent] object Promise {
       (new CallbackRunnable(preparedEC, func)).executeWithValue(completedAs)
     }
 
-    def ready(atMost: Duration)(implicit permit: CanAwait): this.type = this
+    def ready(atMost: Duration)(@local cc: CanThrow)(implicit permit: CanAwait): this.type = this
 
     def result(atMost: Duration)(@local cc: CanThrow)(implicit permit: CanAwait): T = value.get.get(cc) // TODO(leo) not sure (this one cannot throw exception)
   }

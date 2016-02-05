@@ -97,11 +97,11 @@ trait Tasks {
 
     def split: Seq[WrappedTask[R, Tp]]
     /** Code that gets called after the task gets started - it may spawn other tasks instead of calling `leaf`. */
-    def compute()
+    def compute()(@local cc: CanThrow)
     /** Start task. */
     def start()
     /** Wait for task to finish. */
-    def sync()
+    def sync()(@local cc: CanThrow)
     /** Try to cancel the task.
      *  @return     `true` if cancellation is successful.
      */
@@ -145,15 +145,15 @@ trait AdaptiveWorkStealingTasks extends Tasks {
 
     def split: Seq[WrappedTask[R, Tp]]
 
-    def compute() = if (body.shouldSplitFurther) {
-      internal()
+    def compute()(@local cc: CanThrow) = if (body.shouldSplitFurther) {
+      internal()(cc)
       release()
     } else {
       body.tryLeaf(None)
       release()
     }
 
-    def internal() = {
+    def internal()(@local cc: CanThrow) = {
       var last = spawnSubtasks()
 
       last.body.tryLeaf(None)
@@ -170,7 +170,7 @@ trait AdaptiveWorkStealingTasks extends Tasks {
           last.release()
         } else {
           // println("Done with " + beforelast.body + ", next sync is " + last.body)
-          last.sync()
+          last.sync()(cc)
         }
         // println("Merging " + body + " with " + last.body)
         body.tryMerge(last.body.repr)
@@ -250,7 +250,7 @@ trait ThreadPoolTasks extends Tasks {
         true
       } else false
     }
-    def run() = {
+    def run()(@local cc: CanThrow) = {
       // utb: compute
       var isOkToRun = false
       synchronized {
@@ -261,7 +261,7 @@ trait ThreadPoolTasks extends Tasks {
       }
       if (isOkToRun) {
         // debuglog("Running body of " + body)
-        compute()
+        compute()(cc)
       } else {
         // just skip
         // debuglog("skipping body of " + body)
@@ -474,15 +474,15 @@ private[parallel] final class FutureTasks(executor: ExecutionContext) extends Ta
    *  using futures.
    *  Folds the futures and merges them asynchronously.
    */
-  private def exec[R, Tp](topLevelTask: Task[R, Tp]): Future[R] = {
+  private def exec[R, Tp](topLevelTask: Task[R, Tp])(@local cc: CanThrow): Future[R] = {
     implicit val ec = environment
 
     /** Constructs a tree of futures where tasks can be reasonably split.
      */
-    def compute(task: Task[R, Tp], depth: Int): Future[Task[R, Tp]] = {
+    def compute(task: Task[R, Tp], depth: Int)(@local cc: CanThrow): Future[Task[R, Tp]] = {
       if (task.shouldSplitFurther && depth < maxdepth) {
         val subtasks = task.split
-        val subfutures = for (subtask <- subtasks.iterator) yield compute(subtask, depth + 1)
+        val subfutures = for (subtask <- subtasks.iterator) yield compute(subtask, depth + 1)(cc)
         subfutures.reduceLeft { (firstFuture, nextFuture) =>
           for {
             firstTask <- firstFuture
@@ -504,15 +504,15 @@ private[parallel] final class FutureTasks(executor: ExecutionContext) extends Ta
       }
     }
 
-    compute(topLevelTask, 0) map { t =>
-      ESC.TRY { cc => t.forwardThrowable()(cc) } // TODO(leo)
+    compute(topLevelTask, 0)(cc) map { t =>
+      t.forwardThrowable()(cc)
       t.result
     }
   }
 
-  def execute[R, Tp](task: Task[R, Tp]): CanThrow -> R = {
-    val future = exec(task)
-    Await.result(future, scala.concurrent.duration.Duration.Inf)
+  def execute[R, Tp](task: Task[R, Tp]): CanThrow -> R = cc => {
+    val future = exec(task)(cc)
+    Await.result(future, scala.concurrent.duration.Duration.Inf)(cc)
   }
 
   def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R = {

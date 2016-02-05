@@ -1097,7 +1097,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     override def merge(that: Exists) = result = result || that.result
   }
 
-  protected[this] class Find[U >: T](pred: T => Boolean, protected[this] val pit: IterableSplitter[T])
+  protected[this] class Find[U >: T](@local pred: T => Boolean, protected[this] val pit: IterableSplitter[T])
   extends Accessor[Option[U], Find[U]] {
     @volatile var result: Option[U] = None
     def leaf(prev: Option[Option[U]]) = { if (!pit.isAborted) result = pit.find(pred); if (result != None) pit.abort() }

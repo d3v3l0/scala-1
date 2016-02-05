@@ -204,7 +204,7 @@ final case class Failure[+T](exception: Throwable) extends Try[T] {
     } catch {
       case NonFatal(e) => Failure(e)
     }
-  def get(@local cc: CanThrow): T = ESC.THROW { throw exception }(cc) // TODO(leo) not sure what is the right thing here
+  def get(@local cc: CanThrow): T = ESC.THROW { throw exception }(cc)
   def flatMap[U](f: T => Try[U]): Try[U] = this.asInstanceOf[Try[U]]
   def flatten[U](implicit ev: T <:< Try[U]): Try[U] = this.asInstanceOf[Try[U]]
   def foreach[U](f: T => U): Unit = ()
@@ -226,7 +226,7 @@ final case class Success[+T](value: T) extends Try[T] {
   def isFailure: Boolean = false
   def isSuccess: Boolean = true
   def recoverWith[U >: T](f: PartialFunction[Throwable, Try[U]]): Try[U] = this
-  def get = value
+  def get(@local cc: CanThrow) = value
   def flatMap[U](f: T => Try[U]): Try[U] =
     try f(value)
     catch {

@@ -207,7 +207,7 @@ private[process] trait ProcessImpl {
   private[process] class DummyProcess(action: => Int) extends Process {
     private[this] val exitCode = Future(action)
     override def exitValue()(@local cc: CanThrow) = exitCode(cc)
-    override def destroy() { }
+    override def destroy()(@local cc: CanThrow) { }
   }
   /** A thin wrapper around a java.lang.Process.  `outputThreads` are the Threads created to read from the
   * output and error streams of the process.  `inputThread` is the Thread created to write to the input stream of
