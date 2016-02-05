@@ -174,7 +174,7 @@ class HashSet[A] extends AbstractSet[A]
     nullToEmpty(filter0(p, false, 0, buffer, 0))
   }
 
-  override def filterNot(@plocal p: A => Boolean) = {
+  override def filterNot(@local p: A => Boolean) = {
     val buffer = new Array[HashSet[A]](bufferSize(size))
     nullToEmpty(filter0(p, true, 0, buffer, 0))
   }

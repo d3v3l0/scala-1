@@ -524,11 +524,11 @@ self =>
     else Stream.Empty
   }
 
-  override final def withFilter(@plocal p: A => Boolean): StreamWithFilter = new StreamWithFilter(p)
+  override final def withFilter(@local p: A => Boolean): StreamWithFilter = new StreamWithFilter(p)
 
   /** A lazier implementation of WithFilter than TraversableLike's.
    */
-  final class StreamWithFilter(p: A => Boolean) extends WithFilter(p) {
+  final class StreamWithFilter(@local p: A => Boolean) extends WithFilter(p) {
 
     override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Stream[A], B, That]): That = {
       def tailMap(coll: Stream[A]): Stream[B] = {
@@ -572,7 +572,7 @@ self =>
       for (x <- self)
         if (p(x)) f(x)
 
-    override def withFilter(@plocal q: A => Boolean): StreamWithFilter =
+    override def withFilter(@local q: A => Boolean): StreamWithFilter =
       new StreamWithFilter(x => p(x) && q(x))
   }
 
@@ -591,7 +591,7 @@ self =>
    *  unless the `f` throws an exception.
    */
   @tailrec
-  override final def foreach[B](f: A => B) {
+  override final def foreach[B](@local f: A => B) {
     if (!this.isEmpty) {
       f(head)
       tail.foreach(f)

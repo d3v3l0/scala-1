@@ -173,7 +173,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @usecase def foreach(f: A => Unit): Unit
    *    @inheritdoc
    */
-  def foreach[U](@plocal f: A => U): Unit
+  def foreach[U](@local f: A => U): Unit
 
   /** Builds a new collection by applying a function to all elements of this $coll.
    *

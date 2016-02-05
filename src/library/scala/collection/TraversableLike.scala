@@ -124,7 +124,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *    It's important to implement this method in an efficient way.
    *
    */
-  def foreach[U](@plocal f: A => U): Unit
+  def foreach[U](@local f: A => U): Unit
 
   /** Tests whether this $coll is empty.
    *
@@ -256,7 +256,7 @@ trait TraversableLike[+A, +Repr] extends Any
     b.result
   }
 
-  private def filterImpl(@plocal p: A => Boolean, isFlipped: Boolean): Repr = {
+  private def filterImpl(@local p: A => Boolean, isFlipped: Boolean): Repr = {
     val b = newBuilder
     for (x <- this)
       if (p(x) != isFlipped) b += x
@@ -278,7 +278,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @return      a new $coll consisting of all elements of this $coll that do not satisfy the given
    *               predicate `p`. The order of the elements is preserved.
    */
-  def filterNot(@plocal p: A => Boolean): Repr = filterImpl(p, isFlipped = true)
+  def filterNot(@local p: A => Boolean): Repr = filterImpl(p, isFlipped = true)
 
   def collect[B, That](@plocal pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
     val b = bf(repr)
@@ -700,12 +700,12 @@ trait TraversableLike[+A, +Repr] extends Any
    *             All these operations apply to those elements of this $coll
    *             which satisfy the predicate `p`.
    */
-  def withFilter(@plocal p: A => Boolean): FilterMonadic[A, Repr] = new WithFilter(p)
+  def withFilter(@local p: A => Boolean): FilterMonadic[A, Repr] = new WithFilter(p)
 
   /** A class supporting filtered operations. Instances of this class are
    *  returned by method `withFilter`.
    */
-  class WithFilter(@plocal p: A => Boolean) extends FilterMonadic[A, Repr] {
+  class WithFilter(@local p: A => Boolean) extends FilterMonadic[A, Repr] {
 
     // TR not sure about this -- previous version: WithFilter extends FilterMonadic[A, Repr] {
     type LT
@@ -779,7 +779,7 @@ trait TraversableLike[+A, +Repr] extends Any
      *  @usecase def foreach(f: A => Unit): Unit
      *    @inheritdoc
      */
-    def foreach[U](@plocal f: A => U): Unit =
+    def foreach[U](@local f: A => U): Unit =
       for (x <- self)
         if (p(x)) f(x)
 
@@ -791,7 +791,7 @@ trait TraversableLike[+A, +Repr] extends Any
      *             All these operations apply to those elements of this $coll which
      *             satisfy the predicate `q` in addition to the predicate `p`.
      */
-    def withFilter(@plocal q: A => Boolean): WithFilter =
+    def withFilter(@local q: A => Boolean): WithFilter =
       new WithFilter(x => p(x) && q(x))
   }
 

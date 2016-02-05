@@ -41,7 +41,7 @@ trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[X]] extends HasNew
    *
    *  @usecase def foreach(f: A => Unit): Unit
    */
-  def foreach[U](f: A => U): Unit
+  def foreach[U](@local f: A => U): Unit
 
   /** Selects the first element of this $coll.
    *

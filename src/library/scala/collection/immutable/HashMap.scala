@@ -72,7 +72,7 @@ class HashMap[A, +B] extends AbstractMap[A, B]
     nullToEmpty(filter0(p, false, 0, buffer, 0))
   }
 
-  override def filterNot(@plocal p: ((A, B)) => Boolean) = {
+  override def filterNot(@local p: ((A, B)) => Boolean) = {
     val buffer = new Array[HashMap[A, B]](bufferSize(size))
     nullToEmpty(filter0(p, true, 0, buffer, 0))
   }

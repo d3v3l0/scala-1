@@ -64,7 +64,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
   type LT
 
   /** Self-documenting abstract methods. */
-  def foreach[U](@plocal f: A => U): Unit
+  def foreach[U](@local f: A => U): Unit
   def isEmpty: Boolean
   def hasDefiniteSize: Boolean
 
