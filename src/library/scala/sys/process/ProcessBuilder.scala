@@ -143,27 +143,27 @@ trait ProcessBuilder extends Source with Sink {
     * returns the output as a String.  Standard error is sent to the console.  If
     * the exit code is non-zero, an exception is thrown.
     */
-  def !! : String
+  def !! (@local cc: CanThrow): String
 
   /** Starts the process represented by this builder, blocks until it exits, and
     * returns the output as a String.  Standard error is sent to the provided
     * ProcessLogger.  If the exit code is non-zero, an exception is thrown.
     */
-  def !!(log: ProcessLogger): String
+  def !!(log: ProcessLogger)(@local cc: CanThrow): String
 
   /** Starts the process represented by this builder, blocks until it exits, and
     * returns the output as a String.  Standard error is sent to the console.  If
     * the exit code is non-zero, an exception is thrown.  The newly started
     * process reads from standard input of the current process.
     */
-  def !!< : String
+  def !!< (@local cc: CanThrow): String
 
   /** Starts the process represented by this builder, blocks until it exits, and
     * returns the output as a String.  Standard error is sent to the provided
     * ProcessLogger.  If the exit code is non-zero, an exception is thrown.  The
     * newly started process reads from standard input of the current process.
     */
-  def !!<(log: ProcessLogger): String
+  def !!<(log: ProcessLogger)(@local cc: CanThrow): String
 
   /** Starts the process represented by this builder.  The output is returned as
     * a Stream that blocks when lines are not available but the process has not
@@ -195,11 +195,11 @@ trait ProcessBuilder extends Source with Sink {
     * with a non-zero value, the Stream will provide all lines up to termination
     * but will not throw an exception.
     */
-  def lineStream_! : Stream[String]
+  def lineStream_! (@local cc: CanThrow): Stream[String]
 
   /** Deprecated (renamed).  Use `lineStream_!` instead. */
   @deprecated("Use lineStream_! instead.", "2.11.0")
-  def lines_! : Stream[String] = lineStream_!
+  def lines_! (@local cc: CanThrow): Stream[String] = lineStream_!(cc)
 
   /** Starts the process represented by this builder.  The output is returned as
     * a Stream that blocks when lines are not available but the process has not
@@ -207,44 +207,44 @@ trait ProcessBuilder extends Source with Sink {
     * process exits with a non-zero value, the Stream will provide all lines up
     * to termination but will not throw an exception.
     */
-  def lineStream_!(log: ProcessLogger): Stream[String]
+  def lineStream_!(log: ProcessLogger)(@local cc: CanThrow): Stream[String]
 
   /** Deprecated (renamed).  Use `lineStream_!(log: ProcessLogger)` instead. */
   @deprecated("Use stream_! instead.", "2.11.0")
-  def lines_!(log: ProcessLogger): Stream[String] = lineStream_!(log)
+  def lines_!(log: ProcessLogger)(@local cc: CanThrow): Stream[String] = lineStream_!(log)(cc)
 
   /** Starts the process represented by this builder, blocks until it exits, and
     * returns the exit code.  Standard output and error are sent to the console.
     */
-  def ! : Int
+  def ! (@local cc: CanThrow): Int
 
   /** Starts the process represented by this builder, blocks until it exits, and
     * returns the exit code.  Standard output and error are sent to the given
     * ProcessLogger.
     */
-  def !(log: ProcessLogger): Int
+  def !(log: ProcessLogger)(@local cc: CanThrow): Int
 
   /** Starts the process represented by this builder, blocks until it exits, and
     * returns the exit code.  Standard output and error are sent to the console.
     * The newly started process reads from standard input of the current process.
     */
-  def !< : Int
+  def !< (@local cc: CanThrow): Int
 
   /** Starts the process represented by this builder, blocks until it exits, and
     * returns the exit code.  Standard output and error are sent to the given
     * ProcessLogger.  The newly started process reads from standard input of the
     * current process.
     */
-  def !<(log: ProcessLogger): Int
+  def !<(log: ProcessLogger)(@local cc: CanThrow): Int
 
   /** Starts the process represented by this builder.  Standard output and error
    * are sent to the console.*/
-  def run(): Process
+  def run()(@local cc: CanThrow): Process
 
   /** Starts the process represented by this builder.  Standard output and error
     * are sent to the given ProcessLogger.
     */
-  def run(log: ProcessLogger): Process
+  def run(log: ProcessLogger)(@local cc: CanThrow): Process
 
   /** Starts the process represented by this builder.  I/O is handled by the
     * given ProcessIO instance.
@@ -255,14 +255,14 @@ trait ProcessBuilder extends Source with Sink {
     * are sent to the console.  The newly started process reads from standard
     * input of the current process if `connectInput` is true.
     */
-  def run(connectInput: Boolean): Process
+  def run(connectInput: Boolean)(@local cc: CanThrow): Process
 
   /** Starts the process represented by this builder, blocks until it exits, and
     * returns the exit code.  Standard output and error are sent to the given
     * ProcessLogger.  The newly started process reads from standard input of the
     * current process if `connectInput` is true.
     */
-  def run(log: ProcessLogger, connectInput: Boolean): Process
+  def run(log: ProcessLogger, connectInput: Boolean)(@local cc: CanThrow): Process
 
   /** Constructs a command that runs this command first and then `other` if this
     * command succeeds.

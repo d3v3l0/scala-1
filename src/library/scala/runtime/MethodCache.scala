@@ -70,7 +70,7 @@ private[scala] final class PolyMethodCache(
       case _                  => next find forReceiver
     }
 
-  def find(forReceiver: JClass[_]) = findInternal(forReceiver)
+  def find(forReceiver: JClass[_])(@local cc: CanThrow) = findInternal(forReceiver)(cc)
 
   // TODO: come up with a more realistic number
   final private val MaxComplexity = 160
