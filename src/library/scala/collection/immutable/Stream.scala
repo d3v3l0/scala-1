@@ -526,7 +526,7 @@ self =>
 
   /** A lazier implementation of WithFilter than TraversableLike's.
    */
-  final class StreamWithFilter(p: A => Boolean) extends WithFilter(p) {
+  final class StreamWithFilter(@local p: A => Boolean) extends WithFilter(p) {
 
     override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Stream[A], B, That]): That = {
       def tailMap(coll: Stream[A]): Stream[B] = {
@@ -1295,7 +1295,7 @@ object Stream extends SeqFactory[Stream] {
     else cons(start, range(start + step, end, step))
   }
 
-  private[immutable] def filteredTail[A](stream: Stream[A], p: A => Boolean) = {
+  private[immutable] def filteredTail[A](stream: Stream[A], @local p: A => Boolean) = {
     cons(stream.head, stream.tail filter p)
   }
 

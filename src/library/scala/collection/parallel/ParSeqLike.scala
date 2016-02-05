@@ -337,7 +337,7 @@ self =>
 
   protected trait Transformer[R, Tp] extends Accessor[R, Tp] with super.Transformer[R, Tp]
 
-  protected[this] class SegmentLength(pred: T => Boolean, from: Int, protected[this] val pit: SeqSplitter[T])
+  protected[this] class SegmentLength(@local pred: T => Boolean, from: Int, protected[this] val pit: SeqSplitter[T])
   extends Accessor[(Int, Boolean), SegmentLength] {
     @volatile var result: (Int, Boolean) = null
     def leaf(prev: Option[(Int, Boolean)]) = if (from < pit.indexFlag) {

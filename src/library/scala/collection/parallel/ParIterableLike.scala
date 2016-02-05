@@ -1078,7 +1078,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     }
   }
 
-  protected[this] class Forall(pred: T => Boolean, protected[this] val pit: IterableSplitter[T])
+  protected[this] class Forall(@local pred: T => Boolean, protected[this] val pit: IterableSplitter[T])
   extends Accessor[Boolean, Forall] {
     @volatile var result: Boolean = true
     def leaf(prev: Option[Boolean]) = { if (!pit.isAborted) result = pit.forall(pred); if (result == false) pit.abort() }
