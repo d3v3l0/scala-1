@@ -40,8 +40,6 @@ import scala.annotation.tailrec
 trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[A, Repr] {
   self =>
 
-  type LT
-
   def seq: IndexedSeq[A]
   override def hashCode()= scala.util.hashing.MurmurHash3.seqHash(seq)  // TODO - can we get faster via "indexedSeqHash" ?
 

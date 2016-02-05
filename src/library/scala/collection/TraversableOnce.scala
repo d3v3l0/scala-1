@@ -61,8 +61,6 @@ import scala.reflect.ClassTag
 trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
   self =>
 
-  type LT
-
   /** Self-documenting abstract methods. */
   def foreach[U](@plocal f: A => U): Unit
   def isEmpty: Boolean

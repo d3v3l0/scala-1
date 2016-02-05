@@ -77,8 +77,6 @@ trait TraversableLike[+A, +Repr] extends Any
 
   import Traversable.breaks._
 
-  type LT
-
   /** The type implementing this traversable */
   protected[this] type Self = Repr
 
