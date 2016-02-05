@@ -36,8 +36,6 @@ trait IterableViewLike[+A,
         with TraversableViewLike[A, Coll, This]
 { self =>
 
-  type LT
-
   /** Explicit instantiation of the `Transformed` trait to reduce class file size in subclasses. */
   private[collection] abstract class AbstractTransformed[+B] extends Iterable[B] with super[TraversableViewLike].Transformed[B] with Transformed[B]
 

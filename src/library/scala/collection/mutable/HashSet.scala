@@ -48,8 +48,6 @@ extends AbstractSet[A]
 {
   initWithContents(contents)
 
-  override protected type plocal = local[LT]
-
   def this() = this(null)
 
   override def companion: GenericCompanion[HashSet] = HashSet

@@ -22,8 +22,6 @@ package mutable
 trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
   import FlatHashTable._
 
-  protected type plocal = local[Any]
-
   private final def tableDebug = false
 
   @transient private[collection] var _loadFactor = defaultLoadFactor

@@ -205,8 +205,6 @@ abstract class Stream[+A] extends AbstractSeq[A]
                              with LinearSeqOptimized[A, Stream[A]]
                              with Serializable {
 self =>
-  override type LT = Nothing
-
   override def companion: GenericCompanion[Stream] = Stream
 
   import scala.collection.{Traversable, Iterable, Seq, IndexedSeq}

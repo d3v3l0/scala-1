@@ -54,8 +54,6 @@ extends scala.collection.mutable.AbstractBuffer[T]
 {
   import UnrolledBuffer.Unrolled
 
-  type LT = Any
-
   @transient private var headptr = newUnrolled
   @transient private var lastptr = headptr
   @transient private var sz = 0

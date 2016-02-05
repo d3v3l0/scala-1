@@ -38,9 +38,6 @@ trait HashTable[A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashU
   // However, I'm afraid it's too late now for such breaking change.
   import HashTable._
 
-  protected type LT = Any
-  protected type plocal = local[LT]
-
   @transient protected var _loadFactor = defaultLoadFactor
 
   /** The actual hash table.

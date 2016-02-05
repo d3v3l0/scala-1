@@ -44,7 +44,6 @@ self =>
   initWithContents(contents)
 
   type Entry = scala.collection.mutable.DefaultEntry[K, V]
-  override protected type plocal = local[LT]
 
   def this() = this(null)
 

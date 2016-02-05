@@ -87,8 +87,6 @@ sealed abstract class List[+A] extends AbstractSeq[A]
                                   with GenericTraversableTemplate[A, List]
                                   with LinearSeqOptimized[A, List[A]]
                                   with Serializable {
-  override protected type LT = Any
-
   override def companion: GenericCompanion[List] = List
 
   import scala.collection.{Iterable, Traversable, Seq, IndexedSeq}

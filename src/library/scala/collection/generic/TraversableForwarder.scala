@@ -29,8 +29,6 @@ import scala.reflect.ClassTag
  */
 @deprecated("Forwarding is inherently unreliable since it is not automated and new methods can be forgotten.", "2.11.0")
 trait TraversableForwarder[+A] extends Traversable[A] {
-  type LT
-
   /** The traversable object to which calls are forwarded. */
   protected def underlying: Traversable[A]
 

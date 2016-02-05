@@ -74,8 +74,6 @@ trait TraversableViewLike[+A,
 {
   self =>
 
-  type LT
-
   protected def underlying: Coll
   protected[this] def viewIdentifier: String = ""
   protected[this] def viewIdString: String = ""
