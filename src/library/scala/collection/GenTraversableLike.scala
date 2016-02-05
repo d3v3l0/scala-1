@@ -54,11 +54,7 @@ import scala.annotation.migration
  *  @author Aleksandar Prokopec
  *  @since 2.9
  */
-trait GenTraversableLike[+A, +PreRepr] extends Any with GenTraversableOnce[A] with Parallelizable[A, parallel.ParIterable[A]] { self =>
-
-  type LT
-
-  type Repr = PreRepr { type LT = self.LT }
+trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with Parallelizable[A, parallel.ParIterable[A]] {
 
   def repr: Repr
 
@@ -125,7 +121,7 @@ trait GenTraversableLike[+A, +PreRepr] extends Any with GenTraversableOnce[A] wi
    *
    *  @return           a new $coll containing the prefix scan of the elements in this $coll
    */
-  def scan[B >: A, That](z: B)(@plocal op: (B, B) => B)(implicit cbf: CanBuildFrom[Repr, B, That]): That
+  def scan[B >: A, That](z: B)(op: (B, B) => B)(implicit cbf: CanBuildFrom[Repr, B, That]): That
 
   /** Produces a collection containing cumulative results of applying the
    *  operator going left to right.
@@ -140,7 +136,7 @@ trait GenTraversableLike[+A, +PreRepr] extends Any with GenTraversableOnce[A] wi
    *  @param bf      $bfinfo
    *  @return        collection with intermediate results
    */
-  def scanLeft[B, That](z: B)(@plocal op: (B, A) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
 
   /** Produces a collection containing cumulative results of applying the operator going right to left.
    *  The head of the collection is the last cumulative result.

@@ -66,11 +66,11 @@ import scala.language.higherKinds
  *  @define Coll Traversable
  *  @define coll traversable collection
  */
-trait TraversableLike[+A, +PreRepr] extends Any
-                                    with HasNewBuilder[A, PreRepr]
-                                    with FilterMonadic[A, PreRepr]
+trait TraversableLike[+A, +Repr] extends Any
+                                    with HasNewBuilder[A, Repr]
+                                    with FilterMonadic[A, Repr]
                                     with TraversableOnce[A]
-                                    with GenTraversableLike[A, PreRepr]
+                                    with GenTraversableLike[A, Repr]
                                     with Parallelizable[A, ParIterable[A]]
 {
   self =>
@@ -78,8 +78,6 @@ trait TraversableLike[+A, +PreRepr] extends Any
   import Traversable.breaks._
 
   type LT
-
-  type Repr = PreRepr { type LT = self.LT }
 
   /** The type implementing this traversable */
   protected[this] type Self = Repr
@@ -701,16 +699,12 @@ trait TraversableLike[+A, +PreRepr] extends Any
    *             All these operations apply to those elements of this $coll
    *             which satisfy the predicate `p`.
    */
-  def withFilter(@plocal p: A => Boolean): FilterMonadic[A, PreRepr] = new WithFilter(p)
+  def withFilter(@plocal p: A => Boolean): FilterMonadic[A, Repr] = new WithFilter(p)
 
   /** A class supporting filtered operations. Instances of this class are
    *  returned by method `withFilter`.
    */
-  class WithFilter(@plocal p: A => Boolean) extends FilterMonadic[A, PreRepr] {
-
-    // TR not sure about this -- previous version: WithFilter extends FilterMonadic[A, Repr] {
-    type LT
-    type Repr = PreRepr { type LT = self.LT }
+  class WithFilter(@plocal p: A => Boolean) extends FilterMonadic[A, Repr] {
 
     /** Builds a new collection by applying a function to all elements of the
      *  outer $coll containing this `WithFilter` instance that satisfy predicate `p`.
