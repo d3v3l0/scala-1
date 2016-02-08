@@ -367,7 +367,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *          iterator by applying the function `f` to it.
    *  @note   Reuse: $consumesAndProducesIterator
    */
-  def map[B](f: A => B): Iterator[B] = new AbstractIterator[B] {
+  def map[B](@local f: A => B): Iterator[B] = new AbstractIterator[B] { // TODO(leo) parametrize with LT
     def hasNext = self.hasNext
     def next() = f(self.next())
   }
