@@ -43,7 +43,7 @@ trait Task[R, +Tp] {
   def forwardThrowable()(@local cc: CanThrow) = ESC.THROW { if (throwable != null) throw throwable }(cc)
 
   // tries to do the leaf computation, storing the possible exception
-  private[parallel] def tryLeaf(lastres: Option[R]) {
+  private[parallel] def tryLeaf(lastres: Option[R])(@local cc: CanThrow) {
     try {
       tryBreakable {
         leaf(lastres)
@@ -149,14 +149,14 @@ trait AdaptiveWorkStealingTasks extends Tasks {
       internal()(cc)
       release()
     } else {
-      body.tryLeaf(None)
+      body.tryLeaf(None)(cc)
       release()
     }
 
     def internal()(@local cc: CanThrow) = {
       var last = spawnSubtasks()
 
-      last.body.tryLeaf(None)
+      last.body.tryLeaf(None)(cc)
       last.release()
       body.result = last.body.result
       body.throwable = last.body.throwable
@@ -166,7 +166,7 @@ trait AdaptiveWorkStealingTasks extends Tasks {
         last = last.next
         if (last.tryCancel()) {
           // println("Done with " + beforelast.body + ", next direct is " + last.body)
-          last.body.tryLeaf(Some(body.result))
+          last.body.tryLeaf(Some(body.result))(cc)
           last.release()
         } else {
           // println("Done with " + beforelast.body + ", next sync is " + last.body)
@@ -499,7 +499,7 @@ private[parallel] final class FutureTasks(executor: ExecutionContext) extends Ta
             task.throwable = exception
         }
       } else Future {
-        task.tryLeaf(None)
+        task.tryLeaf(None)(cc)
         task
       }
     }
