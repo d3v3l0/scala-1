@@ -125,7 +125,7 @@ trait Tasks {
   def execute[R, Tp](fjtask: Task[R, Tp]): CanThrow -> R
 
   /** Executes a result task, waits for it to finish, then returns its result. Forwards an exception if some task threw it. */
-  def executeAndWaitResult[R, Tp](task: Task[R, Tp]): R
+  def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R
 
   /** Retrieves the parallelism level of the task execution environment. */
   def parallelismLevel: Int
@@ -375,7 +375,7 @@ trait ForkJoinTasks extends Tasks with HavingForkJoinPool {
 
   trait WrappedTask[R, +Tp] extends RecursiveAction with super.WrappedTask[R, Tp] {
     def start() = fork
-    def sync() = join
+    def sync()(@local cc: CanThrow) = join
     def tryCancel = tryUnfork
   }
 
@@ -401,7 +401,7 @@ trait ForkJoinTasks extends Tasks with HavingForkJoinPool {
     }
 
     { cc =>
-      fjtask.sync()
+      fjtask.sync()(cc)
       fjtask.body.forwardThrowable()(cc)
       fjtask.body.result
     }
@@ -423,7 +423,7 @@ trait ForkJoinTasks extends Tasks with HavingForkJoinPool {
       forkJoinPool.execute(fjtask)
     }
 
-    fjtask.sync()
+    fjtask.sync()(cc)
     // if (fjtask.body.throwable != null) println("throwing: " + fjtask.body.throwable + " at " + fjtask.body)
     fjtask.body.forwardThrowable()(cc)
     fjtask.body.result
