@@ -105,7 +105,7 @@ sealed abstract class Try[+T] {
   /**
    * Maps the given function to the value from this `Success` or returns this if this is a `Failure`.
    */
-  def map[U](f: T => U): Try[U]
+  def map[U](@local f: T => U): Try[U]
 
   /**
    * Converts this to a `Failure` if the predicate is not satisfied.

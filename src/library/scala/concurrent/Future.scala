@@ -146,7 +146,7 @@ trait Future[+T] extends Awaitable[T] {
    *  $multipleCallbacks
    *  $callbackInContext
    */
-  def onComplete[U](@deprecatedName('func) f: Try[T] => U)(implicit executor: ExecutionContext): Unit
+  def onComplete[U](@deprecatedName('func) @local f: Try[T] => U)(implicit executor: ExecutionContext): Unit
 
 
   /* Miscellaneous */
@@ -230,7 +230,7 @@ trait Future[+T] extends Awaitable[T] {
    *
    *  $forComprehensionExamples
    */
-  def map[S](f: T => S)(implicit executor: ExecutionContext): Future[S] = { // transform(f, identity)
+  def map[S](@local f: T => S)(implicit executor: ExecutionContext): Future[S] = { // transform(f, identity)
     val p = Promise[S]()
     onComplete { v => p complete (v map f) }
     p.future
@@ -610,4 +610,3 @@ object Future {
 trait OnCompleteRunnable {
   self: Runnable =>
 }
-
