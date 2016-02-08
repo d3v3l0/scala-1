@@ -37,7 +37,7 @@ trait ParHashTable[K, Entry >: Null <: HashEntry[K, Entry]] extends scala.collec
       es ne null
     }
 
-    def next(): T = {
+    @local def next(): T = {
       val res = es
       es = es.next
       scan()

@@ -227,7 +227,7 @@ extends AbstractSeq[T]
   def iterator: Iterator[T] = new AbstractIterator[T] {
     var currentIndex = index
     def hasNext = currentIndex > 0
-    def next() = {
+    @local def next() = {
       currentIndex -= 1
       table(currentIndex).asInstanceOf[T]
     }

@@ -119,7 +119,7 @@ extends AbstractSeq[A]
       var elems   = first0
       var count   = len
       def hasNext = count > 0 && elems.nonEmpty
-      def next()  = {
+      @local def next()  = {
         if (!hasNext) throw new NoSuchElementException
         count = count - 1
         val e = elems.elem

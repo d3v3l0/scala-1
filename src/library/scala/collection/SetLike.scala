@@ -191,7 +191,7 @@ self =>
     private var itr: Iterator[This] = Iterator.empty
 
     def hasNext = len <= elms.size || itr.hasNext
-    def next = {
+    @local def next = {
       if (!itr.hasNext) {
         if (len > elms.size) Iterator.empty.next()
         else {
@@ -217,7 +217,7 @@ self =>
     idxs(len) = elms.size
 
     def hasNext = _hasNext
-    def next(): This = {
+    @local def next(): This = {
       if (!hasNext) Iterator.empty.next()
 
       val buf = self.newBuilder

@@ -381,7 +381,7 @@ extends AbstractMap[Long, V]
       index += 1
       true
     })
-    def next = {
+    @local def next = {
       if (nextPair == null && !hasNext) throw new NoSuchElementException("next")
       val ans = nextPair
       if (anotherPair != null) {

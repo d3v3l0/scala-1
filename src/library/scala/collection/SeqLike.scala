@@ -165,7 +165,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     private var _hasNext = true
 
     def hasNext = _hasNext
-    def next(): Repr = {
+    @local def next(): Repr = {
       if (!hasNext)
         Iterator.empty.next()
 
@@ -217,7 +217,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     private var _hasNext = true
 
     def hasNext = _hasNext
-    def next(): Repr = {
+    @local def next(): Repr = {
       if (!hasNext)
         Iterator.empty.next()
 

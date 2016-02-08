@@ -104,7 +104,7 @@ override def companion: GenericCompanion[Vector] = Vector
   def reverseIterator: Iterator[A] = new AbstractIterator[A] {
     private var i = self.length
     def hasNext: Boolean = 0 < i
-    def next(): A =
+    @local def next(): A =
       if (0 < i) {
         i -= 1
         self(i)
@@ -670,7 +670,7 @@ extends AbstractIterator[A]
 
   private var _hasNext = blockIndex + lo < endIndex
 
-  def next(): A = {
+  @local def next(): A = {
     if (!_hasNext) throw new NoSuchElementException("reached iterator end")
 
     val res = display0(lo).asInstanceOf[A]
@@ -1240,4 +1240,3 @@ private[immutable] trait VectorPointer[T] {
 
 
 }
-

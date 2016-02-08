@@ -165,7 +165,7 @@ trait LinkedListLike[A, This <: Seq[A] with LinkedListLike[A, This]] extends Seq
   override def iterator: Iterator[A] = new AbstractIterator[A] {
     var elems = self
     def hasNext = elems.nonEmpty
-    def next = {
+    @local def next = {
       val res = elems.elem
       elems = elems.next
       res

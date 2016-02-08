@@ -117,7 +117,7 @@ class ListSet[A] extends AbstractSet[A]
   def iterator: Iterator[A] = new AbstractIterator[A] {
     var that: ListSet[A] = self
     def hasNext = that.nonEmpty
-    def next: A =
+    @local def next: A =
       if (hasNext) {
         val res = that.head
         that = that.tail

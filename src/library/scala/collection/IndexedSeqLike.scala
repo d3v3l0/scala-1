@@ -61,7 +61,7 @@ trait IndexedSeqLike[+A, +Repr] extends Any with SeqLike[A, Repr] {
 
     def hasNext: Boolean = index < end
 
-    def next(): A = {
+    @local def next(): A = {
       if (index >= end)
         Iterator.empty.next()
 

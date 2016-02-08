@@ -210,7 +210,7 @@ trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
       while (i < table.length && (null == table(i))) i += 1
       i < table.length
     }
-    def next(): A =
+    @local def next(): A =
       if (hasNext) { i += 1; entryToElem(table(i - 1)) }
       else Iterator.empty.next()
   }

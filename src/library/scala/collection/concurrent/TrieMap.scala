@@ -972,7 +972,7 @@ private[collection] class TrieMapIterator[K, V](var level: Int, private var ct: 
 
   def hasNext = (current ne null) || (subiter ne null)
 
-  def next() = if (hasNext) {
+  @local def next() = if (hasNext) {
     var r: (K, V) = null
     if (subiter ne null) {
       r = subiter.next()

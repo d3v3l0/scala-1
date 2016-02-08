@@ -1114,7 +1114,7 @@ final class StreamIterator[+A] private() extends AbstractIterator[A] with Iterat
   private var these: LazyCell = _
 
   def hasNext: Boolean = these.v.nonEmpty
-  def next(): A =
+  @local def next(): A =
     if (isEmpty) Iterator.empty.next()
     else {
       val cur    = these.v

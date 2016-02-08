@@ -73,7 +73,7 @@ class BufferedSource(inputStream: InputStream, bufferSize: Int)(implicit val cod
 
       nextLine != null
     }
-    override def next(): String = {
+    @local override def next(): String = {
       val result = {
         if (nextLine == null) ESC.NO{ lineReader.readLine }
         else try nextLine finally nextLine = null

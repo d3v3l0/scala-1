@@ -87,7 +87,7 @@ self =>
   extends SeqSplitter[T] {
     def hasNext = i < until
 
-    def next = {
+    @local def next = {
       val elem = arr(i)
       i += 1
       elem.asInstanceOf[T]

@@ -113,7 +113,7 @@ private[immutable] abstract class IntMapIterator[V, T](it: IntMap[V]) extends Ab
   def valueOf(tip: IntMap.Tip[V]): T
 
   def hasNext = index != 0
-  final def next: T =
+  @local final def next: T =
     pop match {
       case IntMap.Bin(_,_, t@IntMap.Tip(_, _), right) => {
         push(right)

@@ -137,7 +137,7 @@ extends TrieMapIterator[K, V](lev, ct, mustInit)
     it
   }
 
-  override def next() = {
+  @local override def next() = {
     iterated += 1
     super.next()
   }

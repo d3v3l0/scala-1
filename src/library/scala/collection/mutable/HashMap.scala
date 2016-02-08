@@ -113,14 +113,14 @@ extends AbstractMap[A, B]
   override def keysIterator: Iterator[A] = new AbstractIterator[A] {
     val iter    = entriesIterator
     def hasNext = iter.hasNext
-    def next()  = iter.next().key
+    @local def next()  = iter.next().key
   }
 
   /* Override to avoid tuple allocation */
   override def valuesIterator: Iterator[B] = new AbstractIterator[B] {
     val iter    = entriesIterator
     def hasNext = iter.hasNext
-    def next()  = iter.next().value
+    @local def next()  = iter.next().value
   }
 
   /** Toggles whether a size map is used to track hash map statistics.

@@ -158,7 +158,7 @@ package parallel {
   extends IterableSplitter[T] {
     signalDelegate = _sigdel
     def hasNext = index < until
-    def next = {
+    @local def next = {
       val r = buffer(index)
       index += 1
       r

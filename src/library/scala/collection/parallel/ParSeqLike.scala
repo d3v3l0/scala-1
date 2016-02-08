@@ -66,7 +66,7 @@ self =>
 
     def hasNext = i < end
 
-    def next(): T = if (i < end) {
+    @local def next(): T = if (i < end) {
       val x = self(i)
       i += 1
       x

@@ -190,7 +190,7 @@ extends AbstractMap[Key, Value]
 
     def hasNext = {advance(); index <= mask }
 
-    def next = {
+    @local def next = {
       advance()
       val result = table(index)
       index += 1

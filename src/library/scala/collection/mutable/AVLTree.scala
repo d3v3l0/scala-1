@@ -237,7 +237,7 @@ private class AVLIterator[A](root: Node[A]) extends Iterator[A] {
 
   override def hasNext: Boolean = !stack.isEmpty
 
-  override def next(): A = {
+  @local override def next(): A = {
     if (stack.isEmpty)
       throw new NoSuchElementException()
     else {

@@ -211,7 +211,7 @@ trait HashTable[A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashU
     var es        = iterTable(idx)
 
     def hasNext = es != null
-    def next() = {
+    @local def next() = {
       val res = es
       es = es.next
       while (es == null && idx > 0) {

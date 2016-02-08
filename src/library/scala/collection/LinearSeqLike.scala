@@ -44,7 +44,7 @@ trait LinearSeqLike[+A, +Repr <: LinearSeqLike[A, Repr]] extends SeqLike[A, Repr
   def iterator: Iterator[A] = new AbstractIterator[A] {
     var these = self
     def hasNext: Boolean = !these.isEmpty
-    def next(): A =
+    @local def next(): A =
       if (hasNext) {
         val result = these.head; these = these.tail; result
       } else Iterator.empty.next()

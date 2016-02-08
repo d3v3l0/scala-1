@@ -220,7 +220,7 @@ abstract class Source extends Iterator[Char] {
       }
     }
     def hasNext = iter.hasNext
-    def next = {
+    @local def next = {
       sb.clear()
       while (getc()) { }
       sb.toString
@@ -239,7 +239,7 @@ abstract class Source extends Iterator[Char] {
 
   /** Returns next character.
    */
-  def next(): Char = positioner.next()
+  @local def next(): Char = positioner.next()
 
   class Positioner(encoder: Position) {
     def this() = this(RelaxedPosition)

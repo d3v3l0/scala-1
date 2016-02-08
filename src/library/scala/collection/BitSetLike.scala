@@ -110,7 +110,7 @@ trait BitSetLike[+This <: BitSetLike[This] with SortedSet[Int]] extends SortedSe
       while (current != end && !self.contains(current)) current += 1
       current != end
     }
-    def next(): Int =
+    @local def next(): Int =
       if (hasNext) { val r = current; current += 1; r }
       else Iterator.empty.next()
   }

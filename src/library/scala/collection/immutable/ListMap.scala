@@ -121,7 +121,7 @@ extends AbstractMap[A, B]
     new AbstractIterator[(A,B)] {
       var self: ListMap[A,B] = ListMap.this
       def hasNext = !self.isEmpty
-      def next(): (A,B) =
+      @local def next(): (A,B) =
         if (!hasNext) throw new NoSuchElementException("next on empty iterator")
         else { val res = (self.key, self.value); self = self.next; res }
     }.toList.reverseIterator

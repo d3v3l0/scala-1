@@ -169,7 +169,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
   override def iterator: Iterator[A] = new AbstractIterator[A] {
     private var i = 1
     def hasNext: Boolean = i < resarr.p_size0
-    def next(): A = {
+    @local def next(): A = {
       val n = resarr.p_array(i)
       i += 1
       toA(n)
@@ -207,7 +207,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
   def reverseIterator: Iterator[A] = new AbstractIterator[A] {
     private var i = resarr.p_size0 - 1
     def hasNext: Boolean = i >= 1
-    def next(): A = {
+    @local def next(): A = {
       val n = resarr.p_array(i)
       i -= 1
       toA(n)
@@ -254,4 +254,3 @@ object PriorityQueue extends OrderedTraversableFactory[PriorityQueue] {
   def newBuilder[A](implicit ord: Ordering[A]) = new PriorityQueue[A]
   implicit def canBuildFrom[A](implicit ord: Ordering[A]): CanBuildFrom[Coll, A, PriorityQueue[A]] = new GenericCanBuildFrom[A]
 }
-

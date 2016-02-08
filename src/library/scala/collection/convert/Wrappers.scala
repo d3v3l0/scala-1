@@ -40,12 +40,12 @@ private[collection] trait Wrappers {
 
   case class JIteratorWrapper[A](underlying: ju.Iterator[A]) extends AbstractIterator[A] with Iterator[A] {
     def hasNext = underlying.hasNext
-    def next() = underlying.next
+    @local def next() = underlying.next
   }
 
   case class JEnumerationWrapper[A](underlying: ju.Enumeration[A]) extends AbstractIterator[A] with Iterator[A] {
     def hasNext = underlying.hasMoreElements
-    def next() = underlying.nextElement
+    @local def next() = underlying.nextElement
   }
 
   case class IterableWrapper[A](underlying: Iterable[A]) extends ju.AbstractCollection[A] with IterableWrapperTrait[A] { }
@@ -280,7 +280,7 @@ private[collection] trait Wrappers {
     def iterator: Iterator[(A, B)] = new AbstractIterator[(A, B)] {
       val ui = underlying.entrySet.iterator
       def hasNext = ui.hasNext
-      def next() = { val e = ui.next(); (e.getKey, e.getValue) }
+      @local def next() = { val e = ui.next(); (e.getKey, e.getValue) }
     }
 
     override def clear() = underlying.clear()
@@ -434,7 +434,7 @@ private[collection] trait Wrappers {
     def iterator: Iterator[(String, String)] = new AbstractIterator[(String, String)] {
       val ui = underlying.entrySet.iterator
       def hasNext = ui.hasNext
-      def next() = {
+      @local def next() = {
         val e = ui.next()
         (e.getKey.asInstanceOf[String], e.getValue.asInstanceOf[String])
       }

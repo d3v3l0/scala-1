@@ -302,7 +302,7 @@ extends AbstractMap[K, V]
       true
     }
 
-    def next: (K, V) = {
+    @local def next: (K, V) = {
       if (hasNext) {
         val ans = (kz(index).asInstanceOf[K], vz(index).asInstanceOf[V])
         index += 1

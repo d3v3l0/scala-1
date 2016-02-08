@@ -403,7 +403,7 @@ final class ListBuffer[A]
     var cursor: List[A] = if (ListBuffer.this.isEmpty) Nil else start
 
     def hasNext: Boolean = cursor ne Nil
-    def next(): A =
+    @local def next(): A =
       if (!hasNext) throw new NoSuchElementException("next on empty Iterator")
       else {
         val ans = cursor.head

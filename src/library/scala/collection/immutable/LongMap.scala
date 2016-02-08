@@ -105,7 +105,7 @@ private[immutable] abstract class LongMapIterator[V, T](it: LongMap[V]) extends 
   def valueOf(tip: LongMap.Tip[V]): T
 
   def hasNext = index != 0
-  final def next: T =
+  @local final def next: T =
     pop() match {
       case LongMap.Bin(_,_, t@LongMap.Tip(_, _), right) => {
         push(right)
@@ -435,4 +435,3 @@ extends AbstractMap[Long, T]
   }
 
 }
-

@@ -136,7 +136,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
       }
     }
     def hasNext = node ne null
-    def next = if (hasNext) {
+    @local def next = if (hasNext) {
       val r = node.array(pos)
       scan()
       r

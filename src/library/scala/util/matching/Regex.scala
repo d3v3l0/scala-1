@@ -318,16 +318,16 @@ class Regex private[matching](val pattern: Pattern, groupNames: String*) extends
   //  @see UnanchoredRegex
   protected def runMatcher(m: Matcher) = m.matches()
 
-  /** Return all non-overlapping matches of this `Regex` in the given character 
+  /** Return all non-overlapping matches of this `Regex` in the given character
    *  sequence as a [[scala.util.matching.Regex.MatchIterator]],
    *  which is a special [[scala.collection.Iterator]] that returns the
    *  matched strings but can also be queried for more data about the last match,
    *  such as capturing groups and start position.
-   * 
+   *
    *  A `MatchIterator` can also be converted into an iterator
    *  that returns objects of type [[scala.util.matching.Regex.Match]],
    *  such as is normally returned by `findAllMatchIn`.
-   * 
+   *
    *  Where potential matches overlap, the first possible match is returned,
    *  followed by the next match that follows the input consumed by the
    *  first match:
@@ -370,7 +370,7 @@ class Regex private[matching](val pattern: Pattern, groupNames: String*) extends
     val matchIterator = findAllIn(source)
     new Iterator[Match] {
       def hasNext = matchIterator.hasNext
-      def next: Match = {
+      @local def next: Match = {
         matchIterator.next()
         new Match(matchIterator.source, matchIterator.matcher, matchIterator.groupNames).force
       }
@@ -749,7 +749,7 @@ object Regex {
     }
 
     /** The next matched substring of `source`. */
-    def next(): String = {
+    @local def next(): String = {
       if (!hasNext) throw new NoSuchElementException
       nextSeen = false
       matcher.group
@@ -775,14 +775,14 @@ object Regex {
     /** Convert to an iterator that yields MatchData elements instead of Strings. */
     def matchData: Iterator[Match] = new AbstractIterator[Match] {
       def hasNext = self.hasNext
-      def next = { self.next(); new Match(source, matcher, groupNames).force }
+      @local def next = { self.next(); new Match(source, matcher, groupNames).force }
     }
 
     /** Convert to an iterator that yields MatchData elements instead of Strings and has replacement support. */
     private[matching] def replacementData = new AbstractIterator[Match] with Replacement {
       def matcher = self.matcher
       def hasNext = self.hasNext
-      def next = { self.next(); new Match(source, matcher, groupNames).force }
+      @local def next = { self.next(); new Match(source, matcher, groupNames).force }
     }
   }
 
