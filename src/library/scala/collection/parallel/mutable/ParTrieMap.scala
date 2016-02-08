@@ -93,7 +93,7 @@ extends ParMap[K, V]
   /** Computes TrieMap size in parallel. */
   class Size(offset: Int, howmany: Int, array: Array[BasicNode]) extends Task[Int, Size] {
     var result = -1
-    def leaf(prev: Option[Int]) = {
+    def leaf(prev: Option[Int])(@local cc: CanThrow) = {
       var sz = 0
       var i = offset
       val until = offset + howmany

@@ -178,7 +178,7 @@ extends scala.collection.parallel.BucketCombiner[T, ParHashSet[T], Any, HashSetC
   class CreateTrie(bucks: Array[Unrolled[Any]], root: Array[HashSet[T]], offset: Int, howmany: Int)
   extends Task[Unit, CreateTrie] {
     var result = ()
-    def leaf(prev: Option[Unit]) = {
+    def leaf(prev: Option[Unit])(@local cc: CanThrow) = {
       var i = offset
       val until = offset + howmany
       while (i < until) {

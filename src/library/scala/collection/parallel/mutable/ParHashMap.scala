@@ -259,7 +259,7 @@ extends scala.collection.parallel.BucketCombiner[(K, V), ParHashMap[K, V], Defau
   class FillBlocks(buckets: Array[Unrolled[DefaultEntry[K, V]]], table: AddingHashTable, offset: Int, howmany: Int)
   extends Task[Int, FillBlocks] {
     var result = Int.MinValue
-    def leaf(prev: Option[Int]) = {
+    def leaf(prev: Option[Int])(@local cc: CanThrow) = {
       var i = offset
       val until = offset + howmany
       result = 0

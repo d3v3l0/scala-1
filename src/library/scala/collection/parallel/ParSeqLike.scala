@@ -358,7 +358,7 @@ self =>
   protected[this] class IndexWhere(pred: T => Boolean, from: Int, protected[this] val pit: SeqSplitter[T])
   extends Accessor[Int, IndexWhere] {
     @volatile var result: Int = -1
-    def leaf(prev: Option[Int]) = if (from < pit.indexFlag) {
+    def leaf(prev: Option[Int])(@local cc: CanThrow) = if (from < pit.indexFlag) {
       val r = pit.indexWhere(pred)
       if (r != -1) {
         result = from + r
@@ -379,7 +379,7 @@ self =>
   protected[this] class LastIndexWhere(pred: T => Boolean, pos: Int, protected[this] val pit: SeqSplitter[T])
   extends Accessor[Int, LastIndexWhere] {
     @volatile var result: Int = -1
-    def leaf(prev: Option[Int]) = if (pos > pit.indexFlag) {
+    def leaf(prev: Option[Int])(@local cc: CanThrow) = if (pos > pit.indexFlag) {
       val r = pit.lastIndexWhere(pred)
       if (r != -1) {
         result = pos + r
@@ -400,7 +400,7 @@ self =>
   protected[this] class Reverse[U >: T, This >: Repr](cbf: () => Combiner[U, This], protected[this] val pit: SeqSplitter[T])
   extends Transformer[Combiner[U, This], Reverse[U, This]] {
     @volatile var result: Combiner[U, This] = null
-    def leaf(prev: Option[Combiner[U, This]]) = result = pit.reverse2combiner(reuse(prev, cbf()))
+    def leaf(prev: Option[Combiner[U, This]])(@local cc: CanThrow) = result = pit.reverse2combiner(reuse(prev, cbf()))
     protected[this] def newSubtask(p: SuperParIterator) = new Reverse(cbf, down(p))
     override def merge(that: Reverse[U, This]) = result = that.result combine result
   }
@@ -408,7 +408,7 @@ self =>
   protected[this] class ReverseMap[S, That](f: T => S, pbf: () => Combiner[S, That], protected[this] val pit: SeqSplitter[T])
   extends Transformer[Combiner[S, That], ReverseMap[S, That]] {
     @volatile var result: Combiner[S, That] = null
-    def leaf(prev: Option[Combiner[S, That]]) = result = pit.reverseMap2combiner(f, pbf())
+    def leaf(prev: Option[Combiner[S, That]])(@local cc: CanThrow) = result = pit.reverseMap2combiner(f, pbf())
     protected[this] def newSubtask(p: SuperParIterator) = new ReverseMap(f, pbf, down(p))
     override def merge(that: ReverseMap[S, That]) = result = that.result combine result
   }
@@ -416,7 +416,7 @@ self =>
   protected[this] class SameElements[U >: T](protected[this] val pit: SeqSplitter[T], val otherpit: SeqSplitter[U])
   extends Accessor[Boolean, SameElements[U]] {
     @volatile var result: Boolean = true
-    def leaf(prev: Option[Boolean]) = if (!pit.isAborted) {
+    def leaf(prev: Option[Boolean])(@local cc: CanThrow) = if (!pit.isAborted) {
       result = pit.sameElements(otherpit)
       if (!result) pit.abort()
     }
@@ -433,7 +433,7 @@ self =>
   protected[this] class Updated[U >: T, That](pos: Int, elem: U, pbf: CombinerFactory[U, That], protected[this] val pit: SeqSplitter[T])
   extends Transformer[Combiner[U, That], Updated[U, That]] {
     @volatile var result: Combiner[U, That] = null
-    def leaf(prev: Option[Combiner[U, That]]) = result = pit.updated2combiner(pos, elem, pbf())
+    def leaf(prev: Option[Combiner[U, That]])(@local cc: CanThrow) = result = pit.updated2combiner(pos, elem, pbf())
     protected[this] def newSubtask(p: SuperParIterator) = unsupported
     override def split = {
       val pits = pit.splitWithSignalling
@@ -446,7 +446,7 @@ self =>
   protected[this] class Zip[U >: T, S, That](len: Int, cf: CombinerFactory[(U, S), That], protected[this] val pit: SeqSplitter[T], val otherpit: SeqSplitter[S])
   extends Transformer[Combiner[(U, S), That], Zip[U, S, That]] {
     @volatile var result: Result = null
-    def leaf(prev: Option[Result]) = result = pit.zip2combiner[U, S, That](otherpit, cf())
+    def leaf(prev: Option[Result])(@local cc: CanThrow) = result = pit.zip2combiner[U, S, That](otherpit, cf())
     protected[this] def newSubtask(p: SuperParIterator) = unsupported
     override def split = {
       val fp = len / 2
@@ -464,7 +464,7 @@ self =>
   protected[this] class Corresponds[S](corr: (T, S) => Boolean, protected[this] val pit: SeqSplitter[T], val otherpit: SeqSplitter[S])
   extends Accessor[Boolean, Corresponds[S]] {
     @volatile var result: Boolean = true
-    def leaf(prev: Option[Boolean]) = if (!pit.isAborted) {
+    def leaf(prev: Option[Boolean])(@local cc: CanThrow) = if (!pit.isAborted) {
       result = pit.corresponds(corr)(otherpit)
       if (!result) pit.abort()
     }

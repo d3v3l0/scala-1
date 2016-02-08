@@ -611,7 +611,7 @@ self =>
   extends Task[Unit, ScanToArray[U]] {
     var result = ()
 
-    def leaf(prev: Option[Unit]) = iterate(tree)
+    def leaf(prev: Option[Unit])(@local cc: CanThrow) = iterate(tree)
     private def iterate(tree: ScanTree[U]): Unit = tree match {
       case ScanNode(left, right) =>
         iterate(left)
@@ -648,7 +648,7 @@ self =>
   class Map[S](f: T => S, targetarr: Array[Any], offset: Int, howmany: Int) extends Task[Unit, Map[S]] {
     var result = ()
 
-    def leaf(prev: Option[Unit]) = {
+    def leaf(prev: Option[Unit])(@local cc: CanThrow) = {
       val tarr = targetarr
       val sarr = array
       var i = offset

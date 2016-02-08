@@ -46,7 +46,7 @@ trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedA
 
   class CopyChainToArray(array: Array[Any], offset: Int, howmany: Int) extends Task[Unit, CopyChainToArray] {
     var result = ()
-    def leaf(prev: Option[Unit]) = if (howmany > 0) {
+    def leaf(prev: Option[Unit])(@local cc: CanThrow) = if (howmany > 0) {
       var totalleft = howmany
       val (stbuff, stind) = findStart(offset)
       var buffind = stbuff

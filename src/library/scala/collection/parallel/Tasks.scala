@@ -24,7 +24,7 @@ trait Task[R, +Tp] {
    *  Optionally is provided with the result from the previous completed task
    *  or `None` if there was no previous task (or the previous task is uncompleted or unknown).
    */
-  def leaf(result: Option[R])
+  def leaf(result: Option[R])(@local cc: CanThrow)
 
   /** A result that can be accessed once the task is completed. */
   var result: R
@@ -46,7 +46,7 @@ trait Task[R, +Tp] {
   private[parallel] def tryLeaf(lastres: Option[R])(@local cc: CanThrow) {
     try {
       tryBreakable {
-        leaf(lastres)
+        leaf(lastres)(cc)
         result = result // ensure that effects of `leaf` are visible to readers of `result`
       } catchBreak {
         signalAbort()

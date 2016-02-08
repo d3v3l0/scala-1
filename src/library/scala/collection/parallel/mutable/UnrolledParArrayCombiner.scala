@@ -73,7 +73,7 @@ extends Combiner[T, ParArray[T]] {
   extends Task[Unit, CopyUnrolledToArray] {
     var result = ()
 
-    def leaf(prev: Option[Unit]) = if (howmany > 0) {
+    def leaf(prev: Option[Unit])(@local cc: CanThrow) = if (howmany > 0) {
       var totalleft = howmany
       val (startnode, startpos) = findStart(offset)
       var curr = startnode
@@ -110,4 +110,3 @@ extends Combiner[T, ParArray[T]] {
 object UnrolledParArrayCombiner {
   def apply[T](): UnrolledParArrayCombiner[T] = new UnrolledParArrayCombiner[T] {} // was: with EnvironmentPassingCombiner[T, ParArray[T]]
 }
-

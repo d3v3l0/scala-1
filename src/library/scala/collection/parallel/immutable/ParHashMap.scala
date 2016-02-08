@@ -225,7 +225,7 @@ extends scala.collection.parallel.BucketCombiner[(K, V), ParHashMap[K, V], (K, V
   class CreateTrie(bucks: Array[Unrolled[(K, V)]], root: Array[HashMap[K, V]], offset: Int, howmany: Int)
   extends Task[Unit, CreateTrie] {
     @volatile var result = ()
-    def leaf(prev: Option[Unit]) = {
+    def leaf(prev: Option[Unit])(@local cc: CanThrow) = {
       var i = offset
       val until = offset + howmany
       while (i < until) {
@@ -264,7 +264,7 @@ extends scala.collection.parallel.BucketCombiner[(K, V), ParHashMap[K, V], (K, V
   class CreateGroupedTrie[Repr](cbf: () => Combiner[V, Repr], bucks: Array[Unrolled[(K, V)]], root: Array[HashMap[K, AnyRef]], offset: Int, howmany: Int)
   extends Task[Unit, CreateGroupedTrie[Repr]] {
     @volatile var result = ()
-    def leaf(prev: Option[Unit]) = {
+    def leaf(prev: Option[Unit])(@local cc: CanThrow) = {
       var i = offset
       val until = offset + howmany
       while (i < until) {
