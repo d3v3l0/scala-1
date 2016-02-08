@@ -42,8 +42,6 @@ class HashMap[A, +B] extends AbstractMap[A, B]
 {
   import HashMap.{nullToEmpty, bufferSize}
 
-  type LT = Any
-
   override def size: Int = 0
 
   override def empty = HashMap.empty[A, B]
