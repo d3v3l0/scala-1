@@ -35,7 +35,7 @@ trait ParIterable[T] extends scala.collection.GenIterable[T]
   // if `mutable.ParIterableLike` is introduced, please move these methods there
   override def toIterable: ParIterable[T] = this
 
-  override def toSeq: ParSeq[T] = toParCollection[T, ParSeq[T]](() => ParSeq.newCombiner[T])
+  override def toSeq(implicit @local cc: CanThrow): ParSeq[T] = toParCollection[T, ParSeq[T]](() => ParSeq.newCombiner[T])
 
   def seq: scala.collection.mutable.Iterable[T]
 }

@@ -577,19 +577,19 @@ self =>
 
   private def buildsArray[S, That](c: Builder[S, That]) = c.isInstanceOf[ParArrayCombiner[_]]
 
-  override def map[S, That](f: T => S)(implicit bf: CanBuildFrom[ParArray[T], S, That]) = if (buildsArray(bf(repr))) {
+  override def map[S, That](f: T => S)(implicit bf: CanBuildFrom[ParArray[T], S, That], @local cc: CanThrow) = if (buildsArray(bf(repr))) {
     // reserve an array
     val targarrseq = new ArraySeq[S](length)
     val targetarr = targarrseq.array.asInstanceOf[Array[Any]]
 
     // fill it in parallel
-    tasksupport.executeAndWaitResult(new Map[S](f, targetarr, 0, length))
+    tasksupport.executeAndWaitResult(new Map[S](f, targetarr, 0, length))(cc)
 
     // wrap it into a parallel array
     (new ParArray[S](targarrseq)).asInstanceOf[That]
-  } else super.map(f)(bf)
+  } else super.map(f)(bf, cc)
 
-  override def scan[U >: T, That](z: U)(op: (U, U) => U)(implicit cbf: CanBuildFrom[ParArray[T], U, That]): That =
+  override def scan[U >: T, That](z: U)(op: (U, U) => U)(@local cc: CanThrow)(implicit cbf: CanBuildFrom[ParArray[T], U, That]): That =
     if (tasksupport.parallelismLevel > 1 && buildsArray(cbf(repr))) {
       // reserve an array
       val targarrseq = new ArraySeq[U](length + 1)
@@ -598,12 +598,12 @@ self =>
 
       // do a parallel prefix scan
       if (length > 0) tasksupport.executeAndWaitResult(new CreateScanTree[U](0, size, z, op, splitter) mapResult {
-        tree => tasksupport.executeAndWaitResult(new ScanToArray(tree, z, op, targetarr))
-      })
+        tree => tasksupport.executeAndWaitResult(new ScanToArray(tree, z, op, targetarr))(cc)
+      })(cc)
 
       // wrap the array into a parallel array
       (new ParArray[U](targarrseq)).asInstanceOf[That]
-    } else super.scan(z)(op)(cbf)
+    } else super.scan(z)(op)(cc)(cbf)
 
   /* tasks */
 

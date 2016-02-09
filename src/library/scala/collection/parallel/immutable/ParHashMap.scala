@@ -171,11 +171,11 @@ extends scala.collection.parallel.BucketCombiner[(K, V), ParHashMap[K, V], (K, V
     this
   }
 
-  def result = {
+  def result(@local cc: CanThrow) = {
     val bucks = buckets.filter(_ != null).map(_.headPtr)
     val root = new Array[HashMap[K, V]](bucks.length)
 
-    combinerTaskSupport.executeAndWaitResult(new CreateTrie(bucks, root, 0, bucks.length))
+    combinerTaskSupport.executeAndWaitResult(new CreateTrie(bucks, root, 0, bucks.length))(cc)
 
     var bitmap = 0
     var i = 0
@@ -193,11 +193,11 @@ extends scala.collection.parallel.BucketCombiner[(K, V), ParHashMap[K, V], (K, V
     }
   }
 
-  def groupByKey[Repr](cbf: () => Combiner[V, Repr]): ParHashMap[K, Repr] = {
+  def groupByKey[Repr](cbf: () => Combiner[V, Repr])(@local cc: CanThrow): ParHashMap[K, Repr] = {
     val bucks = buckets.filter(_ != null).map(_.headPtr)
     val root = new Array[HashMap[K, AnyRef]](bucks.length)
 
-    combinerTaskSupport.executeAndWaitResult(new CreateGroupedTrie(cbf, bucks, root, 0, bucks.length))
+    combinerTaskSupport.executeAndWaitResult(new CreateGroupedTrie(cbf, bucks, root, 0, bucks.length))(cc)
 
     var bitmap = 0
     var i = 0

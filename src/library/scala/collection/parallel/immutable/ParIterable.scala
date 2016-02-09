@@ -35,7 +35,7 @@ extends scala.collection.GenIterable[T]
   override def companion: GenericCompanion[ParIterable] with GenericParCompanion[ParIterable] = ParIterable
   // if `immutable.ParIterableLike` is introduced, please move these 4 methods there
   override def toIterable: ParIterable[T] = this
-  override def toSeq: ParSeq[T] = toParCollection[T, ParSeq[T]](() => ParSeq.newCombiner[T])
+  override def toSeq(implicit @local cc: CanThrow): ParSeq[T] = toParCollection[T, ParSeq[T]](() => ParSeq.newCombiner[T])
 }
 
 /** $factoryInfo

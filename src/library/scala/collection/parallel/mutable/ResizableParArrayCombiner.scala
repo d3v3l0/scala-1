@@ -29,11 +29,11 @@ trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedA
   // public method with private[mutable] type ExposedArrayBuffer in parameter type; cannot be overridden.
   final def newLazyCombiner(c: ArrayBuffer[ExposedArrayBuffer[T]]) = ResizableParArrayCombiner(c)
 
-  def allocateAndCopy = if (chain.size > 1) {
+  def allocateAndCopy(@local cc: CanThrow) = if (chain.size > 1) {
     val arrayseq = new ArraySeq[T](size)
     val array = arrayseq.array.asInstanceOf[Array[Any]]
 
-    combinerTaskSupport.executeAndWaitResult(new CopyChainToArray(array, 0, size))
+    combinerTaskSupport.executeAndWaitResult(new CopyChainToArray(array, 0, size))(cc)
 
     new ParArray(arrayseq)
   } else { // optimisation if there is only 1 array

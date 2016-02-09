@@ -140,22 +140,22 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
     this
   }
 
-  def result: ParHashSet[T] = {
-    val contents = if (size >= ParHashSetCombiner.numblocks * sizeMapBucketSize) parPopulate else seqPopulate
+  def result(@local cc: CanThrow): ParHashSet[T] = {
+    val contents = if (size >= ParHashSetCombiner.numblocks * sizeMapBucketSize) parPopulate(cc) else seqPopulate(cc)
     new ParHashSet(contents)
   }
 
-  private def parPopulate: FlatHashTable.Contents[T] = {
+  private def parPopulate(@local cc: CanThrow): FlatHashTable.Contents[T] = {
     // construct it in parallel
     val table = new AddingFlatHashTable(size, tableLoadFactor, seedvalue)
-    val (inserted, leftovers) = combinerTaskSupport.executeAndWaitResult(new FillBlocks(buckets, table, 0, buckets.length))
+    val (inserted, leftovers) = combinerTaskSupport.executeAndWaitResult(new FillBlocks(buckets, table, 0, buckets.length))(cc)
     var leftinserts = 0
     for (entry <- leftovers) leftinserts += table.insertEntry(0, table.tableLength, entry)
     table.setSize(leftinserts + inserted)
     table.hashTableContents
   }
 
-  private def seqPopulate: FlatHashTable.Contents[T] = {
+  private def seqPopulate(@local cc: CanThrow): FlatHashTable.Contents[T] = {
     // construct it sequentially
     // TODO parallelize by keeping separate size maps and merging them
     val tbl = new FlatHashTable[T] {

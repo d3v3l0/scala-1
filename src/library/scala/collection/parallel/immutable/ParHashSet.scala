@@ -151,11 +151,11 @@ extends scala.collection.parallel.BucketCombiner[T, ParHashSet[T], Any, HashSetC
     this
   }
 
-  def result = {
+  def result(@local cc: CanThrow) = {
     val bucks = buckets.filter(_ != null).map(_.headPtr)
     val root = new Array[HashSet[T]](bucks.length)
 
-    combinerTaskSupport.executeAndWaitResult(new CreateTrie(bucks, root, 0, bucks.length))
+    combinerTaskSupport.executeAndWaitResult(new CreateTrie(bucks, root, 0, bucks.length))(cc)
 
     var bitmap = 0
     var i = 0

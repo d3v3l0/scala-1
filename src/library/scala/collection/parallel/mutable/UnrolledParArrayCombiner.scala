@@ -39,11 +39,11 @@ extends Combiner[T, ParArray[T]] {
     this
   }
 
-  def result = {
+  def result(@local cc: CanThrow) = {
     val arrayseq = new ArraySeq[T](size)
     val array = arrayseq.array.asInstanceOf[Array[Any]]
 
-    combinerTaskSupport.executeAndWaitResult(new CopyUnrolledToArray(array, 0, size))
+    combinerTaskSupport.executeAndWaitResult(new CopyUnrolledToArray(array, 0, size))(cc)
 
     new ParArray(arrayseq)
   }

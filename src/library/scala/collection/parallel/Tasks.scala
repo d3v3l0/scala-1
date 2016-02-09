@@ -552,7 +552,7 @@ trait ExecutionContextTasks extends Tasks {
 
   def execute[R, Tp](task: Task[R, Tp]): CanThrow -> R = driver execute task
 
-  def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R = driver executeAndWaitResult task
+  def executeAndWaitResult[R, Tp](task: Task[R, Tp])(@local cc: CanThrow): R = driver.executeAndWaitResult(task)(cc)
 
   def parallelismLevel = driver.parallelismLevel
 }
