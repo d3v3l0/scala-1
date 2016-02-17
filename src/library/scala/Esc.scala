@@ -9,6 +9,8 @@ trait `->`[-A,+B] extends Function1[A,B] {
 
 trait CanThrow
 
+trait CannotThrow
+
 object ESC {
 	def NO[T](x:T):T = x
 

@@ -27,8 +27,9 @@ import scala.language.higherKinds
  *  @define coll  collection
  *  @define Coll  Traversable
  */
-trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
+trait GenericTraversableTemplate[MaybeCanThrowType, +A, +CC[X] <: GenTraversable[X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
   type LT
+  type MaybeCanThrow = MaybeCanThrowType
 
   /** Applies a function `f` to all elements of this $coll.
    *
