@@ -58,7 +58,7 @@ class Stack[A] private (var elems: List[A])
 extends AbstractSeq[A]
    with Seq[A]
    with SeqLike[A, Stack[A]]
-   with GenericTraversableTemplate[A, Stack]
+   with GenericTraversableTemplate[CannotThrow, A, Stack]
    with Cloneable[Stack[A]]
    with Serializable
 {
@@ -167,7 +167,7 @@ extends AbstractSeq[A]
   override def toList: List[A] = elems
 
   @migration("`foreach` traverses in FIFO order.", "2.8.0")
-  override def foreach[U](f: A => U): Unit = super.foreach(f)
+  override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow): Unit = super.foreach(f)
 
   /** This method clones the stack.
    *

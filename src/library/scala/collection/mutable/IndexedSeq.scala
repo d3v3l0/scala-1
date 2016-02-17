@@ -21,7 +21,7 @@ import generic._
  */
 trait IndexedSeq[A] extends Seq[A]
                    with scala.collection.IndexedSeq[A]
-                   with GenericTraversableTemplate[A, IndexedSeq]
+                   with GenericTraversableTemplate[CannotThrow, A, IndexedSeq]
                    with IndexedSeqLike[A, IndexedSeq[A]] {
   override def companion: GenericCompanion[IndexedSeq]  = IndexedSeq
   override def seq: IndexedSeq[A] = this

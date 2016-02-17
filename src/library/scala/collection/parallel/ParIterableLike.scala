@@ -462,7 +462,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @tparam U    the result type of the function applied to each element, which is always discarded
    *  @param f     function applied to each element
    */
-  def foreach[U](@local f: T => U) = {
+  def foreach[U](@local f: T => U)(implicit @local mct: MaybeCanThrow) = {
     tasksupport.executeAndWaitResult(new Foreach(f, splitter))(cc)
   }
 

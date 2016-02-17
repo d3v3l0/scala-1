@@ -132,7 +132,7 @@ self =>
 
     /* accessors */
 
-    override def foreach[U](f: T => U) = {
+    override def foreach[U](f: T => U)(implicit @local mct: MaybeCanThrow) = {
       foreach_quick(f, arr, until, i)
       i = until
     }

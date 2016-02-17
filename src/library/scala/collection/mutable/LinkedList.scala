@@ -79,7 +79,7 @@ import generic._
 @deprecated("Low-level linked lists are deprecated due to idiosyncrasies in interface and incomplete features.", "2.11.0")
 class LinkedList[A]() extends AbstractSeq[A]
                          with LinearSeq[A]
-                         with GenericTraversableTemplate[A, LinkedList]
+                         with GenericTraversableTemplate[CannotThrow, A, LinkedList]
                          with LinkedListLike[A, LinkedList[A]]
                          with Serializable {
   next = this

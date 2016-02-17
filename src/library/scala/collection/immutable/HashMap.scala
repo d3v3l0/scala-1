@@ -48,7 +48,7 @@ class HashMap[A, +B] extends AbstractMap[A, B]
 
   def iterator: Iterator[(A,B)] = Iterator.empty
 
-  override def foreach[U](f: ((A, B)) =>  U): Unit = { }
+  override def foreach[U](f: ((A, B)) =>  U)(implicit @local mct: MaybeCanThrow): Unit = { }
 
   def get(key: A): Option[B] =
     get0(key, computeHash(key), 0)
@@ -218,7 +218,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
       if (negate ^ p(ensurePair)) this else null
 
     override def iterator: Iterator[(A,B)] = Iterator(ensurePair)
-    override def foreach[U](f: ((A, B)) => U): Unit = f(ensurePair)
+    override def foreach[U](f: ((A, B)) => U)(implicit @local mct: MaybeCanThrow): Unit = f(ensurePair)
     // this method may be called multiple times in a multithreaded environment, but that's ok
     private[HashMap] def ensurePair: (A,B) = if (kv ne null) kv else { kv = (key, value); kv }
     protected override def merge0[B1 >: B](that: HashMap[A, B1], level: Int, merger: Merger[A, B1]): HashMap[A, B1] = {
@@ -276,7 +276,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
     }
 
     override def iterator: Iterator[(A,B)] = kvs.iterator
-    override def foreach[U](f: ((A, B)) => U): Unit = kvs.foreach(f)
+    override def foreach[U](f: ((A, B)) => U)(implicit @local mct: MaybeCanThrow): Unit = kvs.foreach(f)
     override def split: Seq[HashMap[A, B]] = {
       val (x, y) = kvs.splitAt(kvs.size / 2)
       def newhm(lm: ListMap[A, B @uV]) = new HashMapCollision1(hash, lm)
@@ -422,7 +422,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
       final override def getElem(cc: AnyRef): (A, B) = cc.asInstanceOf[HashMap1[A, B]].ensurePair
     }
 
-    override def foreach[U](f: ((A, B)) =>  U): Unit = {
+    override def foreach[U](f: ((A, B)) =>  U)(implicit @local mct: MaybeCanThrow): Unit = {
       var i = 0
       while (i < elems.length) {
         elems(i).foreach(f)

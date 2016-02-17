@@ -66,7 +66,7 @@ class ArrayStack[T] private(private var table : Array[AnyRef],
 extends AbstractSeq[T]
    with Seq[T]
    with SeqLike[T, ArrayStack[T]]
-   with GenericTraversableTemplate[T, ArrayStack]
+   with GenericTraversableTemplate[CannotThrow, T, ArrayStack]
    with Cloneable[ArrayStack[T]]
    with Builder[T, ArrayStack[T]]
    with Serializable
@@ -233,7 +233,7 @@ extends AbstractSeq[T]
     }
   }
 
-  override def foreach[U](f: T =>  U) {
+  override def foreach[U](f: T =>  U)(implicit @local mct: MaybeCanThrow) {
     var currentIndex = index
     while (currentIndex > 0) {
       currentIndex -= 1

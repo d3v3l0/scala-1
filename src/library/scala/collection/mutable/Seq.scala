@@ -28,7 +28,7 @@ import generic._
 trait Seq[A] extends Iterable[A]
 //                with GenSeq[A]
                 with scala.collection.Seq[A]
-                with GenericTraversableTemplate[A, Seq]
+                with GenericTraversableTemplate[CannotThrow, A, Seq]
                 with SeqLike[A, Seq[A]] {
   override def companion: GenericCompanion[Seq] = Seq
   override def seq: Seq[A] = this

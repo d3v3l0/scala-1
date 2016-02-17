@@ -19,7 +19,7 @@ import mutable.Builder
  */
 trait Iterable[+A] extends Traversable[A]
                       with GenIterable[A]
-                      with GenericTraversableTemplate[A, Iterable]
+                      with GenericTraversableTemplate[CannotThrow, A, Iterable]
                       with IterableLike[A, Iterable[A]] {
   type LT
 

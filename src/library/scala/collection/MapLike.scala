@@ -173,7 +173,7 @@ self =>
     def + (elem: A): Set[A] = (Set[A]() ++ this + elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
     def - (elem: A): Set[A] = (Set[A]() ++ this - elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
     override def size = self.size
-    override def foreach[C](f: A => C) = self.keysIterator foreach f
+    override def foreach[C](f: A => C)(implicit @local mct: MaybeCanThrow) = self.keysIterator foreach f
   }
 
   /** Creates an iterator for all keys.
@@ -205,7 +205,7 @@ self =>
   protected class DefaultValuesIterable extends AbstractIterable[B] with Iterable[B] with Serializable {
     def iterator = valuesIterator
     override def size = self.size
-    override def foreach[C](f: B => C) = self.valuesIterator foreach f
+    override def foreach[C](f: B => C)(implicit @local mct: MaybeCanThrow) = self.valuesIterator foreach f
   }
 
   /** Creates an iterator for all values in this map.
@@ -230,7 +230,7 @@ self =>
     throw new NoSuchElementException("key not found: " + key)
 
   protected class FilteredKeys(p: A => Boolean) extends AbstractMap[A, B] with DefaultMap[A, B] {
-    override def foreach[C](f: ((A, B)) => C): Unit = for (kv <- self) if (p(kv._1)) f(kv)
+    override def foreach[C](f: ((A, B)) => C)(implicit @local mct: MaybeCanThrow): Unit = for (kv <- self) if (p(kv._1)) f(kv)
     def iterator = self.iterator.filter(kv => p(kv._1))
     override def contains(key: A) = self.contains(key) && p(key)
     def get(key: A) = if (!p(key)) None else self.get(key)
@@ -244,7 +244,7 @@ self =>
   def filterKeys(p: A => Boolean): Map[A, B] = new FilteredKeys(p)
 
   protected class MappedValues[C](f: B => C) extends AbstractMap[A, C] with DefaultMap[A, C] {
-    override def foreach[D](g: ((A, C)) => D): Unit = for ((k, v) <- self) g((k, f(v)))
+    override def foreach[D](g: ((A, C)) => D)(implicit @local mct: MaybeCanThrow): Unit = for ((k, v) <- self) g((k, f(v)))
     def iterator = for ((k, v) <- self.iterator) yield (k, f(v))
     override def size = self.size
     override def contains(key: A) = self.contains(key)

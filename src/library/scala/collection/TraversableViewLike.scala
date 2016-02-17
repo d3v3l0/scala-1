@@ -100,7 +100,7 @@ trait TraversableViewLike[+A,
    *  ViewLike class.
    */
   trait Transformed[+B] extends TraversableView[B, Coll] {
-    def foreach[U](f: B => U): Unit
+    def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow): Unit
 
     lazy val underlying = self.underlying
     final override protected[this] def viewIdString = self.viewIdString + viewIdentifier
@@ -132,7 +132,7 @@ trait TraversableViewLike[+A,
 
   trait EmptyView extends Transformed[Nothing] {
     final override def isEmpty = true
-    final override def foreach[U](f: Nothing => U): Unit = ()
+    final override def foreach[U](f: Nothing => U)(implicit @local mct: MaybeCanThrow): Unit = ()
   }
 
   /** A fall back which forces everything into a vector and then applies an operation
@@ -140,7 +140,7 @@ trait TraversableViewLike[+A,
    */
   trait Forced[B] extends Transformed[B] {
     protected[this] val forced: GenSeq[B]
-    def foreach[U](f: B => U) = forced foreach f
+    def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow) = forced foreach f
     final override protected[this] def viewIdentifier = "C"
   }
 
@@ -151,7 +151,7 @@ trait TraversableViewLike[+A,
     // protected def newSliced(_endpoints: SliceInterval): Transformed[A] =
     //   self.newSliced(endpoints.recalculate(_endpoints))
 
-    def foreach[U](f: A => U) {
+    def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow) {
       var index = 0
       for (x <- self) {
         if (from <= index) {
@@ -166,7 +166,7 @@ trait TraversableViewLike[+A,
 
   trait Mapped[B] extends Transformed[B] {
     protected[this] val mapping: A => B
-    def foreach[U](f: B => U) {
+    def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow) {
       for (x <- self)
         f(mapping(x))
     }
@@ -175,7 +175,7 @@ trait TraversableViewLike[+A,
 
   trait FlatMapped[B] extends Transformed[B] {
     protected[this] val mapping: A => GenTraversableOnce[B]
-    def foreach[U](f: B => U) {
+    def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow) {
       for (x <- self)
         for (y <- mapping(x).seq)
           f(y)
@@ -185,7 +185,7 @@ trait TraversableViewLike[+A,
 
   trait Appended[B >: A] extends Transformed[B] {
     protected[this] val rest: GenTraversable[B]
-    def foreach[U](f: B => U) {
+    def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow) {
       self foreach f
       rest foreach f
     }
@@ -194,7 +194,7 @@ trait TraversableViewLike[+A,
 
   trait Filtered extends Transformed[A] {
     protected[this] val pred: A => Boolean
-    def foreach[U](f: A => U) {
+    def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow) {
       for (x <- self)
         if (pred(x)) f(x)
     }
@@ -203,7 +203,7 @@ trait TraversableViewLike[+A,
 
   trait TakenWhile extends Transformed[A] {
     protected[this] val pred: A => Boolean
-    def foreach[U](f: A => U) {
+    def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow) {
       for (x <- self) {
         if (!pred(x)) return
         f(x)
@@ -214,7 +214,7 @@ trait TraversableViewLike[+A,
 
   trait DroppedWhile extends Transformed[A] {
     protected[this] val pred: A => Boolean
-    def foreach[U](f: A => U) {
+    def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow) {
       var go = false
       for (x <- self) {
         if (!go && !pred(x)) go = true

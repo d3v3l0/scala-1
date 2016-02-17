@@ -45,7 +45,7 @@ import scala.annotation.migration
 final class ListBuffer[A]
       extends AbstractBuffer[A]
          with Buffer[A]
-         with GenericTraversableTemplate[A, ListBuffer]
+         with GenericTraversableTemplate[CannotThrow, A, ListBuffer]
          with BufferLike[A, ListBuffer[A]]
          with Builder[A, List[A]]
          with SeqForwarder[A] /*TR deprecated */

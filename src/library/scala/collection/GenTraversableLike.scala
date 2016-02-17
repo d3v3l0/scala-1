@@ -170,10 +170,10 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *              This result will always be ignored. Typically `U` is `Unit`,
    *              but this is not necessary.
    *
-   *  @usecase def foreach(f: A => Unit): Unit
+   *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow): Unit
    *    @inheritdoc
    */
-  def foreach[U](@local f: A => U): Unit
+  def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow): Unit
 
   /** Builds a new collection by applying a function to all elements of this $coll.
    *

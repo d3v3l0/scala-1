@@ -46,7 +46,7 @@ import parallel.mutable.ParArray
 class ArraySeq[A](override val length: Int)
 extends AbstractSeq[A]
    with IndexedSeq[A]
-   with GenericTraversableTemplate[A, ArraySeq]
+   with GenericTraversableTemplate[CannotThrow, A, ArraySeq]
    with IndexedSeqOptimized[A, ArraySeq[A]]
    with CustomParallelizable[A, ParArray[A]]
    with Serializable
@@ -68,7 +68,7 @@ extends AbstractSeq[A]
     array(idx) = elem.asInstanceOf[AnyRef]
   }
 
-  override def foreach[U](f: A =>  U) {
+  override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow) {
     var i = 0
     while (i < length) {
       f(array(i).asInstanceOf[A])

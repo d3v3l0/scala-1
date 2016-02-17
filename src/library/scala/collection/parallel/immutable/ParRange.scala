@@ -87,7 +87,7 @@ self =>
 
     /* accessors */
 
-    override def foreach[U](f: Int => U): Unit = {
+    override def foreach[U](f: Int => U)(implicit @local mct: MaybeCanThrow): Unit = {
       rangeleft.foreach(f.asInstanceOf[Int => Unit])
       ind = len
     }

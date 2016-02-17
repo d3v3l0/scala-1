@@ -201,7 +201,7 @@ import scala.language.implicitConversions
 @deprecatedInheritance("This class will be sealed.", "2.11.0")
 abstract class Stream[+A] extends AbstractSeq[A]
                              with LinearSeq[A]
-                             with GenericTraversableTemplate[A, Stream]
+                             with GenericTraversableTemplate[CannotThrow, A, Stream]
                              with LinearSeqOptimized[A, Stream[A]]
                              with Serializable {
 self =>
@@ -591,7 +591,7 @@ self =>
    *  unless the `f` throws an exception.
    */
   @tailrec
-  override final def foreach[B](@local f: A => B) {
+  override final def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow) {
     if (!this.isEmpty) {
       f(head)
       tail.foreach(f)

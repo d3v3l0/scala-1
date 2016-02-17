@@ -68,10 +68,10 @@ self =>
    *    Note: this method underlies the implementation of most other bulk operations.
    *    Subclasses should re-implement this method if a more efficient implementation exists.
    *
-   *  @usecase def foreach(f: A => Unit): Unit
+   *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow): Unit
    *    @inheritdoc
    */
-  def foreach[U](@local f: A => U): Unit =
+  def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow): Unit =
     iterator.foreach(f)
 
   override /*TraversableLike*/ def forall(@plocal p: A => Boolean): Boolean =

@@ -144,7 +144,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
   }
 
   // this should be faster than the iterator
-  override def foreach[U](@local f: T => U) = headptr.foreach(f)
+  override def foreach[U](@local f: T => U)(implicit @local mct: MaybeCanThrow) = headptr.foreach(f)
 
   def result = this
 
@@ -234,7 +234,7 @@ object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
       next = new Unrolled[T](0, new Array[T](nextlength), null, buff)
       next append elem
     }
-    def foreach[U](@local[Any] f: T => U) {
+    def foreach[U](@local[Any] f: T => U)(implicit @local mct: MaybeCanThrow) {
       var unrolled = this
       var i = 0
       while (unrolled ne null) {

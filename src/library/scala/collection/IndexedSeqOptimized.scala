@@ -30,7 +30,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def isEmpty: Boolean = { length == 0 }
 
   override /*IterableLike*/
-  def foreach[U](@local f: A => U): Unit = {
+  def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow): Unit = {
     var i = 0
     val len = length
     while (i < len) { f(this(i)); i += 1 }

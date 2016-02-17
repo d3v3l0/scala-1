@@ -26,7 +26,7 @@ import parallel.immutable.ParSeq
 trait Seq[+A] extends Iterable[A]
 //                      with GenSeq[A]
                       with scala.collection.Seq[A]
-                      with GenericTraversableTemplate[A, Seq]
+                      with GenericTraversableTemplate[CannotThrow, A, Seq]
                       with SeqLike[A, Seq[A]]
                       with Parallelizable[A, ParSeq[A]]
 {

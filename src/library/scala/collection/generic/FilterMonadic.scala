@@ -17,6 +17,6 @@ trait FilterMonadic[+A, +Repr] extends Any { self =>
   type LT
   def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
   def flatMap[B, That](f: A => scala.collection.GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That
-  def foreach[U](f: A => U): Unit
+  def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow): Unit
   def withFilter(p: A => Boolean): FilterMonadic[A, Repr]
 }

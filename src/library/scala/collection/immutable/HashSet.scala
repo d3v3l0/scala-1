@@ -53,7 +53,7 @@ class HashSet[A] extends AbstractSet[A]
 
   def iterator: Iterator[A] = Iterator.empty
 
-  override def foreach[U](f: A =>  U): Unit = { }
+  override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow): Unit = { }
 
   def contains(e: A): Boolean = get0(e, computeHash(e), 0)
 
@@ -319,7 +319,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
       if (negate ^ p(key)) this else null
 
     override def iterator: Iterator[A] = Iterator(key)
-    override def foreach[U](f: A => U): Unit = f(key)
+    override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow): Unit = f(key)
   }
 
   private[immutable] class HashSetCollision1[A](private[HashSet] val hash: Int, val ks: ListSet[A]) extends LeafHashSet[A] {
@@ -465,7 +465,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
     }
 
     override def iterator: Iterator[A] = ks.iterator
-    override def foreach[U](f: A => U): Unit = ks.foreach(f)
+    override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow): Unit = ks.foreach(f)
 
     private def writeObject(out: java.io.ObjectOutputStream) {
       // this cannot work - reading things in might produce different
@@ -972,7 +972,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
       final override def getElem(cc: AnyRef): A = cc.asInstanceOf[HashSet1[A]].key
     }
 
-    override def foreach[U](f: A =>  U): Unit = {
+    override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow): Unit = {
       var i = 0
       while (i < elems.length) {
         elems(i).foreach(f)

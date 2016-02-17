@@ -72,7 +72,7 @@ extends AbstractSet[A]
 
   override def iterator: Iterator[A] = super[FlatHashTable].iterator
 
-  override def foreach[U](f: A =>  U) {
+  override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow) {
     var i = 0
     val len = table.length
     while (i < len) {

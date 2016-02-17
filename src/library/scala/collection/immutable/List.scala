@@ -84,7 +84,7 @@ import java.io._
 sealed abstract class List[+A] extends AbstractSeq[A]
                                   with LinearSeq[A]
                                   with Product
-                                  with GenericTraversableTemplate[A, List]
+                                  with GenericTraversableTemplate[CannotThrow, A, List]
                                   with LinearSeqOptimized[A, List[A]]
                                   with Serializable {
   type LT = Any
@@ -378,7 +378,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
 
   // Overridden with an implementation identical to the inherited one (at this time)
   // solely so it can be finalized and thus inlinable.
-  @inline final override def foreach[U](@local f: A => U) {
+  @inline final override def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow) {
     var these = this
     while (!these.isEmpty) {
       f(these.head)

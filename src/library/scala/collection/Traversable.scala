@@ -21,7 +21,7 @@ import scala.util.control.Breaks
 trait Traversable[+A] extends TraversableLike[A, Traversable[A]]
                          with GenTraversable[A]
                          with TraversableOnce[A]
-                         with GenericTraversableTemplate[A, Traversable] {
+                         with GenericTraversableTemplate[CannotThrow, A, Traversable] {
   type LT
 
   override def companion: GenericCompanion[Traversable] = Traversable
@@ -40,7 +40,7 @@ trait Traversable[+A] extends TraversableLike[A, Traversable[A]]
   override def remove(p: A => Boolean): Traversable[A]
   override def partition(p: A => Boolean): (Traversable[A], Traversable[A])
   override def groupBy[K](f: A => K): Map[K, Traversable[A]]
-  override def foreach[U](f: A =>  U): Unit
+  override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow): Unit
   override def forall(p: A => Boolean): Boolean
   override def exists(p: A => Boolean): Boolean
   override def count(p: A => Boolean): Int

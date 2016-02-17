@@ -60,7 +60,7 @@ trait SeqViewLike[+A,
       if (idx >= 0 && idx + from < until) self.apply(idx + from)
       else throw new IndexOutOfBoundsException(idx.toString)
 
-    override def foreach[U](f: A => U) = iterator foreach f
+    override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow) = iterator foreach f
     override def iterator: Iterator[A] = self.iterator drop from take endpoints.width
   }
 
