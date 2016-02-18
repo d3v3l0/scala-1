@@ -63,6 +63,9 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   type LT
 
+  // TODO(leo): should maybe be abstract, as Par*Iterator are TraversableOnce
+  type MaybeCanThrow = CannotThrow
+
   /** Self-documenting abstract methods. */
   def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow): Unit
   def isEmpty: Boolean

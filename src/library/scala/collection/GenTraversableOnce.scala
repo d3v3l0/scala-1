@@ -51,6 +51,7 @@ trait GenTraversableOnce[+A] extends Any {
 
   type LT
   type plocal = local[LT]
+  type MaybeCanThrow
 
   def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow): Unit
 

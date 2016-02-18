@@ -23,6 +23,7 @@ import scala.language.{ higherKinds, implicitConversions }
  *  @define willNotTerminateInf
  */
 trait ZippedTraversable2[+El1, +El2] extends Any {
+  type MaybeCanThrow = CannotThrow
   def foreach[U](f: (El1, El2) => U): Unit
 }
 object ZippedTraversable2 {
