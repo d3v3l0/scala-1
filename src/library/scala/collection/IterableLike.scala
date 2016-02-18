@@ -71,7 +71,7 @@ self =>
    *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow): Unit
    *    @inheritdoc
    */
-  def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow): Unit =
+  def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct): Unit =
     iterator.foreach(f)
 
   override /*TraversableLike*/ def forall(@plocal p: A => Boolean): Boolean =

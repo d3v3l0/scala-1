@@ -234,7 +234,7 @@ object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
       next = new Unrolled[T](0, new Array[T](nextlength), null, buff)
       next append elem
     }
-    def foreach[U](@local[Any] f: T => U)(implicit @local mct: MaybeCanThrow) {
+    def foreach[U](@local[Any] f: T => U) {
       var unrolled = this
       var i = 0
       while (unrolled ne null) {
@@ -307,6 +307,7 @@ object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
     } else false
 
     @tailrec final def insertAll(idx: Int, t: scala.collection.Traversable[T], buffer: UnrolledBuffer[T]): Unit = {
+      @local implicit val mct = new CannotThrow {}
       if (idx < size) {
 	// divide this node at the appropriate position and insert all into head
 	// update new next

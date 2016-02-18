@@ -569,6 +569,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
   private class SerializationProxy[A,B](@transient private var orig: HashMap[A, B]) extends Serializable {
     private def writeObject(out: java.io.ObjectOutputStream) {
     ESC.NO {
+      @local implicit val mct = new CannotThrow {}
       val s = orig.size
       out.writeInt(s)
       for ((k,v) <- orig) {

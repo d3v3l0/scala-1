@@ -34,7 +34,7 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   /** The traversable object to which calls are forwarded. */
   protected def underlying: Traversable[A] { type LT = self.LT }
 
-  override def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow): Unit = underlying foreach f
+  override def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow = mct): Unit = underlying foreach f
   override def isEmpty: Boolean = underlying.isEmpty
   override def nonEmpty: Boolean = underlying.nonEmpty
   override def size: Int = underlying.size

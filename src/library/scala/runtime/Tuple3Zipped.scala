@@ -33,6 +33,8 @@ object ZippedTraversable3 {
 
 final class Tuple3Zipped[El1, Repr1, El2, Repr2, El3, Repr3](val colls: (TraversableLike[El1, Repr1], IterableLike[El2, Repr2], IterableLike[El3, Repr3]))
         extends AnyVal with ZippedTraversable3[El1, El2, El3] {
+  // TODO(leo) pull in implicit from colls._1 just like in Tuple2Zipped
+  implicit def mct = new CannotThrow {}
 
   def map[B, To](f: (El1, El2, El3) => B)(implicit cbf: CBF[Repr1, B, To]): To = {
     val b = cbf(colls._1.repr)
