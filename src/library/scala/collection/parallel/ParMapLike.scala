@@ -99,7 +99,7 @@ self =>
     def - (elem: K)(implicit @local cc: CanThrow): ParSet[K] =
       (ParSet[K]() ++ this - elem).asInstanceOf[ParSet[K]] // !!! concrete overrides abstract problem
     override def size = self.size
-    override def foreach[S](f: K => S)(implicit @local mct: MaybeCanThrow) = for ((k, v) <- self) f(k)
+    override def foreach[S](f: K => S)(implicit @local cc: MaybeCanThrow) = for ((k, v) <- self) f(k)
     override def seq = self.seq.keySet
   }
 
@@ -116,9 +116,9 @@ self =>
 
   def values: ParIterable[V] = new DefaultValuesIterable
 
-  def filterKeys(p: K => Boolean): ParMap[K, V] = new ParMap[K, V] {
+  def filterKeys(p: K => Boolean)(implicit @local cc: MaybeCanThrow): ParMap[K, V] = new ParMap[K, V] {
     lazy val filtered = self.filter(kv => p(kv._1))
-    override def foreach[S](f: ((K, V)) => S)(implicit @local mct: MaybeCanThrow): Unit = for (kv <- self) if (p(kv._1)) f(kv)
+    override def foreach[S](f: ((K, V)) => S)(implicit @local cc: MaybeCanThrow): Unit = for (kv <- self) if (p(kv._1)) f(kv)
     def splitter = filtered.splitter
     override def contains(key: K) = self.contains(key) && p(key)
     def get(key: K) = if (!p(key)) None else self.get(key)

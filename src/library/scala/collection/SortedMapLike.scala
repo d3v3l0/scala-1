@@ -73,7 +73,7 @@ self =>
     m
   }
 
-  override def filterKeys(p: A => Boolean): SortedMap[A, B] = new FilteredKeys(p) with SortedMap.Default[A, B] {
+  override def filterKeys(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B] = new FilteredKeys(p) with SortedMap.Default[A, B] {
     implicit def ordering: Ordering[A] = self.ordering
     override def rangeImpl(from : Option[A], until : Option[A]): SortedMap[A, B] = self.rangeImpl(from, until).filterKeys(p)
     override def iteratorFrom(start: A) = self iteratorFrom start filter {case (k, _) => p(k)}

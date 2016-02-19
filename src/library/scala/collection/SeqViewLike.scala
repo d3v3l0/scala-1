@@ -255,7 +255,7 @@ trait SeqViewLike[+A,
   override def diff[B >: A](that: GenSeq[B]): This =
     newForced(thisSeq diff that).asInstanceOf[This]
 
-  override def intersect[B >: A](that: GenSeq[B]): This =
+  override def intersect[B >: A](that: GenSeq[B])(implicit @local mct: MaybeCanThrow = mct): This =
     newForced(thisSeq intersect that).asInstanceOf[This]
 
   override def sorted[B >: A](implicit ord: Ordering[B]): This =

@@ -49,7 +49,7 @@ extends GenIterableLike[A, Repr]
    *  @return  a new set consisting of all elements that are both in this
    *  set and in the given set `that`.
    */
-  def intersect(that: GenSet[A]): Repr = this filter that
+  def intersect(that: GenSet[A])(implicit @local mct: MaybeCanThrow): Repr = this filter that
 
   /** Computes the intersection between this set and another set.
    *
@@ -58,7 +58,7 @@ extends GenIterableLike[A, Repr]
    *  @return  a new set consisting of all elements that are both in this
    *  set and in the given set `that`.
    */
-  def &(that: GenSet[A]): Repr = this intersect that
+  def &(that: GenSet[A])(implicit @local mct: MaybeCanThrow): Repr = this intersect that
 
   /** Computes the union between of set and another set.
    *

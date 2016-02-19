@@ -104,7 +104,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
     override def empty = LinkedHashMap.empty
   }
 
-  override def filterKeys(p: A => Boolean): scala.collection.Map[A, B] = new FilteredKeys(p)
+  override def filterKeys(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): scala.collection.Map[A, B] = new FilteredKeys(p)
 
   protected class MappedValues[C](f: B => C) extends super.MappedValues[C](f) {
     override def empty = LinkedHashMap.empty

@@ -85,7 +85,7 @@ self =>
   protected override def newTakenWhile(@plocal p: A => Boolean): Transformed[A] = new { val pred = p } with AbstractTransformed[A] with TakenWhile
   protected override def newReversed: Transformed[A] = new AbstractTransformed[A] with Reversed
 
-  override def filter(@plocal p: A => Boolean): This = newFiltered(p)
+  override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
   override def init: This = newSliced(SliceInterval(0, self.length - 1))
   override def drop(n: Int): This = newSliced(SliceInterval(n, self.length))
   override def take(n: Int): This = newSliced(SliceInterval(0, n min self.length))

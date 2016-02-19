@@ -297,7 +297,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return      a new $coll consisting of all elements of this $coll that satisfy the given
    *               predicate `p`. Their order may not be preserved.
    */
-  def filter(pred: A => Boolean): Repr
+  def filter(pred: A => Boolean)(implicit @local mct: MaybeCanThrow): Repr
 
   /** Selects all elements of this $coll which do not satisfy a predicate.
    *

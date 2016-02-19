@@ -270,7 +270,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @return      a new $coll consisting of all elements of this $coll that satisfy the given
    *               predicate `p`. The order of the elements is preserved.
    */
-  def filter(@plocal p: A => Boolean): Repr = filterImpl(p, isFlipped = false)
+  def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = filterImpl(p, isFlipped = false)
 
   /** Selects all elements of this $coll which do not satisfy a predicate.
    *

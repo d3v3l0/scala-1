@@ -457,7 +457,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *                  ''n'' times in `that`, then the first ''n'' occurrences of `x` will be retained
    *                  in the result, but any following occurrences will be omitted.
    */
-  def intersect[B >: A](that: GenSeq[B]): Repr
+  def intersect[B >: A](that: GenSeq[B])(implicit @local mct: MaybeCanThrow): Repr
 
   /** Builds a new $coll from this $coll without any duplicate elements.
    *  $willNotTerminateInf

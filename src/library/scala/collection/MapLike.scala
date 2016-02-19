@@ -241,7 +241,7 @@ self =>
    *  @return an immutable map consisting only of those key value pairs of this map where the key satisfies
    *          the predicate `p`. The resulting map wraps the original map without copying any elements.
    */
-  def filterKeys(p: A => Boolean): Map[A, B] = new FilteredKeys(p)
+  def filterKeys(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Map[A, B] = new FilteredKeys(p)
 
   protected class MappedValues[C](f: B => C) extends AbstractMap[A, C] with DefaultMap[A, C] {
     override def foreach[D](g: ((A, C)) => D)(implicit @local mct: MaybeCanThrow): Unit = for ((k, v) <- self) g((k, f(v)))

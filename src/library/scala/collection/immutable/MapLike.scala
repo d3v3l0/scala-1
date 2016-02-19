@@ -92,7 +92,7 @@ self =>
    *  @return an immutable map consisting only of those key value pairs of this map where the key satisfies
    *          the predicate `p`. The resulting map wraps the original map without copying any elements.
    */
-  override def filterKeys(p: A => Boolean): Map[A, B] = new FilteredKeys(p) with DefaultMap[A, B]
+  override def filterKeys(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Map[A, B] = new FilteredKeys(p) with DefaultMap[A, B]
 
   /** Transforms this map by applying a function to every retrieved value.
    *  @param  f   the function used to transform values of this map.
@@ -127,4 +127,3 @@ self =>
     b.result()
   }
 }
-

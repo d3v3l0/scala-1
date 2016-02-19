@@ -14,4 +14,6 @@ package collection
  *  @since 2.9
  *  @author Aleksandar Prokopec
  */
-trait Parallel
+trait Parallel {
+  type MaybeCanThrow = CanThrow
+}

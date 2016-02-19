@@ -161,6 +161,7 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
     val tbl = new FlatHashTable[T] {
       sizeMapInit(table.length)
       seedvalue = ParHashSetCombiner.this.seedvalue
+      @local implicit val mct = new CannotThrow {} // TODO(leo) fix in ArrayOps
       for {
         buffer <- buckets
         if buffer ne null

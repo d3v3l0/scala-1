@@ -162,7 +162,7 @@ extends GenIterableLike[T, Repr]
 self: ParIterableLike[T, Repr, Sequential] =>
 
   type LT = Nothing // Arguments to ParIterable.map are always first-class!
-
+  type MaybeCanThrow = CanThrow
 
   @transient
   @volatile
@@ -462,7 +462,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @tparam U    the result type of the function applied to each element, which is always discarded
    *  @param f     function applied to each element
    */
-  def foreach[U](@local f: T => U)(implicit @local mct: MaybeCanThrow) = {
+  def foreach[U](@local f: T => U)(implicit @local cc: MaybeCanThrow) = {
     tasksupport.executeAndWaitResult(new Foreach(f, splitter))(cc)
   }
 
@@ -593,9 +593,9 @@ self: ParIterableLike[T, Repr, Sequential] =>
     }
   }
 
-  def withFilter(pred: T => Boolean)(implicit @local cc: CanThrow): Repr = filter(pred)
+  def withFilter(pred: T => Boolean): Repr = filter(pred)
 
-  def filter(pred: T => Boolean)(implicit @local cc: CanThrow): Repr = {
+  def filter(pred: T => Boolean)(implicit @local cc: MaybeCanThrow): Repr = {
     tasksupport.executeAndWaitResult(new Filter(pred, combinerFactory, splitter) mapResult { _.resultWithTaskSupport })(cc)
   }
 

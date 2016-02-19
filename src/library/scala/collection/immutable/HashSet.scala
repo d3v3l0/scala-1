@@ -93,7 +93,7 @@ class HashSet[A] extends AbstractSet[A]
     case _ => super.union(that)
   }
 
-  override def intersect(that: GenSet[A]): HashSet[A] = that match {
+  override def intersect(that: GenSet[A])(implicit @local mct: MaybeCanThrow = mct): HashSet[A] = that match {
     case that: HashSet[A] =>
       val buffer = new Array[HashSet[A]](bufferSize(this.size min that.size))
       nullToEmpty(intersect0(that, 0, buffer, 0))
@@ -169,7 +169,7 @@ class HashSet[A] extends AbstractSet[A]
   @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
   override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
 
-  override def filter(@plocal p: A => Boolean) = {
+  override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct) = {
     val buffer = new Array[HashSet[A]](bufferSize(size))
     nullToEmpty(filter0(p, false, 0, buffer, 0))
   }

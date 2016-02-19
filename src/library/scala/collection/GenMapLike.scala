@@ -93,7 +93,7 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
    *  @return an immutable map consisting only of those key value pairs of this map where the key satisfies
    *          the predicate `p`. The resulting map wraps the original map without copying any elements.
    */
-  def filterKeys(p: A => Boolean): GenMap[A, B]
+  def filterKeys(p: A => Boolean)(implicit @local mct: MaybeCanThrow): GenMap[A, B]
 
   /** Transforms this map by applying a function to every retrieved value.
    *  @param  f   the function used to transform values of this map.

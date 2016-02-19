@@ -66,7 +66,7 @@ trait SynchronizedSet[A] extends Set[A] {
     super.remove(elem)
   }
 
-  override def intersect(that: scala.collection.GenSet[A]) = synchronized {
+  override def intersect(that: scala.collection.GenSet[A])(implicit @local mct: MaybeCanThrow = mct) = synchronized {
     super.intersect(that)
   }
 

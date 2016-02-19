@@ -307,7 +307,7 @@ self =>
    *                  ''n'' times in `that`, then the first ''n'' occurrences of `x` will be retained
    *                  in the result, but any following occurrences will be omitted.
    */
-  def intersect[U >: T](that: GenSeq[U]) = sequentially {
+  def intersect[U >: T](that: GenSeq[U])(implicit @local cc: MaybeCanThrow) = sequentially {
     _ intersect that
   }
 

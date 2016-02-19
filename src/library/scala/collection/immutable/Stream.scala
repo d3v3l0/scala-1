@@ -514,7 +514,7 @@ self =>
    * // produces
    * }}}
    */
-  override def filter(@plocal p: A => Boolean): Stream[A] = {
+  override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow): Stream[A] = {
     // optimization: drop leading prefix of elems for which f returns false
     // var rest = this dropWhile (!p(_)) - forget DRY principle - GC can't collect otherwise
     var rest = this

@@ -65,7 +65,7 @@ class HashMap[A, +B] extends AbstractMap[A, B]
   def - (key: A): HashMap[A, B] =
     removed0(key, computeHash(key), 0)
 
-  override def filter(@plocal p: ((A, B)) => Boolean) = {
+  override def filter(@plocal p: ((A, B)) => Boolean)(implicit @local mct: MaybeCanThrow) = {
     val buffer = new Array[HashMap[A, B]](bufferSize(size))
     nullToEmpty(filter0(p, false, 0, buffer, 0))
   }

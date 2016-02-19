@@ -478,7 +478,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
    *                  ''n'' times in `that`, then the first ''n'' occurrences of `x` will be retained
    *                  in the result, but any following occurrences will be omitted.
    */
-  def intersect[B >: A](that: GenSeq[B]): Repr = {
+  def intersect[B >: A](that: GenSeq[B])(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val occ = occCounts(that.seq)
     val b = newBuilder
     for (x <- this) {

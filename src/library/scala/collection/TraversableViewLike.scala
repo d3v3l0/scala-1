@@ -265,7 +265,7 @@ trait TraversableViewLike[+A,
   protected def newTaken(n: Int): Transformed[A] = newSliced(SliceInterval(0, n))
   protected def newDropped(n: Int): Transformed[A] = newSliced(SliceInterval(n, Int.MaxValue))
 
-  override def filter(@plocal p: A => Boolean): This = newFiltered(p)
+  override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
   override def withFilter(@local p: A => Boolean): This = newFiltered(p)
   override def partition(@plocal p: A => Boolean): (This, This) = (newFiltered(p), newFiltered(!p(_)))
   override def init: This = newSliced(SliceInterval(0, size - 1)) // !!! can't call size here.
