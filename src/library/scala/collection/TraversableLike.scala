@@ -700,7 +700,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *             All these operations apply to those elements of this $coll
    *             which satisfy the predicate `p`.
    */
-  def withFilter(@local p: A => Boolean): FilterMonadic[A, Repr] = new WithFilter(p)
+  def withFilter(@local p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): FilterMonadic[A, Repr] = new WithFilter(p)
 
   /** A class supporting filtered operations. Instances of this class are
    *  returned by method `withFilter`.
@@ -791,7 +791,7 @@ trait TraversableLike[+A, +Repr] extends Any
      *             All these operations apply to those elements of this $coll which
      *             satisfy the predicate `q` in addition to the predicate `p`.
      */
-    def withFilter(@local q: A => Boolean): WithFilter =
+    def withFilter(@local q: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): WithFilter =
       new WithFilter(x => p(x) && q(x))
   }
 

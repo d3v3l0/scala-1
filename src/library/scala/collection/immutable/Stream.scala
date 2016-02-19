@@ -524,7 +524,7 @@ self =>
     else Stream.Empty
   }
 
-  override final def withFilter(@local p: A => Boolean): StreamWithFilter = new StreamWithFilter(p)
+  override final def withFilter(@local p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): StreamWithFilter = new StreamWithFilter(p)
 
   /** A lazier implementation of WithFilter than TraversableLike's.
    */
@@ -572,7 +572,7 @@ self =>
       for (x <- self)
         if (p(x)) f(x)
 
-    override def withFilter(@local q: A => Boolean): StreamWithFilter =
+    override def withFilter(@local q: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): StreamWithFilter =
       new StreamWithFilter(x => p(x) && q(x))
   }
 

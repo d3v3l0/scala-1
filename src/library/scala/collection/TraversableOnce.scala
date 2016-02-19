@@ -473,9 +473,12 @@ object TraversableOnce {
   class ForceImplicitAmbiguity
 
   implicit class MonadOps[+A](trav: TraversableOnce[A]) {
+    type MaybeCanThrow = TraversableOnce[A]#MaybeCanThrow
+    // TODO(leo) use this instead of shadowing with implicit params in methods?
+    // @local implicit val mct = new MaybeCanThrow {}
     def map[B](f: A => B): TraversableOnce[B] = trav.toIterator map f
     def flatMap[B](f: A => GenTraversableOnce[B]): TraversableOnce[B] = trav.toIterator flatMap f
-    def withFilter(p: A => Boolean) = trav.toIterator filter p
+    def withFilter(p: A => Boolean)(implicit @local mct: MaybeCanThrow = trav.mct) = trav.toIterator filter p
     def filter(p: A => Boolean): TraversableOnce[A] = withFilter(p)
   }
 }

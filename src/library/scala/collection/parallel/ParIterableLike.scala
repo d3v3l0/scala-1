@@ -593,7 +593,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     }
   }
 
-  def withFilter(pred: T => Boolean): Repr = filter(pred)
+  def withFilter(pred: T => Boolean)(implicit @local cc: MaybeCanThrow): Repr = filter(pred)
 
   def filter(pred: T => Boolean)(implicit @local cc: MaybeCanThrow): Repr = {
     tasksupport.executeAndWaitResult(new Filter(pred, combinerFactory, splitter) mapResult { _.resultWithTaskSupport })(cc)
