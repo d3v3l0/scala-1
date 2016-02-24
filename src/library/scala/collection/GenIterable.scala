@@ -23,7 +23,7 @@ import generic._
 trait GenIterable[+A]
 extends GenIterableLike[A, GenIterable[A]]
    with GenTraversable[A]
-   with GenericTraversableTemplate[CannotThrow, A, GenIterable]
+   with GenericTraversableTemplate[A, GenIterable]
 {
   def seq: Iterable[A]
   override def companion: GenericCompanion[GenIterable] = GenIterable

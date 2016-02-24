@@ -42,7 +42,7 @@ import scala.annotation.tailrec
 class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
          extends AbstractSeq[A]
             with LinearSeq[A]
-            with GenericTraversableTemplate[CannotThrow, A, Queue]
+            with GenericTraversableTemplate[A, Queue]
             with LinearSeqLike[A, Queue[A]]
             with Serializable {
 

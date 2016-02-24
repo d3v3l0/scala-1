@@ -34,7 +34,7 @@ import generic._
 class Queue[A]
 extends MutableList[A]
    with LinearSeqOptimized[A, Queue[A]]
-   with GenericTraversableTemplate[CannotThrow, A, Queue]
+   with GenericTraversableTemplate[A, Queue]
    with Cloneable[Queue[A]]
    with Serializable
 {

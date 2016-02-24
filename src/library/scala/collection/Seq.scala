@@ -18,7 +18,7 @@ import mutable.Builder
 trait Seq[+A] extends PartialFunction[Int, A]
                       with Iterable[A]
                       with GenSeq[A]
-                      with GenericTraversableTemplate[CannotThrow, A, Seq]
+                      with GenericTraversableTemplate[A, Seq]
                       with SeqLike[A, Seq[A]] { self =>
   override def companion: GenericCompanion[Seq] = Seq
 

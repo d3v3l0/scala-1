@@ -24,7 +24,7 @@ trait GenSeq[+A]
 extends GenSeqLike[A, GenSeq[A]]
    with GenIterable[A]
    with Equals
-   with GenericTraversableTemplate[CannotThrow, A, GenSeq]
+   with GenericTraversableTemplate[A, GenSeq]
 {
   def seq: Seq[A]
   override def companion: GenericCompanion[GenSeq] = GenSeq

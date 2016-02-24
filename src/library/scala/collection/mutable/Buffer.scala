@@ -30,7 +30,7 @@ import generic._
  *  @define coll buffer
  */
 trait Buffer[A] extends Seq[A]
-                   with GenericTraversableTemplate[CannotThrow, A, Buffer]
+                   with GenericTraversableTemplate[A, Buffer]
                    with BufferLike[A, Buffer[A]]
                    with scala.Cloneable {
   override def companion: GenericCompanion[Buffer] = Buffer

@@ -25,7 +25,7 @@ import mutable.Builder
  *  `LinearSeqOptimized[A, Coll[A]]`.
  */
 trait LinearSeq[+A] extends Seq[A]
-                            with GenericTraversableTemplate[CannotThrow, A, LinearSeq]
+                            with GenericTraversableTemplate[A, LinearSeq]
                             with LinearSeqLike[A, LinearSeq[A]] {
   override def companion: GenericCompanion[LinearSeq] = LinearSeq
   override def seq: LinearSeq[A] = this

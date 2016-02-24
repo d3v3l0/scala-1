@@ -46,7 +46,7 @@ import parallel.mutable.ParArray
 class ArraySeq[A](override val length: Int)
 extends AbstractSeq[A]
    with IndexedSeq[A]
-   with GenericTraversableTemplate[CannotThrow, A, ArraySeq]
+   with GenericTraversableTemplate[A, ArraySeq]
    with IndexedSeqOptimized[A, ArraySeq[A]]
    with CustomParallelizable[A, ParArray[A]]
    with Serializable

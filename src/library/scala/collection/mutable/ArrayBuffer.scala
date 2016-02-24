@@ -48,7 +48,7 @@ import parallel.mutable.ParArray
 class ArrayBuffer[A](override protected val initialSize: Int)
   extends AbstractBuffer[A]
      with Buffer[A]
-     with GenericTraversableTemplate[CannotThrow, A, ArrayBuffer]
+     with GenericTraversableTemplate[A, ArrayBuffer]
      with BufferLike[A, ArrayBuffer[A]]
      with IndexedSeqOptimized[A, ArrayBuffer[A]]
      with Builder[A, ArrayBuffer[A]]

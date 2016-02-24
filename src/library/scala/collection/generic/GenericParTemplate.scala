@@ -26,7 +26,7 @@ import scala.language.higherKinds
  *  @since 2.8
  */
 trait GenericParTemplate[+A, +CC[X] <: ParIterable[X]]
-extends GenericTraversableTemplate[CanThrow, A, CC]
+extends GenericTraversableTemplate[A, CC]
    with HasNewCombiner[A, CC[A] @uncheckedVariance]
 {
   def companion: GenericCompanion[CC] with GenericParCompanion[CC]

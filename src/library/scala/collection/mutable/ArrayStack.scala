@@ -66,7 +66,7 @@ class ArrayStack[T] private(private var table : Array[AnyRef],
 extends AbstractSeq[T]
    with Seq[T]
    with SeqLike[T, ArrayStack[T]]
-   with GenericTraversableTemplate[CannotThrow, T, ArrayStack]
+   with GenericTraversableTemplate[T, ArrayStack]
    with Cloneable[ArrayStack[T]]
    with Builder[T, ArrayStack[T]]
    with Serializable

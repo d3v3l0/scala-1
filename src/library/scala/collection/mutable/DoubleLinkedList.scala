@@ -45,7 +45,7 @@ import generic._
 @SerialVersionUID(-8144992287952814767L)
 class DoubleLinkedList[A]() extends AbstractSeq[A]
                             with LinearSeq[A]
-                            with GenericTraversableTemplate[CannotThrow, A, DoubleLinkedList]
+                            with GenericTraversableTemplate[A, DoubleLinkedList]
                             with DoubleLinkedListLike[A, DoubleLinkedList[A]]
                             with Serializable {
   next = this

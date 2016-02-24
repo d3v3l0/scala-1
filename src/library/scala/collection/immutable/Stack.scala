@@ -50,7 +50,7 @@ object Stack extends SeqFactory[Stack] {
 class Stack[+A] protected (protected val elems: List[A])
                  extends AbstractSeq[A]
                     with LinearSeq[A]
-                    with GenericTraversableTemplate[CannotThrow, A, Stack]
+                    with GenericTraversableTemplate[A, Stack]
                     with LinearSeqOptimized[A, Stack[A]]
                     with Serializable {
   override def companion: GenericCompanion[Stack] = Stack

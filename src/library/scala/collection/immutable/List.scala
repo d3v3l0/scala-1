@@ -84,7 +84,7 @@ import java.io._
 sealed abstract class List[+A] extends AbstractSeq[A]
                                   with LinearSeq[A]
                                   with Product
-                                  with GenericTraversableTemplate[CannotThrow, A, List]
+                                  with GenericTraversableTemplate[A, List]
                                   with LinearSeqOptimized[A, List[A]]
                                   with Serializable {
   type LT = Any

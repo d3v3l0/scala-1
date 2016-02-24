@@ -21,7 +21,7 @@ import mutable.Builder
  */
 trait Traversable[+A] extends scala.collection.Traversable[A]
 //                         with GenTraversable[A]
-                         with GenericTraversableTemplate[CannotThrow, A, Traversable]
+                         with GenericTraversableTemplate[A, Traversable]
                          with TraversableLike[A, Traversable[A]]
                          with Immutable {
   override def companion: GenericCompanion[Traversable] = Traversable
