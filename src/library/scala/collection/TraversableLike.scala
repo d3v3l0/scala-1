@@ -25,7 +25,7 @@ import scala.language.higherKinds
  *  implements the behavior common to all collections, in terms of a method
  *  `foreach` with signature:
  * {{{
- *     def foreach[U](f: Elem => U)(implicit @local mct: MaybeCanThrow): Unit
+ *     def foreach[U](f: Elem => U)(implicit @local mct: MaybeCanThrow = mct): Unit
  * }}}
  *  Collection classes mixing in this trait provide a concrete
  *  `foreach` method which traverses all the
@@ -117,14 +117,14 @@ trait TraversableLike[+A, +Repr] extends Any
    *              This result will always be ignored. Typically `U` is `Unit`,
    *              but this is not necessary.
    *
-   *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow): Unit
+   *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow = mct): Unit
    *    @inheritdoc
    *
    *    Note: this method underlies the implementation of most other bulk operations.
    *    It's important to implement this method in an efficient way.
    *
    */
-  def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow): Unit
+  def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct): Unit
 
   /** Tests whether this $coll is empty.
    *
@@ -668,7 +668,7 @@ trait TraversableLike[+A, +Repr] extends Any
    */
   def view = new TraversableView[A, Repr] {
     protected lazy val underlying = self.repr
-    override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow) = self foreach f
+    override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct) = self foreach f
   }
 
   /** Creates a non-strict view of a slice of this $coll.
@@ -776,10 +776,10 @@ trait TraversableLike[+A, +Repr] extends Any
      *              This result will always be ignored. Typically `U` is `Unit`,
      *              but this is not necessary.
      *
-     *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow): Unit
+     *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow = mct): Unit
      *    @inheritdoc
      */
-    def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow): Unit =
+    def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct): Unit =
       for (x <- self)
         if (p(x)) f(x)
 

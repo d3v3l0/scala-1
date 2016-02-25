@@ -378,7 +378,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
 
   // Overridden with an implementation identical to the inherited one (at this time)
   // solely so it can be finalized and thus inlinable.
-  @inline final override def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow) {
+  @inline final override def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
     var these = this
     while (!these.isEmpty) {
       f(these.head)

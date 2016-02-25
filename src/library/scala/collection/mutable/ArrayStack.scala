@@ -233,7 +233,7 @@ extends AbstractSeq[T]
     }
   }
 
-  override def foreach[U](f: T =>  U)(implicit @local mct: MaybeCanThrow) {
+  override def foreach[U](f: T =>  U)(implicit @local mct: MaybeCanThrow = mct) {
     var currentIndex = index
     while (currentIndex > 0) {
       currentIndex -= 1

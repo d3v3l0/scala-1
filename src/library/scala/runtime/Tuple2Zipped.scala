@@ -29,7 +29,7 @@ trait ZippedTraversable2[+El1, +El2] extends Any {
 object ZippedTraversable2 {
   implicit def zippedTraversable2ToTraversable[El1, El2](zz: ZippedTraversable2[El1, El2]): Traversable[(El1, El2)] = {
     new scala.collection.AbstractTraversable[(El1, El2)] {
-      def foreach[U](f: ((El1, El2)) => U)(implicit @local mct: MaybeCanThrow): Unit = zz foreach Function.untupled(f)
+      def foreach[U](f: ((El1, El2)) => U)(implicit @local mct: MaybeCanThrow = mct): Unit = zz foreach Function.untupled(f)
     }
   }
 }

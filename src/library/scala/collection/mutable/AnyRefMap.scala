@@ -312,7 +312,7 @@ extends AbstractMap[K, V]
     }
   }
 
-  override def foreach[A](f: ((K,V)) => A)(implicit @local mct: MaybeCanThrow) {
+  override def foreach[A](f: ((K,V)) => A)(implicit @local mct: MaybeCanThrow = mct) {
     var i = 0
     var e = _size
     while (e > 0) {

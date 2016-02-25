@@ -70,7 +70,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow) {
+  def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow = mct) {
     var these = this
     while (!these.isEmpty) {
       f(these.head)

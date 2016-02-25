@@ -49,7 +49,7 @@ trait ResizableArray[A] extends IndexedSeq[A]
     array(idx) = elem.asInstanceOf[AnyRef]
   }
 
-  override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow) {
+  override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
     var i = 0
     // size is cached here because profiling reports a lot of time spent calling
     // it on every iteration.  I think it's likely a profiler ghost but it doesn't

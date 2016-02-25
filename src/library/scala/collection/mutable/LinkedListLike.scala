@@ -172,7 +172,7 @@ trait LinkedListLike[A, This <: Seq[A] with LinkedListLike[A, This]] extends Seq
     }
   }
 
-  override def foreach[B](f: A => B)(implicit @local mct: MaybeCanThrow) {
+  override def foreach[B](f: A => B)(implicit @local mct: MaybeCanThrow = mct) {
     var these = this
     while (these.nonEmpty) {
       f(these.elem)

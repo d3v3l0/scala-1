@@ -154,7 +154,7 @@ extends scala.collection.AbstractSeq[Int]
     else start + (step * idx)
   }
 
-  @inline final override def foreach[@specialized(Unit) U](f: Int => U)(implicit @local mct: MaybeCanThrow) {
+  @inline final override def foreach[@specialized(Unit) U](f: Int => U)(implicit @local mct: MaybeCanThrow = mct) {
     validateMaxLength()
     val isCommonCase = (start != Int.MinValue || end != Int.MinValue)
     var i = start

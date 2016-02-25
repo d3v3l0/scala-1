@@ -167,7 +167,7 @@ extends AbstractSeq[A]
   override def toList: List[A] = elems
 
   @migration("`foreach` traverses in FIFO order.", "2.8.0")
-  override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow): Unit = super.foreach(f)
+  override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct): Unit = super.foreach(f)
 
   /** This method clones the stack.
    *

@@ -44,7 +44,7 @@ trait SynchronizedMap[A, B] extends Map[A, B] {
   override def values: scala.collection.Iterable[B] = synchronized { super.values }
   override def valuesIterator: Iterator[B] = synchronized { super.valuesIterator }
   override def clone(): Self = synchronized { super.clone() }
-  override def foreach[U](f: ((A, B)) => U)(implicit @local mct: MaybeCanThrow) = synchronized { super.foreach(f) }
+  override def foreach[U](f: ((A, B)) => U)(implicit @local mct: MaybeCanThrow = mct) = synchronized { super.foreach(f) }
   override def apply(key: A): B = synchronized { super.apply(key) }
   override def keySet: scala.collection.Set[A] = synchronized { super.keySet }
   @migration("`keys` returns `Iterable[A]` rather than `Iterator[A]`.", "2.8.0")

@@ -43,7 +43,7 @@ trait IterableViewLike[+A,
 
   trait Transformed[+B] extends IterableView[B, Coll] with super.Transformed[B] {
     def iterator: Iterator[B]
-    override def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow): Unit = iterator foreach f
+    override def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow = mct): Unit = iterator foreach f
     override def toString = viewToString
     override def isEmpty = !iterator.hasNext
   }

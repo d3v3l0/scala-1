@@ -134,7 +134,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
       else Iterator.empty.next()
   }
 
-  override def foreach[U](f: ((A, B)) => U)(implicit @local mct: MaybeCanThrow) {
+  override def foreach[U](f: ((A, B)) => U)(implicit @local mct: MaybeCanThrow = mct) {
     var cur = firstEntry
     while (cur ne null) {
       f((cur.key, cur.value))

@@ -214,7 +214,7 @@ extends AbstractMap[Key, Value]
    *  @tparam U  The return type of the specified function `f`, return result of which is ignored.
    *  @param f   The function to apply to each key, value mapping.
    */
-  override def foreach[U](f : ((Key, Value)) => U)(implicit @local mct: MaybeCanThrow) {
+  override def foreach[U](f : ((Key, Value)) => U)(implicit @local mct: MaybeCanThrow = mct) {
     val startModCount = modCount
     foreachUndeletedEntry(entry => {
       if (modCount != startModCount) sys.error("Concurrent Modification")

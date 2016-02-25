@@ -88,7 +88,7 @@ class LinkedHashSet[A] extends AbstractSet[A]
       else Iterator.empty.next()
   }
 
-  override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow) {
+  override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
     var cur = firstEntry
     while (cur ne null) {
       f(cur.key)

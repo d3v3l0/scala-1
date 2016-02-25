@@ -738,10 +738,10 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *
    *  @note    Reuse: $consumesIterator
    *
-   *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow): Unit
+   *  @usecase def foreach(f: A => Unit)(implicit @local mct: MaybeCanThrow = mct): Unit
    *    @inheritdoc
    */
-  def foreach[U](@local f: A =>  U)(implicit @local mct: MaybeCanThrow) { while (hasNext) f(next()) }
+  def foreach[U](@local f: A =>  U)(implicit @local mct: MaybeCanThrow = mct) { while (hasNext) f(next()) }
 
   /** Tests whether a predicate holds for all values produced by this iterator.
    *  $mayNotTerminateInf

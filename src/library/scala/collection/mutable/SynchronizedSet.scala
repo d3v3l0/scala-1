@@ -78,7 +78,7 @@ trait SynchronizedSet[A] extends Set[A] {
     super.subsetOf(that)
   }
 
-  override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow) = synchronized {
+  override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow = mct) = synchronized {
     super.foreach(f)
   }
 

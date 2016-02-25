@@ -68,7 +68,7 @@ extends AbstractSeq[A]
     array(idx) = elem.asInstanceOf[AnyRef]
   }
 
-  override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow) {
+  override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow = mct) {
     var i = 0
     while (i < length) {
       f(array(i).asInstanceOf[A])

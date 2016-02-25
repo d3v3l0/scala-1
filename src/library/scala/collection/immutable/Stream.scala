@@ -591,7 +591,7 @@ self =>
    *  unless the `f` throws an exception.
    */
   @tailrec
-  override final def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow) {
+  override final def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow = mct) {
     if (!this.isEmpty) {
       f(head)
       tail.foreach(f)
