@@ -283,7 +283,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   /* helper traits - to avoid structural invocations */
 
   trait TaskOps[R, Tp] {
-    def mapResult[R1](mapping: R => R1): ResultMapping[R, Tp, R1]
+    def mapResult[R1](@local mapping: R => R1): ResultMapping[R, Tp, R1]
     // public method with inaccessible types in parameters
     def compose[R3, R2, Tp2](t2: SSCTask[R2, Tp2])(resCombiner: (R, R2) => R3): SeqComposite[R, R2, R3, SSCTask[R, Tp], SSCTask[R2, Tp2]]
     def parallel[R3, R2, Tp2](t2: SSCTask[R2, Tp2])(resCombiner: (R, R2) => R3): ParComposite[R, R2, R3, SSCTask[R, Tp], SSCTask[R2, Tp2]]
@@ -750,10 +750,9 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @return       the longest prefix of this $coll of elements that satisfy the predicate `pred`
    */
   def takeWhile(pred: T => Boolean)(@local cc: CanThrow): Repr = {
-    implicit val ccImplicit = cc // TODO(leo)
     val cbf = combinerFactory
     if (cbf.doesShareCombiners) {
-      val parseqspan = toSeq.takeWhile(pred)(cc)
+      val parseqspan = toSeq(cc).takeWhile(pred)(cc)
       tasksupport.executeAndWaitResult(new Copy(combinerFactory, parseqspan.splitter) mapResult {
         _.resultWithTaskSupport
       })(cc)
@@ -776,10 +775,9 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *                the elements satisfy `pred`, and the rest of the collection
    */
   def span(pred: T => Boolean)(@local cc: CanThrow): (Repr, Repr) = {
-    implicit val ccImplicit = cc // TODO(leo)
     val cbf = combinerFactory
     if (cbf.doesShareCombiners) {
-      val (xs, ys) = toSeq.span(pred)(cc)
+      val (xs, ys) = toSeq(cc).span(pred)(cc)
       val copyxs = new Copy(combinerFactory, xs.splitter) mapResult { _.resultWithTaskSupport }
       val copyys = new Copy(combinerFactory, ys.splitter) mapResult { _.resultWithTaskSupport }
       val copyall = (copyxs parallel copyys) {
@@ -971,7 +969,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   protected trait Transformer[R, Tp] extends Accessor[R, Tp]
 
-  protected[this] class Foreach[S](op: T => S, protected[this] val pit: IterableSplitter[T])
+  protected[this] class Foreach[S](@local op: T => S, protected[this] val pit: IterableSplitter[T]) // XXX(leo)
   extends Accessor[Unit, Foreach[S]] {
     @volatile var result: Unit = ()
     def leaf(prevr: Option[Unit])(@local cc: CanThrow) = pit.foreach(op)

@@ -117,7 +117,8 @@ self =>
   def values: ParIterable[V] = new DefaultValuesIterable
 
   def filterKeys(p: K => Boolean)(implicit @local cc: MaybeCanThrow): ParMap[K, V] = new ParMap[K, V] {
-    lazy val filtered = self.filter(kv => p(kv._1))
+    /*@local*/ lazy val filtered = // FIXME(tiark) doesn't work on lazy val
+      ESC.TRY { cc0 => self.filter(kv => p(kv._1))(cc0) } // workaround w/ TRY
     override def foreach[S](f: ((K, V)) => S)(implicit @local cc: MaybeCanThrow): Unit = for (kv <- self) if (p(kv._1)) f(kv)
     def splitter = filtered.splitter
     override def contains(key: K) = self.contains(key) && p(key)

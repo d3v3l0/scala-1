@@ -85,8 +85,8 @@ package parallel {
       def asParIterable = t.asInstanceOf[ParIterable[T]]
       def isParSeq = t.isInstanceOf[ParSeq[_]]
       def asParSeq = t.asInstanceOf[ParSeq[T]]
-      def ifParSeq[R](isbody: ParSeq[T] => R) = new Otherwise[R] {
-        def otherwise(notbody: => R) = if (isParallel) isbody(asParSeq) else notbody
+      def ifParSeq[R](@local isbody: ParSeq[T] => R) = new Otherwise[R] {
+        @local def otherwise(notbody: => R) = if (isParallel) isbody(asParSeq) else notbody
       }
     }
     implicit def throwable2ops(self: Throwable) = new ThrowableOps {
@@ -111,7 +111,7 @@ package parallel {
 
   trait TraversableOps[T] {
     trait Otherwise[R] {
-      def otherwise(notbody: => R): R
+      @local def otherwise(notbody: => R): R
     }
 
     def isParallel: Boolean
@@ -119,7 +119,7 @@ package parallel {
     def asParIterable: ParIterable[T]
     def isParSeq: Boolean
     def asParSeq: ParSeq[T]
-    def ifParSeq[R](isbody: ParSeq[T] => R): Otherwise[R]
+    def ifParSeq[R](@local isbody: ParSeq[T] => R): Otherwise[R]
   }
 
   @deprecated("This trait will be removed.", "2.11.0")

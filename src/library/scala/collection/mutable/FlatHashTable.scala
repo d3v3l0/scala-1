@@ -106,6 +106,7 @@ trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
     out.writeInt(seedvalue)
     out.writeBoolean(isSizeMapDefined)
   }(cc)
+    @local implicit val mct = new CannotThrow {} // TODO(leo) workaround for BugImplicitLocalDefaultDisallows2ndClassFn
     iterator.foreach(x=>ESC.THROW(out.writeObject(x))(cc))
   }
 

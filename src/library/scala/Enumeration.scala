@@ -162,6 +162,8 @@ abstract class Enumeration (initial: Int) extends Serializable {
                                                    classOf[Value].isAssignableFrom(m.getReturnType) &&
                                                    m.getDeclaringClass != classOf[Enumeration] &&
                                                    isValDef(m))
+
+    @local implicit val mct = new CannotThrow {} // TODO(leo) workaround for BugImplicitLocalDefaultDisallows2ndClassFn
     methods foreach { m =>
       val name = m.getName
       // invoke method to obtain actual `Value` instance
