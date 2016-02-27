@@ -78,7 +78,7 @@ trait TraversableLike[+A, +Repr] extends Any
   import Traversable.breaks._
 
   type LT
-
+  override type MaybeCanThrow = CannotThrow
 
   /** The type implementing this traversable */
   protected[this] type Self = Repr

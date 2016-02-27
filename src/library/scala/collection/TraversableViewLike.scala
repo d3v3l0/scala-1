@@ -100,7 +100,7 @@ trait TraversableViewLike[+A,
    *  ViewLike class.
    */
   trait Transformed[+B] extends TraversableView[B, Coll] {
-    def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow = mct): Unit
+    def foreach[U](@local f: B => U)(implicit @local mct: MaybeCanThrow = mct): Unit
 
     lazy val underlying = self.underlying
     final override protected[this] def viewIdString = self.viewIdString + viewIdentifier
@@ -132,7 +132,7 @@ trait TraversableViewLike[+A,
 
   trait EmptyView extends Transformed[Nothing] {
     final override def isEmpty = true
-    final override def foreach[U](f: Nothing => U)(implicit @local mct: MaybeCanThrow = mct): Unit = ()
+    final override def foreach[U](@local f: Nothing => U)(implicit @local mct: MaybeCanThrow = mct): Unit = ()
   }
 
   /** A fall back which forces everything into a vector and then applies an operation
@@ -140,7 +140,7 @@ trait TraversableViewLike[+A,
    */
   trait Forced[B] extends Transformed[B] {
     protected[this] val forced: GenSeq[B]
-    def foreach[U](f: B => U)(implicit @local mct: forced.MaybeCanThrow) = forced foreach f // XXX(leo) not sure how to properly fix this
+    def foreach[U](@local f: B => U)(implicit @local mct: forced.MaybeCanThrow) = forced foreach f // XXX(leo) not sure how to properly fix this
     final override protected[this] def viewIdentifier = "C"
   }
 
@@ -151,7 +151,7 @@ trait TraversableViewLike[+A,
     // protected def newSliced(_endpoints: SliceInterval): Transformed[A] =
     //   self.newSliced(endpoints.recalculate(_endpoints))
 
-    def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
+    def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
       var index = 0
       for (x <- self) {
         if (from <= index) {
@@ -166,7 +166,7 @@ trait TraversableViewLike[+A,
 
   trait Mapped[B] extends Transformed[B] {
     protected[this] val mapping: A => B
-    def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow = mct) {
+    def foreach[U](@local f: B => U)(implicit @local mct: MaybeCanThrow = mct) {
       for (x <- self)
         f(mapping(x))
     }
@@ -175,7 +175,7 @@ trait TraversableViewLike[+A,
 
   trait FlatMapped[B] extends Transformed[B] {
     protected[this] val mapping: A => GenTraversableOnce[B]
-    def foreach[U](f: B => U)(implicit @local mct: MaybeCanThrow = mct) {
+    def foreach[U](@local f: B => U)(implicit @local mct: MaybeCanThrow = mct) {
       for (x <- self)
         for (y <- mapping(x).seq)
           f(y)
@@ -185,7 +185,7 @@ trait TraversableViewLike[+A,
 
   trait Appended[B >: A] extends Transformed[B] {
     protected[this] val rest: GenTraversable[B]
-    def foreach[U](f: B => U)(implicit @local mct: rest.MaybeCanThrow) { // XXX(leo) not sure how to properly fix this
+    def foreach[U](@local f: B => U)(implicit @local mct: MaybeCanThrow) { @local implicit val cc = new CanThrow {}; // XXX(leo) not sure how to properly fix this
       @local implicit val mctSelf = self.mct
       self foreach f
       rest foreach f
@@ -195,7 +195,7 @@ trait TraversableViewLike[+A,
 
   trait Filtered extends Transformed[A] {
     protected[this] val pred: A => Boolean
-    def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
+    def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
       for (x <- self)
         if (pred(x)) f(x)
     }
@@ -204,7 +204,7 @@ trait TraversableViewLike[+A,
 
   trait TakenWhile extends Transformed[A] {
     protected[this] val pred: A => Boolean
-    def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
+    def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
       for (x <- self) {
         if (!pred(x)) return
         f(x)
@@ -215,7 +215,7 @@ trait TraversableViewLike[+A,
 
   trait DroppedWhile extends Transformed[A] {
     protected[this] val pred: A => Boolean
-    def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
+    def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct) {
       var go = false
       for (x <- self) {
         if (!go && !pred(x)) go = true

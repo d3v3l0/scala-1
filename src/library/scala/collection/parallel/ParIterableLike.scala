@@ -162,7 +162,6 @@ extends GenIterableLike[T, Repr]
 self: ParIterableLike[T, Repr, Sequential] =>
 
   type LT = Nothing // Arguments to ParIterable.map are always first-class!
-  type MaybeCanThrow = CanThrow
 
   @transient
   @volatile

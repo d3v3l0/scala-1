@@ -568,7 +568,7 @@ self =>
       else super.flatMap(f)(bf)
     }
 
-    override def foreach[B](f: A => B) =
+    override def foreach[B](f: A => B)(implicit @local mct: MaybeCanThrow = mct) =
       for (x <- self)
         if (p(x)) f(x)
 
