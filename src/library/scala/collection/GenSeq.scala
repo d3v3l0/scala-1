@@ -26,6 +26,7 @@ extends GenSeqLike[A, GenSeq[A]]
    with Equals
    with GenericTraversableTemplate[A, GenSeq]
 {
+  type MaybeCanThrow >: CanThrow
   def seq: Seq[A]
   override def companion: GenericCompanion[GenSeq] = GenSeq
 }

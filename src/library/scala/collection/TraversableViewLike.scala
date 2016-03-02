@@ -140,7 +140,7 @@ trait TraversableViewLike[+A,
    */
   trait Forced[B] extends Transformed[B] {
     protected[this] val forced: GenSeq[B]
-    def foreach[U](@local f: B => U)(implicit @local mct: forced.MaybeCanThrow) = forced foreach f // XXX(leo) not sure how to properly fix this
+    def foreach[U](@local f: B => U)(implicit @local mct: MaybeCanThrow) = { @local implicit val mct = new CanThrow {}; forced.foreach(f)(mct) } // XXX(leo) not sure how to properly fix this
     final override protected[this] def viewIdentifier = "C"
   }
 

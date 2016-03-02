@@ -29,7 +29,7 @@ import scala.language.higherKinds
  */
 trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[X]] extends HasNewBuilder[A, CC[A] @uncheckedVariance] {
   type LT
-  type MaybeCanThrow
+  type MaybeCanThrow >: CanThrow
 
   /** Applies a function `f` to all elements of this $coll.
    *

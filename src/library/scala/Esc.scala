@@ -6,10 +6,9 @@ trait `->`[-A,+B] extends Function1[A,B] {
   def apply(@local y: A): B
 }
 
-
-trait CanThrow
-
 trait CannotThrow
+
+trait CanThrow  extends CannotThrow
 
 object ESC {
 	def NO[T](x:T):T = x
