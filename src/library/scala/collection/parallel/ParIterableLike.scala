@@ -345,7 +345,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     def apply() = bf.apply()
   }
 
-  protected[this] def sequentially[S, That <: Parallel](b: Sequential => Parallelizable[S, That]) = b(seq).par.asInstanceOf[Repr]
+  protected[this] def sequentially[S, That <: Parallel](@local b: Sequential => Parallelizable[S, That]) = b(seq).par.asInstanceOf[Repr]
 
   def mkString(start: String, sep: String, end: String): String = seq.mkString(start, sep, end)
 
