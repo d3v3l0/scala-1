@@ -70,7 +70,7 @@ trait Sorted[K, +This <: Sorted[K, This]] {
   /** Create a range projection of this collection with no lower-bound.
    *  @param to The upper-bound (inclusive) of the ranged projection.
    */
-  def to(to: K): This = {
+  def to(to: K, @local mct: MaybeCanThrow = mct): This = {
     val i = keySet.from(to).iterator
     if (i.isEmpty) return repr
     val next = i.next()

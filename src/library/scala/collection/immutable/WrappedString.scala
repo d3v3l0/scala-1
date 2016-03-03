@@ -38,7 +38,7 @@ class WrappedString(val self: String) extends AbstractSeq[Char] with IndexedSeq[
   /** Creates a string builder buffer as builder for this class */
   override protected[this] def newBuilder = WrappedString.newBuilder
 
-  override def slice(from: Int, until: Int): WrappedString = {
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): WrappedString = {
     val start = if (from < 0) 0 else from
     if (until <= start || start >= repr.length)
       return new WrappedString("")

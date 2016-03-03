@@ -273,7 +273,7 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
 
   def + [S >: T] (kv: (Int, S)): IntMap[S] = updated(kv._1, kv._2)
 
-  override def updated[S >: T](key: Int, value: S): IntMap[S] = this match {
+  override def updated[S >: T](key: Int, value: S, @local mct: MaybeCanThrow = mct): IntMap[S] = this match {
     case IntMap.Bin(prefix, mask, left, right) =>
       if (!hasMatch(key, prefix, mask)) join(key, IntMap.Tip(key, value), prefix, this)
       else if (zero(key, mask)) IntMap.Bin(prefix, mask, left.updated(key, value), right)

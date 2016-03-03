@@ -268,7 +268,7 @@ self =>
    *  @tparam   B1 the type of the added value
    *  @return   A new map with the new key/value mapping added to this map.
    *
-   *  @usecase  def updated(key: A, value: B): Map[A, B]
+   *  @usecase  def updated(key: A, value: B, @local mct: MaybeCanThrow = mct): Map[A, B]
    *    @inheritdoc
    */
   def updated [B1 >: B](key: A, value: B1): Map[A, B1] = this + ((key, value))
@@ -314,7 +314,7 @@ self =>
    *  @param p    A predicate over key-value pairs
    *  @return     A new map containing elements not satisfying the predicate.
    */
-  override def filterNot(@local p: ((A, B)) => Boolean): This = {
+  override def filterNot(@local p: ((A, B)) => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = {
     var res: This = repr
     for (kv <- this)
       if (p(kv)) res = (res - kv._1).asInstanceOf[This] // !!! concrete overrides abstract problem

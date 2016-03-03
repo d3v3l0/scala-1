@@ -238,7 +238,7 @@ trait TraversableLike[+A, +Repr] extends Any
   def ++:[B >: A, That](that: Traversable[B])(implicit bf: CanBuildFrom[Repr, B, That]): That =
     (that ++ seq)(breakOut)
 
-  def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     def builder = { // extracted to keep method size under 35 bytes, so that it can be JIT-inlined
       val b = bf(repr)
       b.sizeHint(this)
@@ -249,7 +249,7 @@ trait TraversableLike[+A, +Repr] extends Any
     b.result
   }
 
-  def flatMap[B, That](@plocal f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def flatMap[B, That](@plocal f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     def builder = bf(repr) // extracted to keep method size under 35 bytes, so that it can be JIT-inlined
     val b = builder
     for (x <- this) b ++= f(x).seq
@@ -278,9 +278,9 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @return      a new $coll consisting of all elements of this $coll that do not satisfy the given
    *               predicate `p`. The order of the elements is preserved.
    */
-  def filterNot(@local p: A => Boolean): Repr = filterImpl(p, isFlipped = true)
+  def filterNot(@local p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = filterImpl(p, isFlipped = true)
 
-  def collect[B, That](@plocal pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def collect[B, That](@plocal pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     val b = bf(repr)
     foreach(pf.runWith(b += _))
     b.result
@@ -323,13 +323,13 @@ trait TraversableLike[+A, +Repr] extends Any
    *           that don't. The relative order of the elements in the resulting ${coll}s
    *           is the same as in the original $coll.
    */
-  def partition(@plocal p: A => Boolean): (Repr, Repr) = {
+  def partition(@plocal p: A => Boolean): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = {
     val l, r = newBuilder
     for (x <- this) (if (p(x)) l else r) += x
     (l.result, r.result)
   }
 
-  def groupBy[K](@plocal f: A => K): immutable.Map[K, Repr] = {
+  def groupBy[K](@plocal f: A => K)(implicit @local mct: MaybeCanThrow = mct): immutable.Map[K, Repr] = {
     val m = mutable.Map.empty[K, Builder[A, Repr]]
     for (elem <- this) {
       val key = f(elem)
@@ -351,7 +351,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @return        `true`  if this $coll is empty, otherwise `true` if the given predicate `p`
     *                holds for all elements of this $coll, otherwise `false`.
    */
-  def forall(@plocal p: A => Boolean): Boolean = {
+  def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     var result = true
     breakable {
       for (x <- this)
@@ -368,7 +368,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @return        `false` if this $coll is empty, otherwise `true` if the given predicate `p`
     *                holds for some of the elements of this $coll, otherwise `false`
    */
-  def exists(@plocal p: A => Boolean): Boolean = {
+  def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     var result = false
     breakable {
       for (x <- this)
@@ -386,7 +386,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @return     an option value containing the first element in the $coll
    *              that satisfies `p`, or `None` if none exists.
    */
-  def find(@plocal p: A => Boolean): Option[A] = {
+  def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A] = {
     var result: Option[A] = None
     breakable {
       for (x <- this)
@@ -395,7 +395,7 @@ trait TraversableLike[+A, +Repr] extends Any
     result
   }
 
-  def scan[B >: A, That](z: B)(@plocal op: (B, B) => B)(implicit cbf: CanBuildFrom[Repr, B, That]): That = scanLeft(z)(op)
+  def scan[B >: A, That](z: B)(@plocal op: (B, B) => B)(implicit cbf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = scanLeft(z)(op)
 
   def scanLeft[B, That](z: B)(@plocal op: (B, A) => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
     val b = bf(repr)
@@ -492,9 +492,9 @@ trait TraversableLike[+A, +Repr] extends Any
     b.result
   }
 
-  def take(n: Int): Repr = slice(0, n)
+  def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = slice(0, n)
 
-  def drop(n: Int): Repr =
+  def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr =
     if (n <= 0) {
       val b = newBuilder
       b.sizeHint(this)
@@ -502,7 +502,7 @@ trait TraversableLike[+A, +Repr] extends Any
     }
     else sliceWithKnownDelta(n, Int.MaxValue, -n)
 
-  def slice(from: Int, until: Int): Repr =
+  def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Repr =
     sliceWithKnownBound(scala.math.max(from, 0), until)
 
   // Precondition: from >= 0, until > 0, builder already configured for building.
@@ -536,7 +536,7 @@ trait TraversableLike[+A, +Repr] extends Any
     }
   }
 
-  def takeWhile(@plocal p: A => Boolean): Repr = {
+  def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val b = newBuilder
     breakable {
       for (x <- this) {
@@ -547,7 +547,7 @@ trait TraversableLike[+A, +Repr] extends Any
     b.result
   }
 
-  def dropWhile(@plocal p: A => Boolean): Repr = {
+  def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val b = newBuilder
     var go = false
     for (x <- this) {
@@ -557,7 +557,7 @@ trait TraversableLike[+A, +Repr] extends Any
     b.result
   }
 
-  def span(@plocal p: A => Boolean): (Repr, Repr) = {
+  def span(@plocal p: A => Boolean): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = {
     val l, r = newBuilder
     var toLeft = true
     for (x <- this) {
@@ -567,7 +567,7 @@ trait TraversableLike[+A, +Repr] extends Any
     (l.result, r.result)
   }
 
-  def splitAt(n: Int): (Repr, Repr) = {
+  def splitAt(n: Int): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = {
     val l, r = newBuilder
     l.sizeHintBounded(n, this)
     if (n >= 0) r.sizeHint(this, -n)
@@ -609,12 +609,12 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @tparam B      the type of the elements of the array.
    *
    *
-   *  @usecase def copyToArray(xs: Array[A], start: Int, len: Int): Unit
+   *  @usecase def copyToArray(xs: Array[A], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct): Unit
    *    @inheritdoc
    *
    *    $willNotTerminateInf
    */
-  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int) {
+  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) {
     var i = start
     val end = (start + len) min xs.length
     breakable {
@@ -632,7 +632,7 @@ trait TraversableLike[+A, +Repr] extends Any
   def toIterator: Iterator[A] = toStream.iterator
   def toStream: Stream[A] = toBuffer.toStream
   // Override to provide size hint.
-  override def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]]): Col[A @uV] = {
+  override def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]], @local mct: MaybeCanThrow = mct): Col[A @uV] = {
     val b = cbf()
     b.sizeHint(this)
     b ++= thisCollection
@@ -721,14 +721,14 @@ trait TraversableLike[+A, +Repr] extends Any
      *                the given function `f` to each element of the outer $coll
      *                that satisfies predicate `p` and collecting the results.
      *
-     *  @usecase def map[B](f: A => B): $Coll[B]
+     *  @usecase def map[B](f: A => B, @local mct: MaybeCanThrow = mct): $Coll[B]
      *    @inheritdoc
      *
      *    @return       a new $coll resulting from applying the given function
      *                  `f` to each element of the outer $coll that satisfies
      *                  predicate `p` and collecting the results.
      */
-    def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+    def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
       val b = bf(repr)
       for (x <- self)
         if (p(x)) b += f(x)
@@ -748,7 +748,7 @@ trait TraversableLike[+A, +Repr] extends Any
      *                of the outer $coll that satisfies predicate `p` and
      *                concatenating the results.
      *
-     *  @usecase def flatMap[B](f: A => TraversableOnce[B]): $Coll[B]
+     *  @usecase def flatMap[B](f: A => TraversableOnce[B], @local mct: MaybeCanThrow = mct): $Coll[B]
      *    @inheritdoc
      *
      *    The type of the resulting collection will be guided by the static type
@@ -759,7 +759,7 @@ trait TraversableLike[+A, +Repr] extends Any
      *                  outer $coll that satisfies predicate `p` and concatenating
      *                  the results.
      */
-    def flatMap[B, That](@plocal f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+    def flatMap[B, That](@plocal f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
       val b = bf(repr)
       for (x <- self)
         if (p(x)) b ++= f(x).seq

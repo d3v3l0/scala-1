@@ -103,7 +103,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return       A fresh immutable map with the binding from `key` to
    *                `value` added to this map.
    */
-  override def updated[B1 >: B](key: A, value: B1): Map[A, B1] = this + ((key, value))
+  override def updated[B1 >: B](key: A, value: B1, @local mct: MaybeCanThrow = mct): Map[A, B1] = this + ((key, value))
 
   /** Creates a new map containing a new key/value mapping and all the key/value mappings
    *  of this map.

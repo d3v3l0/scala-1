@@ -127,7 +127,7 @@ extends scala.collection.mutable.AbstractBuffer[T]
     var node: Unrolled[T] = headptr
     scan()
 
-    private def scan() {
+    private def scan(@local mct: MaybeCanThrow = mct) {
       pos += 1
       while (pos >= node.size) {
         pos = 0

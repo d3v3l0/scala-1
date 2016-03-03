@@ -231,17 +231,17 @@ trait TraversableViewLike[+A,
 //         else super.++[B, That](that)(bf)
   }
 
-  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[This, B, That]): That = {
+  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That = {
     newMapped(f).asInstanceOf[That]
 //    val b = bf(repr)
 //          if (b.isInstanceOf[NoBuilder[_]]) newMapped(f).asInstanceOf[That]
 //    else super.map[B, That](f)(bf)
   }
 
-  override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That =
     filter(pf.isDefinedAt).map(pf)(bf)
 
-  override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[This, B, That]): That = {
+  override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That = {
     newFlatMapped(f).asInstanceOf[That]
 // was:    val b = bf(repr)
 //     if (b.isInstanceOf[NoBuilder[_]]) newFlatMapped(f).asInstanceOf[That]
@@ -268,15 +268,15 @@ trait TraversableViewLike[+A,
 
   override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
   override def withFilter(@local p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
-  override def partition(@plocal p: A => Boolean): (This, This) = (newFiltered(p), newFiltered(!p(_)))
+  override def partition(@plocal p: A => Boolean): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (newFiltered(p), newFiltered(!p(_)))
   override def init: This = newSliced(SliceInterval(0, size - 1)) // !!! can't call size here.
-  override def drop(n: Int): This = newDropped(n)
-  override def take(n: Int): This = newTaken(n)
-  override def slice(from: Int, until: Int): This = newSliced(SliceInterval(from, until))
-  override def dropWhile(@plocal p: A => Boolean): This = newDroppedWhile(p)
-  override def takeWhile(@plocal p: A => Boolean): This = newTakenWhile(p)
-  override def span(@plocal p: A => Boolean): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
-  override def splitAt(n: Int): (This, This) = (newTaken(n), newDropped(n))
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newDropped(n)
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newTaken(n)
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(from, until))
+  override def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newDroppedWhile(p)
+  override def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newTakenWhile(p)
+  override def span(@plocal p: A => Boolean): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (newTakenWhile(p), newDroppedWhile(p))
+  override def splitAt(n: Int): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (newTaken(n), newDropped(n))
 
   override def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[This, B, That]): That =
     newForced(thisSeq.scanLeft(z)(op)).asInstanceOf[That]
@@ -285,7 +285,7 @@ trait TraversableViewLike[+A,
   override def scanRight[B, That](z: B)(op: (A, B) => B)(implicit bf: CanBuildFrom[This, B, That]): That =
     newForced(thisSeq.scanRight(z)(op)).asInstanceOf[That]
 
-  override def groupBy[K](f: A => K): immutable.Map[K, This] =
+  override def groupBy[K](f: A => K)(implicit @local mct: MaybeCanThrow = mct): immutable.Map[K, This] =
     thisSeq groupBy f mapValues (xs => newForced(xs))
 
   override def unzip[A1, A2](implicit asPair: A => (A1, A2)) =
@@ -294,7 +294,7 @@ trait TraversableViewLike[+A,
   override def unzip3[A1, A2, A3](implicit asTriple: A => (A1, A2, A3)) =
     (newMapped(x => asTriple(x)._1), newMapped(x => asTriple(x)._2), newMapped(x => asTriple(x)._3))  // TODO - Performance improvements.
 
-  override def filterNot(@local p: (A) => Boolean): This =
+  override def filterNot(@local p: (A) => Boolean)(implicit @local mct: MaybeCanThrow = mct): This =
     newFiltered(a => !(p(a)))
 
   override def inits: Iterator[This] =

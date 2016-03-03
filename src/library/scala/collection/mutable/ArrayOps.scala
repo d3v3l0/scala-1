@@ -41,7 +41,7 @@ trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParalleliza
   private def elementClass: Class[_] =
     arrayElementClass(repr.getClass)
 
-  override def copyToArray[U >: T](xs: Array[U], start: Int, len: Int) {
+  override def copyToArray[U >: T](xs: Array[U], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) {
     var l = math.min(len, repr.length)
     if (xs.length - start < l) l = xs.length - start max 0
     Array.copy(repr, 0, xs, start, l)

@@ -49,7 +49,7 @@ self =>
    *  @param    value the value
    *  @return   A new map with the new binding added to this map
    */
-  override def updated[B1 >: B](key: A, value: B1): SortedMap[A, B1] = this+((key, value))
+  override def updated[B1 >: B](key: A, value: B1, @local mct: MaybeCanThrow = mct): SortedMap[A, B1] = this+((key, value))
 
   /** Add a key/value pair to this map.
    *  @param    kv the key/value pair

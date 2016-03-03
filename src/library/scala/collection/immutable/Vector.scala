@@ -138,7 +138,7 @@ override def companion: GenericCompanion[Vector] = Vector
 
   // SeqLike api
 
-  override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That]): That =
+  override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That], @local mct: MaybeCanThrow = mct): That =
     if (isDefaultCBF[A, B, That](bf))
       updateAt(index, elem).asInstanceOf[That] // ignore bf--it will just give a Vector, and slowly
     else super.updated(index, elem)(bf)
@@ -153,7 +153,7 @@ override def companion: GenericCompanion[Vector] = Vector
       appendBack(elem).asInstanceOf[That] // ignore bf--it will just give a Vector, and slowly
     else super.:+(elem)(bf)
 
-  override def take(n: Int): Vector[A] = {
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Vector[A] = {
     if (n <= 0)
       Vector.empty
     else if (startIndex + n < endIndex)
@@ -162,7 +162,7 @@ override def companion: GenericCompanion[Vector] = Vector
       this
   }
 
-  override def drop(n: Int): Vector[A] = {
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Vector[A] = {
     if (n <= 0)
       this
     else if (startIndex + n < endIndex)
@@ -209,10 +209,10 @@ override def companion: GenericCompanion[Vector] = Vector
     dropRight(1)
   }
 
-  override /*IterableLike*/ def slice(from: Int, until: Int): Vector[A] =
+  override /*IterableLike*/ def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Vector[A] =
     take(until).drop(from)
 
-  override /*IterableLike*/ def splitAt(n: Int): (Vector[A], Vector[A]) = (take(n), drop(n))
+  override /*IterableLike*/ def splitAt(n: Int): (Vector[A], Vector[A])(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
 
 
   // concat (suboptimal but avoids worst performance gotchas)

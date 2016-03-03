@@ -126,20 +126,20 @@ trait IterableViewLike[+A,
   // are run/bug2876 and run/viewtest.
   protected override def newTaken(n: Int): Transformed[A] = newSliced(SliceInterval(0, n))
   protected override def newDropped(n: Int): Transformed[A] = newSliced(SliceInterval(n, Int.MaxValue))
-  override def drop(n: Int): This = newDropped(n)
-  override def take(n: Int): This = newTaken(n)
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newDropped(n)
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newTaken(n)
 
-  override def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[This, (A1, B), That]): That = {
+  override def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[This, (A1, B), That], @local mct: MaybeCanThrow = mct): That = {
     newZipped(that).asInstanceOf[That]
 // was:    val b = bf(repr)
 //    if (b.isInstanceOf[NoBuilder[_]]) newZipped(that).asInstanceOf[That]
 //    else super.zip[A1, B, That](that)(bf)
   }
 
-  override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[This, (A1, Int), That]): That =
+  override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[This, (A1, Int), That], @local mct: MaybeCanThrow = mct): That =
     zip[A1, Int, That](Stream from 0)(bf)
 
-  override def zipAll[B, A1 >: A, That](that: GenIterable[B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[This, (A1, B), That]): That =
+  override def zipAll[B, A1 >: A, That](that: GenIterable[B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[This, (A1, B), That], @local mct: MaybeCanThrow = mct): That =
     newZippedAll(that, thisElem, thatElem).asInstanceOf[That]
 
   override def grouped(size: Int): Iterator[This] =

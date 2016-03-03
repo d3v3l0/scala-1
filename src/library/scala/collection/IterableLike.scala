@@ -74,11 +74,11 @@ self =>
   def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct): Unit =
     iterator.foreach(f)
 
-  override /*TraversableLike*/ def forall(@plocal p: A => Boolean): Boolean =
+  override /*TraversableLike*/ def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean =
     iterator.forall(p)
-  override /*TraversableLike*/ def exists(@plocal p: A => Boolean): Boolean =
+  override /*TraversableLike*/ def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean =
     iterator.exists(p)
-  override /*TraversableLike*/ def find(@plocal p: A => Boolean): Option[A] =
+  override /*TraversableLike*/ def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A] =
     iterator.find(p)
   override /*TraversableLike*/ def isEmpty: Boolean =
     !iterator.hasNext
@@ -109,7 +109,7 @@ self =>
   override /*TraversableLike*/ def head: A =
     iterator.next()
 
-  override /*TraversableLike*/ def slice(from: Int, until: Int): Repr = {
+  override /*TraversableLike*/ def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val lo = math.max(from, 0)
     val elems = until - lo
     val b = newBuilder
@@ -126,7 +126,7 @@ self =>
     }
   }
 
-  override /*TraversableLike*/ def take(n: Int): Repr = {
+  override /*TraversableLike*/ def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val b = newBuilder
 
     if (n <= 0) b.result()
@@ -142,7 +142,7 @@ self =>
     }
   }
 
-  override /*TraversableLike*/ def drop(n: Int): Repr = {
+  override /*TraversableLike*/ def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val b = newBuilder
     val lo = math.max(0, n)
     b.sizeHint(this, -lo)
@@ -155,7 +155,7 @@ self =>
     (b ++= it).result()
   }
 
-  override /*TraversableLike*/ def takeWhile(@plocal p: A => Boolean): Repr = {
+  override /*TraversableLike*/ def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val b = newBuilder
     val it = iterator
     while (it.hasNext) {
@@ -249,7 +249,7 @@ self =>
     b.result()
   }
 
-  override /*TraversableLike*/ def copyToArray[B >: A](xs: Array[B], start: Int, len: Int) {
+  override /*TraversableLike*/ def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) {
     var i = start
     val end = (start + len) min xs.length
     val it = iterator
@@ -259,7 +259,7 @@ self =>
     }
   }
 
-  def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = {
+  def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Repr, (A1, B), That], @local mct: MaybeCanThrow = mct): That = {
     val b = bf(repr)
     val these = this.iterator
     val those = that.iterator
@@ -268,7 +268,7 @@ self =>
     b.result()
   }
 
-  def zipAll[B, A1 >: A, That](that: GenIterable[B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = {
+  def zipAll[B, A1 >: A, That](that: GenIterable[B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Repr, (A1, B), That], @local mct: MaybeCanThrow = mct): That = {
     val b = bf(repr)
     val these = this.iterator
     val those = that.iterator
@@ -281,7 +281,7 @@ self =>
     b.result()
   }
 
-  def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Repr, (A1, Int), That]): That = {
+  def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Repr, (A1, Int), That], @local mct: MaybeCanThrow = mct): That = {
     val b = bf(repr)
     var i = 0
     for (x <- this) {
@@ -291,7 +291,7 @@ self =>
     b.result()
   }
 
-  def sameElements[B >: A](that: GenIterable[B]): Boolean = {
+  def sameElements[B >: A](that: GenIterable[B])(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     val these = this.iterator
     val those = that.iterator
     while (these.hasNext && those.hasNext)

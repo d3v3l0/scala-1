@@ -85,7 +85,7 @@ extends AbstractSeq[A]
    *  @param  start starting index.
    *  @param  len number of elements to copy
    */
-  override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int) {
+  override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) {
     val len1 = len min (xs.length - start) min length
     Array.copy(array, 0, xs, start, len1)
   }

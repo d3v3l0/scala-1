@@ -85,7 +85,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the length of the longest segment of this $coll starting from index `from`
    *           such that every element of the segment satisfies the predicate `p`.
    */
-  def segmentLength(@plocal p: A => Boolean, from: Int): Int
+  def segmentLength(@plocal p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int
 
   /** Returns the length of the longest prefix whose elements all satisfy some predicate.
    *
@@ -106,7 +106,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the index `>= from` of the first element of this $coll that satisfies the predicate `p`,
    *           or `-1`, if none exists.
    */
-  def indexWhere(p: A => Boolean, from: Int): Int
+  def indexWhere(p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int
 
   /** Finds index of first element satisfying some predicate.
    *
@@ -116,7 +116,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the index of the first element of this $coll that satisfies the predicate `p`,
    *           or `-1`, if none exists.
    */
-  def indexWhere(p: A => Boolean): Int = indexWhere(p, 0)
+  def indexWhere(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = indexWhere(p, 0)
 
   /** Finds index of first occurrence of some value in this $coll.
    *
@@ -185,7 +185,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the index of the last element of this $coll that satisfies the predicate `p`,
    *           or `-1`, if none exists.
    */
-  def lastIndexWhere(p: A => Boolean): Int = lastIndexWhere(p, length - 1)
+  def lastIndexWhere(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = lastIndexWhere(p, length - 1)
 
   /** Finds index of last element satisfying some predicate before or at given end index.
    *
@@ -193,7 +193,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the index `<= end` of the last element of this $coll that satisfies the predicate `p`,
    *           or `-1`, if none exists.
    */
-  def lastIndexWhere(p: A => Boolean, end: Int): Int
+  def lastIndexWhere(p: A => Boolean, end: Int)(implicit @local mct: MaybeCanThrow = mct): Int
 
   /** Returns new $coll with elements in reversed order.
    *
@@ -214,7 +214,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return       a new collection of type `That` resulting from applying the given function
    *                `f` to each element of this $coll and collecting the results in reversed order.
    *
-   *  @usecase def reverseMap[B](f: A => B): $Coll[B]
+   *  @usecase def reverseMap[B](f: A => B, @local mct: MaybeCanThrow = mct): $Coll[B]
    *    @inheritdoc
    *
    *    $willNotTerminateInf
@@ -224,14 +224,14 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    @return       a new $coll resulting from applying the given function
    *                  `f` to each element of this $coll and collecting the results in reversed order.
    */
-  def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
 
   /** Tests whether this $coll starts with the given sequence.
    *
    * @param  that    the sequence to test
    * @return `true` if this collection has `that` as a prefix, `false` otherwise.
    */
-  def startsWith[B](that: GenSeq[B]): Boolean = startsWith(that, 0)
+  def startsWith[B](that: GenSeq[B])(implicit @local mct: MaybeCanThrow = mct): Boolean = startsWith(that, 0)
 
   /** Tests whether this $coll contains the given sequence at a given index.
    *
@@ -243,14 +243,14 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    * @return `true` if the sequence `that` is contained in this $coll at
    *         index `offset`, otherwise `false`.
    */
-  def startsWith[B](that: GenSeq[B], offset: Int): Boolean
+  def startsWith[B](that: GenSeq[B], offset: Int)(implicit @local mct: MaybeCanThrow = mct): Boolean
 
   /** Tests whether this $coll ends with the given sequence.
    *  $willNotTerminateInf
    *  @param  that    the sequence to test
    *  @return `true` if this $coll has `that` as a suffix, `false` otherwise.
    */
-  def endsWith[B](that: GenSeq[B]): Boolean
+  def endsWith[B](that: GenSeq[B])(implicit @local mct: MaybeCanThrow = mct): Boolean
 
   /** Produces a new $coll where a slice of elements in this $coll is replaced by another sequence.
    *
@@ -264,14 +264,14 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *                   except that `replaced` elements starting from `from` are replaced
    *                   by `patch`.
    *
-   *  @usecase def patch(from: Int, that: GenSeq[A], replaced: Int): $Coll[A]
+   *  @usecase def patch(from: Int, that: GenSeq[A], replaced: Int, @local mct: MaybeCanThrow = mct): $Coll[A]
    *    @inheritdoc
    *
    *    @return          a new $coll consisting of all elements of this $coll
    *                     except that `replaced` elements starting from `from` are replaced
    *                     by `patch`.
    */
-  def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
 
   /** A copy of this $coll with one single replaced element.
    *  @param  index  the position of the replacement
@@ -282,12 +282,12 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return a new $coll` which is a copy of this $coll with the element at position `index` replaced by `elem`.
    *  @throws IndexOutOfBoundsException if `index` does not satisfy `0 <= index < length`.
    *
-   *  @usecase def updated(index: Int, elem: A): $Coll[A]
+   *  @usecase def updated(index: Int, elem: A, @local mct: MaybeCanThrow = mct): $Coll[A]
    *    @inheritdoc
    *
    *    @return a copy of this $coll with the element at position `index` replaced by `elem`.
    */
-  def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
 
   /** A copy of the $coll with an element prepended.
    *
@@ -366,14 +366,14 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return a new collection of type `That` consisting of
    *          all elements of this $coll followed by the minimal number of occurrences of `elem` so
    *          that the resulting collection has a length of at least `len`.
-   *  @usecase def padTo(len: Int, elem: A): $Coll[A]
+   *  @usecase def padTo(len: Int, elem: A, @local mct: MaybeCanThrow = mct): $Coll[A]
    *    @inheritdoc
    *
    *    @return a new $coll consisting of
    *            all elements of this $coll followed by the minimal number of occurrences of `elem` so
    *            that the resulting $coll has a length of at least `len`.
    */
-  def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
 
   /** Tests whether every element of this $coll relates to the
    *  corresponding element of another sequence by satisfying a test predicate.
@@ -385,7 +385,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *                  `p(x, y)` is `true` for all corresponding elements `x` of this $coll
    *                  and `y` of `that`, otherwise `false`.
    */
-  def corresponds[B](that: GenSeq[B])(p: (A, B) => Boolean): Boolean
+  def corresponds[B](that: GenSeq[B])(p: (A, B) => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean
 
   def toSeq: GenSeq[A]
 

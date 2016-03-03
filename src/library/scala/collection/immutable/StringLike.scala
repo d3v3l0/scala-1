@@ -55,7 +55,7 @@ self =>
 
   override def mkString = toString
 
-  override def slice(from: Int, until: Int): Repr = {
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val start = from max 0
     val end   = until min length
 

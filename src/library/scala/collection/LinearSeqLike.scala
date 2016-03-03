@@ -65,7 +65,7 @@ trait LinearSeqLike[+A, +Repr <: LinearSeqLike[A, Repr]] extends SeqLike[A, Repr
     }
   }
 
-  @tailrec override final def corresponds[B](that: GenSeq[B])(p: (A,B) => Boolean): Boolean = {
+  @tailrec override final def corresponds[B](that: GenSeq[B])(p: (A,B) => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     if (this.isEmpty) that.isEmpty
     else that.nonEmpty && p(head, that.head) && (tail corresponds that.tail)(p)
   }

@@ -205,7 +205,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
 
   override def toList: List[A] = this
 
-  override def take(n: Int): List[A] = if (isEmpty || n <= 0) Nil else {
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): List[A] = if (isEmpty || n <= 0) Nil else {
     val h = new ::(head, Nil)
     var t = h
     var rest = tail
@@ -220,7 +220,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     h
   }
 
-  override def drop(n: Int): List[A] = {
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): List[A] = {
     var these = this
     var count = n
     while (!these.isEmpty && count > 0) {
@@ -240,7 +240,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
    *  letters.slice(1,3) // Returns List('b','c')
    *  }}}
    */
-  override def slice(from: Int, until: Int): List[A] = {
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): List[A] = {
     val lo = scala.math.max(from, 0)
     if (until <= lo || isEmpty) Nil
     else this drop lo take (until - lo)
@@ -257,7 +257,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
 
   // dropRight is inherited from LinearSeq
 
-  override def splitAt(n: Int): (List[A], List[A]) = {
+  override def splitAt(n: Int): (List[A], List[A])(implicit @local mct: MaybeCanThrow = mct) = {
     val b = new ListBuffer[A]
     var i = 0
     var these = this
@@ -270,7 +270,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
   }
 
   @noinline // TODO - fix optimizer bug that requires noinline (see SI-8334)
-  final override def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[List[A], B, That], @local mct: MaybeCanThrow = mct): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         val h = new ::[B](f(head), Nil)
@@ -289,7 +289,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
   }
 
   @noinline // TODO - fix optimizer bug that requires noinline for map; applied here to be safe (see SI-8334)
-  final override def collect[B, That](@plocal pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def collect[B, That](@plocal pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[List[A], B, That], @local mct: MaybeCanThrow = mct): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         var rest = this
@@ -319,7 +319,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
   }
 
   @noinline // TODO - fix optimizer bug that requires noinline for map; applied here to be safe (see SI-8334)
-  final override def flatMap[B, That](@plocal f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[List[A], B, That]): That = {
+  final override def flatMap[B, That](@plocal f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[List[A], B, That], @local mct: MaybeCanThrow = mct): That = {
     if (bf eq List.ReusableCBF) {
       if (this eq Nil) Nil.asInstanceOf[That] else {
         var rest = this
@@ -347,7 +347,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     else super.flatMap(f)
   }
 
-  @inline final override def takeWhile(@plocal p: A => Boolean): List[A] = {
+  @inline final override def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): List[A] = {
     val b = new ListBuffer[A]
     var these = this
     while (!these.isEmpty && p(these.head)) {
@@ -357,7 +357,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     b.toList
   }
 
-  @inline final override def dropWhile(@plocal p: A => Boolean): List[A] = {
+  @inline final override def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): List[A] = {
     @tailrec @plocal
     def loop(xs: List[A]): List[A] =
       if (xs.isEmpty || !p(xs.head)) xs
@@ -366,7 +366,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     loop(this)
   }
 
-  @inline final override def span(@plocal p: A => Boolean): (List[A], List[A]) = {
+  @inline final override def span(@plocal p: A => Boolean): (List[A], List[A])(implicit @local mct: MaybeCanThrow = mct) = {
     val b = new ListBuffer[A]
     var these = this
     while (!these.isEmpty && p(these.head)) {

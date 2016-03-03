@@ -137,7 +137,7 @@ trait LinkedListLike[A, This <: Seq[A] with LinkedListLike[A, This]] extends Seq
     }
   }
 
-  override def drop(n: Int): This = {
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = {
     var i = 0
     var these: This = repr
     while (i < n && !these.isEmpty) {

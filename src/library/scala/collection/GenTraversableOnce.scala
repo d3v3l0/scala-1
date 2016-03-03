@@ -96,7 +96,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @throws UnsupportedOperationException
    *  if this $coll is empty.
    */
-  def reduce[A1 >: A](@plocal op: (A1, A1) => A1): A1
+  def reduce[A1 >: A](@plocal op: (A1, A1) => A1)(implicit @local mct: MaybeCanThrow = mct): A1
 
   /** Reduces the elements of this $coll, if any, using the specified
    *  associative binary operator.
@@ -108,7 +108,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @return        An option value containing result of applying reduce operator `op` between all
    *                 the elements if the collection is nonempty, and `None` otherwise.
    */
-  def reduceOption[A1 >: A](@plocal op: (A1, A1) => A1): Option[A1]
+  def reduceOption[A1 >: A](@plocal op: (A1, A1) => A1)(implicit @local mct: MaybeCanThrow = mct): Option[A1]
 
   /** Folds the elements of this $coll using the specified associative
    *  binary operator.
@@ -122,7 +122,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @param op      a binary operator that must be associative
    *  @return        the result of applying fold operator `op` between all the elements and `z`
    */
-  def fold[A1 >: A](z: A1)(@plocal op: (A1, A1) => A1): A1
+  def fold[A1 >: A](z: A1)(@plocal op: (A1, A1) => A1)(implicit @local mct: MaybeCanThrow = mct): A1
 
   /** Applies a binary operator to a start value and all elements of this $coll,
    *  going left to right.
@@ -258,7 +258,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @param seqop     an operator used to accumulate results within a partition
    *  @param combop    an associative operator used to combine results from different partitions
    */
-  def aggregate[B](z: =>B)(@plocal seqop: (B, A) => B, @plocal combop: (B, B) => B): B
+  def aggregate[B](z: =>B)(@plocal seqop: (B, A) => B, @plocal combop: (B, B) => B)(implicit @local mct: MaybeCanThrow = mct): B
 
   /** Applies a binary operator to all elements of this $coll, going right to left.
    *  $willNotTerminateInf
@@ -304,7 +304,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @param p     the predicate  used to test elements.
    *  @return      the number of elements satisfying the predicate `p`.
    */
-  def count(p: A => Boolean): Int
+  def count(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int
 
   /** Sums up the elements of this collection.
    *
@@ -322,7 +322,7 @@ trait GenTraversableOnce[+A] extends Any {
    *     Examples of such types are: `Long`, `Float`, `Double`, `BigInt`.
    *
    */
-  def sum[A1 >: A](implicit num: Numeric[A1]): A1
+  def sum[A1 >: A](implicit num: Numeric[A1], @local mct: MaybeCanThrow = mct): A1
 
   /** Multiplies up the elements of this collection.
    *
@@ -339,7 +339,7 @@ trait GenTraversableOnce[+A] extends Any {
    *     can be used as element type of the $coll and as result type of `product`.
    *     Examples of such types are: `Long`, `Float`, `Double`, `BigInt`.
    */
-  def product[A1 >: A](implicit num: Numeric[A1]): A1
+  def product[A1 >: A](implicit num: Numeric[A1], @local mct: MaybeCanThrow = mct): A1
 
   /** Finds the smallest element.
    *
@@ -352,7 +352,7 @@ trait GenTraversableOnce[+A] extends Any {
    *
    *    @return   the smallest element of this $coll
    */
-  def min[A1 >: A](implicit ord: Ordering[A1]): A
+  def min[A1 >: A](implicit ord: Ordering[A1], @local mct: MaybeCanThrow = mct): A
 
   /** Finds the largest element.
    *
@@ -365,7 +365,7 @@ trait GenTraversableOnce[+A] extends Any {
    *
    *    @return   the largest element of this $coll.
    */
-  def max[A1 >: A](implicit ord: Ordering[A1]): A
+  def max[A1 >: A](implicit ord: Ordering[A1], @local mct: MaybeCanThrow = mct): A
 
   /** Finds the first element which yields the largest value measured by function f.
    *
@@ -375,12 +375,12 @@ trait GenTraversableOnce[+A] extends Any {
    *  @return   the first element of this $coll with the largest value measured by function f
    *  with respect to the ordering `cmp`.
    *
-   *  @usecase def maxBy[B](f: A => B): A
+   *  @usecase def maxBy[B](f: A => B, @local mct: MaybeCanThrow = mct): A
    *    @inheritdoc
    *
    *    @return   the first element of this $coll with the largest value measured by function f.
    */
-  def maxBy[B](@plocal f: A => B)(implicit cmp: Ordering[B]): A
+  def maxBy[B](@plocal f: A => B)(implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A
 
   /** Finds the first element which yields the smallest value measured by function f.
    *
@@ -390,16 +390,16 @@ trait GenTraversableOnce[+A] extends Any {
    *  @return   the first element of this $coll with the smallest value measured by function f
    *  with respect to the ordering `cmp`.
    *
-   *  @usecase def minBy[B](f: A => B): A
+   *  @usecase def minBy[B](f: A => B, @local mct: MaybeCanThrow = mct): A
    *    @inheritdoc
    *
    *    @return   the first element of this $coll with the smallest value measured by function f.
    */
-  def minBy[B](@plocal f: A => B)(implicit cmp: Ordering[B]): A
+  def minBy[B](@plocal f: A => B)(implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A
 
-  def forall(@plocal pred: A => Boolean): Boolean
+  def forall(@plocal pred: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean
 
-  def exists(pred: A => Boolean): Boolean
+  def exists(pred: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean
 
   /** Finds the first element of the $coll satisfying a predicate, if any.
    *
@@ -410,7 +410,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  @return        an option value containing the first element in the $coll
    *                 that satisfies `p`, or `None` if none exists.
    */
-  def find(@plocal pred: A => Boolean): Option[A]
+  def find(@plocal pred: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A]
 
   /** Copies values of this $coll to an array.
    *  Fills the given array `xs` with values of this $coll.
@@ -420,12 +420,12 @@ trait GenTraversableOnce[+A] extends Any {
    *  @param  xs     the array to fill.
    *  @tparam B      the type of the elements of the array.
    *
-   *  @usecase def copyToArray(xs: Array[A]): Unit
+   *  @usecase def copyToArray(xs: Array[A])(implicit @local mct: MaybeCanThrow = mct): Unit
    *    @inheritdoc
    *
    *    $willNotTerminateInf
    */
-  def copyToArray[B >: A](xs: Array[B]): Unit
+  def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow = mct): Unit
 
   /** Copies values of this $coll to an array.
    *  Fills the given array `xs` with values of this $coll, beginning at index `start`.
@@ -436,14 +436,14 @@ trait GenTraversableOnce[+A] extends Any {
    *  @param  start  the starting index.
    *  @tparam B      the type of the elements of the array.
    *
-   *  @usecase def copyToArray(xs: Array[A], start: Int): Unit
+   *  @usecase def copyToArray(xs: Array[A], start: Int)(implicit @local mct: MaybeCanThrow = mct): Unit
    *    @inheritdoc
    *
    *    $willNotTerminateInf
    */
-  def copyToArray[B >: A](xs: Array[B], start: Int): Unit
+  def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow = mct): Unit
 
-  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int): Unit
+  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct): Unit
 
   /** Displays all elements of this $coll in a string using start, end, and
    *  separator strings.
@@ -572,7 +572,7 @@ trait GenTraversableOnce[+A] extends Any {
    *    @return    a map of type `immutable.Map[T, U]`
    *               containing all key/value pairs of type `(T, U)` of this $coll.
    */
-  def toMap[K, V](implicit ev: A <:< (K, V)): GenMap[K, V]
+  def toMap[K, V](implicit ev: A <:< (K, V), @local mct: MaybeCanThrow = mct): GenMap[K, V]
 
   /** Converts this $coll to a Vector.
    *  $willNotTerminateInf
@@ -589,5 +589,5 @@ trait GenTraversableOnce[+A] extends Any {
    *    $willNotTerminateInf
    *    @return a new collection containing all elements of this $coll.
    */
-  def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]]): Col[A @uV]
+  def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]], @local mct: MaybeCanThrow = mct): Col[A @uV]
 }

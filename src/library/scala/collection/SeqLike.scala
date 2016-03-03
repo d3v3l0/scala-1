@@ -108,7 +108,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
    */
   override def size = length
 
-  def segmentLength(@plocal p: A => Boolean, from: Int): Int = {
+  def segmentLength(@plocal p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = 0
     val it = iterator.drop(from)
     while (it.hasNext && p(it.next()))
@@ -116,7 +116,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     i
   }
 
-  def indexWhere(p: A => Boolean, from: Int): Int = {
+  def indexWhere(p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = from
     val it = iterator.drop(from)
     while (it.hasNext) {
@@ -127,7 +127,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     -1
   }
 
-  def lastIndexWhere(p: A => Boolean, end: Int): Int = {
+  def lastIndexWhere(p: A => Boolean, end: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = length - 1
     val it = reverseIterator
     while (it.hasNext && { val elem = it.next(); (i > end || !p(elem)) }) i -= 1
@@ -200,7 +200,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
       elms(j) = tmpE
     }
 
-    private[this] def init() = {
+    private[this] def init()(implicit @local mct: MaybeCanThrow = mct) = {
       val m = mutable.HashMap[A, Int]()
       val (es, is) = (thisCollection map (e => (e, m.getOrElseUpdate(e, m.size))) sortBy (_._2)).unzip
 
@@ -253,7 +253,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
      *
      *  @return     (newSeq,cnts,nums)
      */
-    private def init(): (IndexedSeq[A], Array[Int], Array[Int]) = {
+    private def init(): (IndexedSeq[A], Array[Int], Array[Int])(implicit @local mct: MaybeCanThrow = mct) = {
       val m = mutable.HashMap[A, Int]()
 
       // e => (e, weight(e))
@@ -282,7 +282,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     b.result()
   }
 
-  def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     var xs: List[A] = List()
     for (x <- this)
       xs = x :: xs
@@ -303,7 +303,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
    */
   def reverseIterator: Iterator[A] = toCollection(reverse).iterator
 
-  def startsWith[B](that: GenSeq[B], offset: Int): Boolean = {
+  def startsWith[B](that: GenSeq[B], offset: Int)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     val i = this.iterator drop offset
     val j = that.iterator
     while (j.hasNext && i.hasNext)
@@ -313,7 +313,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     !j.hasNext
   }
 
-  def endsWith[B](that: GenSeq[B]): Boolean = {
+  def endsWith[B](that: GenSeq[B])(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     val i = this.iterator.drop(length - that.length)
     val j = that.iterator
     while (i.hasNext && j.hasNext)
@@ -514,7 +514,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     b.result()
   }
 
-  def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     val b = bf(repr)
     var i = 0
     val it = this.iterator
@@ -532,7 +532,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     b.result()
   }
 
-  def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     if (index < 0) throw new IndexOutOfBoundsException(index.toString)
     val b = bf(repr)
     var i = 0
@@ -562,7 +562,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     b.result()
   }
 
-  def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     val b = bf(repr)
     val L = length
     b.sizeHint(math.max(L, len))
@@ -575,7 +575,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     b.result()
   }
 
-  def corresponds[B](that: GenSeq[B])(p: (A,B) => Boolean): Boolean = {
+  def corresponds[B](that: GenSeq[B])(p: (A,B) => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     val i = this.iterator
     val j = that.iterator
     while (i.hasNext && j.hasNext)

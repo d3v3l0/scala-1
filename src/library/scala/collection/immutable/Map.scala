@@ -38,7 +38,7 @@ trait Map[A, +B] extends Iterable[(A, B)]
    *  A new map will not be built; lazy collections will stay lazy.
    */
   @deprecatedOverriding("Immutable maps should do nothing on toMap except return themselves cast as a map.",  "2.11.0")
-  override def toMap[T, U](implicit ev: (A, B) <:< (T, U)): immutable.Map[T, U] =
+  override def toMap[T, U](implicit ev: (A, B) <:< (T, U), @local mct: MaybeCanThrow = mct): immutable.Map[T, U] =
     self.asInstanceOf[immutable.Map[T, U]]
 
   override def seq: Map[A, B] = this
@@ -85,7 +85,7 @@ object Map extends ImmutableMapFactory[Map] {
 
   class WithDefault[A, +B](underlying: Map[A, B], d: A => B) extends scala.collection.Map.WithDefault[A, B](underlying, d) with Map[A, B] {
     override def empty = new WithDefault(underlying.empty, d)
-    override def updated[B1 >: B](key: A, value: B1): WithDefault[A, B1] = new WithDefault[A, B1](underlying.updated[B1](key, value), d)
+    override def updated[B1 >: B](key: A, value: B1, @local mct: MaybeCanThrow = mct): WithDefault[A, B1] = new WithDefault[A, B1](underlying.updated[B1](key, value), d)
     override def + [B1 >: B](kv: (A, B1)): WithDefault[A, B1] = updated(kv._1, kv._2)
     override def - (key: A): WithDefault[A, B] = new WithDefault(underlying - key, d)
     override def withDefault[B1 >: B](d: A => B1): immutable.Map[A, B1] = new WithDefault[A, B1](underlying, d)

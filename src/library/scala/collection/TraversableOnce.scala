@@ -94,10 +94,10 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
   // Presently these are abstract because the Traversable versions use
   // breakable/break, and I wasn't sure enough of how that's supposed to
   // function to consolidate them with the Iterator versions.
-  def forall(@plocal p: A => Boolean): Boolean
-  def exists(@plocal p: A => Boolean): Boolean
-  def find(@plocal p: A => Boolean): Option[A]
-  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int): Unit
+  def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean
+  def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean
+  def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A]
+  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct): Unit
 
   // for internal use
   protected[this] def reversed = {
@@ -114,7 +114,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   def nonEmpty: Boolean = !isEmpty
 
-  def count(@plocal p: A => Boolean): Int = {
+  def count(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var cnt = 0
     for (x <- this)
       if (p(x)) cnt += 1
@@ -209,33 +209,33 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
   def reduceRightOption[B >: A](@plocal op: (A, B) => B): Option[B] =
     if (isEmpty) None else Some(reduceRight(op))
 
-  def reduce[A1 >: A](@plocal op: (A1, A1) => A1): A1 = reduceLeft(op)
+  def reduce[A1 >: A](@plocal op: (A1, A1) => A1)(implicit @local mct: MaybeCanThrow = mct): A1 = reduceLeft(op)
 
-  def reduceOption[A1 >: A](@plocal op: (A1, A1) => A1): Option[A1] = reduceLeftOption(op)
+  def reduceOption[A1 >: A](@plocal op: (A1, A1) => A1)(implicit @local mct: MaybeCanThrow = mct): Option[A1] = reduceLeftOption(op)
 
-  def fold[A1 >: A](z: A1)(@plocal op: (A1, A1) => A1): A1 = foldLeft(z)(op)
+  def fold[A1 >: A](z: A1)(@plocal op: (A1, A1) => A1)(implicit @local mct: MaybeCanThrow = mct): A1 = foldLeft(z)(op)
 
-  def aggregate[B](z: =>B)(@plocal seqop: (B, A) => B, combop: (B, B) => B): B = foldLeft(z)(seqop)
+  def aggregate[B](z: =>B)(@plocal seqop: (B, A) => B, combop: (B, B) => B)(implicit @local mct: MaybeCanThrow = mct): B = foldLeft(z)(seqop)
 
-  def sum[B >: A](implicit num: Numeric[B]): B = foldLeft(num.zero)(num.plus)
+  def sum[B >: A](implicit num: Numeric[B], @local mct: MaybeCanThrow = mct): B = foldLeft(num.zero)(num.plus)
 
-  def product[B >: A](implicit num: Numeric[B]): B = foldLeft(num.one)(num.times)
+  def product[B >: A](implicit num: Numeric[B], @local mct: MaybeCanThrow = mct): B = foldLeft(num.one)(num.times)
 
-  def min[B >: A](implicit cmp: Ordering[B]): A = {
+  def min[B >: A](implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A = {
     if (isEmpty)
       throw new UnsupportedOperationException("empty.min")
 
     reduceLeft((x, y) => if (cmp.lteq(x, y)) x else y)
   }
 
-  def max[B >: A](implicit cmp: Ordering[B]): A = {
+  def max[B >: A](implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A = {
     if (isEmpty)
       throw new UnsupportedOperationException("empty.max")
 
     reduceLeft((x, y) => if (cmp.gteq(x, y)) x else y)
   }
 
-  def maxBy[B](@plocal f: A => B)(implicit cmp: Ordering[B]): A = {
+  def maxBy[B](@plocal f: A => B)(implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A = {
     if (isEmpty)
       throw new UnsupportedOperationException("empty.maxBy")
 
@@ -253,7 +253,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
     }
     maxElem
   }
-  def minBy[B](@plocal f: A => B)(implicit cmp: Ordering[B]): A = {
+  def minBy[B](@plocal f: A => B)(implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A = {
     if (isEmpty)
       throw new UnsupportedOperationException("empty.minBy")
 
@@ -278,10 +278,10 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
    */
   def copyToBuffer[B >: A](dest: Buffer[B]): Unit = dest ++= seq
 
-  def copyToArray[B >: A](xs: Array[B], start: Int): Unit =
+  def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow = mct): Unit =
     copyToArray(xs, start, xs.length - start)
 
-  def copyToArray[B >: A](xs: Array[B]): Unit =
+  def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow = mct): Unit =
     copyToArray(xs, 0, xs.length)
 
   def toArray[B >: A : ClassTag]: Array[B] = {
@@ -309,13 +309,13 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   def toVector: Vector[A] = to[Vector]
 
-  def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]]): Col[A @uV] = {
+  def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]], @local mct: MaybeCanThrow = mct): Col[A @uV] = {
     val b = cbf()
     b ++= seq
     b.result()
   }
 
-  def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[T, U] = {
+  def toMap[T, U](implicit ev: A <:< (T, U), @local mct: MaybeCanThrow = mct): immutable.Map[T, U] = {
     val b = immutable.Map.newBuilder[T, U]
     for (x <- self)
       b += x
@@ -476,8 +476,8 @@ object TraversableOnce {
     type MaybeCanThrow = TraversableOnce[A]#MaybeCanThrow
     // TODO(leo) use this instead of shadowing with implicit params in methods?
     // @local implicit val mct = new MaybeCanThrow {}
-    def map[B](f: A => B): TraversableOnce[B] = trav.toIterator map f
-    def flatMap[B](f: A => GenTraversableOnce[B]): TraversableOnce[B] = trav.toIterator flatMap f
+    def map[B](f: A => B, @local mct: MaybeCanThrow = mct): TraversableOnce[B] = trav.toIterator map f
+    def flatMap[B](f: A => GenTraversableOnce[B], @local mct: MaybeCanThrow = mct): TraversableOnce[B] = trav.toIterator flatMap f
     def withFilter(p: A => Boolean)(implicit @local mct: MaybeCanThrow = trav.mct) = trav.toIterator filter p
     def filter(p: A => Boolean): TraversableOnce[A] = withFilter(p)
   }

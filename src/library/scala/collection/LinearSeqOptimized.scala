@@ -80,7 +80,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
 
 
   override /*IterableLike*/
-  def forall(@plocal p: A => Boolean): Boolean = {
+  def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     var these = this
     while (!these.isEmpty) {
       if (!p(these.head)) return false
@@ -90,7 +90,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def exists(@plocal p: A => Boolean): Boolean = {
+  def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     var these = this
     while (!these.isEmpty) {
       if (p(these.head)) return true
@@ -110,7 +110,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def find(@plocal p: A => Boolean): Option[A] = {
+  def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A] = {
     var these = this
     while (!these.isEmpty) {
       if (p(these.head)) return Some(these.head)
@@ -159,7 +159,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def take(n: Int): Repr = {
+  def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val b = newBuilder
     var i = 0
     var these = repr
@@ -172,7 +172,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*TraversableLike*/
-  def drop(n: Int): Repr = {
+  def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     var these: Repr = repr
     var count = n
     while (!these.isEmpty && count > 0) {
@@ -207,7 +207,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def slice(from: Int, until: Int): Repr = {
+  def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     var these: Repr = repr
     var count = from max 0
     if (until <= count)
@@ -228,7 +228,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def takeWhile(@plocal p: A => Boolean): Repr = {
+  def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val b = newBuilder
     var these = this
     while (!these.isEmpty && p(these.head)) {
@@ -239,7 +239,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*TraversableLike*/
-  def span(@plocal p: A => Boolean): (Repr, Repr) = {
+  def span(@plocal p: A => Boolean): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = {
     var these: Repr = repr
     val b = newBuilder
     while (!these.isEmpty && p(these.head)) {
@@ -250,7 +250,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*IterableLike*/
-  def sameElements[B >: A](that: GenIterable[B]): Boolean = that match {
+  def sameElements[B >: A](that: GenIterable[B])(implicit @local mct: MaybeCanThrow = mct): Boolean = that match {
     case that1: LinearSeq[_] =>
       // Probably immutable, so check reference identity first (it's quick anyway)
       (this eq that1) || {
@@ -284,7 +284,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   def isDefinedAt(x: Int): Boolean = x >= 0 && lengthCompare(x) > 0
 
   override /*SeqLike*/
-  def segmentLength(@plocal p: A => Boolean, from: Int): Int = {
+  def segmentLength(@plocal p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = 0
     var these = this drop from
     while (!these.isEmpty && p(these.head)) {
@@ -295,7 +295,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*SeqLike*/
-  def indexWhere(p: A => Boolean, from: Int): Int = {
+  def indexWhere(p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = from
     var these = this drop from
     while (these.nonEmpty) {
@@ -309,7 +309,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*SeqLike*/
-  def lastIndexWhere(p: A => Boolean, end: Int): Int = {
+  def lastIndexWhere(p: A => Boolean, end: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = 0
     var these = this
     var last = -1

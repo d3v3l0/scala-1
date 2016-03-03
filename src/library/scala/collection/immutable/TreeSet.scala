@@ -68,19 +68,19 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
   override def tail = new TreeSet(RB.delete(tree, firstKey))
   override def init = new TreeSet(RB.delete(tree, lastKey))
 
-  override def drop(n: Int) = {
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct) = {
     if (n <= 0) this
     else if (n >= size) empty
     else newSet(RB.drop(tree, n))
   }
 
-  override def take(n: Int) = {
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct) = {
     if (n <= 0) empty
     else if (n >= size) this
     else newSet(RB.take(tree, n))
   }
 
-  override def slice(from: Int, until: Int) = {
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct) = {
     if (until <= from) empty
     else if (from <= 0) take(until)
     else if (until >= size) drop(from)
@@ -89,7 +89,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
 
   override def dropRight(n: Int) = take(size - math.max(n, 0))
   override def takeRight(n: Int) = drop(size - math.max(n, 0))
-  override def splitAt(n: Int) = (take(n), drop(n))
+  override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
 
   private[this] def countWhile(@plocal p: A => Boolean): Int = {
     var result = 0
@@ -97,9 +97,9 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
     while (it.hasNext && p(it.next())) result += 1
     result
   }
-  override def dropWhile(@plocal p: A => Boolean) = drop(countWhile(p))
-  override def takeWhile(@plocal p: A => Boolean) = take(countWhile(p))
-  override def span(@plocal p: A => Boolean) = splitAt(countWhile(p))
+  override def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct) = drop(countWhile(p))
+  override def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct) = take(countWhile(p))
+  override def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct) = splitAt(countWhile(p))
 
   def this()(implicit ordering: Ordering[A]) = this(null)(ordering)
 
@@ -156,7 +156,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
   override def rangeImpl(from: Option[A], until: Option[A]): TreeSet[A] = newSet(RB.rangeImpl(tree, from, until))
   override def range(from: A, until: A): TreeSet[A] = newSet(RB.range(tree, from, until))
   override def from(from: A): TreeSet[A] = newSet(RB.from(tree, from))
-  override def to(to: A): TreeSet[A] = newSet(RB.to(tree, to))
+  override def to(to: A, @local mct: MaybeCanThrow = mct): TreeSet[A] = newSet(RB.to(tree, to))
   override def until(until: A): TreeSet[A] = newSet(RB.until(tree, until))
 
   override def firstKey = head

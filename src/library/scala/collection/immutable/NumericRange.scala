@@ -96,13 +96,13 @@ extends AbstractSeq[T] with IndexedSeq[T] with Serializable {
   // based on the given value.
   private def newEmptyRange(value: T) = NumericRange(value, value, step)
 
-  final override def take(n: Int): NumericRange[T] = (
+  final override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): NumericRange[T] = (
     if (n <= 0 || length == 0) newEmptyRange(start)
     else if (n >= length) this
     else new NumericRange.Inclusive(start, locationAfterN(n - 1), step)
   )
 
-  final override def drop(n: Int): NumericRange[T] = (
+  final override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): NumericRange[T] = (
     if (n <= 0 || length == 0) this
     else if (n >= length) newEmptyRange(end)
     else copy(locationAfterN(n), end, step)
@@ -115,13 +115,13 @@ extends AbstractSeq[T] with IndexedSeq[T] with Serializable {
 
   import NumericRange.defaultOrdering
 
-  override def min[T1 >: T](implicit ord: Ordering[T1]): T =
+  override def min[T1 >: T](implicit ord: Ordering[T1], @local mct: MaybeCanThrow = mct): T =
     if (ord eq defaultOrdering(num)) {
       if (num.signum(step) > 0) start
       else last
     } else super.min(ord)
 
-  override def max[T1 >: T](implicit ord: Ordering[T1]): T =
+  override def max[T1 >: T](implicit ord: Ordering[T1], @local mct: MaybeCanThrow = mct): T =
     if (ord eq defaultOrdering(num)) {
       if (num.signum(step) > 0) last
       else start
@@ -174,7 +174,7 @@ extends AbstractSeq[T] with IndexedSeq[T] with Serializable {
     try containsTyped(x.asInstanceOf[T])
     catch { case _: ClassCastException => false }
 
-  final override def sum[B >: T](implicit num: Numeric[B]): B = {
+  final override def sum[B >: T](implicit num: Numeric[B], @local mct: MaybeCanThrow = mct): B = {
     // arithmetic series formula  can be used for regular addition
     if ((num eq scala.math.Numeric.IntIsIntegral)||
         (num eq scala.math.Numeric.BigIntIsIntegral)||
@@ -232,7 +232,7 @@ object NumericRange {
    *  whether or not it is inclusive.  Throws an exception if step == 0 or
    *  the number of elements exceeds the maximum Int.
    */
-  def count[T](start: T, end: T, step: T, isInclusive: Boolean)(implicit num: Integral[T]): Int = {
+  def count[T](start: T, end: T, step: T, isInclusive: Boolean)(implicit num: Integral[T])(implicit @local mct: MaybeCanThrow = mct): Int = {
     val zero    = num.zero
     val upward  = num.lt(start, end)
     val posStep = num.gt(step, zero)

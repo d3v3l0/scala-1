@@ -87,13 +87,13 @@ self =>
 
   override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
   override def init: This = newSliced(SliceInterval(0, self.length - 1))
-  override def drop(n: Int): This = newSliced(SliceInterval(n, self.length))
-  override def take(n: Int): This = newSliced(SliceInterval(0, n min self.length))
-  override def slice(from: Int, until: Int): This = newSliced(SliceInterval(from, until min self.length))
-  override def dropWhile(@plocal p: A => Boolean): This = newDroppedWhile(p)
-  override def takeWhile(@plocal p: A => Boolean): This = newTakenWhile(p)
-  override def span(@plocal p: A => Boolean): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
-  override def splitAt(n: Int): (This, This) = (take(n), drop(n)) // !!!
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(n, self.length))
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(0, n min self.length))
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(from, until min self.length))
+  override def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newDroppedWhile(p)
+  override def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newTakenWhile(p)
+  override def span(@plocal p: A => Boolean): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (newTakenWhile(p), newDroppedWhile(p))
+  override def splitAt(n: Int): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n)) // !!!
   override def reverse: This = newReversed
   override def tail: IndexedSeqView[A, Coll] = if (isEmpty) super.tail else slice(1, length)
 }

@@ -61,7 +61,7 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
   override def rangeImpl(from: Option[A], until: Option[A]): TreeMap[A, B] = new TreeMap[A, B](RB.rangeImpl(tree, from, until))
   override def range(from: A, until: A): TreeMap[A, B] = new TreeMap[A, B](RB.range(tree, from, until))
   override def from(from: A): TreeMap[A, B] = new TreeMap[A, B](RB.from(tree, from))
-  override def to(to: A): TreeMap[A, B] = new TreeMap[A, B](RB.to(tree, to))
+  override def to(to: A, @local mct: MaybeCanThrow = mct): TreeMap[A, B] = new TreeMap[A, B](RB.to(tree, to))
   override def until(until: A): TreeMap[A, B] = new TreeMap[A, B](RB.until(tree, until))
 
   override def firstKey = RB.smallest(tree).key
@@ -82,19 +82,19 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
   override def tail = new TreeMap(RB.delete(tree, firstKey))
   override def init = new TreeMap(RB.delete(tree, lastKey))
 
-  override def drop(n: Int) = {
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct) = {
     if (n <= 0) this
     else if (n >= size) empty
     else new TreeMap(RB.drop(tree, n))
   }
 
-  override def take(n: Int) = {
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct) = {
     if (n <= 0) empty
     else if (n >= size) this
     else new TreeMap(RB.take(tree, n))
   }
 
-  override def slice(from: Int, until: Int) = {
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct) = {
     if (until <= from) empty
     else if (from <= 0) take(until)
     else if (until >= size) drop(from)
@@ -103,7 +103,7 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
 
   override def dropRight(n: Int) = take(size - math.max(n, 0))
   override def takeRight(n: Int) = drop(size - math.max(n, 0))
-  override def splitAt(n: Int) = (take(n), drop(n))
+  override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
 
   private[this] def countWhile(@plocal p: ((A, B)) => Boolean): Int = {
     var result = 0
@@ -111,9 +111,9 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
     while (it.hasNext && p(it.next())) result += 1
     result
   }
-  override def dropWhile(@plocal p: ((A, B)) => Boolean) = drop(countWhile(p))
-  override def takeWhile(@plocal p: ((A, B)) => Boolean) = take(countWhile(p))
-  override def span(@plocal p: ((A, B)) => Boolean) = splitAt(countWhile(p))
+  override def dropWhile(@plocal p: ((A, B)) => Boolean)(implicit @local mct: MaybeCanThrow = mct) = drop(countWhile(p))
+  override def takeWhile(@plocal p: ((A, B)) => Boolean)(implicit @local mct: MaybeCanThrow = mct) = take(countWhile(p))
+  override def span(@plocal p: ((A, B)) => Boolean)(implicit @local mct: MaybeCanThrow = mct) = splitAt(countWhile(p))
 
   /** A factory to create empty maps of the same type of keys.
    */

@@ -184,7 +184,7 @@ extends scala.collection.AbstractSeq[T]
    *   length of the sequence otherwise. This is limited up to the length
    *   of the current sequence if `end` is larger than its length.
    */
-  override def slice(_start: Int, _end: Int): PagedSeq[T] = {
+  override def slice(_start: Int, _end: Int)(implicit @local mct: MaybeCanThrow = mct): PagedSeq[T] = {
     page(start)
     val s = start + _start
     val e = if (_end == UndeterminedEnd) _end else start + _end
@@ -202,7 +202,7 @@ extends scala.collection.AbstractSeq[T]
   /** The subsequence from index `start` up to
    *  the length of the current sequence.
    */
-  def slice(start: Int): PagedSeq[T] = slice(start, UndeterminedEnd)
+  def slice(start: Int)(implicit @local mct: MaybeCanThrow = mct): PagedSeq[T] = slice(start, UndeterminedEnd)
 
   /** Convert sequence to string */
   override def toString = {

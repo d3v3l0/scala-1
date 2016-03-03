@@ -36,7 +36,7 @@ final class StringOps(override val repr: String) extends AnyVal with StringLike[
   override protected[this] def newBuilder = StringBuilder.newBuilder
 
   override def apply(index: Int): Char = repr charAt index
-  override def slice(from: Int, until: Int): String = {
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): String = {
     val start = if (from < 0) 0 else from
     if (until <= start || start >= repr.length)
       return ""

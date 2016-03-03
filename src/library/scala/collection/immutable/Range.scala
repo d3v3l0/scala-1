@@ -115,13 +115,13 @@ extends scala.collection.AbstractSeq[Int]
   override def last = if (isEmpty) Nil.last else lastElement
   override def head = if (isEmpty) Nil.head else start
 
-  override def min[A1 >: Int](implicit ord: Ordering[A1]): Int =
+  override def min[A1 >: Int](implicit ord: Ordering[A1], @local mct: MaybeCanThrow = mct): Int =
     if (ord eq Ordering.Int) {
       if (step > 0) head
       else last
     } else super.min(ord)
 
-  override def max[A1 >: Int](implicit ord: Ordering[A1]): Int =
+  override def max[A1 >: Int](implicit ord: Ordering[A1], @local mct: MaybeCanThrow = mct): Int =
     if (ord eq Ordering.Int) {
       if (step > 0) last
       else head
@@ -178,7 +178,7 @@ extends scala.collection.AbstractSeq[Int]
    *  @param n  the number of elements to take.
    *  @return   a new range consisting of `n` first elements.
    */
-  final override def take(n: Int): Range = (
+  final override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Range = (
     if (n <= 0 || isEmpty) newEmptyRange(start)
     else if (n >= numRangeElements && numRangeElements >= 0) this
     else {
@@ -195,7 +195,7 @@ extends scala.collection.AbstractSeq[Int]
    *  @param n  the number of elements to drop.
    *  @return   a new range consisting of all the elements of this range except `n` first elements.
    */
-  final override def drop(n: Int): Range = (
+  final override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Range = (
     if (n <= 0 || isEmpty) this
     else if (n >= numRangeElements && numRangeElements >= 0) newEmptyRange(end)
     else {
@@ -252,7 +252,7 @@ extends scala.collection.AbstractSeq[Int]
   // based on the given value.
   private def newEmptyRange(value: Int) = new Range(value, value, step)
 
-  final override def takeWhile(@plocal p: Int => Boolean): Range = {
+  final override def takeWhile(@plocal p: Int => Boolean)(implicit @local mct: MaybeCanThrow = mct): Range = {
     val stop = argTakeWhile(p)
     if (stop==start) newEmptyRange(start)
     else {
@@ -261,7 +261,7 @@ extends scala.collection.AbstractSeq[Int]
       else new Range.Inclusive(start, x, step)
     }
   }
-  final override def dropWhile(@plocal p: Int => Boolean): Range = {
+  final override def dropWhile(@plocal p: Int => Boolean)(implicit @local mct: MaybeCanThrow = mct): Range = {
     val stop = argTakeWhile(p)
     if (stop == start) this
     else {
@@ -270,7 +270,7 @@ extends scala.collection.AbstractSeq[Int]
       else new Range.Inclusive(x + step, last, step)
     }
   }
-  final override def span(@plocal p: Int => Boolean): (Range, Range) = {
+  final override def span(@plocal p: Int => Boolean): (Range, Range)(implicit @local mct: MaybeCanThrow = mct) = {
     val border = argTakeWhile(p)
     if (border == start) (newEmptyRange(start), this)
     else {
@@ -285,7 +285,7 @@ extends scala.collection.AbstractSeq[Int]
    *
    *  $doesNotUseBuilders
    */
-  final override def splitAt(n: Int) = (take(n), drop(n))
+  final override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
 
   /** Creates a new range consisting of the `length - n` last elements of the range.
    *
@@ -344,7 +344,7 @@ extends scala.collection.AbstractSeq[Int]
     }
   }
 
-  final override def sum[B >: Int](implicit num: Numeric[B]): Int = {
+  final override def sum[B >: Int](implicit num: Numeric[B], @local mct: MaybeCanThrow = mct): Int = {
     if (num eq scala.math.Numeric.IntIsIntegral) {
       // this is normal integer range with usual addition. arithmetic series formula can be used
       if (isEmpty) 0
@@ -406,7 +406,7 @@ object Range {
    *  If the size of the range exceeds Int.MaxValue, the
    *  result will be negative.
    */
-  def count(start: Int, end: Int, step: Int, isInclusive: Boolean): Int = {
+  def count(start: Int, end: Int, step: Int, isInclusive: Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
     if (step == 0)
       throw new IllegalArgumentException("step cannot be 0.")
 
@@ -429,7 +429,7 @@ object Range {
       else result.toInt
     }
   }
-  def count(start: Int, end: Int, step: Int): Int =
+  def count(start: Int, end: Int, step: Int)(implicit @local mct: MaybeCanThrow = mct): Int =
     count(start, end, step, isInclusive = false)
 
   class Inclusive(start: Int, end: Int, step: Int) extends Range(start, end, step) {

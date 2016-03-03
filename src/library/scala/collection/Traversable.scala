@@ -34,17 +34,17 @@ trait Traversable[+A] extends TraversableLike[A, Traversable[A]]
   override def size: Int
   override def hasDefiniteSize
   override def ++[B >: A, That](xs: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Traversable[A], B, That]): That
-  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Traversable[A], B, That]): That
-  override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Traversable[A], B, That]): That
+  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Traversable[A], B, That], @local mct: MaybeCanThrow = mct): That
+  override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Traversable[A], B, That], @local mct: MaybeCanThrow = mct): That
   override def filter(p: A => Boolean): Traversable[A]
   override def remove(p: A => Boolean): Traversable[A]
-  override def partition(p: A => Boolean): (Traversable[A], Traversable[A])
-  override def groupBy[K](f: A => K): Map[K, Traversable[A]]
+  override def partition(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Traversable[A], Traversable[A])
+  override def groupBy[K](f: A => K)(implicit @local mct: MaybeCanThrow = mct): Map[K, Traversable[A]]
   override def foreach[U](f: A =>  U)(implicit @local mct: MaybeCanThrow = mct): Unit
-  override def forall(p: A => Boolean): Boolean
-  override def exists(p: A => Boolean): Boolean
-  override def count(p: A => Boolean): Int
-  override def find(p: A => Boolean): Option[A]
+  override def forall(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean
+  override def exists(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean
+  override def count(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int
+  override def find(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A]
   override def foldLeft[B](z: B)(op: (B, A) => B): B
   override def /: [B](z: B)(op: (B, A) => B): B
   override def foldRight[B](z: B)(op: (A, B) => B): B
@@ -59,13 +59,13 @@ trait Traversable[+A] extends TraversableLike[A, Traversable[A]]
   override def last: A
   override def lastOption: Option[A]
   override def init: Traversable[A]
-  override def take(n: Int): Traversable[A]
-  override def drop(n: Int): Traversable[A]
-  override def slice(from: Int, until: Int): Traversable[A]
-  override def takeWhile(p: A => Boolean): Traversable[A]
-  override def dropWhile(p: A => Boolean): Traversable[A]
-  override def span(p: A => Boolean): (Traversable[A], Traversable[A])
-  override def splitAt(n: Int): (Traversable[A], Traversable[A])
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Traversable[A]
+  override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Traversable[A]
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Traversable[A]
+  override def takeWhile(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Traversable[A]
+  override def dropWhile(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Traversable[A]
+  override def span(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Traversable[A], Traversable[A])
+  override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (Traversable[A], Traversable[A])
   override def copyToBuffer[B >: A](dest: Buffer[B])
   override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)
   override def copyToArray[B >: A](xs: Array[B], start: Int)

@@ -313,7 +313,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *          whole iterator, if it produces fewer than `n` values.
    *  @note   Reuse: $consumesAndProducesIterator
    */
-  def take(n: Int): Iterator[A] = slice(0, n)
+  def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Iterator[A] = slice(0, n)
 
   /** Advances this iterator past the first ''n'' elements, or the length of the iterator, whichever is smaller.
    *
@@ -322,7 +322,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           it omits the first `n` values.
    *  @note    Reuse: $consumesAndProducesIterator
    */
-  def drop(n: Int): Iterator[A] = {
+  def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Iterator[A] = {
     var j = 0
     while (j < n && hasNext) {
       next()
@@ -339,7 +339,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *  and then takes `until - from` elements, using `take`.
    *  @note         Reuse: $consumesAndProducesIterator
    */
-  def slice(from: Int, until: Int): Iterator[A] = {
+  def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Iterator[A] = {
     val lo = from max 0
     var toDrop = lo
     while (toDrop > 0 && self.hasNext) {
@@ -367,7 +367,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *          iterator by applying the function `f` to it.
    *  @note   Reuse: $consumesAndProducesIterator
    */
-  def map[B](@local f: A => B): Iterator[B] = new AbstractIterator[B] { // TODO(leo) parametrize with LT
+  def map[B](@local f: A => B, @local mct: MaybeCanThrow = mct): Iterator[B] = new AbstractIterator[B] { // TODO(leo) parametrize with LT
     def hasNext = self.hasNext
     @local def next() = f(self.next())
   }
@@ -392,7 +392,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           `f` to each value produced by this iterator and concatenating the results.
    *  @note    Reuse: $consumesAndProducesIterator
    */
-  def flatMap[B](f: A => GenTraversableOnce[B]): Iterator[B] = new AbstractIterator[B] {
+  def flatMap[B](f: A => GenTraversableOnce[B], @local mct: MaybeCanThrow = mct): Iterator[B] = new AbstractIterator[B] {
     private var cur: Iterator[B] = empty
     def hasNext: Boolean =
       cur.hasNext || self.hasNext && { cur = f(self.next()).toIterator; hasNext }
@@ -432,7 +432,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *                   `p(x, y)` is `true` for all corresponding elements `x` of this iterator
    *                   and `y` of `that`, otherwise `false`
    */
-  def corresponds[B](that: GenTraversableOnce[B])(p: (A, B) => Boolean): Boolean = {
+  def corresponds[B](that: GenTraversableOnce[B])(p: (A, B) => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     val that0 = that.toIterator
     while (hasNext && that0.hasNext)
       if (!p(next(), that0.next())) return false
@@ -460,7 +460,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *  @return  an iterator which produces those values of this iterator which do not satisfy the predicate `p`.
    *  @note    Reuse: $consumesAndProducesIterator
    */
-  def filterNot(p: A => Boolean): Iterator[A] = filter(!p(_))
+  def filterNot(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Iterator[A] = filter(!p(_))
 
  /** Creates an iterator by transforming values
   *  produced by this iterator with a partial function, dropping those
@@ -472,7 +472,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
   *  @note     Reuse: $consumesAndProducesIterator
   */
   @migration("`collect` has changed. The previous behavior can be reproduced with `toSeq`.", "2.8.0")
-  def collect[B](pf: PartialFunction[A, B]): Iterator[B] = {
+  def collect[B](pf: PartialFunction[A, B], @local mct: MaybeCanThrow = mct): Iterator[B] = {
     val self = buffered
     new AbstractIterator[B] {
       private def skip() = while (self.hasNext && !pf.isDefinedAt(self.head)) self.next()
@@ -529,7 +529,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           the predicate `p`.
    *  @note    Reuse: $consumesAndProducesIterator
    */
-  def takeWhile(p: A => Boolean): Iterator[A] = new AbstractIterator[A] {
+  def takeWhile(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Iterator[A] = new AbstractIterator[A] {
     private var hd: A = _
     private var hdDefined: Boolean = false
     private var tail: Iterator[A] = self
@@ -552,7 +552,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           is the same as in the original iterator.
    *  @note    Reuse: $consumesOneAndProducesTwoIterators
    */
-  def partition(p: A => Boolean): (Iterator[A], Iterator[A]) = {
+  def partition(p: A => Boolean): (Iterator[A], Iterator[A])(implicit @local mct: MaybeCanThrow = mct) = {
     val self = buffered
     class PartitionIterator(p: A => Boolean) extends AbstractIterator[A] {
       var other: PartitionIterator = _
@@ -579,7 +579,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           whose elements all satisfy `p`, and the rest of the Iterator.
    *  @note    Reuse: $consumesOneAndProducesTwoIterators
    */
-  def span(p: A => Boolean): (Iterator[A], Iterator[A]) = {
+  def span(p: A => Boolean): (Iterator[A], Iterator[A])(implicit @local mct: MaybeCanThrow = mct) = {
     val self = buffered
 
     // Must be a named class to avoid structural call to finish from trailing iterator
@@ -620,7 +620,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *  @return  an iterator consisting of the remaining elements
    *  @note    Reuse: $consumesAndProducesIterator
    */
-  def dropWhile(p: A => Boolean): Iterator[A] = {
+  def dropWhile(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Iterator[A] = {
     val self = buffered
     new AbstractIterator[A] {
       var dropped = false
@@ -647,7 +647,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *                 iterator and `that`.
    *  @note          Reuse: $consumesTwoAndProducesOneIterator
    */
-  def zip[B](that: Iterator[B]): Iterator[(A, B)] = new AbstractIterator[(A, B)] {
+  def zip[B](that: Iterator[B], @local mct: MaybeCanThrow = mct): Iterator[(A, B)] = new AbstractIterator[(A, B)] {
     def hasNext = self.hasNext && that.hasNext
     @local def next = (self.next(), that.next())
   }
@@ -661,10 +661,10 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *          that the number of produced values is at least `len`.
    *  @note    Reuse: $consumesAndProducesIterator
    *
-   *  @usecase def padTo(len: Int, elem: A): Iterator[A]
+   *  @usecase def padTo(len: Int, elem: A, @local mct: MaybeCanThrow = mct): Iterator[A]
    *    @inheritdoc
    */
-  def padTo[A1 >: A](len: Int, elem: A1): Iterator[A1] = new AbstractIterator[A1] {
+  def padTo[A1 >: A](len: Int, elem: A1, @local mct: MaybeCanThrow = mct): Iterator[A1] = new AbstractIterator[A1] {
     private var count = 0
     def hasNext = self.hasNext || count < len
     @local def next = {
@@ -712,10 +712,10 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *                  If `that` is shorter than this iterator, `thatElem` values are used to pad the result.
    *  @note           Reuse: $consumesTwoAndProducesOneIterator
    *
-   *  @usecase def zipAll[B](that: Iterator[B], thisElem: A, thatElem: B): Iterator[(A, B)]
+   *  @usecase def zipAll[B](that: Iterator[B], thisElem: A, thatElem: B, @local mct: MaybeCanThrow = mct): Iterator[(A, B)]
    *    @inheritdoc
    */
-  def zipAll[B, A1 >: A, B1 >: B](that: Iterator[B], thisElem: A1, thatElem: B1): Iterator[(A1, B1)] = new AbstractIterator[(A1, B1)] {
+  def zipAll[B, A1 >: A, B1 >: B](that: Iterator[B], thisElem: A1, thatElem: B1, @local mct: MaybeCanThrow = mct): Iterator[(A1, B1)] = new AbstractIterator[(A1, B1)] {
     def hasNext = self.hasNext || that.hasNext
     @local def next(): (A1, B1) =
       if (self.hasNext) {
@@ -751,7 +751,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *                 produced by this iterator, otherwise `false`.
    *  @note          Reuse: $consumesIterator
    */
-  def forall(@plocal p: A => Boolean): Boolean = {
+  def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     var res = true
     while (res && hasNext) res = p(next())
     res
@@ -765,7 +765,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *                 produced by this iterator, otherwise `false`.
    *  @note          Reuse: $consumesIterator
    */
-  def exists(@plocal p: A => Boolean): Boolean = {
+  def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     var res = false
     while (!res && hasNext) res = p(next())
     res
@@ -790,7 +790,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           predicate `p`, or `None` if none exists.
    *  @note    Reuse: $consumesIterator
    */
-  def find(@plocal p: A => Boolean): Option[A] = {
+  def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A] = {
     var res: Option[A] = None
     while (res.isEmpty && hasNext) {
       val e = next()
@@ -807,7 +807,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           or -1 if such an element does not exist until the end of the iterator is reached.
    *  @note    Reuse: $consumesIterator
    */
-  def indexWhere(@plocal p: A => Boolean): Int = {
+  def indexWhere(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = 0
     var found = false
     while (!found && hasNext) {
@@ -1098,7 +1098,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *  @param replaced   The number of values in the original iterator that are replaced by the patch.
    *  @note           Reuse: $consumesTwoAndProducesOneIterator
    */
-  def patch[B >: A](from: Int, patchElems: Iterator[B], replaced: Int): Iterator[B] = new AbstractIterator[B] {
+  def patch[B >: A](from: Int, patchElems: Iterator[B], replaced: Int, @local mct: MaybeCanThrow = mct): Iterator[B] = new AbstractIterator[B] {
     private var origElems = self
     private var i = (if (from > 0) from else 0)  // Counts down, switch to patch on 0, -1 means use patch first
     def hasNext: Boolean = {
@@ -1143,12 +1143,12 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *
    *  @note    Reuse: $consumesIterator
    *
-   *  @usecase def copyToArray(xs: Array[A], start: Int, len: Int): Unit
+   *  @usecase def copyToArray(xs: Array[A], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct): Unit
    *    @inheritdoc
    *
    *    $willNotTerminateInf
    */
-  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int): Unit = {
+  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct): Unit = {
     require(start >= 0 && (start < xs.length || xs.length == 0), s"start $start out of range ${xs.length}")
     var i = start
     val end = start + math.min(len, xs.length - start)
@@ -1168,7 +1168,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *
    *  @note        Reuse: $consumesTwoIterators
    */
-  def sameElements(that: Iterator[_]): Boolean = {
+  def sameElements(that: Iterator[_])(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     while (hasNext && that.hasNext)
       if (next != that.next)
         return false

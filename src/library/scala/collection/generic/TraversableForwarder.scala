@@ -39,10 +39,10 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def nonEmpty: Boolean = underlying.nonEmpty
   override def size: Int = underlying.size
   override def hasDefiniteSize = underlying.hasDefiniteSize
-  override def forall(@plocal p: A => Boolean): Boolean = underlying forall p
-  override def exists(@plocal p: A => Boolean): Boolean = underlying exists p
-  override def count(@plocal p: A => Boolean): Int = underlying count p
-  override def find(@plocal p: A => Boolean): Option[A] = underlying find p
+  override def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = underlying forall p
+  override def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = underlying exists p
+  override def count(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = underlying count p
+  override def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A] = underlying find p
   override def foldLeft[B](z: B)(@plocal op: (B, A) => B): B = underlying.foldLeft(z)(op)
   override def /: [B](z: B)(op: (B, A) => B): B = underlying./:(z)(op)
   override def foldRight[B](z: B)(op: (A, B) => B): B = underlying.foldRight(z)(op)
@@ -51,18 +51,18 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def reduceLeftOption[B >: A](op: (B, A) => B): Option[B] = underlying.reduceLeftOption(op)
   override def reduceRight[B >: A](op: (A, B) => B): B = underlying.reduceRight(op)
   override def reduceRightOption[B >: A](op: (A, B) => B): Option[B] = underlying.reduceRightOption(op)
-  override def sum[B >: A](implicit num: Numeric[B]): B = underlying sum num
-  override def product[B >: A](implicit num: Numeric[B]): B = underlying product num
-  override def min[B >: A](implicit cmp: Ordering[B]): A = underlying min cmp
-  override def max[B >: A](implicit cmp: Ordering[B]): A = underlying max cmp
+  override def sum[B >: A](implicit num: Numeric[B], @local mct: MaybeCanThrow = mct): B = underlying sum num
+  override def product[B >: A](implicit num: Numeric[B], @local mct: MaybeCanThrow = mct): B = underlying product num
+  override def min[B >: A](implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A = underlying min cmp
+  override def max[B >: A](implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A = underlying max cmp
   override def head: A = underlying.head
   override def headOption: Option[A] = underlying.headOption
   override def last: A = underlying.last
   override def lastOption: Option[A] = underlying.lastOption
   override def copyToBuffer[B >: A](dest: Buffer[B]) = underlying.copyToBuffer(dest)
-  override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int) = underlying.copyToArray(xs, start, len)
-  override def copyToArray[B >: A](xs: Array[B], start: Int) = underlying.copyToArray(xs, start)
-  override def copyToArray[B >: A](xs: Array[B]) = underlying.copyToArray(xs)
+  override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) = underlying.copyToArray(xs, start, len)
+  override def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow = mct) = underlying.copyToArray(xs, start)
+  override def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow = mct) = underlying.copyToArray(xs)
   override def toArray[B >: A: ClassTag]: Array[B] = underlying.toArray
   override def toList: List[A] = underlying.toList
   override def toIterable: Iterable[A] = underlying.toIterable
@@ -71,7 +71,7 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def toBuffer[B >: A] = underlying.toBuffer
   override def toStream: Stream[A] = underlying.toStream
   override def toSet[B >: A]: immutable.Set[B] = underlying.toSet
-  override def toMap[T, U](implicit ev: A <:< (T, U)): immutable.Map[T, U] = underlying.toMap(ev)
+  override def toMap[T, U](implicit ev: A <:< (T, U), @local mct: MaybeCanThrow = mct): immutable.Map[T, U] = underlying.toMap(ev)
   override def mkString(start: String, sep: String, end: String): String = underlying.mkString(start, sep, end)
   override def mkString(sep: String): String = underlying.mkString(sep)
   override def mkString: String = underlying.mkString

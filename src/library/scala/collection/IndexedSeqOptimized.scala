@@ -43,13 +43,13 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*IterableLike*/
-  def forall(@plocal p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = true) == length
+  def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = prefixLengthImpl(p, expectTrue = true) == length
 
   override /*IterableLike*/
-  def exists(@plocal p: A => Boolean): Boolean = prefixLengthImpl(p, expectTrue = false) != length
+  def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = prefixLengthImpl(p, expectTrue = false) != length
 
   override /*IterableLike*/
-  def find(@plocal p: A => Boolean): Option[A] = {
+  def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A] = {
     @plocal val q = (x: A) => !p(x)
     val i = prefixLength(q)
     if (i < length) Some(this(i)) else None
@@ -82,7 +82,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
     if (length > 0) foldr(0, length - 1, this(length - 1), op) else super.reduceRight(op)
 
   override /*IterableLike*/
-  def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Repr, (A1, B), That]): That = that match {
+  def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Repr, (A1, B), That], @local mct: MaybeCanThrow = mct): That = that match {
     case that: IndexedSeq[_] =>
       val b = bf(repr)
       var i = 0
@@ -98,7 +98,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*IterableLike*/
-  def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Repr, (A1, Int), That]): That = {
+  def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Repr, (A1, Int), That], @local mct: MaybeCanThrow = mct): That = {
     val b = bf(repr)
     val len = length
     b.sizeHint(len)
@@ -111,7 +111,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*IterableLike*/
-  def slice(from: Int, until: Int): Repr = {
+  def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val lo    = math.max(from, 0)
     val hi    = math.min(math.max(until, 0), length)
     val elems = math.max(hi - lo, 0)
@@ -139,10 +139,10 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def init: Repr = if (length > 0) slice(0, length - 1) else super.init
 
   override /*TraversableLike*/
-  def take(n: Int): Repr = slice(0, n)
+  def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = slice(0, n)
 
   override /*TraversableLike*/
-  def drop(n: Int): Repr = slice(n, length)
+  def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = slice(n, length)
 
   override /*IterableLike*/
   def takeRight(n: Int): Repr = slice(length - math.max(n, 0), length)
@@ -151,19 +151,19 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def dropRight(n: Int): Repr = slice(0, length - math.max(n, 0))
 
   override /*TraversableLike*/
-  def splitAt(n: Int): (Repr, Repr) = (take(n), drop(n))
+  def splitAt(n: Int): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
 
   override /*IterableLike*/
-  def takeWhile(@plocal p: A => Boolean): Repr = take(prefixLength(p))
+  def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = take(prefixLength(p))
 
   override /*TraversableLike*/
-  def dropWhile(@plocal p: A => Boolean): Repr = drop(prefixLength(p))
+  def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = drop(prefixLength(p))
 
   override /*TraversableLike*/
-  def span(@plocal p: A => Boolean): (Repr, Repr) = splitAt(prefixLength(p))
+  def span(@plocal p: A => Boolean): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = splitAt(prefixLength(p))
 
   override /*IterableLike*/
-  def sameElements[B >: A](that: GenIterable[B]): Boolean = that match {
+  def sameElements[B >: A](that: GenIterable[B])(implicit @local mct: MaybeCanThrow = mct): Boolean = that match {
     case that: IndexedSeq[_] =>
       val len = length
       len == that.length && {
@@ -176,7 +176,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*IterableLike*/
-  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int) {
+  def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) {
     var i = 0
     var j = start
     val end = length min len min (xs.length - start)
@@ -193,7 +193,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def lengthCompare(len: Int): Int = length - len
 
   override /*SeqLike*/
-  def segmentLength(@plocal p: A => Boolean, from: Int): Int = {
+  def segmentLength(@plocal p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     val len = length
     var i = from
     while (i < len && p(this(i))) i += 1
@@ -203,13 +203,13 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   private def negLength(n: Int) = if (n >= length) -1 else n
 
   override /*SeqLike*/
-  def indexWhere(p: A => Boolean, from: Int): Int = {
+  def indexWhere(p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     val start = from max 0
     negLength(start + segmentLength(!p(_), start))
   }
 
   override /*SeqLike*/
-  def lastIndexWhere(p: A => Boolean, end: Int): Int = {
+  def lastIndexWhere(p: A => Boolean, end: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = math.min(end, length - 1)
     while (i >= 0 && !p(this(i))) i -= 1
     i
@@ -239,7 +239,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*SeqLike*/
-  def startsWith[B](that: GenSeq[B], offset: Int): Boolean = that match {
+  def startsWith[B](that: GenSeq[B], offset: Int)(implicit @local mct: MaybeCanThrow = mct): Boolean = that match {
     case that: IndexedSeq[_] =>
       var i = offset
       var j = 0
@@ -264,7 +264,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*SeqLike*/
-  def endsWith[B](that: GenSeq[B]): Boolean = that match {
+  def endsWith[B](that: GenSeq[B])(implicit @local mct: MaybeCanThrow = mct): Boolean = that match {
     case that: IndexedSeq[_] =>
       var i = length - 1
       var j = that.length - 1

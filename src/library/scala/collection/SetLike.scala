@@ -89,7 +89,7 @@ self =>
   // which I hope to turn into an Xlint style warning as the migration aspect
   // is not central to its importance.
   @migration("Set.map now returns a Set, so it will discard duplicate values.", "2.8.0")
-  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[This, B, That]): That = super.map(f)(bf)
+  override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That = super.map(f)(bf)
 
   /** Tests if some element is contained in this set.
    *

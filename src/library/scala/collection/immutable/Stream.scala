@@ -414,7 +414,7 @@ self =>
    * @param f function to apply to each element.
    * @return  `f(a,,0,,), ..., f(a,,n,,)` if this sequence is `a,,0,,, ..., a,,n,,`.
    */
-  override final def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Stream[A], B, That]): That = {
+  override final def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That = {
     if (isStreamBuilder(bf)) asThat(
       if (isEmpty) Stream.Empty
       else cons(f(head), asStream[B](tail map f))
@@ -422,7 +422,7 @@ self =>
     else super.map(f)(bf)
   }
 
-  override final def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Stream[A], B, That]): That = {
+  override final def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That = {
     if (!isStreamBuilder(bf)) super.collect(pf)(bf)
     else {
       // this implementation avoids:
@@ -479,7 +479,7 @@ self =>
    * @return  `f(a,,0,,) ::: ... ::: f(a,,n,,)` if
    *           this stream is `[a,,0,,, ..., a,,n,,]`.
    */
-  override final def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Stream[A], B, That]): That =
+  override final def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That =
     // we assume there is no other builder factory on streams and therefore know that That = Stream[B]
     // optimisations are not for speed, but for functionality
     // see tickets #153, #498, #2147, and corresponding tests in run/ (as well as run/stream_flatmap_odds.scala)
@@ -530,7 +530,7 @@ self =>
    */
   final class StreamWithFilter(@local p: A => Boolean) extends WithFilter(p) {
 
-    override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Stream[A], B, That]): That = {
+    override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That = {
       def tailMap(coll: Stream[A]): Stream[B] = {
         var head: A = null.asInstanceOf[A]
         var tail: Stream[A] = coll
@@ -549,7 +549,7 @@ self =>
       else super.map(f)(bf)
     }
 
-    override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Stream[A], B, That]): That = {
+    override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That = {
       def tailFlatMap(coll: Stream[A]): Stream[B] = {
         var head: A = null.asInstanceOf[A]
         var tail: Stream[A] = coll
@@ -649,7 +649,7 @@ self =>
    * }}}
    *
    */
-  override def partition(@plocal p: A => Boolean): (Stream[A], Stream[A]) = (filter(p(_)), filterNot(p(_)))
+  override def partition(@plocal p: A => Boolean): (Stream[A], Stream[A])(implicit @local mct: MaybeCanThrow = mct) = (filter(p(_)), filterNot(p(_)))
 
   /** Returns a stream formed from this stream and the specified stream `that`
    * by associating each element of the former with the element at the same
@@ -683,7 +683,7 @@ self =>
    * // (5,6)
    * }}}
    */
-  override final def zip[A1 >: A, B, That](that: scala.collection.GenIterable[B])(implicit bf: CanBuildFrom[Stream[A], (A1, B), That]): That =
+  override final def zip[A1 >: A, B, That](that: scala.collection.GenIterable[B])(implicit bf: CanBuildFrom[Stream[A], (A1, B), That], @local mct: MaybeCanThrow = mct): That =
     // we assume there is no other builder factory on streams and therefore know that That = Stream[(A1, B)]
     if (isStreamBuilder(bf)) asThat(
       if (this.isEmpty || that.isEmpty) Stream.Empty
@@ -713,7 +713,7 @@ self =>
    * // (5,4)
    * }}}
    */
-  override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Stream[A], (A1, Int), That]): That =
+  override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Stream[A], (A1, Int), That], @local mct: MaybeCanThrow = mct): That =
     this.zip[A1, Int, That](Stream.from(0))
 
   /** Write all defined elements of this iterable into given string builder.
@@ -824,7 +824,7 @@ self =>
   }
   override def toString = super.mkString(stringPrefix + "(", ", ", ")")
 
-  override def splitAt(n: Int): (Stream[A], Stream[A]) = (take(n), drop(n))
+  override def splitAt(n: Int): (Stream[A], Stream[A])(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
 
   /** Returns the `n` first elements of this `Stream` as another `Stream`, or
    * else the whole `Stream`, if it has less than `n` elements.
@@ -845,7 +845,7 @@ self =>
    * // produces: "5, 6, 7, 8, 9"
    * }}}
    */
-  override def take(n: Int): Stream[A] = (
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Stream[A] = (
     // Note that the n == 1 condition appears redundant but is not.
     // It prevents "tail" from being referenced (and its head being evaluated)
     // when obtaining the last element of the result. Such are the challenges
@@ -855,7 +855,7 @@ self =>
     else cons(head, tail take n-1)
   )
 
-  @tailrec final override def drop(n: Int): Stream[A] =
+  @tailrec final override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Stream[A] =
     if (n <= 0 || isEmpty) this
     else tail drop n-1
 
@@ -872,7 +872,7 @@ self =>
    * // produces: "50, 51, 52, 53, 54, 55, 56, 57, 58, 59"
    * }}}
    */
-  override def slice(from: Int, until: Int): Stream[A] = {
+  override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Stream[A] = {
     val lo = from max 0
     if (until <= lo || isEmpty) Stream.empty
     else this drop lo take (until - lo)
@@ -939,7 +939,7 @@ self =>
    * produces: "0, 1, 2, 3, 4"
    * }}}
    */
-  override def takeWhile(@plocal p: A => Boolean): Stream[A] =
+  override def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Stream[A] =
     if (!isEmpty && p(head)) cons(head, tail takeWhile p)
     else Stream.Empty
 
@@ -960,7 +960,7 @@ self =>
    * // produces: "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20"
    * }}}
    */
-  override def dropWhile(@plocal p: A => Boolean): Stream[A] = {
+  override def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Stream[A] = {
     var these: Stream[A] = this
     while (!these.isEmpty && p(these.head)) these = these.tail
     these
@@ -1018,7 +1018,7 @@ self =>
    * // 0
    * }}}
    */
-  override def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Stream[A], B, That]): That = {
+  override def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That = {
     def loop(len: Int, these: Stream[A]): Stream[B] =
       if (these.isEmpty) Stream.fill(len)(elem)
       else cons(these.head, loop(len - 1, these.tail))

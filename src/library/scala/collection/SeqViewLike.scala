@@ -222,7 +222,7 @@ trait SeqViewLike[+A,
 
   override def reverse: This = newReversed.asInstanceOf[This]
 
-  override def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[This, B, That]): That = {
+  override def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That = {
     // Be careful to not evaluate the entire sequence!  Patch should work (slowly, perhaps) on infinite streams.
     val nonNegFrom = math.max(0,from)
     val nonNegRep = math.max(0,replaced)
@@ -232,13 +232,13 @@ trait SeqViewLike[+A,
 //    else super.patch[B, That](from, patch, replaced)(bf)
   }
 
-  override def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That =
     patch(length, fill(len - length)(elem), 0)
 
-  override def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def reverseMap[B, That](f: A => B)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That =
     reverse map f
 
-  override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[This, B, That]): That = {
+  override def updated[B >: A, That](index: Int, elem: B)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That = {
     require(0 <= index && index < length) // !!! can't call length like this.
     patch(index, List(elem), 1)(bf)
   }
