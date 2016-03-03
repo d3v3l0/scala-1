@@ -589,7 +589,7 @@ self =>
     (new ParArray[S](targarrseq)).asInstanceOf[That]
   } else super.map(f)(bf, cc)
 
-  override def scan[U >: T, That](z: U)(op: (U, U) => U)(@local cc: CanThrow)(implicit cbf: CanBuildFrom[ParArray[T], U, That]): That =
+  override def scan[U >: T, That](z: U)(op: (U, U) => U)(implicit cbf: CanBuildFrom[ParArray[T], U, That], @local cc: CanThrow): That =
     if (tasksupport.parallelismLevel > 1 && buildsArray(cbf(repr))) {
       // reserve an array
       val targarrseq = new ArraySeq[U](length + 1)
@@ -603,7 +603,7 @@ self =>
 
       // wrap the array into a parallel array
       (new ParArray[U](targarrseq)).asInstanceOf[That]
-    } else super.scan(z)(op)(cc)(cbf)
+    } else super.scan(z)(op)(cbf, cc)
 
   /* tasks */
 

@@ -220,7 +220,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   def headOption = if (nonEmpty) Some(head) else None
 
-  def tail = drop(1)
+  def tail(implicit @local cc: CanThrow) = drop(1)
 
   def last = {
     var lst = head
@@ -230,7 +230,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   def lastOption = if (nonEmpty) Some(last) else None
 
-  def init = take(size - 1)
+  def init(implicit @local cc: CanThrow) = take(size - 1)
 
   /** Creates a new parallel iterator used to traverse the elements of this parallel collection.
    *  This iterator is more specific than the iterator of the returned by `iterator`, and augmented
@@ -372,7 +372,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @throws UnsupportedOperationException
    *  if this $coll is empty.
    */
-  def reduce[U >: T](op: (U, U) => U)(@local cc: CanThrow): U = {
+  def reduce[U >: T](op: (U, U) => U)(implicit @local cc: CanThrow): U = {
     tasksupport.executeAndWaitResult(new Reduce(op, splitter) mapResult { _.get })(cc)
   }
 
@@ -390,7 +390,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @return        An option value containing result of applying reduce operator `op` between all
    *                 the elements if the collection is nonempty, and `None` otherwise.
    */
-  def reduceOption[U >: T](op: (U, U) => U): Option[U] = if (isEmpty) None else Some(reduce(op))
+  def reduceOption[U >: T](op: (U, U) => U)(implicit @local cc: CanThrow): Option[U] = if (isEmpty) None else Some(reduce(op))
 
   /** Folds the elements of this sequence using the specified associative binary operator.
    *  The order in which the elements are reduced is unspecified and may be nondeterministic.
@@ -407,7 +407,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param op      a binary operator that must be associative
    *  @return        the result of applying fold operator `op` between all the elements and `z`
    */
-  def fold[U >: T](z: U)(op: (U, U) => U)(@local cc: CanThrow): U = {
+  def fold[U >: T](z: U)(op: (U, U) => U)(implicit @local cc: CanThrow): U = {
     tasksupport.executeAndWaitResult(new Fold(z, op, splitter))(cc)
   }
 
@@ -440,7 +440,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param seqop     an operator used to accumulate results within a partition
    *  @param combop    an associative operator used to combine results from different partitions
    */
-  def aggregate[S](z: =>S)(seqop: (S, T) => S, combop: (S, S) => S)(@local cc: CanThrow): S = {
+  def aggregate[S](z: =>S)(seqop: (S, T) => S, combop: (S, S) => S)(implicit @local cc: CanThrow): S = {
     tasksupport.executeAndWaitResult(new Aggregate(() => z, seqop, combop, splitter))(cc)
   }
 
@@ -465,36 +465,36 @@ self: ParIterableLike[T, Repr, Sequential] =>
     tasksupport.executeAndWaitResult(new Foreach(f, splitter))(cc)
   }
 
-  def count(p: T => Boolean)(@local cc: CanThrow): Int = {
+  def count(p: T => Boolean)(implicit @local cc: CanThrow): Int = {
     tasksupport.executeAndWaitResult(new Count(p, splitter))(cc)
   }
 
-  def sum[U >: T](@local cc: CanThrow)(implicit num: Numeric[U]): U = {
+  def sum[U >: T](implicit num: Numeric[U], @local cc: CanThrow): U = {
     tasksupport.executeAndWaitResult(new Sum[U](num, splitter))(cc)
   }
 
-  def product[U >: T](@local cc: CanThrow)(implicit num: Numeric[U]): U = {
+  def product[U >: T](implicit num: Numeric[U], @local cc: CanThrow): U = {
     tasksupport.executeAndWaitResult(new Product[U](num, splitter))(cc)
   }
 
-  def min[U >: T](@local cc: CanThrow)(implicit ord: Ordering[U]): T = {
+  def min[U >: T](implicit ord: Ordering[U], @local cc: CanThrow): T = {
     tasksupport.executeAndWaitResult(new Min(ord, splitter) mapResult { _.get })(cc).asInstanceOf[T]
   }
 
-  def max[U >: T](@local cc: CanThrow)(implicit ord: Ordering[U]): T = {
+  def max[U >: T](implicit ord: Ordering[U], @local cc: CanThrow): T = {
     tasksupport.executeAndWaitResult(new Max(ord, splitter) mapResult { _.get })(cc).asInstanceOf[T]
   }
 
-  def maxBy[S](f: T => S)(@local cc: CanThrow)(implicit cmp: Ordering[S]): T = {
+  def maxBy[S](f: T => S)(implicit cmp: Ordering[S], @local cc: CanThrow): T = {
     if (isEmpty) throw new UnsupportedOperationException("empty.maxBy")
 
-    reduce((x, y) => if (cmp.gteq(f(x), f(y))) x else y)
+    reduce((x: T, y: T) => if (cmp.gteq(f(x), f(y))) x else y)
   }
 
-  def minBy[S](f: T => S)(@local cc: CanThrow)(implicit cmp: Ordering[S]): T = {
+  def minBy[S](f: T => S)(implicit cmp: Ordering[S], @local cc: CanThrow): T = {
     if (isEmpty) throw new UnsupportedOperationException("empty.minBy")
 
-    reduce((x, y) => if (cmp.lteq(f(x), f(y))) x else y)
+    reduce((x: T, y: T) => if (cmp.lteq(f(x), f(y))) x else y)
   }
 
   def map[S, That](f: T => S)(implicit bf: CanBuildFrom[Repr, S, That], @local cc: CanThrow): That = if (bf(repr).isCombiner) {
@@ -504,7 +504,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     tasksupport.executeAndWaitResult(new Map[S, That](f, pbf, splitter) mapResult { _.result })
   } otherwise seq.map(f)(bf2seq(bf))*/
 
-  def collect[S, That](pf: PartialFunction[T, S])(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, S, That]): That = if (bf(repr).isCombiner) {
+  def collect[S, That](pf: PartialFunction[T, S])(implicit bf: CanBuildFrom[Repr, S, That], @local cc: CanThrow): That = if (bf(repr).isCombiner) {
     tasksupport.executeAndWaitResult(new Collect[S, That](pf, combinerFactory(() => bf(repr).asCombiner), splitter) mapResult { _.resultWithTaskSupport })(cc)
   } else setTaskSupport(seq.collect(pf)(bf2seq(bf)), tasksupport)
   /*bf ifParallel { pbf =>
@@ -525,7 +525,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param pred    a predicate used to test elements
    *  @return        true if `p` holds for all elements, false otherwise
    */
-  def forall(@plocal pred: T => Boolean)(@local cc: CanThrow): Boolean = {
+  def forall(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Boolean = {
     tasksupport.executeAndWaitResult(new Forall(pred, splitter assign new DefaultSignalling with VolatileAbort))(cc)
   }
 
@@ -536,7 +536,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param pred    a predicate used to test elements
    *  @return        true if `p` holds for some element, false otherwise
    */
-  def exists(pred: T => Boolean)(@local cc: CanThrow): Boolean = {
+  def exists(pred: T => Boolean)(implicit @local cc: CanThrow): Boolean = {
     tasksupport.executeAndWaitResult(new Exists(pred, splitter assign new DefaultSignalling with VolatileAbort))(cc)
   }
 
@@ -551,7 +551,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param pred     predicate used to test the elements
    *  @return         an option value with the element if such an element exists, or `None` otherwise
    */
-  def find(@plocal pred: T => Boolean)(@local cc: CanThrow): Option[T] = {
+  def find(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Option[T] = {
     tasksupport.executeAndWaitResult(new Find(pred, splitter assign new DefaultSignalling with VolatileAbort))(cc)
   }
 
@@ -635,7 +635,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     }
   }
 
-  def partition(pred: T => Boolean)(@local cc: CanThrow): (Repr, Repr) = {
+  def partition(pred: T => Boolean)(implicit @local cc: CanThrow): (Repr, Repr) = {
     tasksupport.executeAndWaitResult(
       new Partition(pred, combinerFactory, combinerFactory, splitter) mapResult {
         p => (p._1.resultWithTaskSupport, p._2.resultWithTaskSupport)
@@ -643,14 +643,14 @@ self: ParIterableLike[T, Repr, Sequential] =>
     )(cc)
   }
 
-  def groupBy[K](f: T => K)(@local cc: CanThrow): immutable.ParMap[K, Repr] = {
+  def groupBy[K](f: T => K)(implicit @local cc: CanThrow): immutable.ParMap[K, Repr] = {
     val r = tasksupport.executeAndWaitResult(new GroupBy(f, () => HashMapCombiner[K, T], splitter) mapResult {
       rcb => rcb.groupByKey(() => combinerFactory())(cc)
     })(cc)
     setTaskSupport(r, tasksupport)
   }
 
-  def take(n: Int)(@local cc: CanThrow): Repr = {
+  def take(n: Int)(implicit @local cc: CanThrow): Repr = {
     val actualn = if (size > n) n else size
     if (actualn < MIN_FOR_COPY) take_sequential(actualn)
     else tasksupport.executeAndWaitResult(new Take(actualn, combinerFactory, splitter) mapResult {
@@ -670,7 +670,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     cb.resultWithTaskSupport
   }
 
-  def drop(n: Int)(@local cc: CanThrow): Repr = {
+  def drop(n: Int)(implicit @local cc: CanThrow): Repr = {
     val actualn = if (size > n) n else size
     if ((size - actualn) < MIN_FOR_COPY) drop_sequential(actualn)
     else tasksupport.executeAndWaitResult(new Drop(actualn, combinerFactory, splitter) mapResult { _.resultWithTaskSupport })(cc)
@@ -684,7 +684,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     cb.resultWithTaskSupport
   }
 
-  override def slice(unc_from: Int, unc_until: Int)(@local cc: CanThrow): Repr = {
+  override def slice(unc_from: Int, unc_until: Int)(implicit @local cc: CanThrow): Repr = {
     val from = unc_from min size max 0
     val until = unc_until min size max from
     if ((until - from) <= MIN_FOR_COPY) slice_sequential(from, until)
@@ -702,7 +702,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     cb.resultWithTaskSupport
   }
 
-  def splitAt(n: Int)(@local cc: CanThrow): (Repr, Repr) = {
+  def splitAt(n: Int)(implicit @local cc: CanThrow): (Repr, Repr) = {
     tasksupport.executeAndWaitResult(
       new SplitAt(n, combinerFactory, combinerFactory, splitter) mapResult {
         p => (p._1.resultWithTaskSupport, p._2.resultWithTaskSupport)
@@ -726,7 +726,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *
    *    @return           a new $coll containing the prefix scan of the elements in this $coll
    */
-  def scan[U >: T, That](z: U)(op: (U, U) => U)(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, U, That]): That = if (bf(repr).isCombiner) {
+  def scan[U >: T, That](z: U)(op: (U, U) => U)(implicit bf: CanBuildFrom[Repr, U, That], @local cc: CanThrow): That = if (bf(repr).isCombiner) {
     if (tasksupport.parallelismLevel > 1) {
       if (size > 0) tasksupport.executeAndWaitResult(new CreateScanTree(0, size, z, op, splitter) mapResult {
         tree => tasksupport.executeAndWaitResult(new FromScanTree(tree, z, op, combinerFactory(() => bf(repr).asCombiner)) mapResult {
@@ -748,7 +748,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @param pred   the predicate used to test the elements
    *  @return       the longest prefix of this $coll of elements that satisfy the predicate `pred`
    */
-  def takeWhile(pred: T => Boolean)(@local cc: CanThrow): Repr = {
+  def takeWhile(pred: T => Boolean)(implicit @local cc: CanThrow): Repr = {
     val cbf = combinerFactory
     if (cbf.doesShareCombiners) {
       val parseqspan = toSeq(cc).takeWhile(pred)(cc)
@@ -773,7 +773,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @return       a pair consisting of the longest prefix of the collection for which all
    *                the elements satisfy `pred`, and the rest of the collection
    */
-  def span(pred: T => Boolean)(@local cc: CanThrow): (Repr, Repr) = {
+  def span(pred: T => Boolean)(implicit @local cc: CanThrow): (Repr, Repr) = {
     val cbf = combinerFactory
     if (cbf.doesShareCombiners) {
       val (xs, ys) = toSeq(cc).span(pred)(cc)
@@ -802,7 +802,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
    *  @return       a collection composed of all the elements after the longest prefix of elements
    *                in this $coll that satisfy the predicate `pred`
    */
-  def dropWhile(pred: T => Boolean)(@local cc: CanThrow): Repr = {
+  def dropWhile(pred: T => Boolean)(implicit @local cc: CanThrow): Repr = {
     val cntx = new DefaultSignalling with AtomicIndexFlag
     cntx.setIndexFlag(Int.MaxValue)
     tasksupport.executeAndWaitResult(
@@ -812,24 +812,24 @@ self: ParIterableLike[T, Repr, Sequential] =>
     )(cc)
   }
 
-  def copyToArray[U >: T](xs: Array[U])(@local cc: CanThrow): Unit = copyToArray(xs, 0)(cc)
+  def copyToArray[U >: T](xs: Array[U])(implicit @local cc: CanThrow): Unit = copyToArray(xs, 0)(cc)
 
-  def copyToArray[U >: T](xs: Array[U], start: Int)(@local cc: CanThrow): Unit = copyToArray(xs, start, xs.length - start)(cc)
+  def copyToArray[U >: T](xs: Array[U], start: Int)(implicit @local cc: CanThrow): Unit = copyToArray(xs, start, xs.length - start)(cc)
 
-  def copyToArray[U >: T](xs: Array[U], start: Int, len: Int)(@local cc: CanThrow) = if (len > 0) {
+  def copyToArray[U >: T](xs: Array[U], start: Int, len: Int)(implicit @local cc: CanThrow) = if (len > 0) {
     tasksupport.executeAndWaitResult(new CopyToArray(start, len, xs, splitter))(cc)
   }
 
   def sameElements[U >: T](that: GenIterable[U]) = seq.sameElements(that)
 
-  def zip[U >: T, S, That](that: GenIterable[S])(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
+  def zip[U >: T, S, That](that: GenIterable[S])(implicit bf: CanBuildFrom[Repr, (U, S), That], @local cc: CanThrow): That = if (bf(repr).isCombiner && that.isParSeq) {
     val thatseq = that.asParSeq
     tasksupport.executeAndWaitResult(new Zip(combinerFactory(() => bf(repr).asCombiner), splitter, thatseq.splitter) mapResult { _.resultWithTaskSupport })(cc)
   } else setTaskSupport(seq.zip(that)(bf2seq(bf)), tasksupport)
 
-  def zipWithIndex[U >: T, That](implicit bf: CanBuildFrom[Repr, (U, Int), That]): That = this zip immutable.ParRange(0, size, 1, inclusive = false)
+  def zipWithIndex[U >: T, That](implicit bf: CanBuildFrom[Repr, (U, Int), That], @local cc: CanThrow): That = this zip immutable.ParRange(0, size, 1, inclusive = false)
 
-  def zipAll[S, U >: T, That](that: GenIterable[S], thisElem: U, thatElem: S)(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
+  def zipAll[S, U >: T, That](that: GenIterable[S], thisElem: U, thatElem: S)(implicit bf: CanBuildFrom[Repr, (U, S), That], @local cc: CanThrow): That = if (bf(repr).isCombiner && that.isParSeq) {
     val thatseq = that.asParSeq
     tasksupport.executeAndWaitResult(
       new ZipAll(size max thatseq.length, thisElem, thatElem, combinerFactory(() => bf(repr).asCombiner), splitter, thatseq.splitter) mapResult {
@@ -842,14 +842,14 @@ self: ParIterableLike[T, Repr, Sequential] =>
     tasksupport.executeAndWaitResult(new ToParCollection(combinerFactory(cbf), splitter) mapResult { _.resultWithTaskSupport })(cc)
   }
 
-  protected def toParMap[K, V, That](cbf: () => Combiner[(K, V), That])(@local cc: CanThrow)(implicit ev: T <:< (K, V)): That = {
+  protected def toParMap[K, V, That](cbf: () => Combiner[(K, V), That])(implicit ev: T <:< (K, V), @local cc: CanThrow): That = {
     tasksupport.executeAndWaitResult(new ToParMap(combinerFactory(cbf), splitter)(ev) mapResult { _.resultWithTaskSupport })(cc)
   }
 
   @deprecated("Use .seq.view instead", "2.11.0")
   def view = seq.view
 
-  override def toArray[U >: T: ClassTag](@local cc: CanThrow): Array[U] = {
+  override def toArray[U >: T: ClassTag](implicit @local cc: CanThrow): Array[U] = {
     val arr = new Array[U](size)
     copyToArray(arr)(cc)
     arr
@@ -875,7 +875,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   override def toSet[U >: T](implicit @local cc: CanThrow): immutable.ParSet[U] = toParCollection[U, immutable.ParSet[U]](() => immutable.ParSet.newCombiner[U])
 
-  override def toMap[K, V](implicit ev: T <:< (K, V), @local cc: CanThrow): immutable.ParMap[K, V] = toParMap[K, V, immutable.ParMap[K, V]](() => immutable.ParMap.newCombiner[K, V])(cc)
+  override def toMap[K, V](implicit ev: T <:< (K, V), @local cc: CanThrow): immutable.ParMap[K, V] = toParMap[K, V, immutable.ParMap[K, V]](() => immutable.ParMap.newCombiner[K, V])
 
   override def toVector(implicit @local cc: CanThrow): Vector[T] = to[Vector]
 

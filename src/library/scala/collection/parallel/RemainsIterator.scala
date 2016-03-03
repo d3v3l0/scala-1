@@ -649,7 +649,7 @@ self =>
 
   override def zipAllParSeq[S, U >: T, R >: S](that: SeqSplitter[S], thisElem: U, thatElem: R) = new ZippedAll[U, R](that, thisElem, thatElem)
 
-  def reverse(@local cc: CanThrow): SeqSplitter[T] = {
+  def reverse(implicit @local cc: CanThrow): SeqSplitter[T] = {
     val pa = mutable.ParArray.fromTraversables(self).reverse(cc)
     new pa.ParArrayIterator {
       override def reverse = self

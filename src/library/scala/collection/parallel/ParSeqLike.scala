@@ -104,7 +104,7 @@ self =>
    *  @return      the length of the longest segment of elements starting at `from` and
    *               satisfying the predicate
    */
-  def segmentLength(@plocal p: T => Boolean, from: Int)(@local cc: CanThrow): Int = if (from >= length) 0 else {
+  def segmentLength(@plocal p: T => Boolean, from: Int)(implicit @local cc: CanThrow): Int = if (from >= length) 0 else {
     val realfrom = if (from < 0) 0 else from
     val ctx = new DefaultSignalling with AtomicIndexFlag
     ctx.setIndexFlag(Int.MaxValue)
@@ -122,7 +122,7 @@ self =>
    *  @return      the index `>= from` of the first element of this $coll that satisfies the predicate `p`,
    *               or `-1`, if none exists
    */
-  def indexWhere(p: T => Boolean, from: Int)(@local cc: CanThrow): Int = if (from >= length) -1 else {
+  def indexWhere(p: T => Boolean, from: Int)(implicit @local cc: CanThrow): Int = if (from >= length) -1 else {
     val realfrom = if (from < 0) 0 else from
     val ctx = new DefaultSignalling with AtomicIndexFlag
     ctx.setIndexFlag(Int.MaxValue)
@@ -140,18 +140,18 @@ self =>
    *  @return      the index `<= end` of the first element of this $coll that satisfies the predicate `p`,
    *               or `-1`, if none exists
    */
-  def lastIndexWhere(p: T => Boolean, end: Int)(@local cc: CanThrow): Int = if (end < 0) -1 else {
+  def lastIndexWhere(p: T => Boolean, end: Int)(implicit @local cc: CanThrow): Int = if (end < 0) -1 else {
     val until = if (end >= length) length else end + 1
     val ctx = new DefaultSignalling with AtomicIndexFlag
     ctx.setIndexFlag(Int.MinValue)
     tasksupport.executeAndWaitResult(new LastIndexWhere(p, 0, splitter.psplitWithSignalling(until, length - until)(0) assign ctx))(cc)
   }
 
-  def reverse(@local cc: CanThrow): Repr = {
+  def reverse(implicit @local cc: CanThrow): Repr = {
     tasksupport.executeAndWaitResult(new Reverse(() => newCombiner, splitter) mapResult { _.resultWithTaskSupport })(cc)
   }
 
-  def reverseMap[S, That](f: T => S)(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, S, That]): That = if (bf(repr).isCombiner) {
+  def reverseMap[S, That](f: T => S)(implicit bf: CanBuildFrom[Repr, S, That], @local cc: CanThrow): That = if (bf(repr).isCombiner) {
     tasksupport.executeAndWaitResult(
       new ReverseMap[S, That](f, () => bf(repr).asCombiner, splitter) mapResult { _.resultWithTaskSupport }
     )(cc)
@@ -169,7 +169,7 @@ self =>
    *  @param offset  the starting offset for the search
    *  @return        `true` if there is a sequence `that` starting at `offset` in this sequence, `false` otherwise
    */
-  def startsWith[S](that: GenSeq[S], offset: Int)(@local cc: CanThrow): Boolean = that ifParSeq { pthat =>
+  def startsWith[S](that: GenSeq[S], offset: Int)(implicit @local cc: CanThrow): Boolean = that ifParSeq { pthat =>
     if (offset < 0 || offset >= length) offset == length && pthat.length == 0
     else if (pthat.length == 0) true
     else if (pthat.length > length - offset) false
@@ -181,7 +181,7 @@ self =>
     }
   } otherwise seq.startsWith(that, offset)
 
-  override def sameElements[U >: T](that: GenIterable[U])(@local cc: CanThrow): Boolean = that ifParSeq { pthat =>
+  override def sameElements[U >: T](that: GenIterable[U])(implicit @local cc: CanThrow): Boolean = that ifParSeq { pthat =>
     val ctx = new DefaultSignalling with VolatileAbort
     length == pthat.length && tasksupport.executeAndWaitResult(new SameElements(splitter assign ctx, pthat.splitter))(cc)
   } otherwise seq.sameElements(that)
@@ -194,7 +194,7 @@ self =>
    *  @param that     the sequence to test
    *  @return         `true` if this $coll has `that` as a suffix, `false` otherwise
    */
-  def endsWith[S](that: GenSeq[S])(@local cc: CanThrow): Boolean = that ifParSeq { pthat =>
+  def endsWith[S](that: GenSeq[S])(implicit @local cc: CanThrow): Boolean = that ifParSeq { pthat =>
     if (that.length == 0) true
     else if (that.length > length) false
     else {
@@ -204,7 +204,7 @@ self =>
     }
   } otherwise seq.endsWith(that)
 
-  def patch[U >: T, That](from: Int, patch: GenSeq[U], replaced: Int)(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, U, That]): That = {
+  def patch[U >: T, That](from: Int, patch: GenSeq[U], replaced: Int)(implicit bf: CanBuildFrom[Repr, U, That], @local cc: CanThrow): That = {
     val realreplaced = replaced min (length - from)
     if (patch.isParSeq && bf(repr).isCombiner && (size - realreplaced + patch.size) > MIN_FOR_COPY) {
       val that = patch.asParSeq
@@ -233,7 +233,7 @@ self =>
     setTaskSupport(b.result(), tasksupport)
   }
 
-  def updated[U >: T, That](index: Int, elem: U)(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, U, That]): That = if (bf(repr).isCombiner) {
+  def updated[U >: T, That](index: Int, elem: U)(implicit bf: CanBuildFrom[Repr, U, That], @local cc: CanThrow): That = if (bf(repr).isCombiner) {
     tasksupport.executeAndWaitResult(
       new Updated(index, elem, combinerFactory(() => bf(repr).asCombiner), splitter) mapResult {
         _.resultWithTaskSupport
@@ -244,26 +244,26 @@ self =>
     tasksupport.executeAndWaitResult(new Updated(index, elem, pbf, splitter) mapResult { _.result })
   } otherwise seq.updated(index, elem)(bf2seq(bf))*/
 
-  def +:[U >: T, That](elem: U)(implicit bf: CanBuildFrom[Repr, U, That]): That = {
+  def +:[U >: T, That](elem: U)(implicit bf: CanBuildFrom[Repr, U, That], @local cc: CanThrow): That = {
     patch(0, mutable.ParArray(elem), 0)
   }
 
-  def :+[U >: T, That](elem: U)(implicit bf: CanBuildFrom[Repr, U, That]): That = {
+  def :+[U >: T, That](elem: U)(implicit bf: CanBuildFrom[Repr, U, That], @local cc: CanThrow): That = {
     patch(length, mutable.ParArray(elem), 0)
   }
 
-  def padTo[U >: T, That](len: Int, elem: U)(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, U, That]): That = if (length < len) {
+  def padTo[U >: T, That](len: Int, elem: U)(implicit bf: CanBuildFrom[Repr, U, That], @local cc: CanThrow): That = if (length < len) {
     patch(length, new immutable.Repetition(elem, len - length), 0)
   } else patch(length, Nil, 0)
 
-  override def zip[U >: T, S, That](that: GenIterable[S])(@local cc: CanThrow)(implicit bf: CanBuildFrom[Repr, (U, S), That]): That = if (bf(repr).isCombiner && that.isParSeq) {
+  override def zip[U >: T, S, That](that: GenIterable[S])(implicit bf: CanBuildFrom[Repr, (U, S), That], @local cc: CanThrow): That = if (bf(repr).isCombiner && that.isParSeq) {
     val thatseq = that.asParSeq
     tasksupport.executeAndWaitResult(
       new Zip(length min thatseq.length, combinerFactory(() => bf(repr).asCombiner), splitter, thatseq.splitter) mapResult {
         _.resultWithTaskSupport
       }
     )(cc)
-  } else super.zip(that)(cc)(bf)
+  } else super.zip(that)(bf, cc)
 
   /** Tests whether every element of this $coll relates to the
    *  corresponding element of another parallel sequence by satisfying a test predicate.
@@ -277,7 +277,7 @@ self =>
    *                   `p(x, y)` is `true` for all corresponding elements `x` of this $coll
    *                   and `y` of `that`, otherwise `false`
    */
-  def corresponds[S](that: GenSeq[S])(p: (T, S) => Boolean)(@local cc: CanThrow): Boolean = that ifParSeq { pthat =>
+  def corresponds[S](that: GenSeq[S])(p: (T, S) => Boolean)(implicit @local cc: CanThrow): Boolean = that ifParSeq { pthat =>
     val ctx = new DefaultSignalling with VolatileAbort
     length == pthat.length && tasksupport.executeAndWaitResult(new Corresponds(p, splitter assign ctx, pthat.splitter))(cc)
   } otherwise seq.corresponds(that)(p)
