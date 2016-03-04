@@ -65,7 +65,7 @@ trait FlatHashTable[A] extends FlatHashTable.HashUtils[A] {
    *
    * The serialization format expected is the one produced by `serializeTo`.
    */
-  private[collection] def init(in: java.io.ObjectInputStream, @local f: A => Unit)(@local cc: CanThrow)(implicit @local mct: MaybeCanThrow = mct) {
+  private[collection] def init(in: java.io.ObjectInputStream, @local f: A => Unit)(@local cc: CanThrow) {
   ESC.THROW{
     in.defaultReadObject
 

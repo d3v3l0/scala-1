@@ -232,7 +232,7 @@ object NumericRange {
    *  whether or not it is inclusive.  Throws an exception if step == 0 or
    *  the number of elements exceeds the maximum Int.
    */
-  def count[T](start: T, end: T, step: T, isInclusive: Boolean)(implicit num: Integral[T])(implicit @local mct: MaybeCanThrow = mct): Int = {
+  def count[T](start: T, end: T, step: T, isInclusive: Boolean)(implicit num: Integral[T]): Int = {
     val zero    = num.zero
     val upward  = num.lt(start, end)
     val posStep = num.gt(step, zero)
@@ -351,4 +351,3 @@ object NumericRange {
   )
 
 }
-

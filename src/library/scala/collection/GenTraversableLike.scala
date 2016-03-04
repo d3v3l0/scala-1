@@ -124,7 +124,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *
    *  @return           a new $coll containing the prefix scan of the elements in this $coll
    */
-  def scan[B >: A, That](z: B)(@plocal op: (B, B) => B)(implicit cbf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
+  def scan[B >: A, That](z: B)(@plocal op: (B, B) => B)(implicit cbf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
 
   /** Produces a collection containing cumulative results of applying the
    *  operator going left to right.
@@ -184,12 +184,12 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return       a new collection of type `That` resulting from applying the given function
    *                `f` to each element of this $coll and collecting the results.
    *
-   *  @usecase def map[B](f: A => B, @local mct: MaybeCanThrow = mct): $Coll[B]
+   *  @usecase def map[B](f: A => B, @local mct: MaybeCanThrow): $Coll[B]
    *    @inheritdoc
    *    @return       a new $coll resulting from applying the given function
    *                  `f` to each element of this $coll and collecting the results.
    */
-  def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
+  def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
 
   /** Builds a new collection by applying a partial function to all elements of this $coll
    *  on which the function is defined.
@@ -202,7 +202,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *                `pf` to each element on which it is defined and collecting the results.
    *                The order of the elements is preserved.
    *
-   *  @usecase def collect[B](pf: PartialFunction[A, B], @local mct: MaybeCanThrow = mct): $Coll[B]
+   *  @usecase def collect[B](pf: PartialFunction[A, B], @local mct: MaybeCanThrow): $Coll[B]
    *    @inheritdoc
    *
    *    $collectExample
@@ -211,7 +211,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *                  `pf` to each element on which it is defined and collecting the results.
    *                  The order of the elements is preserved.
    */
-  def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
+  def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
 
   /** Builds a new collection by applying a function to all elements of this $coll
    *  and using the elements of the resulting collections.
@@ -223,7 +223,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return       a new collection of type `That` resulting from applying the given collection-valued function
    *                `f` to each element of this $coll and concatenating the results.
    *
-   *  @usecase def flatMap[B](f: A => GenTraversableOnce[B], @local mct: MaybeCanThrow = mct): $Coll[B]
+   *  @usecase def flatMap[B](f: A => GenTraversableOnce[B], @local mct: MaybeCanThrow): $Coll[B]
    *    @inheritdoc
    *
    *    For example:
@@ -252,7 +252,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *    @return       a new $coll resulting from applying the given collection-valued function
    *                  `f` to each element of this $coll and concatenating the results.
    */
-  def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
+  def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
 
   /** Returns a new $coll containing the elements from the left hand operand followed by the elements from the
    *  right hand operand. The element type of the $coll is the most specific superclass encompassing
@@ -305,7 +305,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return      a new $coll consisting of all elements of this $coll that do not satisfy the given
    *               predicate `p`. Their order may not be preserved.
    */
-  def filterNot(pred: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr
+  def filterNot(pred: A => Boolean)(implicit @local mct: MaybeCanThrow): Repr
 
   /** Partitions this $coll in two ${coll}s according to a predicate.
    *
@@ -315,7 +315,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *              that don't. The relative order of the elements in the resulting ${coll}s
    *              may not be preserved.
    */
-  def partition(pred: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr)
+  def partition(pred: A => Boolean)(implicit @local mct: MaybeCanThrow): (Repr, Repr)
 
   /** Partitions this $coll into a map of ${coll}s according to some discriminator function.
    *
@@ -333,7 +333,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *               for which `f(x)` equals `k`.
    *
    */
-  def groupBy[K](f: A => K)(implicit @local mct: MaybeCanThrow = mct): GenMap[K, Repr]
+  def groupBy[K](f: A => K)(implicit @local mct: MaybeCanThrow): GenMap[K, Repr]
 
   /** Selects first ''n'' elements.
    *  $orderDependent
@@ -341,7 +341,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return a $coll consisting only of the first `n` elements of this $coll,
    *          or else the whole $coll, if it has less than `n` elements.
    */
-  def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr
+  def take(n: Int)(implicit @local mct: MaybeCanThrow): Repr
 
   /** Selects all elements except first ''n'' ones.
    *  $orderDependent
@@ -349,7 +349,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return a $coll consisting of all elements of this $coll except the first `n` ones, or else the
    *          empty $coll, if this $coll has less than `n` elements.
    */
-  def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr
+  def drop(n: Int)(implicit @local mct: MaybeCanThrow): Repr
 
   /** Selects an interval of elements.  The returned collection is made up
    *  of all elements `x` which satisfy the invariant:
@@ -364,7 +364,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *           index `from` extending up to (but not including) index `until`
    *           of this $coll.
    */
-  def slice(unc_from: Int, unc_until: Int)(implicit @local mct: MaybeCanThrow = mct): Repr
+  def slice(unc_from: Int, unc_until: Int)(implicit @local mct: MaybeCanThrow): Repr
 
   /** Splits this $coll into two at a given position.
    *  Note: `c splitAt n` is equivalent to (but possibly more efficient than)
@@ -375,7 +375,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return  a pair of ${coll}s consisting of the first `n`
    *           elements of this $coll, and the other elements.
    */
-  def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr)
+  def splitAt(n: Int)(implicit @local mct: MaybeCanThrow): (Repr, Repr)
 
   /** Takes longest prefix of elements that satisfy a predicate.
    *  $orderDependent
@@ -383,7 +383,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return  the longest prefix of this $coll whose elements all satisfy
    *           the predicate `p`.
    */
-  def takeWhile(pred: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr
+  def takeWhile(pred: A => Boolean)(implicit @local mct: MaybeCanThrow): Repr
 
   /** Splits this $coll into a prefix/suffix pair according to a predicate.
    *
@@ -396,7 +396,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return  a pair consisting of the longest prefix of this $coll whose
    *           elements all satisfy `p`, and the rest of this $coll.
    */
-  def span(pred: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr)
+  def span(pred: A => Boolean)(implicit @local mct: MaybeCanThrow): (Repr, Repr)
 
   /** Drops longest prefix of elements that satisfy a predicate.
    *  $orderDependent
@@ -404,7 +404,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return  the longest suffix of this $coll whose first element
    *           does not satisfy the predicate `p`.
    */
-  def dropWhile(pred: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr
+  def dropWhile(pred: A => Boolean)(implicit @local mct: MaybeCanThrow): Repr
 
   /** Defines the prefix of this object's `toString` representation.
    *

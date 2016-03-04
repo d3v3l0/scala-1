@@ -43,7 +43,7 @@ object RedBlackTree {
     else tree
   }
 
-  def count(tree: Tree[_, _])(implicit @local mct: MaybeCanThrow = mct) = if (tree eq null) 0 else tree.count
+  def count(tree: Tree[_, _]) = if (tree eq null) 0 else tree.count
   /**
    * Count all the nodes with keys greater than or equal to the lower bound and less than the upper bound.
    * The two bounds are optional.
@@ -73,12 +73,12 @@ object RedBlackTree {
   }
   def range[A: Ordering, B](tree: Tree[A, B], from: A, until: A): Tree[A, B] = blacken(doRange(tree, from, until))
   def from[A: Ordering, B](tree: Tree[A, B], from: A): Tree[A, B] = blacken(doFrom(tree, from))
-  def to[A: Ordering, B](tree: Tree[A, B], to: A, @local mct: MaybeCanThrow = mct): Tree[A, B] = blacken(doTo(tree, to))
+  def to[A: Ordering, B](tree: Tree[A, B], to: A): Tree[A, B] = blacken(doTo(tree, to))
   def until[A: Ordering, B](tree: Tree[A, B], key: A): Tree[A, B] = blacken(doUntil(tree, key))
 
-  def drop[A: Ordering, B](tree: Tree[A, B], n: Int)(implicit @local mct: MaybeCanThrow = mct): Tree[A, B] = blacken(doDrop(tree, n))
-  def take[A: Ordering, B](tree: Tree[A, B], n: Int)(implicit @local mct: MaybeCanThrow = mct): Tree[A, B] = blacken(doTake(tree, n))
-  def slice[A: Ordering, B](tree: Tree[A, B], from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Tree[A, B] = blacken(doSlice(tree, from, until))
+  def drop[A: Ordering, B](tree: Tree[A, B], n: Int): Tree[A, B] = blacken(doDrop(tree, n))
+  def take[A: Ordering, B](tree: Tree[A, B], n: Int): Tree[A, B] = blacken(doTake(tree, n))
+  def slice[A: Ordering, B](tree: Tree[A, B], from: Int, until: Int): Tree[A, B] = blacken(doSlice(tree, from, until))
 
   def smallest[A, B](tree: Tree[A, B]): Tree[A, B] = {
     if (tree eq null) throw new NoSuchElementException("empty map")
@@ -530,7 +530,7 @@ object RedBlackTree {
      * functionality works.
      */
     private[this] def startFrom(key: A) : Tree[A,B] = if (root eq null) null else {
-      @tailrec def find(tree: Tree[A, B])(implicit @local mct: MaybeCanThrow = mct): Tree[A, B] =
+      @tailrec def find(tree: Tree[A, B]): Tree[A, B] =
         if (tree eq null) popNext()
         else find(
           if (ordering.lteq(key, tree.key)) goLeft(tree)

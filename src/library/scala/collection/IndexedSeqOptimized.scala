@@ -151,7 +151,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def dropRight(n: Int): Repr = slice(0, length - math.max(n, 0))
 
   override /*TraversableLike*/
-  def splitAt(n: Int): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
+  def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = (take(n), drop(n))
 
   override /*IterableLike*/
   def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = take(prefixLength(p))
@@ -160,7 +160,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = drop(prefixLength(p))
 
   override /*TraversableLike*/
-  def span(@plocal p: A => Boolean): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = splitAt(prefixLength(p))
+  def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = splitAt(prefixLength(p))
 
   override /*IterableLike*/
   def sameElements[B >: A](that: GenIterable[B])(implicit @local mct: MaybeCanThrow = mct): Boolean = that match {

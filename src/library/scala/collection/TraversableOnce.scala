@@ -476,8 +476,8 @@ object TraversableOnce {
     type MaybeCanThrow = TraversableOnce[A]#MaybeCanThrow
     // TODO(leo) use this instead of shadowing with implicit params in methods?
     // @local implicit val mct = new MaybeCanThrow {}
-    def map[B](f: A => B, @local mct: MaybeCanThrow = mct): TraversableOnce[B] = trav.toIterator map f
-    def flatMap[B](f: A => GenTraversableOnce[B], @local mct: MaybeCanThrow = mct): TraversableOnce[B] = trav.toIterator flatMap f
+    def map[B](f: A => B, @local mct: MaybeCanThrow = trav.mct): TraversableOnce[B] = trav.toIterator map f
+    def flatMap[B](f: A => GenTraversableOnce[B], @local mct: MaybeCanThrow = trav.mct): TraversableOnce[B] = trav.toIterator flatMap f
     def withFilter(p: A => Boolean)(implicit @local mct: MaybeCanThrow = trav.mct) = trav.toIterator filter p
     def filter(p: A => Boolean): TraversableOnce[A] = withFilter(p)
   }

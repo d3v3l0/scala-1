@@ -92,8 +92,8 @@ self =>
   override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(from, until min self.length))
   override def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newDroppedWhile(p)
   override def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newTakenWhile(p)
-  override def span(@plocal p: A => Boolean): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (newTakenWhile(p), newDroppedWhile(p))
-  override def splitAt(n: Int): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n)) // !!!
+  override def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
+  override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (This, This) = (take(n), drop(n)) // !!!
   override def reverse: This = newReversed
   override def tail: IndexedSeqView[A, Coll] = if (isEmpty) super.tail else slice(1, length)
 }

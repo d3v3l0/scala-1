@@ -82,7 +82,7 @@ trait HashTable[A, Entry >: Null <: HashEntry[A, Entry]] extends HashTable.HashU
    * Initializes the collection from the input stream. `readEntry` will be called for each
    * entry to be read from the input stream.
    */
-  private[collection] def init(in: java.io.ObjectInputStream, @local readEntry: => Entry)(@local cc: CanThrow)(implicit @local mct: MaybeCanThrow = mct) {
+  private[collection] def init(in: java.io.ObjectInputStream, @local readEntry: => Entry)(@local cc: CanThrow) {
   ESC.THROW{
     in.defaultReadObject
 

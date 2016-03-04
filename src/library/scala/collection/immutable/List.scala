@@ -257,7 +257,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
 
   // dropRight is inherited from LinearSeq
 
-  override def splitAt(n: Int): (List[A], List[A])(implicit @local mct: MaybeCanThrow = mct) = {
+  override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (List[A], List[A]) = {
     val b = new ListBuffer[A]
     var i = 0
     var these = this
@@ -366,7 +366,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     loop(this)
   }
 
-  @inline final override def span(@plocal p: A => Boolean): (List[A], List[A])(implicit @local mct: MaybeCanThrow = mct) = {
+  @inline final override def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (List[A], List[A]) = {
     val b = new ListBuffer[A]
     var these = this
     while (!these.isEmpty && p(these.head)) {

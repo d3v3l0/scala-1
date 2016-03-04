@@ -270,7 +270,7 @@ extends scala.collection.AbstractSeq[Int]
       else new Range.Inclusive(x + step, last, step)
     }
   }
-  final override def span(@plocal p: Int => Boolean): (Range, Range)(implicit @local mct: MaybeCanThrow = mct) = {
+  final override def span(@plocal p: Int => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Range, Range) = {
     val border = argTakeWhile(p)
     if (border == start) (newEmptyRange(start), this)
     else {
@@ -406,7 +406,7 @@ object Range {
    *  If the size of the range exceeds Int.MaxValue, the
    *  result will be negative.
    */
-  def count(start: Int, end: Int, step: Int, isInclusive: Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
+  def count(start: Int, end: Int, step: Int, isInclusive: Boolean): Int = {
     if (step == 0)
       throw new IllegalArgumentException("step cannot be 0.")
 
@@ -429,7 +429,7 @@ object Range {
       else result.toInt
     }
   }
-  def count(start: Int, end: Int, step: Int)(implicit @local mct: MaybeCanThrow = mct): Int =
+  def count(start: Int, end: Int, step: Int): Int =
     count(start, end, step, isInclusive = false)
 
   class Inclusive(start: Int, end: Int, step: Int) extends Range(start, end, step) {

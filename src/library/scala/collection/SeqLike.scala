@@ -253,7 +253,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
      *
      *  @return     (newSeq,cnts,nums)
      */
-    private def init(): (IndexedSeq[A], Array[Int], Array[Int])(implicit @local mct: MaybeCanThrow = mct) = {
+    private def init()(implicit @local mct: MaybeCanThrow = mct): (IndexedSeq[A], Array[Int], Array[Int]) = {
       val m = mutable.HashMap[A, Int]()
 
       // e => (e, weight(e))

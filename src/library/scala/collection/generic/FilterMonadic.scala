@@ -17,8 +17,8 @@ trait FilterMonadic[+A, +Repr] extends Any { self =>
   type LT
   type MaybeCanThrow = CannotThrow
   @local private implicit def mct0 = new CannotThrow {} // TODO(leo) re-think
-  def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
-  def flatMap[B, That](f: A => scala.collection.GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That
+  def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
+  def flatMap[B, That](f: A => scala.collection.GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
   def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow): Unit
   def withFilter(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct0): FilterMonadic[A, Repr]
 }

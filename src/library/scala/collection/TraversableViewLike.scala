@@ -268,15 +268,15 @@ trait TraversableViewLike[+A,
 
   override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
   override def withFilter(@local p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
-  override def partition(@plocal p: A => Boolean): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (newFiltered(p), newFiltered(!p(_)))
+  override def partition(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (This, This) = (newFiltered(p), newFiltered(!p(_)))
   override def init: This = newSliced(SliceInterval(0, size - 1)) // !!! can't call size here.
   override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newDropped(n)
   override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newTaken(n)
   override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(from, until))
   override def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newDroppedWhile(p)
   override def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newTakenWhile(p)
-  override def span(@plocal p: A => Boolean): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (newTakenWhile(p), newDroppedWhile(p))
-  override def splitAt(n: Int): (This, This)(implicit @local mct: MaybeCanThrow = mct) = (newTaken(n), newDropped(n))
+  override def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
+  override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (This, This) = (newTaken(n), newDropped(n))
 
   override def scanLeft[B, That](z: B)(op: (B, A) => B)(implicit bf: CanBuildFrom[This, B, That]): That =
     newForced(thisSeq.scanLeft(z)(op)).asInstanceOf[That]

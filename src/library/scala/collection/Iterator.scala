@@ -552,7 +552,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           is the same as in the original iterator.
    *  @note    Reuse: $consumesOneAndProducesTwoIterators
    */
-  def partition(p: A => Boolean): (Iterator[A], Iterator[A])(implicit @local mct: MaybeCanThrow = mct) = {
+  def partition(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Iterator[A], Iterator[A]) = {
     val self = buffered
     class PartitionIterator(p: A => Boolean) extends AbstractIterator[A] {
       var other: PartitionIterator = _
@@ -579,7 +579,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *           whose elements all satisfy `p`, and the rest of the Iterator.
    *  @note    Reuse: $consumesOneAndProducesTwoIterators
    */
-  def span(p: A => Boolean): (Iterator[A], Iterator[A])(implicit @local mct: MaybeCanThrow = mct) = {
+  def span(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Iterator[A], Iterator[A]) = {
     val self = buffered
 
     // Must be a named class to avoid structural call to finish from trailing iterator

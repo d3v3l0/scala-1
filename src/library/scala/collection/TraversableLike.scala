@@ -323,7 +323,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *           that don't. The relative order of the elements in the resulting ${coll}s
    *           is the same as in the original $coll.
    */
-  def partition(@plocal p: A => Boolean): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = {
+  def partition(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = {
     val l, r = newBuilder
     for (x <- this) (if (p(x)) l else r) += x
     (l.result, r.result)
@@ -557,7 +557,7 @@ trait TraversableLike[+A, +Repr] extends Any
     b.result
   }
 
-  def span(@plocal p: A => Boolean): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = {
+  def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = {
     val l, r = newBuilder
     var toLeft = true
     for (x <- this) {
@@ -567,7 +567,7 @@ trait TraversableLike[+A, +Repr] extends Any
     (l.result, r.result)
   }
 
-  def splitAt(n: Int): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = {
+  def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = {
     val l, r = newBuilder
     l.sizeHintBounded(n, this)
     if (n >= 0) r.sizeHint(this, -n)

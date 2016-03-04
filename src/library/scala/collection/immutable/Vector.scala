@@ -212,7 +212,7 @@ override def companion: GenericCompanion[Vector] = Vector
   override /*IterableLike*/ def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): Vector[A] =
     take(until).drop(from)
 
-  override /*IterableLike*/ def splitAt(n: Int): (Vector[A], Vector[A])(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
+  override /*IterableLike*/ def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (Vector[A], Vector[A]) = (take(n), drop(n))
 
 
   // concat (suboptimal but avoids worst performance gotchas)

@@ -649,7 +649,7 @@ self =>
    * }}}
    *
    */
-  override def partition(@plocal p: A => Boolean): (Stream[A], Stream[A])(implicit @local mct: MaybeCanThrow = mct) = (filter(p(_)), filterNot(p(_)))
+  override def partition(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Stream[A], Stream[A]) = (filter(p(_)), filterNot(p(_)))
 
   /** Returns a stream formed from this stream and the specified stream `that`
    * by associating each element of the former with the element at the same
@@ -824,7 +824,7 @@ self =>
   }
   override def toString = super.mkString(stringPrefix + "(", ", ", ")")
 
-  override def splitAt(n: Int): (Stream[A], Stream[A])(implicit @local mct: MaybeCanThrow = mct) = (take(n), drop(n))
+  override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (Stream[A], Stream[A]) = (take(n), drop(n))
 
   /** Returns the `n` first elements of this `Stream` as another `Stream`, or
    * else the whole `Stream`, if it has less than `n` elements.

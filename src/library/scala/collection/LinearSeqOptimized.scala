@@ -239,7 +239,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   }
 
   override /*TraversableLike*/
-  def span(@plocal p: A => Boolean): (Repr, Repr)(implicit @local mct: MaybeCanThrow = mct) = {
+  def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = {
     var these: Repr = repr
     val b = newBuilder
     while (!these.isEmpty && p(these.head)) {
