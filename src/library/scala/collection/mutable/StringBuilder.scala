@@ -375,7 +375,7 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    *  @param    str       the target string to search for
    *  @return             the first applicable index where target occurs, or -1 if not found.
    */
-  def indexOf(str: String): Int = underlying.indexOf(str)
+  def indexOf(str: String)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.indexOf(str)
 
   /** Finds the index of the first occurrence of the specified substring.
    *
@@ -383,14 +383,14 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    *  @param    fromIndex the smallest index in the source string to consider
    *  @return             the first applicable index where target occurs, or -1 if not found.
    */
-  def indexOf(str: String, fromIndex: Int): Int = underlying.indexOf(str, fromIndex)
+  def indexOf(str: String, fromIndex: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.indexOf(str, fromIndex)
 
   /** Finds the index of the last occurrence of the specified substring.
    *
    *  @param    str       the target string to search for
    *  @return             the last applicable index where target occurs, or -1 if not found.
    */
-  def lastIndexOf(str: String): Int = underlying.lastIndexOf(str)
+  def lastIndexOf(str: String)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.lastIndexOf(str)
 
   /** Finds the index of the last occurrence of the specified substring.
    *
@@ -398,7 +398,7 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    *  @param    fromIndex the smallest index in the source string to consider
    *  @return             the last applicable index where target occurs, or -1 if not found.
    */
-  def lastIndexOf(str: String, fromIndex: Int): Int = underlying.lastIndexOf(str, fromIndex)
+  def lastIndexOf(str: String, fromIndex: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.lastIndexOf(str, fromIndex)
 
   /** Creates a new StringBuilder with the reversed contents of this one.
    *  If surrogate pairs are present, they are treated as indivisible units: each

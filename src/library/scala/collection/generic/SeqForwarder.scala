@@ -36,13 +36,13 @@ trait SeqForwarder[+A] extends Seq[A] with IterableForwarder[A] { self =>
   override def lengthCompare(len: Int): Int = underlying lengthCompare len
   override def isDefinedAt(x: Int): Boolean = underlying isDefinedAt x
   override def segmentLength(@plocal p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.segmentLength(p, from)
-  override def prefixLength(@plocal p: A => Boolean) = underlying prefixLength p
+  override def prefixLength(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct) = underlying prefixLength p
   override def indexWhere(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = underlying indexWhere p
   override def indexWhere(p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.indexWhere(p, from)
-  override def indexOf[B >: A](elem: B): Int = underlying indexOf elem
-  override def indexOf[B >: A](elem: B, from: Int): Int = underlying.indexOf(elem, from)
-  override def lastIndexOf[B >: A](elem: B): Int = underlying lastIndexOf elem
-  override def lastIndexOf[B >: A](elem: B, end: Int): Int = underlying.lastIndexOf(elem, end)
+  override def indexOf[B >: A](elem: B)(implicit @local mct: MaybeCanThrow = mct): Int = underlying indexOf elem
+  override def indexOf[B >: A](elem: B, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.indexOf(elem, from)
+  override def lastIndexOf[B >: A](elem: B)(implicit @local mct: MaybeCanThrow = mct): Int = underlying lastIndexOf elem
+  override def lastIndexOf[B >: A](elem: B, end: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.lastIndexOf(elem, end)
   override def lastIndexWhere(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = underlying lastIndexWhere p
   override def lastIndexWhere(p: A => Boolean, end: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.lastIndexWhere(p, end)
   override def reverseIterator: Iterator[A] = underlying.reverseIterator

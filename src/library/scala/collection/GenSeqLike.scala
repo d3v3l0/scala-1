@@ -95,7 +95,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the length of the longest prefix of this $coll
    *           such that every element of the segment satisfies the predicate `p`.
    */
-  def prefixLength(@plocal p: A => Boolean): Int = segmentLength(p, 0)
+  def prefixLength(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow): Int = segmentLength(p, 0)
 
   /** Finds index of the first element satisfying some predicate after or at some start index.
    *
@@ -125,13 +125,13 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the index of the first element of this $coll that is equal (as determined by `==`)
    *           to `elem`, or `-1`, if none exists.
    *
-   *  @usecase def indexOf(elem: A): Int
+   *  @usecase def indexOf(elem: A)(implicit @local mct: MaybeCanThrow): Int
    *    @inheritdoc
    *
    *    $mayNotTerminateInf
    *
    */
-  def indexOf[B >: A](elem: B): Int = indexOf(elem, 0)
+  def indexOf[B >: A](elem: B)(implicit @local mct: CanThrow): Int = indexOf(elem, 0)
 
   /** Finds index of first occurrence of some value in this $coll after or at some start index.
    *
@@ -141,13 +141,13 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the index `>= from` of the first element of this $coll that is equal (as determined by `==`)
    *           to `elem`, or `-1`, if none exists.
    *
-   *  @usecase def indexOf(elem: A, from: Int): Int
+   *  @usecase def indexOf(elem: A, from: Int)(implicit @local mct: MaybeCanThrow): Int
    *    @inheritdoc
    *
    *    $mayNotTerminateInf
    *
    */
-  def indexOf[B >: A](elem: B, from: Int): Int = indexWhere(elem == _, from)
+  def indexOf[B >: A](elem: B, from: Int)(implicit @local mct: MaybeCanThrow): Int = indexWhere(elem == _, from)
 
   /** Finds index of last occurrence of some value in this $coll.
    *
@@ -156,13 +156,13 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the index of the last element of this $coll that is equal (as determined by `==`)
    *           to `elem`, or `-1`, if none exists.
    *
-   *  @usecase def lastIndexOf(elem: A): Int
+   *  @usecase def lastIndexOf(elem: A)(implicit @local mct: MaybeCanThrow): Int
    *    @inheritdoc
    *
    *    $willNotTerminateInf
    *
    */
-  def lastIndexOf[B >: A](elem: B): Int = lastIndexWhere(elem == _)
+  def lastIndexOf[B >: A](elem: B)(implicit @local mct: MaybeCanThrow): Int = lastIndexWhere(elem == _)
 
   /** Finds index of last occurrence of some value in this $coll before or at a given end index.
    *
@@ -172,10 +172,10 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return  the index `<= end` of the last element of this $coll that is equal (as determined by `==`)
    *           to `elem`, or `-1`, if none exists.
    *
-   *  @usecase def lastIndexOf(elem: A, end: Int): Int
+   *  @usecase def lastIndexOf(elem: A, end: Int)(implicit @local mct: MaybeCanThrow): Int
    *    @inheritdoc
    */
-  def lastIndexOf[B >: A](elem: B, end: Int): Int = lastIndexWhere(elem == _, end)
+  def lastIndexOf[B >: A](elem: B, end: Int)(implicit @local mct: MaybeCanThrow): Int = lastIndexWhere(elem == _, end)
 
   /** Finds index of last element satisfying some predicate.
    *

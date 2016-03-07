@@ -829,7 +829,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *          or -1 if such an element does not exist until the end of the iterator is reached.
    *  @note   Reuse: $consumesIterator
    */
-  def indexOf[B >: A](elem: B): Int = {
+  def indexOf[B >: A](elem: B)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = 0
     var found = false
     while (!found && hasNext) {
