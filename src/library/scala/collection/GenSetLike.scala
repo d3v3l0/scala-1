@@ -117,7 +117,7 @@ extends GenIterableLike[A, Repr]
       (this eq that) ||
       (that canEqual this) &&
       (this.size == that.size) &&
-      (try this subsetOf that.asInstanceOf[GenSet[A]]
+      (try ESC.TRY { implicit cc => this subsetOf that.asInstanceOf[GenSet[A]] } // XXX(leo)
        catch { case ex: ClassCastException => false })
     case _ =>
       false

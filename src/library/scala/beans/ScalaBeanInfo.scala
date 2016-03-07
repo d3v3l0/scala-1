@@ -23,9 +23,11 @@ abstract class ScalaBeanInfo(clazz: java.lang.Class[_],
   import java.beans._
 
   private val pd = new Array[PropertyDescriptor](props.length / 3)
-  private val md =
+  private val md = {
+    @local implicit val cc = new CanThrow {} // XXX(leo)
     for (m <- clazz.getMethods if methods.exists(_ == m.getName))
       yield new MethodDescriptor(m)
+  }
 
   init()
 
@@ -44,4 +46,3 @@ abstract class ScalaBeanInfo(clazz: java.lang.Class[_],
   }
 
 }
-

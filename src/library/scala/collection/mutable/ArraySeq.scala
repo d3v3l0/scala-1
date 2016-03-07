@@ -109,7 +109,7 @@ object ArraySeq extends SeqFactory[ArraySeq] {
   def newBuilder[A]: Builder[A, ArraySeq[A]] =
     new ArrayBuffer[A] mapResult { buf =>
       val result = new ArraySeq[A](buf.length)
-      buf.copyToArray(result.array.asInstanceOf[Array[Any]], 0)
+      buf.copyToArray(result.array.asInstanceOf[Array[Any]], 0)(buf.mct) // XXX(leo)
       result
     }
 }

@@ -39,7 +39,7 @@ self =>
     // passes. Is this really worth keeping? If it is, we should add
     // more sensible implementations of == to Ordering.
     case that: SortedSet[_] if that.ordering == ordering => that.hasAll(this.iterator)
-    case that => super.subsetOf(that)
+    case that => ESC.TRY { cc => super.subsetOf(that)(cc) } // XXX(leo)
   }
 
   /**

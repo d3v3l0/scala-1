@@ -116,13 +116,13 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
       (that canEqual this) &&
       (this.size == that.size) && {
       try {
-        this forall {
+        ESC.TRY { implicit cc => this forall {
           case (k, v) => that.get(k.asInstanceOf[b]) match {
             case Some(`v`) =>
               true
             case _ => false
           }
-        }
+        }}
       } catch {
         case ex: ClassCastException =>
           println("class cast "); false

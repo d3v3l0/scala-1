@@ -124,7 +124,7 @@ trait BufferLike[A, +This <: BufferLike[A, This] with Buffer[A]]
    *  @return   the buffer itself
    */
   def -= (x: A): this.type = {
-    val i = indexOf(x)
+    val i = ESC.TRY { cc => indexOf(x)(cc) }
     if (i != -1) remove(i)
     this
   }

@@ -39,7 +39,7 @@ trait SeqForwarder[+A] extends Seq[A] with IterableForwarder[A] { self =>
   override def prefixLength(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct) = underlying prefixLength p
   override def indexWhere(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = underlying indexWhere p
   override def indexWhere(p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.indexWhere(p, from)
-  override def indexOf[B >: A](elem: B)(implicit @local mct: MaybeCanThrow = mct): Int = underlying indexOf elem
+  override def indexOf[B >: A](elem: B)(implicit @local mct: MaybeCanThrow = mct): Int = ESC.TRY { implicit cc => underlying indexOf elem }
   override def indexOf[B >: A](elem: B, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.indexOf(elem, from)
   override def lastIndexOf[B >: A](elem: B)(implicit @local mct: MaybeCanThrow = mct): Int = underlying lastIndexOf elem
   override def lastIndexOf[B >: A](elem: B, end: Int)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.lastIndexOf(elem, end)

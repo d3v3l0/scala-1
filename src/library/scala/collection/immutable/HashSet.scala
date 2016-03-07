@@ -63,7 +63,7 @@ class HashSet[A] extends AbstractSet[A]
       subsetOf0(that, 0)
     case _ =>
       // call the generic implementation
-      super.subsetOf(that)
+      ESC.TRY { cc => super.subsetOf(that)(cc) }
   }
 
   /**
