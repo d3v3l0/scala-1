@@ -1175,6 +1175,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     override def split = {
       val pits = pit.splitWithSignalling
       val sizes = pits.scanLeft(0)(_ + _.remaining)
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip sizes; if untilp <= n) yield {
         if (untilp + p.remaining < n) new Take(p.remaining, cbf, p)
         else new Take(n - untilp, cbf, p)
@@ -1193,6 +1194,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     override def split = {
       val pits = pit.splitWithSignalling
       val sizes = pits.scanLeft(0)(_ + _.remaining)
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, withp) <- pits zip sizes.tail; if withp >= n) yield {
         if (withp - p.remaining > n) new Drop(0, cbf, p)
         else new Drop(n - withp + p.remaining, cbf, p)
@@ -1211,6 +1213,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     override def split = {
       val pits = pit.splitWithSignalling
       val sizes = pits.scanLeft(0)(_ + _.remaining)
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip sizes; if untilp + p.remaining >= from || untilp <= until) yield {
         val f = (from max untilp) - untilp
         val u = (until min (untilp + p.remaining)) - untilp
@@ -1230,6 +1233,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     override def split = {
       val pits = pit.splitWithSignalling
       val sizes = pits.scanLeft(0)(_ + _.remaining)
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip sizes) yield new SplitAt((at max untilp min (untilp + p.remaining)) - untilp, cbfBefore, cbfAfter, p)
     }
     override def merge(that: SplitAt[U, This]) = result = (result._1 combine that.result._1, result._2 combine that.result._2)
@@ -1247,6 +1251,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     protected[this] def newSubtask(p: IterableSplitter[T]) = throw new UnsupportedOperationException
     override def split = {
       val pits = pit.splitWithSignalling
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(0)(_ + _.remaining)) yield new TakeWhile(pos + untilp, pred, cbf, p)
     }
     override def merge(that: TakeWhile[U, This]) = if (result._2) {
@@ -1272,6 +1277,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     protected[this] def newSubtask(p: IterableSplitter[T]) = throw new UnsupportedOperationException
     override def split = {
       val pits = pit.splitWithSignalling
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(0)(_ + _.remaining)) yield new Span(pos + untilp, pred, cbfBefore, cbfAfter, p)
     }
     override def merge(that: Span[U, This]) = result = if (result._2.size == 0) {
@@ -1327,6 +1333,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     protected[this] def newSubtask(p: IterableSplitter[T]) = unsupported
     override def split = {
       val pits = pit.splitWithSignalling
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(0)(_ + _.remaining); if untilp < len) yield {
         val plen = p.remaining min (len - untilp)
         new CopyToArray[U, This](from + untilp, plen, array, p)
@@ -1384,6 +1391,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     protected[this] def newSubtask(pit: IterableSplitter[T]) = unsupported
     override def split = {
       val pits = pit.splitWithSignalling
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(from)(_ + _.remaining)) yield {
         new CreateScanTree(untilp, p.remaining, z, op, p)
       }

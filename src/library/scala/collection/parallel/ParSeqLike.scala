@@ -349,6 +349,7 @@ self =>
     protected[this] def newSubtask(p: SuperParIterator) = throw new UnsupportedOperationException
     override def split = {
       val pits = pit.splitWithSignalling
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(0)(_ + _.remaining)) yield new SegmentLength(pred, from + untilp, p)
     }
     override def merge(that: SegmentLength) = if (result._2) result = (result._1 + that.result._1, that.result._2)
@@ -368,6 +369,7 @@ self =>
     protected[this] def newSubtask(p: SuperParIterator) = unsupported
     override def split = {
       val pits = pit.splitWithSignalling
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(from)(_ + _.remaining)) yield new IndexWhere(pred, untilp, p)
     }
     override def merge(that: IndexWhere) = result = if (result == -1) that.result else {
@@ -389,6 +391,7 @@ self =>
     protected[this] def newSubtask(p: SuperParIterator) = unsupported
     override def split = {
       val pits = pit.splitWithSignalling
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(pos)(_ + _.remaining)) yield new LastIndexWhere(pred, untilp, p)
     }
     override def merge(that: LastIndexWhere) = result = if (result == -1) that.result else {
@@ -424,6 +427,7 @@ self =>
     override def split = {
       val fp = pit.remaining / 2
       val sp = pit.remaining - fp
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, op) <- pit.psplitWithSignalling(fp, sp) zip otherpit.psplitWithSignalling(fp, sp)) yield new SameElements(p, op)
     }
     override def merge(that: SameElements[U]) = result = result && that.result
@@ -437,6 +441,7 @@ self =>
     protected[this] def newSubtask(p: SuperParIterator) = unsupported
     override def split = {
       val pits = pit.splitWithSignalling
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(0)(_ + _.remaining)) yield new Updated(pos - untilp, elem, pbf, p)
     }
     override def merge(that: Updated[U, That]) = result = result combine that.result
@@ -472,6 +477,7 @@ self =>
     override def split = {
       val fp = pit.remaining / 2
       val sp = pit.remaining - fp
+      @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, op) <- pit.psplitWithSignalling(fp, sp) zip otherpit.psplitWithSignalling(fp, sp)) yield new Corresponds(corr, p, op)
     }
     override def merge(that: Corresponds[S]) = result = result && that.result
