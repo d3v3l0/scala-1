@@ -57,7 +57,7 @@ class HashSet[A] extends AbstractSet[A]
 
   def contains(e: A): Boolean = get0(e, computeHash(e), 0)
 
-  override def subsetOf(that: GenSet[A]) = that match {
+  override def subsetOf(that: GenSet[A])(implicit @local mct: MaybeCanThrow = mct) = that match {
     case that:HashSet[A] =>
       // call the specialized implementation with a level of 0 since both this and that are top-level hash sets
       subsetOf0(that, 0)

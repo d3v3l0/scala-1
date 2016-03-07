@@ -74,7 +74,7 @@ trait SynchronizedSet[A] extends Set[A] {
     super.clear()
   }
 
-  override def subsetOf(that: scala.collection.GenSet[A]) = synchronized {
+  override def subsetOf(that: scala.collection.GenSet[A])(implicit @local mct: MaybeCanThrow = mct) = synchronized {
     super.subsetOf(that)
   }
 
