@@ -201,7 +201,7 @@ trait BitSetLike[+This <: BitSetLike[This] with SortedSet[Int]] extends SortedSe
    *  @return     `true` if this bitset is a subset of `other`, i.e. if
    *              every bit of this set is also an element in `other`.
    */
-  def subsetOf(other: BitSet)(implicit @local mct: MaybeCanThrow = mct): Boolean =
+  def subsetOf(other: BitSet): Boolean =
     (0 until nwords) forall (idx => (this.word(idx) & ~ other.word(idx)) == 0L)
 
   override def addString(sb: StringBuilder, start: String, sep: String, end: String) = {

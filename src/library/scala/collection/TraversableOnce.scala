@@ -278,10 +278,10 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
    */
   def copyToBuffer[B >: A](dest: Buffer[B]): Unit = dest ++= seq
 
-  def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow = mct): Unit =
+  def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow): Unit =
     copyToArray(xs, start, xs.length - start)
 
-  def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow = mct): Unit =
+  def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow): Unit =
     copyToArray(xs, 0, xs.length)
 
   def toArray[B >: A : ClassTag]: Array[B] = {

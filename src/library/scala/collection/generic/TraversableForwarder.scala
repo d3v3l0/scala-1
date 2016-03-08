@@ -61,8 +61,8 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def lastOption: Option[A] = underlying.lastOption
   override def copyToBuffer[B >: A](dest: Buffer[B]) = underlying.copyToBuffer(dest)
   override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) = underlying.copyToArray(xs, start, len)
-  override def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow = mct) = underlying.copyToArray(xs, start)
-  override def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow = mct) = underlying.copyToArray(xs)
+  override def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow) = underlying.copyToArray(xs, start)
+  override def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow) = underlying.copyToArray(xs)
   override def toArray[B >: A: ClassTag]: Array[B] = underlying.toArray
   override def toList: List[A] = underlying.toList
   override def toIterable: Iterable[A] = underlying.toIterable

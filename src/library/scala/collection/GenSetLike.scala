@@ -100,7 +100,7 @@ extends GenIterableLike[A, Repr]
    *  @return     `true` if this set is a subset of `that`, i.e. if
    *              every element of this set is also an element of `that`.
    */
-  def subsetOf(that: GenSet[A])(implicit @local mct: CanThrow): Boolean = this forall that
+  def subsetOf(that: GenSet[A])(implicit @local mct: MaybeCanThrow): Boolean = this forall that
 
   /** Compares this set with another object for equality.
    *
