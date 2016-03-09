@@ -375,7 +375,7 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    *  @param    str       the target string to search for
    *  @return             the first applicable index where target occurs, or -1 if not found.
    */
-  def indexOf(str: String)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.indexOf(str)
+  def indexOf(str: String)(implicit @local mct: MaybeCanThrow): Int = underlying.indexOf(str)
 
   /** Finds the index of the first occurrence of the specified substring.
    *
@@ -390,7 +390,7 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    *  @param    str       the target string to search for
    *  @return             the last applicable index where target occurs, or -1 if not found.
    */
-  def lastIndexOf(str: String)(implicit @local mct: MaybeCanThrow = mct): Int = underlying.lastIndexOf(str)
+  def lastIndexOf(str: String)(implicit @local mct: MaybeCanThrow): Int = underlying.lastIndexOf(str)
 
   /** Finds the index of the last occurrence of the specified substring.
    *

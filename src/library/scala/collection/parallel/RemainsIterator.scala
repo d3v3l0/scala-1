@@ -90,7 +90,7 @@ private[collection] trait AugmentedIterableIterator[+T] extends RemainsIterator[
     r
   }
 
-  override def copyToArray[U >: T](array: Array[U], from: Int, len: Int) {
+  override def copyToArray[U >: T](array: Array[U], from: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) {
     var i = from
     val until = from + len
     while (i < until && hasNext) {

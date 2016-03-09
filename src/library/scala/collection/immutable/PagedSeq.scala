@@ -202,7 +202,7 @@ extends scala.collection.AbstractSeq[T]
   /** The subsequence from index `start` up to
    *  the length of the current sequence.
    */
-  def slice(start: Int)(implicit @local mct: MaybeCanThrow = mct): PagedSeq[T] = slice(start, UndeterminedEnd)
+  def slice(start: Int)(implicit @local mct: MaybeCanThrow): PagedSeq[T] = slice(start, UndeterminedEnd)
 
   /** Convert sequence to string */
   override def toString = {

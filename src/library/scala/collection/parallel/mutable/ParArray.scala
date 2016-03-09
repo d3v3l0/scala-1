@@ -304,7 +304,7 @@ self =>
       this
     }
 
-    override def copyToArray[U >: T](array: Array[U], from: Int, len: Int) {
+    override def copyToArray[U >: T](array: Array[U], from: Int, len: Int)(implicit @local cc: CannotThrow) {
       val totallen = (self.length - i) min len min (array.length - from)
       Array.copy(arr, i, array, from, totallen)
       i += totallen

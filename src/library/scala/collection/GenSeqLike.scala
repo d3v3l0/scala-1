@@ -131,7 +131,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    $mayNotTerminateInf
    *
    */
-  def indexOf[B >: A](elem: B)(implicit @local mct: CanThrow): Int = indexOf(elem, 0)
+  def indexOf[B >: A](elem: B)(implicit @local mct: MaybeCanThrow): Int = indexOf(elem, 0)
 
   /** Finds index of first occurrence of some value in this $coll after or at some start index.
    *
@@ -282,7 +282,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return a new $coll` which is a copy of this $coll with the element at position `index` replaced by `elem`.
    *  @throws IndexOutOfBoundsException if `index` does not satisfy `0 <= index < length`.
    *
-   *  @usecase def updated(index: Int, elem: A, @local mct: MaybeCanThrow): $Coll[A]
+   *  @usecase def updated(index: Int, elem: A): $Coll[A]
    *    @inheritdoc
    *
    *    @return a copy of this $coll with the element at position `index` replaced by `elem`.

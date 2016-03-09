@@ -85,7 +85,7 @@ object Map extends ImmutableMapFactory[Map] {
 
   class WithDefault[A, +B](underlying: Map[A, B], d: A => B) extends scala.collection.Map.WithDefault[A, B](underlying, d) with Map[A, B] {
     override def empty = new WithDefault(underlying.empty, d)
-    override def updated[B1 >: B](key: A, value: B1, @local mct: MaybeCanThrow = mct): WithDefault[A, B1] = new WithDefault[A, B1](underlying.updated[B1](key, value), d)
+    override def updated[B1 >: B](key: A, value: B1): WithDefault[A, B1] = new WithDefault[A, B1](underlying.updated[B1](key, value), d)
     override def + [B1 >: B](kv: (A, B1)): WithDefault[A, B1] = updated(kv._1, kv._2)
     override def - (key: A): WithDefault[A, B] = new WithDefault(underlying - key, d)
     override def withDefault[B1 >: B](d: A => B1): immutable.Map[A, B1] = new WithDefault[A, B1](underlying, d)

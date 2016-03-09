@@ -64,7 +64,7 @@ object Map extends MutableMapFactory[Map] {
     override def += (kv: (A, B)) = {underlying += kv; this}
     def -= (key: A) = {underlying -= key; this}
     override def empty = new WithDefault(underlying.empty, d)
-    override def updated[B1 >: B](key: A, value: B1, @local mct: MaybeCanThrow = mct): WithDefault[A, B1] = new WithDefault[A, B1](underlying.updated[B1](key, value), d)
+    override def updated[B1 >: B](key: A, value: B1): WithDefault[A, B1] = new WithDefault[A, B1](underlying.updated[B1](key, value), d)
     override def + [B1 >: B](kv: (A, B1)): WithDefault[A, B1] = updated(kv._1, kv._2)
     override def - (key: A): WithDefault[A, B] = new WithDefault(underlying - key, d)
 

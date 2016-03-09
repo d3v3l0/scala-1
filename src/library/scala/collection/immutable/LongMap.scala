@@ -265,7 +265,7 @@ extends AbstractMap[Long, T]
 
   def + [S >: T] (kv: (Long, S)): LongMap[S] = updated(kv._1, kv._2)
 
-  override def updated[S >: T](key: Long, value: S, @local mct: MaybeCanThrow = mct): LongMap[S] = this match {
+  override def updated[S >: T](key: Long, value: S): LongMap[S] = this match {
     case LongMap.Bin(prefix, mask, left, right) =>
       if (!hasMatch(key, prefix, mask)) join(key, LongMap.Tip(key, value), prefix, this)
       else if (zero(key, mask)) LongMap.Bin(prefix, mask, left.updated(key, value), right)

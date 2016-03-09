@@ -156,7 +156,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
   override def rangeImpl(from: Option[A], until: Option[A]): TreeSet[A] = newSet(RB.rangeImpl(tree, from, until))
   override def range(from: A, until: A): TreeSet[A] = newSet(RB.range(tree, from, until))
   override def from(from: A): TreeSet[A] = newSet(RB.from(tree, from))
-  override def to(to: A, @local mct: MaybeCanThrow = mct): TreeSet[A] = newSet(RB.to(tree, to))
+  override def to(to: A): TreeSet[A] = newSet(RB.to(tree, to))
   override def until(until: A): TreeSet[A] = newSet(RB.until(tree, until))
 
   override def firstKey = head
