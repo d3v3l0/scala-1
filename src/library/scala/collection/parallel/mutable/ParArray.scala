@@ -511,7 +511,7 @@ self =>
     }
 
     override def drop2combiner[U >: T, This](n: Int, cb: Combiner[U, This]) = {
-      drop(n)
+      ESC.TRY { cc => drop(n)(cc) } // XXX(leo)
       cb.sizeHint(remaining)
       while (i < until) {
         cb += arr(i).asInstanceOf[T]

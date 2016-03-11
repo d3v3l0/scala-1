@@ -118,33 +118,6 @@ self =>
     init(in,
       ESC.THROW{createNewEntry(in.readObject().asInstanceOf[K], in.readObject())}(cc))(cc)
   }}
-
-  private[parallel] override def brokenInvariants = {
-    // bucket by bucket, count elements
-    val buckets = for (i <- 0 until (table.length / sizeMapBucketSize)) yield checkBucket(i)
-
-    // check if each element is in the position corresponding to its key
-    val elems = for (i <- 0 until table.length) yield checkEntry(i)
-
-    buckets.flatMap(x => x) ++ elems.flatMap(x => x)
-  }
-
-  private def checkBucket(i: Int) = {
-    def count(e: HashEntry[K, DefaultEntry[K, V]])(implicit @local cc: CanThrow): Int = if (e eq null) 0 else 1 + count(e.next)
-    val expected = sizemap(i)
-    val found = ((i * sizeMapBucketSize) until ((i + 1) * sizeMapBucketSize)).foldLeft(0) {
-      (acc, c) => acc + count(table(c))
-    }
-    if (found != expected) List("Found " + found + " elements, while sizemap showed " + expected)
-    else Nil
-  }
-
-  private def checkEntry(i: Int) = {
-    def check(e: HashEntry[K, DefaultEntry[K, V]]): List[String] = if (e eq null) Nil else
-      if (index(elemHashCode(e.key)) == i) check(e.next)
-      else ("Element " + e.key + " at " + i + " with " + elemHashCode(e.key) + " maps to " + index(elemHashCode(e.key))) :: check(e.next)
-    check(table(i))
-  }
 }
 
 /** $factoryInfo

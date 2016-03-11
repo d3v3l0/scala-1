@@ -439,8 +439,8 @@ self =>
     var remaining = taken min self.remaining
     def hasNext = remaining > 0
     @local def next = { remaining -= 1; self.next() }
-    def dup: IterableSplitter[T] = self.dup.take(taken)
-    def split: Seq[IterableSplitter[T]] = takeSeq(self.split) { (p, n) => p.take(n) }
+    def dup: IterableSplitter[T] = ESC.TRY { cc => self.dup.take(taken)(cc) } // XXX(leo)
+    def split: Seq[IterableSplitter[T]] = takeSeq(self.split) { (p, n) => ESC.TRY { cc => p.take(n)(cc) } } // XXX(leo)
     protected[this] def takeSeq[PI <: IterableSplitter[T]](sq: Seq[PI])(taker: (PI, Int) => PI) = {
       val sizes = sq.scanLeft(0)(_ + _.remaining)
       val shortened = for ((it, (from, until)) <- sq zip (sizes.init zip sizes.tail)) yield
@@ -573,7 +573,7 @@ self =>
   class Taken(tk: Int) extends super.Taken(tk) with SeqSplitter[T] {
     override def dup = super.dup.asInstanceOf[SeqSplitter[T]]
     override def split: Seq[SeqSplitter[T]] = super.split.asInstanceOf[Seq[SeqSplitter[T]]]
-    def psplit(sizes: Int*): Seq[SeqSplitter[T]] = takeSeq(self.psplit(sizes: _*)) { (p, n) => p.take(n) }
+    def psplit(sizes: Int*): Seq[SeqSplitter[T]] = takeSeq(self.psplit(sizes: _*)) { (p, n) => ESC.TRY { cc => p.take(n)(cc) } } // XXX(leo)
   }
   override private[collection] def newTaken(until: Int): Taken = new Taken(until)
   override def take(n: Int)(implicit @local cc: CanThrow): SeqSplitter[T] = newTaken(n)
