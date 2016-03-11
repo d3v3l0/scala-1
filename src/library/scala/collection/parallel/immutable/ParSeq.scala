@@ -31,7 +31,7 @@ extends scala.collection/*.immutable*/.GenSeq[T]
    with ParSeqLike[T, ParSeq[T], scala.collection.immutable.Seq[T]]
 {
   override def companion: GenericCompanion[ParSeq] with GenericParCompanion[ParSeq] = ParSeq
-  override def toSeq: ParSeq[T] = this
+  override def toSeq(implicit @local cc: CanThrow): ParSeq[T] = this
 }
 
 /** $factoryInfo

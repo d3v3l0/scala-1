@@ -216,7 +216,7 @@ package parallel {
     protected var buckets: Array[UnrolledBuffer[Buck]] @uncheckedVariance = new Array[UnrolledBuffer[Buck]](bucketnumber)
     protected var sz: Int = 0
 
-    def size = sz
+    def size(implicit @local cc: CanThrow) = sz
 
     def clear() = {
       buckets = new Array[UnrolledBuffer[Buck]](bucketnumber)

@@ -67,7 +67,7 @@ self =>
 
   def contains(e: T): Boolean = trie.contains(e)
 
-  override def size = trie.size
+  override def size(implicit @local cc: CanThrow) = trie.size
 
   protected override def reuse[S, That](oldc: Option[Combiner[S, That]], newc: Combiner[S, That]) = oldc match {
     case Some(old) => old

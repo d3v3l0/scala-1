@@ -58,15 +58,15 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
 
   override def stringPrefix = "TreeSet"
 
-  override def size = RB.count(tree)
+  override def size(implicit @local mct: MaybeCanThrow = mct) = RB.count(tree)
 
   override def head = RB.smallest(tree).key
-  override def headOption = if (RB.isEmpty(tree)) None else Some(head)
+  override def headOption(implicit @local mct: MaybeCanThrow = mct) = if (RB.isEmpty(tree)) None else Some(head)
   override def last = RB.greatest(tree).key
-  override def lastOption = if (RB.isEmpty(tree)) None else Some(last)
+  override def lastOption(implicit @local mct: MaybeCanThrow = mct) = if (RB.isEmpty(tree)) None else Some(last)
 
-  override def tail = new TreeSet(RB.delete(tree, firstKey))
-  override def init = new TreeSet(RB.delete(tree, lastKey))
+  override def tail(implicit @local mct: MaybeCanThrow = mct) = new TreeSet(RB.delete(tree, firstKey))
+  override def init(implicit @local mct: MaybeCanThrow = mct) = new TreeSet(RB.delete(tree, lastKey))
 
   override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct) = {
     if (n <= 0) this

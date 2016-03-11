@@ -26,7 +26,7 @@ extends AbstractSet[A]
    with Set[A]
    with Serializable {
 
-  override def size: Int = set.size
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = set.size
 
   override def isEmpty: Boolean = set.isEmpty
 

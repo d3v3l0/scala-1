@@ -62,7 +62,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
 
   resarr.p_size0 += 1                  // we do not use array(0)
   def length: Int = resarr.length - 1  // adjust length accordingly
-  override def size: Int = length
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = length
   override def isEmpty: Boolean = resarr.p_size0 < 2
   override def repr = this
 
@@ -189,7 +189,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
    *
    *  @return   A reversed priority queue.
    */
-  def reverse = {
+  def reverse(implicit @local mct: MaybeCanThrow = mct) = {
     val revq = new PriorityQueue[A]()(new scala.math.Ordering[A] {
       def compare(x: A, y: A) = ord.compare(y, x)
     })

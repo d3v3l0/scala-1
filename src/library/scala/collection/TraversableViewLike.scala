@@ -131,7 +131,7 @@ trait TraversableViewLike[+A,
   }
 
   trait EmptyView extends Transformed[Nothing] {
-    final override def isEmpty = true
+    final override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = true
     final override def foreach[U](@local f: Nothing => U)(implicit @local mct: MaybeCanThrow = mct): Unit = ()
   }
 
@@ -269,7 +269,7 @@ trait TraversableViewLike[+A,
   override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
   override def withFilter(@local p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
   override def partition(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (This, This) = (newFiltered(p), newFiltered(!p(_)))
-  override def init: This = newSliced(SliceInterval(0, size - 1)) // !!! can't call size here.
+  override def init(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(0, size - 1)) // !!! can't call size here.
   override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newDropped(n)
   override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newTaken(n)
   override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(from, until))
@@ -303,7 +303,7 @@ trait TraversableViewLike[+A,
   override def tails: Iterator[This] =
     thisSeq.tails.map(as => newForced(as).asInstanceOf[This])
 
-  override def tail: This =
+  override def tail(implicit @local mct: MaybeCanThrow = mct): This =
     // super.tail would also work as it is currently implemented in terms of drop(Int).
     if (isEmpty) super.tail else newDropped(1)
 

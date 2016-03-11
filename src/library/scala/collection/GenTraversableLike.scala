@@ -61,7 +61,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
 
   def repr: Repr
 
-  def size: Int
+  def size(implicit @local mct: MaybeCanThrow): Int
 
   /** Selects the first element of this $coll.
    *  $orderDependent
@@ -88,7 +88,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *           except the first one.
    *  @throws UnsupportedOperationException if the $coll is empty.
    */
-  def tail: Repr
+  def tail(implicit @local mct: MaybeCanThrow): Repr
 
   /** Selects the last element.
     * $orderDependent
@@ -110,7 +110,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *           except the last one.
    *  @throws UnsupportedOperationException if the $coll is empty.
    */
-  def init: Repr
+  def init(implicit @local mct: MaybeCanThrow): Repr
 
   /** Computes a prefix scan of the elements of the collection.
    *

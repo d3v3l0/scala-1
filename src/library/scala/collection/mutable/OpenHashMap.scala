@@ -71,7 +71,7 @@ extends AbstractMap[Key, Value]
   // Used for tracking inserts so that iterators can determine in concurrent modification has occurred.
   private[this] var modCount = 0
 
-  override def size = _size
+  override def size(implicit @local mct: MaybeCanThrow = mct) = _size
   private[this] def size_=(s : Int) { _size = s }
 
   /** Returns a mangled hash code of the provided key. */
@@ -132,11 +132,11 @@ extends AbstractMap[Key, Value]
     if (entry == null) {
       table(index) = new OpenEntry(key, hash, Some(value))
       modCount += 1
-      size += 1
+      _size += 1
       None
     } else {
       val res = entry.value
-      if (entry.value == None) { size += 1; modCount += 1 }
+      if (entry.value == None) { _size += 1; modCount += 1 }
       entry.value = Some(value)
       res
     }
@@ -147,7 +147,7 @@ extends AbstractMap[Key, Value]
     if (table(index) != null && table(index).value != None){
       val res = table(index).value
       table(index).value = None
-      size -= 1
+      _size -= 1
       deleted += 1
       res
     } else None
@@ -232,7 +232,7 @@ extends AbstractMap[Key, Value]
   }
 
   override def retain(f : (Key, Value) => Boolean) = {
-    foreachUndeletedEntry(entry => if (!f(entry.key, entry.value.get)) {entry.value = None; size -= 1; deleted += 1} )
+    foreachUndeletedEntry(entry => if (!f(entry.key, entry.value.get)) {entry.value = None; _size -= 1; deleted += 1} )
     this
   }
 

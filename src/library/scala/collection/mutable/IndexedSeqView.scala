@@ -86,7 +86,7 @@ self =>
   protected override def newReversed: Transformed[A] = new AbstractTransformed[A] with Reversed
 
   override def filter(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newFiltered(p)
-  override def init: This = newSliced(SliceInterval(0, self.length - 1))
+  override def init(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(0, self.length - 1))
   override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(n, self.length))
   override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(0, n min self.length))
   override def slice(from: Int, until: Int)(implicit @local mct: MaybeCanThrow = mct): This = newSliced(SliceInterval(from, until min self.length))
@@ -94,8 +94,8 @@ self =>
   override def takeWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): This = newTakenWhile(p)
   override def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (This, This) = (newTakenWhile(p), newDroppedWhile(p))
   override def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (This, This) = (take(n), drop(n)) // !!!
-  override def reverse: This = newReversed
-  override def tail: IndexedSeqView[A, Coll] = if (isEmpty) super.tail else slice(1, length)
+  override def reverse(implicit @local mct: MaybeCanThrow = mct): This = newReversed
+  override def tail(implicit @local mct: MaybeCanThrow = mct): IndexedSeqView[A, Coll] = if (isEmpty) super.tail else slice(1, length)
 }
 
 /** An object containing the necessary implicit definitions to make

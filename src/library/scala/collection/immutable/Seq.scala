@@ -31,7 +31,7 @@ trait Seq[+A] extends Iterable[A]
                       with Parallelizable[A, ParSeq[A]]
 {
   override def companion: GenericCompanion[Seq] = Seq
-  override def toSeq: Seq[A] = this
+  override def toSeq(implicit @local mct: MaybeCanThrow = mct): Seq[A] = this
   override def seq: Seq[A] = this
   protected[this] override def parCombiner = ParSeq.newCombiner[A] // if `immutable.SeqLike` gets introduced, please move this there!
 }

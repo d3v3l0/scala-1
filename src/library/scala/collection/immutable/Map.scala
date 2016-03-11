@@ -93,7 +93,7 @@ object Map extends ImmutableMapFactory[Map] {
   }
 
   private object EmptyMap extends AbstractMap[Any, Nothing] with Map[Any, Nothing] with Serializable {
-    override def size: Int = 0
+    override def size(implicit @local mct: MaybeCanThrow = mct): Int = 0
     def get(key: Any): Option[Nothing] = None
     def iterator: Iterator[(Any, Nothing)] = Iterator.empty
     override def updated [B1] (key: Any, value: B1): Map[Any, B1] = new Map1(key, value)
@@ -102,7 +102,7 @@ object Map extends ImmutableMapFactory[Map] {
   }
 
   class Map1[A, +B](key1: A, value1: B) extends AbstractMap[A, B] with Map[A, B] with Serializable {
-    override def size = 1
+    override def size(implicit @local mct: MaybeCanThrow = mct) = 1
     def get(key: A): Option[B] =
       if (key == key1) Some(value1) else None
     def iterator = Iterator((key1, value1))
@@ -118,7 +118,7 @@ object Map extends ImmutableMapFactory[Map] {
   }
 
   class Map2[A, +B](key1: A, value1: B, key2: A, value2: B) extends AbstractMap[A, B] with Map[A, B] with Serializable {
-    override def size = 2
+    override def size(implicit @local mct: MaybeCanThrow = mct) = 2
     def get(key: A): Option[B] =
       if (key == key1) Some(value1)
       else if (key == key2) Some(value2)
@@ -139,7 +139,7 @@ object Map extends ImmutableMapFactory[Map] {
   }
 
   class Map3[A, +B](key1: A, value1: B, key2: A, value2: B, key3: A, value3: B) extends AbstractMap[A, B] with Map[A, B] with Serializable {
-    override def size = 3
+    override def size(implicit @local mct: MaybeCanThrow = mct) = 3
     def get(key: A): Option[B] =
       if (key == key1) Some(value1)
       else if (key == key2) Some(value2)
@@ -163,7 +163,7 @@ object Map extends ImmutableMapFactory[Map] {
   }
 
   class Map4[A, +B](key1: A, value1: B, key2: A, value2: B, key3: A, value3: B, key4: A, value4: B) extends AbstractMap[A, B] with Map[A, B] with Serializable {
-    override def size = 4
+    override def size(implicit @local mct: MaybeCanThrow = mct) = 4
     def get(key: A): Option[B] =
       if (key == key1) Some(value1)
       else if (key == key2) Some(value2)

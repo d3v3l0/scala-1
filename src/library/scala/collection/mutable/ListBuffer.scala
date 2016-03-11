@@ -122,7 +122,7 @@ final class ListBuffer[A]
   override def length = len
 
   // Don't use the inherited size, which forwards to a List and is O(n).
-  override def size = length
+  override def size(implicit @local mct: MaybeCanThrow = mct) = length
 
   // Implementations of abstract methods in Buffer
 

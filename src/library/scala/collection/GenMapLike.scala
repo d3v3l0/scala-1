@@ -112,17 +112,18 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
    */
   override def equals(that: Any): Boolean = that match {
     case that: GenMap[b, _] =>
+      @local implicit val mct = new CanThrow {} // XXX(leo)
       (this eq that) ||
       (that canEqual this) &&
       (this.size == that.size) && {
       try {
-        ESC.TRY { implicit cc => this forall {
+        this forall {
           case (k, v) => that.get(k.asInstanceOf[b]) match {
             case Some(`v`) =>
               true
             case _ => false
           }
-        }}
+        }
       } catch {
         case ex: ClassCastException =>
           println("class cast "); false

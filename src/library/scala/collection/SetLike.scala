@@ -78,7 +78,7 @@ self =>
   protected[this] override def parCombiner = ParSet.newCombiner[A]
 
   /* Overridden for efficiency. */
-  override def toSeq: Seq[A] = toBuffer[A]
+  override def toSeq(implicit @local mct: MaybeCanThrow = mct): Seq[A] = toBuffer[A]
   override def toBuffer[A1 >: A]: mutable.Buffer[A1] = {
     val result = new mutable.ArrayBuffer[A1](size)
     copyToBuffer(result)

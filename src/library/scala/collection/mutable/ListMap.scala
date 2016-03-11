@@ -68,7 +68,7 @@ extends AbstractMap[A, B]
   override def clear() = { elems = List(); siz = 0 }
 
   @deprecatedOverriding("No sensible way to override as this functionality relies upon access to private methods.", "2.11.0")
-  override def size: Int = siz
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = siz
 }
 
 /** $factoryInfo

@@ -47,7 +47,7 @@ class TreeSet[A] private (treeRef: ObjectRef[RB.Tree[A, Null]], from: Option[A],
 
   def this()(implicit ordering: Ordering[A]) = this(new ObjectRef(null), None, None)
 
-  override def size: Int = RB.countInRange(treeRef.elem, from, until)
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = RB.countInRange(treeRef.elem, from, until)
 
   override def stringPrefix = "TreeSet"
 

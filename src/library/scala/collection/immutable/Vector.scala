@@ -82,7 +82,7 @@ override def companion: GenericCompanion[Vector] = Vector
 
   override def par = new ParVector(this)
 
-  override def toVector: Vector[A] = this
+  override def toVector(implicit @local mct: MaybeCanThrow = mct): Vector[A] = this
 
   override def lengthCompare(len: Int): Int = length - len
 
@@ -194,7 +194,7 @@ override def companion: GenericCompanion[Vector] = Vector
     apply(0)
   }
 
-  override /*TraversableLike*/ def tail: Vector[A] = {
+  override /*TraversableLike*/ def tail(implicit @local mct: MaybeCanThrow = mct): Vector[A] = {
     if (isEmpty) throw new UnsupportedOperationException("empty.tail")
     drop(1)
   }
@@ -204,7 +204,7 @@ override def companion: GenericCompanion[Vector] = Vector
     apply(length-1)
   }
 
-  override /*TraversableLike*/ def init: Vector[A] = {
+  override /*TraversableLike*/ def init(implicit @local mct: MaybeCanThrow = mct): Vector[A] = {
     if (isEmpty) throw new UnsupportedOperationException("empty.init")
     dropRight(1)
   }

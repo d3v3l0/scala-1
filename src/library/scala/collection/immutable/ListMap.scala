@@ -62,7 +62,7 @@ extends AbstractMap[A, B]
    *
    *  @return number of mappings in this map.
    */
-  override def size: Int = 0
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = 0
 
   /** Checks if this map maps `key` to a value and return the
    *  value if it exists.
@@ -139,7 +139,7 @@ extends AbstractMap[A, B]
      *
      *  @return number of mappings.
      */
-    override def size: Int = size0(this, 0)
+    override def size(implicit @local mct: MaybeCanThrow = mct): Int = size0(this, 0)
 
     // to allow tail recursion and prevent stack overflows
     @tailrec private def size0(cur: ListMap[A, B1], acc: Int): Int = if (cur.isEmpty) acc else size0(cur.next, acc + 1)

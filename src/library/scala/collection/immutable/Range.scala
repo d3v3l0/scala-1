@@ -138,7 +138,7 @@ extends scala.collection.AbstractSeq[Int]
 
   def isInclusive = false
 
-  override def size = length
+  override def size(implicit @local mct: MaybeCanThrow = mct) = length
   override def length = if (numRangeElements < 0) fail() else numRangeElements
 
   private def description = "%d %s %d by %s".format(start, if (isInclusive) "to" else "until", end, step)
@@ -211,7 +211,7 @@ extends scala.collection.AbstractSeq[Int]
    *
    *  @return  a new range consisting of all the elements of this range except the last one.
    */
-  final override def init: Range = {
+  final override def init(implicit @local mct: MaybeCanThrow = mct): Range = {
     if (isEmpty)
       Nil.init
 
@@ -224,7 +224,7 @@ extends scala.collection.AbstractSeq[Int]
    *
    *  @return  a new range consisting of all the elements of this range except the first one.
    */
-  final override def tail: Range = {
+  final override def tail(implicit @local mct: MaybeCanThrow = mct): Range = {
     if (isEmpty)
       Nil.tail
 
@@ -322,7 +322,7 @@ extends scala.collection.AbstractSeq[Int]
    *
    *  $doesNotUseBuilders
    */
-  final override def reverse: Range =
+  final override def reverse(implicit @local mct: MaybeCanThrow = mct): Range =
     if (isEmpty) this
     else new Range.Inclusive(last, start, -step)
 
@@ -367,7 +367,7 @@ extends scala.collection.AbstractSeq[Int]
 
   override def toIterable = this
 
-  override def toSeq = this
+  override def toSeq(implicit @local mct: MaybeCanThrow = mct) = this
 
   override def equals(other: Any) = other match {
     case x: Range =>

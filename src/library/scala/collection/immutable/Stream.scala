@@ -240,7 +240,7 @@ self =>
    *  @return The tail of the `Stream`.
    *  @throws UnsupportedOperationException if the stream is empty.
    */
-  def tail: Stream[A]
+  def tail(implicit @local mct: MaybeCanThrow = mct): Stream[A]
 
   /** Is the tail of this stream defined? */
   protected def tailDefined: Boolean
@@ -885,7 +885,7 @@ self =>
    *
    *  @throws UnsupportedOperationException if the stream is empty.
    */
-  override def init: Stream[A] =
+  override def init(implicit @local mct: MaybeCanThrow = mct): Stream[A] =
     if (isEmpty) super.init
     else if (tail.isEmpty) Stream.Empty
     else cons(head, tail.init)
@@ -1047,7 +1047,7 @@ self =>
    * // 1
    * }}}
    */
-  override def reverse: Stream[A] = {
+  override def reverse(implicit @local mct: MaybeCanThrow = mct): Stream[A] = {
     var result: Stream[A] = Stream.Empty
     var these = this
     while (!these.isEmpty) {
@@ -1166,9 +1166,9 @@ object Stream extends SeqFactory[Stream] {
   }
 
   object Empty extends Stream[Nothing] {
-    override def isEmpty = true
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = true
     override def head = throw new NoSuchElementException("head of empty stream")
-    override def tail = throw new UnsupportedOperationException("tail of empty stream")
+    override def tail(implicit @local mct: MaybeCanThrow = mct) = throw new UnsupportedOperationException("tail of empty stream")
     def tailDefined = false
   }
 
@@ -1223,12 +1223,12 @@ object Stream extends SeqFactory[Stream] {
   /** A lazy cons cell, from which streams are built. */
   @SerialVersionUID(-602202424901551803L)
   final class Cons[+A](hd: A, tl: => Stream[A]) extends Stream[A] {
-    override def isEmpty = false
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = false
     override def head = hd
     @volatile private[this] var tlVal: Stream[A] = _
     @volatile private[this] var tlGen = tl _
     def tailDefined: Boolean = tlGen eq null
-    override def tail: Stream[A] = {
+    override def tail(implicit @local mct: MaybeCanThrow = mct): Stream[A] = {
       if (!tailDefined)
         synchronized {
           if (!tailDefined) {

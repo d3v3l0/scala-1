@@ -55,9 +55,9 @@ self =>
 
   override def seq = new scala.collection.mutable.HashMap[K, V](hashTableContents)
 
-  def splitter = new ParHashMapIterator(1, table.length, size, table(0).asInstanceOf[DefaultEntry[K, V]])
+  def splitter = ESC.TRY { cc => new ParHashMapIterator(1, table.length, size(cc), table(0).asInstanceOf[DefaultEntry[K, V]]) } // XXX(leo)
 
-  override def size = tableSize
+  override def size(implicit @local cc: CanThrow) = tableSize
 
   override def clear() = clearTable()
 
@@ -154,9 +154,9 @@ extends scala.collection.parallel.BucketCombiner[(K, V), ParHashMap[K, V], Defau
     this
   }
 
-  def result(@local cc: CanThrow): ParHashMap[K, V] = if (size >= (ParHashMapCombiner.numblocks * sizeMapBucketSize)) { // 1024
+  def result(@local cc: CanThrow): ParHashMap[K, V] = if (size(cc) >= (ParHashMapCombiner.numblocks * sizeMapBucketSize)) { // 1024
     // construct table
-    val table = new AddingHashTable(size, tableLoadFactor, seedvalue)
+    val table = new AddingHashTable(size(cc), tableLoadFactor, seedvalue)
     val bucks = buckets.map(b => if (b ne null) b.headPtr else null)
     val insertcount = combinerTaskSupport.executeAndWaitResult(new FillBlocks(bucks, table, 0, bucks.length))(cc)
     table.setSize(insertcount)

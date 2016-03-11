@@ -47,7 +47,7 @@ extends AbstractIterable[(Pub, Evt)]
     log.enqueue((pub, event))
   }
 
-  override def size: Int = log.length
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = log.length
   def iterator: Iterator[(Pub, Evt)] = log.iterator
   def events: Iterator[Evt] = log.iterator map (_._2)
 

@@ -98,14 +98,14 @@ self =>
       (ParSet[K]() ++ this + elem).asInstanceOf[ParSet[K]] // !!! concrete overrides abstract problem
     def - (elem: K)(implicit @local cc: CanThrow): ParSet[K] =
       (ParSet[K]() ++ this - elem).asInstanceOf[ParSet[K]] // !!! concrete overrides abstract problem
-    override def size = self.size
+    override def size(implicit @local cc: CanThrow) = self.size
     override def foreach[S](f: K => S)(implicit @local cc: MaybeCanThrow) = for ((k, v) <- self) f(k)
     override def seq = self.seq.keySet
   }
 
   protected class DefaultValuesIterable extends ParIterable[V] {
     def splitter = valuesIterator(self.splitter)
-    override def size = self.size
+    override def size(implicit @local cc: CanThrow) = self.size
     override def foreach[S](f: V => S)(implicit @local mct: MaybeCanThrow) = for ((k, v) <- self) f(v)
     def seq = self.seq.values
   }
@@ -124,7 +124,7 @@ self =>
     override def contains(key: K) = self.contains(key) && p(key)
     def get(key: K) = if (!p(key)) None else self.get(key)
     def seq = ESC.TRY { implicit cc => self.seq.filterKeys(p) } // XXX(leo)
-    def size = filtered.size
+    def size(implicit @local cc: CanThrow) = filtered.size
     def + [U >: V](kv: (K, U))(implicit @local cc: CanThrow): ParMap[K, U] = ParMap[K, U]() ++ this + kv
     def - (key: K)(implicit @local cc: CanThrow): ParMap[K, V] = ParMap[K, V]() ++ this - key
   }
@@ -132,7 +132,7 @@ self =>
   def mapValues[S](f: V => S): ParMap[K, S] = new ParMap[K, S] {
     override def foreach[Q](g: ((K, S)) => Q)(implicit @local mct: MaybeCanThrow): Unit = for ((k, v) <- self) g((k, f(v)))
     def splitter = self.splitter.map(kv => (kv._1, f(kv._2)))
-    override def size = self.size
+    override def size(implicit @local cc: CanThrow) = self.size
     override def contains(key: K) = self.contains(key)
     def get(key: K) = self.get(key).map(f)
     def seq = self.seq.mapValues(f)

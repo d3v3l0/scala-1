@@ -47,7 +47,7 @@ extends AbstractSeq[A]
 
   /** Is the list empty?
    */
-  override def isEmpty = len == 0
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = len == 0
 
   /** Returns the first element in this list
    */
@@ -55,7 +55,7 @@ extends AbstractSeq[A]
 
   /** Returns the rest of this list
    */
-  override def tail: MutableList[A] = {
+  override def tail(implicit @local mct: MaybeCanThrow = mct): MutableList[A] = {
     val tl = new MutableList[A]
     tailImpl(tl)
     tl

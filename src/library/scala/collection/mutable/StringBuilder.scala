@@ -66,7 +66,7 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    */
   def this(str: String) = this(16, str)
 
-  def toArray: Array[Char] = {
+  def toArray(implicit @local mct: MaybeCanThrow = mct): Array[Char] = {
     val arr = new Array[Char](length)
     underlying.getChars(0, length, arr, 0)
     arr
@@ -407,7 +407,7 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    *  @return   the reversed StringBuilder
    */
   @migration("`reverse` returns a new instance.  Use `reverseContents` to update in place and return that StringBuilder itself.", "2.8.0")
-  override def reverse: StringBuilder = new StringBuilder(new JavaStringBuilder(underlying).reverse)
+  override def reverse(implicit @local mct: MaybeCanThrow = mct): StringBuilder = new StringBuilder(new JavaStringBuilder(underlying).reverse)
 
   override def clone(): StringBuilder = new StringBuilder(new JavaStringBuilder(underlying))
 

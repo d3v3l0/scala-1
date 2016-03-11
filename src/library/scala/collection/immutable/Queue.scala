@@ -81,7 +81,7 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
     else if (in.nonEmpty) in.last
     else throw new NoSuchElementException("head on empty queue")
 
-  override def tail: Queue[A] =
+  override def tail(implicit @local mct: MaybeCanThrow = mct): Queue[A] =
     if (out.nonEmpty) new Queue(in, out.tail)
     else if (in.nonEmpty) new Queue(Nil, in.reverse.tail)
     else throw new NoSuchElementException("tail on empty queue")

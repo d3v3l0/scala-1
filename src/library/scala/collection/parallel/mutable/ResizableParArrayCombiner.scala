@@ -30,14 +30,14 @@ trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedA
   final def newLazyCombiner(c: ArrayBuffer[ExposedArrayBuffer[T]]) = ResizableParArrayCombiner(c)
 
   def allocateAndCopy(@local cc: CanThrow) = if (chain.size > 1) {
-    val arrayseq = new ArraySeq[T](size)
+    val arrayseq = new ArraySeq[T](size(cc))
     val array = arrayseq.array.asInstanceOf[Array[Any]]
 
-    combinerTaskSupport.executeAndWaitResult(new CopyChainToArray(array, 0, size))(cc)
+    combinerTaskSupport.executeAndWaitResult(new CopyChainToArray(array, 0, size(cc)))(cc)
 
     new ParArray(arrayseq)
   } else { // optimisation if there is only 1 array
-    new ParArray(new ExposedArraySeq[T](chain(0).internalArray, size))
+    new ParArray(new ExposedArraySeq[T](chain(0).internalArray, size(cc)))
   }
 
   override def toString = "ResizableParArrayCombiner(" + size + "): " //+ chain

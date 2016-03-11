@@ -106,7 +106,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
    *
    *  $willNotTerminateInf
    */
-  override def size = length
+  override def size(implicit @local mct: MaybeCanThrow = mct) = length
 
   def segmentLength(@plocal p: A => Boolean, from: Int)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = 0
@@ -271,7 +271,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     }
   }
 
-  def reverse: Repr = {
+  def reverse(implicit @local mct: MaybeCanThrow = mct): Repr = {
     var xs: List[A] = List()
     for (x <- this)
       xs = x :: xs
@@ -663,7 +663,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
    *
    *  A new collection will not be built; in particular, lazy sequences will stay lazy.
    */
-  override def toSeq: Seq[A] = thisCollection
+  override def toSeq(implicit @local mct: MaybeCanThrow = mct): Seq[A] = thisCollection
 
   /** Produces the range of all indices of this sequence.
    *

@@ -64,7 +64,7 @@ class Stack[+A] protected (protected val elems: List[A])
   override def isEmpty: Boolean = elems.isEmpty
 
   override def head = elems.head
-  override def tail = new Stack(elems.tail)
+  override def tail(implicit @local mct: MaybeCanThrow = mct) = new Stack(elems.tail)
 
   /** Push an element on the stack.
    *
@@ -116,7 +116,7 @@ class Stack[+A] protected (protected val elems: List[A])
     if (!isEmpty) (elems.head, new Stack(elems.tail))
     else throw new NoSuchElementException("pop of empty stack")
 
-  override def reverse: Stack[A] = new Stack(elems.reverse)
+  override def reverse(implicit @local mct: MaybeCanThrow = mct): Stack[A] = new Stack(elems.reverse)
 
   /** Returns an iterator over all elements on the stack. The iterator
    *  issues elements in the reversed order they were inserted into the

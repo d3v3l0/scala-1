@@ -45,7 +45,7 @@ trait IterableViewLike[+A,
     def iterator: Iterator[B]
     override def foreach[U](@local f: B => U)(implicit @local mct: MaybeCanThrow = mct): Unit = iterator foreach f
     override def toString = viewToString
-    override def isEmpty = !iterator.hasNext
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = !iterator.hasNext
   }
 
   trait EmptyView extends Transformed[Nothing] with super.EmptyView {

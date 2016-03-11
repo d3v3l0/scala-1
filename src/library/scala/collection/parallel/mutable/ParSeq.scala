@@ -35,7 +35,7 @@ self =>
 
   def seq: scala.collection.mutable.Seq[T]
 
-  override def toSeq: ParSeq[T] = this
+  override def toSeq(implicit @local cc: CanThrow): ParSeq[T] = this
 }
 
 

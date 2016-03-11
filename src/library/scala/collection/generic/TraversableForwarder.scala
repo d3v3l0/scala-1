@@ -37,7 +37,7 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow = mct): Unit = underlying foreach f
   override def isEmpty: Boolean = underlying.isEmpty
   override def nonEmpty: Boolean = underlying.nonEmpty
-  override def size: Int = underlying.size
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = underlying.size
   override def hasDefiniteSize = underlying.hasDefiniteSize
   override def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = underlying forall p
   override def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = underlying exists p
@@ -66,7 +66,7 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def toArray[B >: A: ClassTag]: Array[B] = underlying.toArray
   override def toList: List[A] = underlying.toList
   override def toIterable: Iterable[A] = underlying.toIterable
-  override def toSeq: Seq[A] = underlying.toSeq
+  override def toSeq(implicit @local mct: MaybeCanThrow = mct): Seq[A] = underlying.toSeq
   override def toIndexedSeq = underlying.toIndexedSeq
   override def toBuffer[B >: A] = underlying.toBuffer
   override def toStream: Stream[A] = underlying.toStream

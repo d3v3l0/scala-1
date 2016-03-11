@@ -52,7 +52,7 @@ extends AbstractSeq[T] with IndexedSeq[T] with Serializable {
     NumericRange.count(start, end, step, isInclusive)
 
   override def length  = numRangeElements
-  override def isEmpty = length == 0
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = length == 0
   override lazy val last: T =
     if (length == 0) Nil.last
     else locationAfterN(length - 1)
@@ -160,7 +160,7 @@ extends AbstractSeq[T] with IndexedSeq[T] with Serializable {
 
       private lazy val underlyingRange: NumericRange[T] = self
       override def foreach[U](f: A => U)(implicit @local mct: MaybeCanThrow = mct) { underlyingRange foreach (x => f(fm(x))) }
-      override def isEmpty = underlyingRange.isEmpty
+      override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = underlyingRange.isEmpty
       override def apply(idx: Int): A = fm(underlyingRange(idx))
       override def containsTyped(el: A) = underlyingRange exists (x => fm(x) == el)
     }

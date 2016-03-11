@@ -65,7 +65,7 @@ trait GenTraversableOnce[+A] extends Any {
    *
    *  @return    the number of elements in this $coll.
    */
-  def size: Int
+  def size(implicit @local mct: MaybeCanThrow): Int
 
   /** Tests whether the $coll is empty.
    *
@@ -487,7 +487,7 @@ trait GenTraversableOnce[+A] extends Any {
    *             this type must be available.
    *  @return    an array containing all elements of this $coll.
    *
-   *  @usecase def toArray: Array[A]
+   *  @usecase def toArray(implicit @local mct: MaybeCanThrow): Array[A]
    *    @inheritdoc
    *
    *    $willNotTerminateInf
@@ -551,7 +551,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  $willNotTerminateInf
    *  @return a sequence containing all elements of this $coll.
    */
-  def toSeq: GenSeq[A]
+  def toSeq(implicit @local mct: MaybeCanThrow): GenSeq[A]
 
   /** Converts this $coll to a set.
    *  $willNotTerminateInf
@@ -578,7 +578,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  $willNotTerminateInf
    *  @return a vector containing all elements of this $coll.
    */
-  def toVector: Vector[A]
+  def toVector(implicit @local mct: MaybeCanThrow): Vector[A]
 
   /** Converts this $coll into another by copying all elements.
    *  @tparam Col  The collection type to build.

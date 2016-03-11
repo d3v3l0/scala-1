@@ -72,7 +72,7 @@ extends AbstractMap[K, V]
     mask = m; _size = sz; _vacant = vc; _hashes = hz; _keys = kz; _values = vz
   }
 
-  override def size: Int = _size
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = _size
   override def empty: AnyRefMap[K,V] = new AnyRefMap(defaultEntry)
 
   private def imbalanced: Boolean =

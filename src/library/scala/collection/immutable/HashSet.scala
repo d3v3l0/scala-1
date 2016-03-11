@@ -47,7 +47,7 @@ class HashSet[A] extends AbstractSet[A]
 
   override def par = ParHashSet.fromTrie(this)
 
-  override def size: Int = 0
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = 0
 
   override def empty = HashSet.empty[A]
 
@@ -254,7 +254,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
   }
 
   class HashSet1[A](private[HashSet] val key: A, private[HashSet] val hash: Int) extends LeafHashSet[A] {
-    override def size = 1
+    override def size(implicit @local mct: MaybeCanThrow = mct) = 1
 
     override def get0(key: A, hash: Int, level: Int): Boolean =
       (hash == this.hash && key == this.key)
@@ -324,7 +324,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
 
   private[immutable] class HashSetCollision1[A](private[HashSet] val hash: Int, val ks: ListSet[A]) extends LeafHashSet[A] {
 
-    override def size = ks.size
+    override def size(implicit @local mct: MaybeCanThrow = mct) = ks.size
 
     override def get0(key: A, hash: Int, level: Int): Boolean =
       if (hash == this.hash) ks.contains(key) else false
@@ -526,7 +526,7 @@ object HashSet extends ImmutableSetFactory[HashSet] {
     // assertion has to remain disabled until SI-6197 is solved
     // assert(elems.length > 1 || (elems.length == 1 && elems(0).isInstanceOf[HashTrieSet[_]]))
 
-    override def size = size0
+    override def size(implicit @local mct: MaybeCanThrow = mct) = size0
 
     override def get0(key: A, hash: Int, level: Int): Boolean = {
       val index = (hash >>> level) & 0x1f

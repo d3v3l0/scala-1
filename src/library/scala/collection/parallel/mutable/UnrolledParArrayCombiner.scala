@@ -40,10 +40,10 @@ extends Combiner[T, ParArray[T]] {
   }
 
   def result(@local cc: CanThrow) = {
-    val arrayseq = new ArraySeq[T](size)
+    val arrayseq = new ArraySeq[T](size(cc))
     val array = arrayseq.array.asInstanceOf[Array[Any]]
 
-    combinerTaskSupport.executeAndWaitResult(new CopyUnrolledToArray(array, 0, size))(cc)
+    combinerTaskSupport.executeAndWaitResult(new CopyUnrolledToArray(array, 0, size(cc)))(cc)
 
     new ParArray(arrayseq)
   }
@@ -65,7 +65,7 @@ extends Combiner[T, ParArray[T]] {
     case _ => unsupportedop("Cannot combine with combiner of different type.")
   }
 
-  def size = buff.size
+  def size(implicit @local cc: CanThrow) = buff.size
 
   /* tasks */
 

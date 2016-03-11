@@ -54,7 +54,7 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
   override protected[this] def newBuilder : Builder[(A, B), TreeMap[A, B]] =
     TreeMap.newBuilder[A, B]
 
-  override def size = RB.count(tree)
+  override def size(implicit @local mct: MaybeCanThrow = mct) = RB.count(tree)
 
   def this()(implicit ordering: Ordering[A]) = this(null)(ordering)
 
@@ -72,15 +72,15 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
     val smallest = RB.smallest(tree)
     (smallest.key, smallest.value)
   }
-  override def headOption = if (RB.isEmpty(tree)) None else Some(head)
+  override def headOption(implicit @local mct: MaybeCanThrow = mct) = if (RB.isEmpty(tree)) None else Some(head)
   override def last = {
     val greatest = RB.greatest(tree)
     (greatest.key, greatest.value)
   }
-  override def lastOption = if (RB.isEmpty(tree)) None else Some(last)
+  override def lastOption(implicit @local mct: MaybeCanThrow = mct) = if (RB.isEmpty(tree)) None else Some(last)
 
-  override def tail = new TreeMap(RB.delete(tree, firstKey))
-  override def init = new TreeMap(RB.delete(tree, lastKey))
+  override def tail(implicit @local mct: MaybeCanThrow = mct) = new TreeMap(RB.delete(tree, firstKey))
+  override def init(implicit @local mct: MaybeCanThrow = mct) = new TreeMap(RB.delete(tree, lastKey))
 
   override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct) = {
     if (n <= 0) this

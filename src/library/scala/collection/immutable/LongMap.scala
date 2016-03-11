@@ -218,7 +218,7 @@ extends AbstractMap[Long, T]
 
   override def stringPrefix = "LongMap"
 
-  override def isEmpty = this == LongMap.Nil
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = this == LongMap.Nil
 
   override def filter(@plocal f: ((Long, T)) => Boolean)(implicit @local mct: MaybeCanThrow = mct): LongMap[T] = this match {
     case LongMap.Bin(prefix, mask, left, right) => {
@@ -238,7 +238,7 @@ extends AbstractMap[Long, T]
     case LongMap.Nil => LongMap.Nil
   }
 
-  final override def size: Int = this match {
+  final override def size(implicit @local mct: MaybeCanThrow = mct): Int = this match {
     case LongMap.Nil => 0
     case LongMap.Tip(_, _) => 1
     case LongMap.Bin(_, _, left, right) => left.size + right.size

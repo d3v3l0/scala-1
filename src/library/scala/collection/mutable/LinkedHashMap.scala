@@ -55,7 +55,7 @@ class LinkedHashMap[A, B] extends AbstractMap[A, B]
   override type plocal = local[LT]
 
   override def empty = LinkedHashMap.empty[A, B]
-  override def size = tableSize
+  override def size(implicit @local mct: MaybeCanThrow = mct) = tableSize
 
   type Entry = LinkedEntry[A, B]
 

@@ -54,7 +54,7 @@ extends ParSet[T]
 
   override def iterator = splitter
 
-  override def size = tableSize
+  override def size(implicit @local cc: CanThrow) = tableSize
 
   def clear() = clearTable()
 
@@ -74,7 +74,7 @@ extends ParSet[T]
 
   def contains(elem: T) = containsElem(elem)
 
-  def splitter = new ParHashSetIterator(0, table.length, size)
+  def splitter = ESC.TRY { cc => new ParHashSetIterator(0, table.length, size(cc)) } // XXX(leo)
 
   class ParHashSetIterator(start: Int, iteratesUntil: Int, totalElements: Int)
   extends ParFlatHashTableIterator(start, iteratesUntil, totalElements) {
@@ -147,7 +147,7 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
 
   private def parPopulate(@local cc: CanThrow): FlatHashTable.Contents[T] = {
     // construct it in parallel
-    val table = new AddingFlatHashTable(size, tableLoadFactor, seedvalue)
+    val table = new AddingFlatHashTable(size(cc), tableLoadFactor, seedvalue)
     val (inserted, leftovers) = combinerTaskSupport.executeAndWaitResult(new FillBlocks(buckets, table, 0, buckets.length))(cc)
     var leftinserts = 0
     for (entry <- leftovers) leftinserts += table.insertEntry(0, table.tableLength, entry)

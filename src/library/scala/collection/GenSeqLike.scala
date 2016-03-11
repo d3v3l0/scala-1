@@ -201,7 +201,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *
    *  @return A new $coll with all elements of this $coll in reversed order.
    */
-  def reverse: Repr
+  def reverse(implicit @local cc: MaybeCanThrow): Repr
 
   /**
    *  Builds a new collection by applying a function to all elements of this $coll and
@@ -387,7 +387,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    */
   def corresponds[B](that: GenSeq[B])(p: (A, B) => Boolean)(implicit @local mct: MaybeCanThrow): Boolean
 
-  def toSeq: GenSeq[A]
+  def toSeq(implicit @local cc: MaybeCanThrow): GenSeq[A]
 
   /** Produces a new sequence which contains all elements of this $coll and also all elements of
    *  a given sequence. `xs union ys`  is equivalent to `xs ++ ys`.

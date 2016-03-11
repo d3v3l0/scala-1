@@ -106,7 +106,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
     elems
   }
 
-  def size: Int = {
+  def size(implicit @local mct: MaybeCanThrow = mct): Int = {
     var result = 0
     for (x <- self) result += 1
     result
@@ -299,7 +299,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   def toIterable: Iterable[A] = toStream
 
-  def toSeq: Seq[A] = toStream
+  def toSeq(implicit @local mct: MaybeCanThrow = mct): Seq[A] = toStream
 
   def toIndexedSeq: immutable.IndexedSeq[A] = to[immutable.IndexedSeq]
 
@@ -307,7 +307,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   def toSet[B >: A]: immutable.Set[B] = to[immutable.Set].asInstanceOf[immutable.Set[B]]
 
-  def toVector: Vector[A] = to[Vector]
+  def toVector(implicit @local mct: MaybeCanThrow = mct): Vector[A] = to[Vector]
 
   def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, A, Col[A @uV]], @local mct: MaybeCanThrow = mct): Col[A @uV] = {
     val b = cbf()

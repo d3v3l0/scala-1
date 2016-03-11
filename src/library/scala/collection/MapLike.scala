@@ -172,7 +172,7 @@ self =>
     def iterator = keysIterator
     def + (elem: A): Set[A] = (Set[A]() ++ this + elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
     def - (elem: A): Set[A] = (Set[A]() ++ this - elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
-    override def size = self.size
+    override def size(implicit @local mct: MaybeCanThrow = mct) = self.size
     override def foreach[C](f: A => C)(implicit @local mct: MaybeCanThrow = mct) = self.keysIterator foreach f
   }
 
@@ -204,7 +204,7 @@ self =>
    */
   protected class DefaultValuesIterable extends AbstractIterable[B] with Iterable[B] with Serializable {
     def iterator = valuesIterator
-    override def size = self.size
+    override def size(implicit @local mct: MaybeCanThrow = mct) = self.size
     override def foreach[C](f: B => C)(implicit @local mct: MaybeCanThrow = mct) = self.valuesIterator foreach f
   }
 
@@ -246,7 +246,7 @@ self =>
   protected class MappedValues[C](f: B => C) extends AbstractMap[A, C] with DefaultMap[A, C] {
     override def foreach[D](g: ((A, C)) => D)(implicit @local mct: MaybeCanThrow = mct): Unit = for ((k, v) <- self) g((k, f(v)))
     def iterator = for ((k, v) <- self.iterator) yield (k, f(v))
-    override def size = self.size
+    override def size(implicit @local mct: MaybeCanThrow = mct) = self.size
     override def contains(key: A) = self.contains(key)
     def get(key: A) = self.get(key).map(f)
   }
@@ -322,7 +322,7 @@ self =>
   }
 
   /* Overridden for efficiency. */
-  override def toSeq: Seq[(A, B)] = toBuffer[(A, B)]
+  override def toSeq(implicit @local mct: MaybeCanThrow = mct): Seq[(A, B)] = toBuffer[(A, B)]
   override def toBuffer[C >: (A, B)]: mutable.Buffer[C] = {
     val result = new mutable.ArrayBuffer[C](size)
     copyToBuffer(result)

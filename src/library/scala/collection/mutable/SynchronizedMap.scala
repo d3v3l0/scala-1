@@ -32,7 +32,7 @@ trait SynchronizedMap[A, B] extends Map[A, B] {
   abstract override def += (kv: (A, B)): this.type = synchronized[this.type] { super.+=(kv) }
   abstract override def -= (key: A): this.type = synchronized[this.type] { super.-=(key) }
 
-  override def size: Int = synchronized { super.size }
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = synchronized { super.size }
   override def put(key: A, value: B): Option[B] = synchronized { super.put(key, value) }
   override def update(key: A, value: B): Unit = synchronized { super.update(key, value) }
   override def remove(key: A): Option[B] = synchronized { super.remove(key) }

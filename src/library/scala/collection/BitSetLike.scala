@@ -60,7 +60,7 @@ trait BitSetLike[+This <: BitSetLike[This] with SortedSet[Int]] extends SortedSe
     a
   }
 
-  override def size: Int = {
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = {
     var s = 0
     var i = nwords
     while (i > 0) {

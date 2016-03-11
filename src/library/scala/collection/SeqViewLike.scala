@@ -220,7 +220,7 @@ trait SeqViewLike[+A,
   protected override def newTaken(n: Int): Transformed[A] = newSliced(SliceInterval(0, n))
   protected override def newDropped(n: Int): Transformed[A] = newSliced(SliceInterval(n, Int.MaxValue))
 
-  override def reverse: This = newReversed.asInstanceOf[This]
+  override def reverse(implicit @local mct: MaybeCanThrow = mct): This = newReversed.asInstanceOf[This]
 
   override def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That = {
     // Be careful to not evaluate the entire sequence!  Patch should work (slowly, perhaps) on infinite streams.

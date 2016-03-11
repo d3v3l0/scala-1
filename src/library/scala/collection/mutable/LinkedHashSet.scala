@@ -56,7 +56,7 @@ class LinkedHashSet[A] extends AbstractSet[A]
   @transient protected var firstEntry: Entry = null
   @transient protected var lastEntry: Entry = null
 
-  override def size: Int = tableSize
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = tableSize
 
   def contains(elem: A): Boolean = findEntry(elem) ne null
 

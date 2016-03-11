@@ -171,7 +171,7 @@ extends MutableList[A]
 
 
   // TODO - Don't override this just for new to create appropriate type....
-  override def tail: Queue[A] = {
+  override def tail(implicit @local mct: MaybeCanThrow = mct): Queue[A] = {
     val tl = new Queue[A]
     tailImpl(tl)
     tl

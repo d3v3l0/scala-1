@@ -448,7 +448,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *           except the first one.
    *  @throws `UnsupportedOperationException` if the $coll is empty.
    */
-  override def tail: Repr = {
+  override def tail(implicit @local mct: MaybeCanThrow = mct): Repr = {
     if (isEmpty) throw new UnsupportedOperationException("empty.tail")
     drop(1)
   }
@@ -478,7 +478,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *           except the last one.
    *  @throws UnsupportedOperationException if the $coll is empty.
    */
-  def init: Repr = {
+  def init(implicit @local mct: MaybeCanThrow = mct): Repr = {
     if (isEmpty) throw new UnsupportedOperationException("empty.init")
     var lst = head
     var follow = false

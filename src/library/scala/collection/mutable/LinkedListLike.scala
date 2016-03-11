@@ -61,7 +61,7 @@ trait LinkedListLike[A, This <: Seq[A] with LinkedListLike[A, This]] extends Seq
   var elem: A = _
   var next: This = _
 
-  override def isEmpty = next eq this
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = next eq this
 
   /** Determines the length of this $coll by traversing and counting every
     * node.
@@ -75,7 +75,7 @@ trait LinkedListLike[A, This <: Seq[A] with LinkedListLike[A, This]] extends Seq
     if (isEmpty) throw new NoSuchElementException
     else elem
 
-  override def tail: This = {
+  override def tail(implicit @local mct: MaybeCanThrow = mct): This = {
     require(nonEmpty, "tail of empty list")
     next
   }

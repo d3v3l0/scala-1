@@ -24,7 +24,7 @@ import scala.annotation.tailrec
  *  {{{
  *     def isEmpty: Boolean
  *     def head: A
- *     def tail: Repr
+ *     def tail(implicit @local mct: MaybeCanThrow = mct): Repr
  *  }}}
  *  Here, `A` is the type of the sequence elements and `Repr` is the type of the sequence itself.
  *  Note that default implementations are provided via inheritance, but these
@@ -41,7 +41,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
 
   def head: A
 
-  def tail: Repr
+  def tail(implicit @local mct: MaybeCanThrow = mct): Repr
 
   /** The length of the $coll.
    *

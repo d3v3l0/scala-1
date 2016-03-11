@@ -32,7 +32,7 @@ extends AbstractMap[A, B]
    with Serializable
 {
 
-  override def size: Int = imap.size
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = imap.size
 
   def get(key: A): Option[B] = imap.get(key)
 

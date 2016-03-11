@@ -72,7 +72,7 @@ extends AbstractMap[Long, V]
     mask = m; extraKeys = ek; zeroValue = zv; minValue = mv; _size = sz; _vacant = vc; _keys = kz; _values = vz
   }
 
-  override def size: Int = _size + (extraKeys+1)/2
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = _size + (extraKeys+1)/2
   override def empty: LongMap[V] = new LongMap()
 
   private def imbalanced: Boolean =

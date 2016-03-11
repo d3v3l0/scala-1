@@ -42,7 +42,7 @@ class HashMap[A, +B] extends AbstractMap[A, B]
 {
   import HashMap.{nullToEmpty, bufferSize}
 
-  override def size: Int = 0
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = 0
 
   override def empty = HashMap.empty[A, B]
 
@@ -182,7 +182,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
   }
 
   class HashMap1[A,+B](private[collection] val key: A, private[collection] val hash: Int, private[collection] val value: (B @uV), private[collection] var kv: (A,B @uV)) extends HashMap[A,B] {
-    override def size = 1
+    override def size(implicit @local mct: MaybeCanThrow = mct) = 1
 
     private[collection] def getKey = key
     private[collection] def getHash = hash
@@ -230,7 +230,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
           extends HashMap[A, B @uV] {
     // assert(kvs.size > 1)
 
-    override def size = kvs.size
+    override def size(implicit @local mct: MaybeCanThrow = mct) = kvs.size
 
     override def get0(key: A, hash: Int, level: Int): Option[B] =
       if (hash == this.hash) kvs.get(key) else None
@@ -299,7 +299,7 @@ object HashMap extends ImmutableMapFactory[HashMap] with BitOperations.Int {
     // assert(Integer.bitCount(bitmap) == elems.length)
     // assert(elems.length > 1 || (elems.length == 1 && elems(0).isInstanceOf[HashTrieMap[_,_]]))
 
-    override def size = size0
+    override def size(implicit @local mct: MaybeCanThrow = mct) = size0
 
     override def get0(key: A, hash: Int, level: Int): Option[B] = {
       val index = (hash >>> level) & 0x1f

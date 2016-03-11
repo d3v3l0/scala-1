@@ -226,7 +226,7 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
 
   override def stringPrefix = "IntMap"
 
-  override def isEmpty = this == IntMap.Nil
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = this == IntMap.Nil
 
   override def filter(@plocal f: ((Int, T)) => Boolean)(implicit @local mct: MaybeCanThrow): IntMap[T] = this match {
     case IntMap.Bin(prefix, mask, left, right) => {
@@ -246,7 +246,7 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
     case IntMap.Nil => IntMap.Nil
   }
 
-  final override def size: Int = this match {
+  final override def size(implicit @local mct: MaybeCanThrow = mct): Int = this match {
     case IntMap.Nil => 0
     case IntMap.Tip(_, _) => 1
     case IntMap.Bin(_, _, left, right) => left.size + right.size

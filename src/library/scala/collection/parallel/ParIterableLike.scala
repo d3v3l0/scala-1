@@ -212,13 +212,13 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   def hasDefiniteSize = true
 
-  def isEmpty = size == 0
+  def isEmpty(implicit @local cc: CanThrow) = size == 0
 
-  def nonEmpty = size != 0
+  def nonEmpty(implicit @local cc: CanThrow) = size != 0
 
   def head = iterator.next()
 
-  def headOption = if (nonEmpty) Some(head) else None
+  def headOption(implicit @local cc: CanThrow) = if (nonEmpty) Some(head) else None
 
   def tail(implicit @local cc: CanThrow) = drop(1)
 
@@ -228,7 +228,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     lst
   }
 
-  def lastOption = if (nonEmpty) Some(last) else None
+  def lastOption(implicit @local cc: CanThrow) = if (nonEmpty) Some(last) else None
 
   def init(implicit @local cc: CanThrow) = take(size - 1)
 

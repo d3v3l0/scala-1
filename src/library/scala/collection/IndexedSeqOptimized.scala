@@ -130,13 +130,13 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   def head: A = if (isEmpty) super.head else this(0)
 
   override /*TraversableLike*/
-  def tail: Repr = if (isEmpty) super.tail else slice(1, length)
+  def tail(implicit @local mct: MaybeCanThrow = mct): Repr = if (isEmpty) super.tail else slice(1, length)
 
   override /*TraversableLike*/
   def last: A = if (length > 0) this(length - 1) else super.last
 
   override /*IterableLike*/
-  def init: Repr = if (length > 0) slice(0, length - 1) else super.init
+  def init(implicit @local mct: MaybeCanThrow = mct): Repr = if (length > 0) slice(0, length - 1) else super.init
 
   override /*TraversableLike*/
   def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = slice(0, n)
@@ -216,7 +216,7 @@ trait IndexedSeqOptimized[+A, +Repr] extends Any with IndexedSeqLike[A, Repr] { 
   }
 
   override /*SeqLike*/
-  def reverse: Repr = {
+  def reverse(implicit @local mct: MaybeCanThrow = mct): Repr = {
     val b = newBuilder
     b.sizeHint(length)
     var i = length

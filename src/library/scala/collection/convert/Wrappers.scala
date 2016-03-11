@@ -57,8 +57,8 @@ private[collection] trait Wrappers {
 
   case class JCollectionWrapper[A](underlying: ju.Collection[A]) extends AbstractIterable[A] with Iterable[A] {
     def iterator = underlying.iterator
-    override def size = underlying.size
-    override def isEmpty = underlying.isEmpty
+    override def size(implicit @local mct: MaybeCanThrow = mct) = underlying.size
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = underlying.isEmpty
     def newBuilder[B] = new mutable.ArrayBuffer[B]
   }
 
@@ -84,7 +84,7 @@ private[collection] trait Wrappers {
 
   case class JListWrapper[A](underlying: ju.List[A]) extends mutable.AbstractBuffer[A] with mutable.Buffer[A] {
     def length = underlying.size
-    override def isEmpty = underlying.isEmpty
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = underlying.isEmpty
     override def iterator: Iterator[A] = underlying.iterator
     def apply(i: Int) = underlying.get(i)
     def update(i: Int, elem: A) = underlying.set(i, elem)
@@ -145,7 +145,7 @@ private[collection] trait Wrappers {
 
   case class JSetWrapper[A](underlying: ju.Set[A]) extends mutable.AbstractSet[A] with mutable.Set[A] with mutable.SetLike[A, JSetWrapper[A]] {
 
-    override def size = underlying.size
+    override def size(implicit @local mct: MaybeCanThrow = mct) = underlying.size
 
     def iterator = underlying.iterator
 
@@ -250,7 +250,7 @@ private[collection] trait Wrappers {
   trait JMapWrapperLike[A, B, +Repr <: mutable.MapLike[A, B, Repr] with mutable.Map[A, B]] extends mutable.Map[A, B] with mutable.MapLike[A, B, Repr] {
     def underlying: ju.Map[A, B]
 
-    override def size = underlying.size
+    override def size(implicit @local mct: MaybeCanThrow = mct) = underlying.size
 
     def get(k: A) = {
       val v = underlying get k
@@ -378,7 +378,7 @@ private[collection] trait Wrappers {
   }
 
   case class JDictionaryWrapper[A, B](underlying: ju.Dictionary[A, B]) extends mutable.AbstractMap[A, B] with mutable.Map[A, B] {
-    override def size: Int = underlying.size
+    override def size(implicit @local mct: MaybeCanThrow = mct): Int = underlying.size
 
     def get(k: A) = {
       val v = underlying get k
@@ -409,7 +409,7 @@ private[collection] trait Wrappers {
             with mutable.Map[String, String]
             with mutable.MapLike[String, String, JPropertiesWrapper] {
 
-    override def size = underlying.size
+    override def size(implicit @local mct: MaybeCanThrow = mct) = underlying.size
 
     def get(k: String) = {
       val v = underlying get k

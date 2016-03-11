@@ -58,7 +58,7 @@ self =>
 
   override def iterator: PreciseSplitter[T] = splitter
 
-  override def size = length
+  override def size(implicit @local cc: CanThrow) = length
 
   /** Used to iterate elements using indices */
   protected abstract class Elements(start: Int, val end: Int) extends SeqSplitter[T] with BufferedIterator[T] {
@@ -322,7 +322,7 @@ self =>
 
   override def toString = seq.mkString(stringPrefix + "(", ", ", ")")
 
-  override def toSeq = this.asInstanceOf[ParSeq[T]]
+  override def toSeq(implicit @local cc: CanThrow) = this.asInstanceOf[ParSeq[T]]
 
   @deprecated("use .seq.view", "2.11.0")
   override def view = seq.view

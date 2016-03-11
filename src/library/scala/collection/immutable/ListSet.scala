@@ -77,7 +77,7 @@ class ListSet[A] extends AbstractSet[A]
    *
    *  @return number of set elements.
    */
-  override def size: Int = 0
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = 0
   override def isEmpty: Boolean = true
 
   /** Checks if this set contains element `elem`.
@@ -134,7 +134,7 @@ class ListSet[A] extends AbstractSet[A]
   /**
    *  @throws java.util.NoSuchElementException
    */
-  override def tail: ListSet[A] = throw new NoSuchElementException("Next of an empty set")
+  override def tail(implicit @local mct: MaybeCanThrow = mct): ListSet[A] = throw new NoSuchElementException("Next of an empty set")
 
   override def stringPrefix = "ListSet"
 
@@ -154,7 +154,7 @@ class ListSet[A] extends AbstractSet[A]
      *
      *  @return number of set elements.
      */
-    override def size = sizeInternal(this, 0)
+    override def size(implicit @local mct: MaybeCanThrow = mct) = sizeInternal(this, 0)
     @tailrec private def sizeInternal(n: ListSet[A], acc: Int): Int =
       if (n.isEmpty) acc
       else sizeInternal(n.unchecked_outer, acc + 1)
@@ -184,6 +184,6 @@ class ListSet[A] extends AbstractSet[A]
       val tail = self - e; new tail.Node(head)
     }
 
-    override def tail: ListSet[A] = self
+    override def tail(implicit @local mct: MaybeCanThrow = mct): ListSet[A] = self
   }
 }

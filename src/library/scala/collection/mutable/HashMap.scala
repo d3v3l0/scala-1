@@ -52,7 +52,7 @@ extends AbstractMap[A, B]
 
   override def empty: HashMap[A, B] = HashMap.empty[A, B]
   override def clear() { clearTable() }
-  override def size: Int = tableSize
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = tableSize
 
   def this() = this(null)
 

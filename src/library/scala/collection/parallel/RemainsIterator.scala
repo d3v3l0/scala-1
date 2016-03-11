@@ -652,7 +652,7 @@ self =>
   def reverse(implicit @local cc: CanThrow): SeqSplitter[T] = {
     val pa = mutable.ParArray.fromTraversables(self).reverse(cc)
     new pa.ParArrayIterator {
-      override def reverse = self
+      override def reverse(implicit @local cc: CanThrow) = self
     }
   }
 

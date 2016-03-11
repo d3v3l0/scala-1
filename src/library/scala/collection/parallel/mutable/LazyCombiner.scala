@@ -36,7 +36,7 @@ trait LazyCombiner[Elem, +To, Buff <: Growable[Elem] with Sizing] extends Combin
       newLazyCombiner(chain ++= that.chain)
     } else throw new UnsupportedOperationException("Cannot combine with combiner of different type.")
   } else this
-  def size = chain.foldLeft(0)(_ + _.size)
+  def size(implicit @local cc: CanThrow) = chain.foldLeft(0)(_ + _.size)
 
   /** Method that allocates the data structure and copies elements into it using
    *  `size` and `chain` members.

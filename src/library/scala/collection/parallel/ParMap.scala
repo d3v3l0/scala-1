@@ -61,7 +61,7 @@ object ParMap extends ParMapFactory[ParMap] {
    *  because of variance issues.
    */
   abstract class WithDefault[A, +B](underlying: ParMap[A, B], d: A => B) extends ParMap[A, B] {
-    override def size               = underlying.size
+    override def size(implicit @local cc: CanThrow)               = underlying.size
     def get(key: A)                 = underlying.get(key)
     def splitter                    = underlying.splitter
     override def default(key: A): B = d(key)

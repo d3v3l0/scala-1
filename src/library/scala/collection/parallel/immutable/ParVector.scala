@@ -57,7 +57,7 @@ extends ParSeq[T]
 
   override def seq: Vector[T] = vector
 
-  override def toVector: Vector[T] = vector
+  override def toVector(implicit @local cc: CanThrow): Vector[T] = vector
 
   class ParVectorIterator(_start: Int, _end: Int) extends VectorIterator[T](_start, _end) with SeqSplitter[T] {
     def remaining: Int = remainingElementCount
@@ -97,7 +97,7 @@ private[immutable] class LazyParVectorCombiner[T] extends Combiner[T, ParVector[
   var sz = 0
   val vectors = new ArrayBuffer[VectorBuilder[T]] += new VectorBuilder[T]
 
-  def size: Int = sz
+  def size(implicit @local cc: CanThrow): Int = sz
 
   def +=(elem: T): this.type = {
     vectors.last += elem

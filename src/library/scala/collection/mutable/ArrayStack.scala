@@ -199,7 +199,7 @@ extends AbstractSeq[T]
    */
   def reduceWith(f: (T, T) => T): Unit = while(size > 1) combine(f)
 
-  override def size = index
+  override def size(implicit @local mct: MaybeCanThrow = mct) = index
 
   /** Evaluates the expression, preserving the contents of the stack so that
    *  any changes the evaluation makes to the stack contents will be undone after

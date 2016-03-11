@@ -54,7 +54,7 @@ extends AbstractSet[A]
 
   override def companion: GenericCompanion[HashSet] = HashSet
 
-  override def size: Int = tableSize
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = tableSize
 
   def contains(elem: A): Boolean = containsElem(elem)
 

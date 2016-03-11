@@ -95,7 +95,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
 
   def isEmpty: Boolean
   def head: A
-  def tail: List[A]
+  def tail(implicit @local mct: MaybeCanThrow = mct): List[A]
 
   // New methods in List
 
@@ -386,7 +386,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     }
   }
 
-  override def reverse: List[A] = {
+  override def reverse(implicit @local mct: MaybeCanThrow = mct): List[A] = {
     var result: List[A] = Nil
     var these = this
     while (!these.isEmpty) {
@@ -418,10 +418,10 @@ sealed abstract class List[+A] extends AbstractSeq[A]
  */
 @SerialVersionUID(0 - 8256821097970055419L)
 case object Nil extends List[Nothing] {
-  override def isEmpty = true
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct) = true
   override def head: Nothing =
     throw new NoSuchElementException("head of empty list")
-  override def tail: List[Nothing] =
+  override def tail(implicit @local mct: MaybeCanThrow = mct): List[Nothing] =
     throw new UnsupportedOperationException("tail of empty list")
   // Removal of equals method here might lead to an infinite recursion similar to IntMap.equals.
   override def equals(that: Any) = that match {

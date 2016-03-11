@@ -938,7 +938,7 @@ extends scala.collection.concurrent.Map[K, V]
     r.cachedSize(this)
   }
 
-  override def size: Int =
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int =
     if (nonReadOnly) readOnlySnapshot().size
     else cachedSize()
 
