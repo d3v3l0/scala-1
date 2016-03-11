@@ -141,7 +141,7 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
   }
 
   def result(@local cc: CanThrow): ParHashSet[T] = {
-    val contents = if (size >= ParHashSetCombiner.numblocks * sizeMapBucketSize) parPopulate(cc) else seqPopulate(cc)
+    val contents = if (size(cc) >= ParHashSetCombiner.numblocks * sizeMapBucketSize) parPopulate(cc) else seqPopulate(cc)
     new ParHashSet(contents)
   }
 

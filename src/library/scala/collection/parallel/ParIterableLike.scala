@@ -672,14 +672,14 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   def drop(n: Int)(implicit @local cc: CanThrow): Repr = {
     val actualn = if (size > n) n else size
-    if ((size - actualn) < MIN_FOR_COPY) drop_sequential(actualn)
+    if ((size(cc) - actualn) < MIN_FOR_COPY) drop_sequential(actualn)(cc)
     else tasksupport.executeAndWaitResult(new Drop(actualn, combinerFactory, splitter) mapResult { _.resultWithTaskSupport })(cc)
   }
 
-  private def drop_sequential(n: Int) = {
+  private def drop_sequential(n: Int)(@local cc: CanThrow) = {
     val it = splitter drop n
     val cb = newCombiner
-    cb.sizeHint(size - n)
+    cb.sizeHint(size(cc) - n)
     while (it.hasNext) cb += it.next
     cb.resultWithTaskSupport
   }
@@ -1264,13 +1264,13 @@ self: ParIterableLike[T, Repr, Sequential] =>
   (pos: Int, pred: T => Boolean, cbfBefore: CombinerFactory[U, This], cbfAfter: CombinerFactory[U, This], protected[this] val pit: IterableSplitter[T])
   extends Transformer[(Combiner[U, This], Combiner[U, This]), Span[U, This]] {
     @volatile var result: (Combiner[U, This], Combiner[U, This]) = null
-    def leaf(prev: Option[(Combiner[U, This], Combiner[U, This])]) = if (pos < pit.indexFlag) {
+    def leaf(prev: Option[(Combiner[U, This], Combiner[U, This])])(@local cc: CanThrow) = if (pos < pit.indexFlag) {
       // val lst = pit.toList
       // val pa = mutable.ParArray(lst: _*)
       // val str = "At leaf we will iterate: " + pa.splitter.toList
       result = pit.span2combiners(pred, cbfBefore(), cbfAfter()) // do NOT reuse old combiners here, lest ye be surprised
       // println("\nAt leaf result is: " + result)
-      if (result._2.size > 0) pit.setIndexFlagIfLesser(pos)
+      if (result._2.size(cc) > 0) pit.setIndexFlagIfLesser(pos)
     } else {
       result = (reuse(prev.map(_._2), cbfBefore()), pit.copy2builder[U, This, Combiner[U, This]](reuse(prev.map(_._2), cbfAfter())))
     }
@@ -1371,7 +1371,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
       val trees = ArrayBuffer[ScanTree[U]]()
       var i = from
       val until = from + len
-      val blocksize = scanBlockSize
+      val blocksize = scanBlockSize(cc)
       while (i < until) {
         trees += scanBlock(i, scala.math.min(blocksize, pit.remaining))
         i += blocksize
@@ -1437,7 +1437,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   /* scan tree */
 
-  protected[this] def scanBlockSize = (thresholdFromSize(size, tasksupport.parallelismLevel) / 2) max 1
+  protected[this] def scanBlockSize(@local cc: CanThrow) = (thresholdFromSize(size(cc), tasksupport.parallelismLevel) / 2) max 1
 
   protected[this] trait ScanTree[U >: T] {
     def beginsAt: Int
