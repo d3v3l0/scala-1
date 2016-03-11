@@ -243,7 +243,7 @@ package parallel {
 
             i += 1
           }
-          sz = sz + that.size
+          sz = sz + ESC.TRY { cc => that.size(cc) } // XXX(leo)
           afterCombine(other)
           this
         case _ =>

@@ -399,7 +399,7 @@ self =>
     pits
   }
 
-  def shouldSplitFurther[S](coll: ParIterable[S], parallelismLevel: Int) = remaining > thresholdFromSize(coll.size, parallelismLevel)
+  def shouldSplitFurther[S](coll: ParIterable[S], parallelismLevel: Int) = ESC.TRY { cc => remaining > thresholdFromSize(coll.size(cc), parallelismLevel) } // XXX(leo)
 
   /** The number of elements this iterator has yet to traverse. This method
    *  doesn't change the state of the iterator.

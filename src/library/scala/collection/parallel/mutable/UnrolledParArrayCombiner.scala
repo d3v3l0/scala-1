@@ -102,7 +102,7 @@ extends Combiner[T, ParArray[T]] {
       val fp = howmany / 2
       List(new CopyUnrolledToArray(array, offset, fp), new CopyUnrolledToArray(array, offset + fp, howmany - fp))
     }
-    def shouldSplitFurther = howmany > scala.collection.parallel.thresholdFromSize(size, combinerTaskSupport.parallelismLevel)
+    def shouldSplitFurther = ESC.TRY { cc => howmany > scala.collection.parallel.thresholdFromSize(size(cc), combinerTaskSupport.parallelismLevel) } // XXX(leo)
     override def toString = "CopyUnrolledToArray(" + offset + ", " + howmany + ")"
   }
 }

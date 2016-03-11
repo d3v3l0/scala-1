@@ -1280,7 +1280,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
       @local implicit val mcc = new CanThrow {} // XXX(leo) temporary fix
       for ((p, untilp) <- pits zip pits.scanLeft(0)(_ + _.remaining)) yield new Span(pos + untilp, pred, cbfBefore, cbfAfter, p)
     }
-    override def merge(that: Span[U, This]) = result = if (result._2.size == 0) {
+    override def merge(that: Span[U, This]) = result = if (ESC.TRY { cc => result._2.size(cc) == 0 }) { // XXX(leo)
       (result._1 combine that.result._1, that.result._2)
     } else {
       (result._1, result._2 combine that.result._1 combine that.result._2)

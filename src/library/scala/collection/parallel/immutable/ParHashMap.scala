@@ -216,7 +216,7 @@ extends scala.collection.parallel.BucketCombiner[(K, V), ParHashMap[K, V], (K, V
   }
 
   override def toString = {
-    "HashTrieCombiner(sz: " + size + ")"
+    "HashTrieCombiner(sz: " + ESC.TRY(implicit cc => size) + ")" // XXX(leo)
     //"HashTrieCombiner(buckets:\n\t" + buckets.filter(_ != null).mkString("\n\t") + ")\n"
   }
 

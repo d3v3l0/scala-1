@@ -40,7 +40,7 @@ trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedA
     new ParArray(new ExposedArraySeq[T](chain(0).internalArray, size(cc)))
   }
 
-  override def toString = "ResizableParArrayCombiner(" + size + "): " //+ chain
+  override def toString = "ResizableParArrayCombiner(" + ESC.TRY(implicit cc => size) + "): " //+ chain // XXX(leo)
 
   /* tasks */
 
@@ -82,7 +82,7 @@ trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedA
       val fp = howmany / 2
       List(new CopyChainToArray(array, offset, fp), new CopyChainToArray(array, offset + fp, howmany - fp))
     }
-    def shouldSplitFurther = howmany > scala.collection.parallel.thresholdFromSize(size, combinerTaskSupport.parallelismLevel)
+    def shouldSplitFurther = ESC.TRY { cc => howmany > scala.collection.parallel.thresholdFromSize(size(cc), combinerTaskSupport.parallelismLevel) } // XXX(leo)
   }
 }
 
