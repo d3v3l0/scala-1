@@ -432,7 +432,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *                   `p(x, y)` is `true` for all corresponding elements `x` of this iterator
    *                   and `y` of `that`, otherwise `false`
    */
-  def corresponds[B](that: GenTraversableOnce[B])(p: (A, B) => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
+  def corresponds[B](that: GenTraversableOnce[B])(p: (A, B) => Boolean)(implicit @local mct: that.MaybeCanThrow): Boolean = {
     val that0 = that.toIterator
     while (hasNext && that0.hasNext)
       if (!p(next(), that0.next())) return false

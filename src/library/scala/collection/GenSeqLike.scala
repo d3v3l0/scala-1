@@ -385,7 +385,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *                  `p(x, y)` is `true` for all corresponding elements `x` of this $coll
    *                  and `y` of `that`, otherwise `false`.
    */
-  def corresponds[B](that: GenSeq[B])(p: (A, B) => Boolean)(implicit @local mct: MaybeCanThrow): Boolean
+  def corresponds[B](that: GenSeq[B])(p: (A, B) => Boolean)(implicit @local mct: that.MaybeCanThrow): Boolean
 
   def toSeq(implicit @local cc: MaybeCanThrow): GenSeq[A]
 

@@ -92,7 +92,7 @@ trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParalleliza
    *  @param asArray  A function that converts elements of this array to rows - arrays of type `U`.
    *  @return         An array obtained by replacing elements of this arrays with rows the represent.
    */
-  def transpose[U](implicit asArray: T => Array[U]): Array[Array[U]] = {
+  def transpose[U](implicit asArray: T => Array[U], @local mct: MaybeCanThrow = mct): Array[Array[U]] = {
     val bb: Builder[Array[U], Array[Array[U]]] = Array.newBuilder(ClassTag[Array[U]](elementClass))
     if (isEmpty) bb.result()
     else {

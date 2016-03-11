@@ -575,7 +575,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     b.result()
   }
 
-  def corresponds[B](that: GenSeq[B])(p: (A,B) => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
+  def corresponds[B](that: GenSeq[B])(p: (A,B) => Boolean)(implicit @local mct: that.MaybeCanThrow): Boolean = {
     val i = this.iterator
     val j = that.iterator
     while (i.hasNext && j.hasNext)

@@ -34,11 +34,11 @@ trait ClassManifestDeprecatedApis[T] extends OptManifest[T] {
     loop(Set(sub), Set())
   }
 
-  private def subargs(args1: List[OptManifest[_]], args2: List[OptManifest[_]]) = (args1 corresponds args2) {
+  private def subargs(args1: List[OptManifest[_]], args2: List[OptManifest[_]]) = { @local implicit val cc = new CanThrow {}; (args1 corresponds args2) {
     // !!! [Martin] this is wrong, need to take variance into account
     case (x: ClassManifest[_], y: ClassManifest[_]) => x <:< y
     case (x, y)                                     => (x eq NoManifest) && (y eq NoManifest)
-  }
+  }}
 
   /** Tests whether the type represented by this manifest is a subtype
     * of the type represented by `that` manifest, subject to the limitations
