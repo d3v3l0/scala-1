@@ -42,19 +42,19 @@ private[collection] trait AugmentedIterableIterator[+T] extends RemainsIterator[
 
   /* accessors */
 
-  override def count(@plocal p: T => Boolean): Int = {
+  override def count(@plocal p: T => Boolean)(implicit @local cc: CanThrow): Int = {
     var i = 0
     while (hasNext) if (p(next())) i += 1
     i
   }
 
-  override def reduce[U >: T](op: (U, U) => U): U = {
+  override def reduce[U >: T](op: (U, U) => U)(implicit @local cc: CanThrow): U = {
     var r: U = next()
     while (hasNext) r = op(r, next())
     r
   }
 
-  override def fold[U >: T](z: U)(op: (U, U) => U): U = {
+  override def fold[U >: T](z: U)(op: (U, U) => U)(implicit @local cc: CanThrow): U = {
     var r = z
     while (hasNext) r = op(r, next())
     r
@@ -294,7 +294,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
 
   /* accessors */
 
-  def prefixLength(@plocal pred: T => Boolean): Int = {
+  def prefixLength(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
     var total = 0
     var loop = true
     while (hasNext && loop) {
@@ -304,7 +304,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
     total
   }
 
-  override def indexWhere(@plocal pred: T => Boolean): Int = {
+  override def indexWhere(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
     var i = 0
     var loop = true
     while (hasNext && loop) {
@@ -314,7 +314,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
     if (loop) -1 else i
   }
 
-  def lastIndexWhere(pred: T => Boolean): Int = {
+  def lastIndexWhere(pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
     var pos = -1
     var i = 0
     while (hasNext) {
@@ -324,7 +324,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
     pos
   }
 
-  def corresponds[S](corr: (T, S) => Boolean)(that: Iterator[S]): Boolean = {
+  def corresponds[S](corr: (T, S) => Boolean)(that: Iterator[S])(implicit @local cc: CanThrow): Boolean = {
     while (hasNext && that.hasNext) {
       if (!corr(next(), that.next())) return false
     }
@@ -460,8 +460,8 @@ self =>
     }
     it
   }
-  override def take(n: Int): IterableSplitter[T] = newTaken(n)
-  override def slice(from1: Int, until1: Int): IterableSplitter[T] = newSliceInternal(newTaken(until1), from1)
+  override def take(n: Int)(implicit @local cc: CanThrow): IterableSplitter[T] = newTaken(n)
+  override def slice(from1: Int, until1: Int)(implicit @local cc: CanThrow): IterableSplitter[T] = newSliceInternal(newTaken(until1), from1)
 
   class Mapped[S](f: T => S) extends IterableSplitter[S] {
     signalDelegate = self.signalDelegate
@@ -576,8 +576,8 @@ self =>
     def psplit(sizes: Int*): Seq[SeqSplitter[T]] = takeSeq(self.psplit(sizes: _*)) { (p, n) => p.take(n) }
   }
   override private[collection] def newTaken(until: Int): Taken = new Taken(until)
-  override def take(n: Int): SeqSplitter[T] = newTaken(n)
-  override def slice(from1: Int, until1: Int): SeqSplitter[T] = newSliceInternal(newTaken(until1), from1)
+  override def take(n: Int)(implicit @local cc: CanThrow): SeqSplitter[T] = newTaken(n)
+  override def slice(from1: Int, until1: Int)(implicit @local cc: CanThrow): SeqSplitter[T] = newSliceInternal(newTaken(until1), from1)
 
   class Mapped[S](f: T => S) extends super.Mapped[S](f) with SeqSplitter[S] {
     override def dup = super.dup.asInstanceOf[SeqSplitter[S]]

@@ -820,7 +820,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
     tasksupport.executeAndWaitResult(new CopyToArray(start, len, xs, splitter))(cc)
   }
 
-  def sameElements[U >: T](that: GenIterable[U]) = seq.sameElements(that)
+  def sameElements[U >: T](that: GenIterable[U])(implicit @local cc: CanThrow) = seq.sameElements(that)
 
   def zip[U >: T, S, That](that: GenIterable[S])(implicit bf: CanBuildFrom[Repr, (U, S), That], @local cc: CanThrow): That = if (bf(repr).isCombiner && that.isParSeq) {
     val thatseq = that.asParSeq
@@ -979,7 +979,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   extends Accessor[Int, Count] {
     // val pittxt = pit.toString
     @volatile var result: Int = 0
-    def leaf(prevr: Option[Int])(@local cc: CanThrow) = result = pit.count(pred)
+    def leaf(prevr: Option[Int])(@local cc: CanThrow) = result = pit.count(pred)(cc)
     protected[this] def newSubtask(p: IterableSplitter[T]) = new Count(pred, p)
     override def merge(that: Count) = result = result + that.result
     // override def toString = "CountTask(" + pittxt + ")"
@@ -988,7 +988,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   protected[this] class Reduce[U >: T](op: (U, U) => U, protected[this] val pit: IterableSplitter[T])
   extends Accessor[Option[U], Reduce[U]] {
     @volatile var result: Option[U] = None
-    def leaf(prevr: Option[Option[U]])(@local cc: CanThrow) = if (pit.remaining > 0) result = Some(pit.reduce(op))
+    def leaf(prevr: Option[Option[U]])(@local cc: CanThrow) = if (pit.remaining > 0) result = Some(pit.reduce(op)(cc))
     protected[this] def newSubtask(p: IterableSplitter[T]) = new Reduce(op, p)
     override def merge(that: Reduce[U]) =
       if (this.result == None) result = that.result
@@ -999,7 +999,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   protected[this] class Fold[U >: T](z: U, op: (U, U) => U, protected[this] val pit: IterableSplitter[T])
   extends Accessor[U, Fold[U]] {
     @volatile var result: U = null.asInstanceOf[U]
-    def leaf(prevr: Option[U])(@local cc: CanThrow) = result = pit.fold(z)(op)
+    def leaf(prevr: Option[U])(@local cc: CanThrow) = result = pit.fold(z)(op)(cc)
     protected[this] def newSubtask(p: IterableSplitter[T]) = new Fold(z, op, p)
     override def merge(that: Fold[U]) = result = op(result, that.result)
   }

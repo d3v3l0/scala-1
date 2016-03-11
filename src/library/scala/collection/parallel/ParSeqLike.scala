@@ -340,9 +340,9 @@ self =>
   protected[this] class SegmentLength(pred: T => Boolean, from: Int, protected[this] val pit: SeqSplitter[T])
   extends Accessor[(Int, Boolean), SegmentLength] {
     @volatile var result: (Int, Boolean) = null
-    def leaf(prev: Option[(Int, Boolean)]) = if (from < pit.indexFlag) {
+    def leaf(prev: Option[(Int, Boolean)])(@local cc: CanThrow) = if (from < pit.indexFlag) {
       val itsize = pit.remaining
-      val seglen = pit.prefixLength(pred)
+      val seglen = pit.prefixLength(pred)(cc)
       result = (seglen, itsize == seglen)
       if (!result._2) pit.setIndexFlagIfLesser(from)
     } else result = (0, false)
@@ -360,7 +360,7 @@ self =>
   extends Accessor[Int, IndexWhere] {
     @volatile var result: Int = -1
     def leaf(prev: Option[Int])(@local cc: CanThrow) = if (from < pit.indexFlag) {
-      val r = pit.indexWhere(pred)
+      val r = pit.indexWhere(pred)(cc)
       if (r != -1) {
         result = from + r
         pit.setIndexFlagIfLesser(from)
@@ -382,7 +382,7 @@ self =>
   extends Accessor[Int, LastIndexWhere] {
     @volatile var result: Int = -1
     def leaf(prev: Option[Int])(@local cc: CanThrow) = if (pos > pit.indexFlag) {
-      val r = pit.lastIndexWhere(pred)
+      val r = pit.lastIndexWhere(pred)(cc)
       if (r != -1) {
         result = pos + r
         pit.setIndexFlagIfGreater(pos)
@@ -470,7 +470,7 @@ self =>
   extends Accessor[Boolean, Corresponds[S]] {
     @volatile var result: Boolean = true
     def leaf(prev: Option[Boolean])(@local cc: CanThrow) = if (!pit.isAborted) {
-      result = pit.corresponds(corr)(otherpit)
+      result = pit.corresponds(corr)(otherpit)(cc)
       if (!result) pit.abort()
     }
     protected[this] def newSubtask(p: SuperParIterator) = unsupported

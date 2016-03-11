@@ -145,7 +145,7 @@ self =>
       }
     }
 
-    override def count(@plocal p: T => Boolean) = {
+    override def count(@plocal p: T => Boolean)(implicit @local cc: CanThrow) = {
       val c = count_quick(p, arr, until, i)
       i = until
       c
@@ -177,9 +177,9 @@ self =>
       sum
     }
 
-    override def fold[U >: T](z: U)(op: (U, U) => U): U = foldLeft[U](z)(op)
+    override def fold[U >: T](z: U)(op: (U, U) => U)(implicit @local cc: CanThrow): U = foldLeft[U](z)(op)
 
-    override def aggregate[S](z: =>S)(seqop: (S, T) => S, combop: (S, S) => S): S = foldLeft[S](z)(seqop)
+    override def aggregate[S](z: =>S)(seqop: (S, T) => S, combop: (S, S) => S)(implicit @local cc: CanThrow): S = foldLeft[S](z)(seqop)
 
     override def sum[U >: T](implicit num: Numeric[U]): U = {
       val s = sum_quick(num, arr, until, i, num.zero)
@@ -213,7 +213,7 @@ self =>
         prod
     }
 
-    override def forall(@plocal p: T => Boolean): Boolean = {
+    override def forall(@plocal p: T => Boolean)(implicit @local cc: CanThrow): Boolean = {
       if (isAborted) return false
 
       var all = true
@@ -242,7 +242,7 @@ self =>
       true
     }
 
-    override def exists(@plocal p: T => Boolean): Boolean = {
+    override def exists(@plocal p: T => Boolean)(implicit @local cc: CanThrow): Boolean = {
       if (isAborted) return true
 
       var some = false
@@ -270,7 +270,7 @@ self =>
       false
     }
 
-    override def find(@plocal p: T => Boolean): Option[T] = {
+    override def find(@plocal p: T => Boolean)(implicit @local cc: CanThrow): Option[T] = {
       if (isAborted) return None
 
       var r: Option[T] = None
@@ -299,7 +299,7 @@ self =>
       None
     }
 
-    override def drop(n: Int): ParArrayIterator = {
+    override def drop(n: Int)(implicit @local cc: CanThrow): ParArrayIterator = {
       i += n
       this
     }
@@ -310,7 +310,7 @@ self =>
       i += totallen
     }
 
-    override def prefixLength(@plocal pred: T => Boolean): Int = {
+    override def prefixLength(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
       val r = prefixLength_quick(pred, arr, until, i)
       i += r + 1
       r
@@ -326,7 +326,7 @@ self =>
       endpos - startpos
     }
 
-    override def indexWhere(@plocal pred: T => Boolean): Int = {
+    override def indexWhere(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
       val r = indexWhere_quick(pred, arr, until, i)
       val ret = if (r != -1) r - i else r
       i = until
@@ -345,7 +345,7 @@ self =>
       pos
     }
 
-    override def lastIndexWhere(pred: T => Boolean): Int = {
+    override def lastIndexWhere(pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
       val r = lastIndexWhere_quick(pred, arr, i, until)
       val ret = if (r != -1) r - i else r
       i = until
@@ -364,7 +364,7 @@ self =>
       pos
     }
 
-    override def sameElements(that: Iterator[_]): Boolean = {
+    override def sameElements(that: Iterator[_])(implicit @local cc: CanThrow): Boolean = {
       var same = true
       while (i < until && that.hasNext) {
         if (arr(i) != that.next) {

@@ -130,7 +130,7 @@ self =>
   }
 
   private def checkBucket(i: Int) = {
-    def count(e: HashEntry[K, DefaultEntry[K, V]]): Int = if (e eq null) 0 else 1 + count(e.next)
+    def count(e: HashEntry[K, DefaultEntry[K, V]])(implicit @local cc: CanThrow): Int = if (e eq null) 0 else 1 + count(e.next)
     val expected = sizemap(i)
     val found = ((i * sizeMapBucketSize) until ((i + 1) * sizeMapBucketSize)).foldLeft(0) {
       (acc, c) => acc + count(table(c))
