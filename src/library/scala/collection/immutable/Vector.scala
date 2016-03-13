@@ -222,7 +222,7 @@ override def companion: GenericCompanion[Vector] = Vector
       import Vector.{Log2ConcatFaster, TinyAppendFaster}
       if (that.isEmpty) this.asInstanceOf[That]
       else {
-        val again = if (!that.isTraversableAgain) that.toVector else that.seq
+        val again = if (!that.isTraversableAgain) that.toVector(new CanThrow {}) else that.seq // XXX(leo)
         again.size match {
           // Often it's better to append small numbers of elements (or prepend if RHS is a vector)
           case n if n <= TinyAppendFaster || n < (this.size >> Log2ConcatFaster) =>

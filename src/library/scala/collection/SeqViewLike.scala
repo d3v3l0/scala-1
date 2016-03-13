@@ -87,12 +87,12 @@ trait SeqViewLike[+A,
     def apply(idx: Int) = {
       if (idx < 0 || idx >= length) throw new IndexOutOfBoundsException(idx.toString)
       val row = findRow(idx, 0, self.length - 1)
-      mapping(self(row)).seq.toSeq(idx - index(row))
+      mapping(self(row)).seq.toSeq.apply(idx - index(row))
     }
   }
 
   trait Appended[B >: A] extends super.Appended[B] with Transformed[B] {
-    protected[this] lazy val restSeq = rest.toSeq
+    protected[this] lazy val restSeq = rest.toSeq(new CanThrow {}) // XXX(leo)
     def length = self.length + restSeq.length
     def apply(idx: Int) =
       if (idx < self.length) self(idx) else restSeq(idx - self.length)

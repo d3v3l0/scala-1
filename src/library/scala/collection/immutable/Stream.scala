@@ -531,7 +531,7 @@ self =>
   final class StreamWithFilter(@local p: A => Boolean) extends WithFilter(p) {
 
     override def map[B, That](f: A => B)(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That = {
-      def tailMap(coll: Stream[A]): Stream[B] = {
+      @local def tailMap(coll: Stream[A]): Stream[B] = {
         var head: A = null.asInstanceOf[A]
         var tail: Stream[A] = coll
         while (true) {
@@ -550,7 +550,7 @@ self =>
     }
 
     override def flatMap[B, That](f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That = {
-      def tailFlatMap(coll: Stream[A]): Stream[B] = {
+      @local def tailFlatMap(coll: Stream[A]): Stream[B] = {
         var head: A = null.asInstanceOf[A]
         var tail: Stream[A] = coll
         while (true) {
@@ -687,7 +687,7 @@ self =>
     // we assume there is no other builder factory on streams and therefore know that That = Stream[(A1, B)]
     if (isStreamBuilder(bf)) asThat(
       if (this.isEmpty || that.isEmpty) Stream.Empty
-      else cons((this.head, that.head), asStream[(A1, B)](this.tail zip that.tail))
+      else cons((this.head, that.head), asStream[(A1, B)](ESC.TRY { implicit cc => this.tail zip that.tail })) // XXX(leo)
     )
     else super.zip(that)(bf)
 
@@ -1019,7 +1019,7 @@ self =>
    * }}}
    */
   override def padTo[B >: A, That](len: Int, elem: B)(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That = {
-    def loop(len: Int, these: Stream[A]): Stream[B] =
+    @local def loop(len: Int, these: Stream[A]): Stream[B] =
       if (these.isEmpty) Stream.fill(len)(elem)
       else cons(these.head, loop(len - 1, these.tail))
 
