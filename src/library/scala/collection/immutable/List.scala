@@ -440,7 +440,7 @@ case object Nil extends List[Nothing] {
  */
 @SerialVersionUID(509929039250432923L) // value computed by serialver for 2.11.2, annotation added in 2.11.4
 final case class ::[B](override val head: B, private[scala] var tl: List[B]) extends List[B] {
-  override def tail : List[B] = tl
+  override def tail(implicit @local mct: MaybeCanThrow = mct) : List[B] = tl
   override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = false
 }
 

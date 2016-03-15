@@ -78,7 +78,9 @@ extends scala.collection.AbstractSeq[Int]
   // should not trigger an exception. So the calculation is delayed,
   // which means it will not fail fast for those cases where failing was
   // correct.
-  override final val isEmpty = (
+  override final def isEmpty(implicit @local mct: MaybeCanThrow = mct) =
+    isEmpty_
+  val isEmpty_ = (
        (start > end && step > 0)
     || (start < end && step < 0)
     || (start == end && !isInclusive)
