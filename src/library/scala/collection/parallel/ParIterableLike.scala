@@ -1136,7 +1136,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   (pred: T => Boolean, cbfTrue: CombinerFactory[U, This], cbfFalse: CombinerFactory[U, This], protected[this] val pit: IterableSplitter[T])
   extends Transformer[(Combiner[U, This], Combiner[U, This]), Partition[U, This]] {
     @volatile var result: (Combiner[U, This], Combiner[U, This]) = null
-    def leaf(prev: Option[(Combiner[U, This], Combiner[U, This])]) = result = pit.partition2combiners(pred, reuse(prev.map(_._1), cbfTrue()), reuse(prev.map(_._2), cbfFalse()))
+    def leaf(prev: Option[(Combiner[U, This], Combiner[U, This])])(@local cc: CanThrow) = result = pit.partition2combiners(pred, reuse(prev.map(_._1), cbfTrue()), reuse(prev.map(_._2), cbfFalse()))
     protected[this] def newSubtask(p: IterableSplitter[T]) = new Partition(pred, cbfTrue, cbfFalse, p)
     override def merge(that: Partition[U, This]) = result = (result._1 combine that.result._1, result._2 combine that.result._2)
   }
@@ -1228,7 +1228,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   (at: Int, cbfBefore: CombinerFactory[U, This], cbfAfter: CombinerFactory[U, This], protected[this] val pit: IterableSplitter[T])
   extends Transformer[(Combiner[U, This], Combiner[U, This]), SplitAt[U, This]] {
     @volatile var result: (Combiner[U, This], Combiner[U, This]) = null
-    def leaf(prev: Option[(Combiner[U, This], Combiner[U, This])]) = result = pit.splitAt2combiners(at, reuse(prev.map(_._1), cbfBefore()), reuse(prev.map(_._2), cbfAfter()))
+    def leaf(prev: Option[(Combiner[U, This], Combiner[U, This])])(@local cc: CanThrow) = result = pit.splitAt2combiners(at, reuse(prev.map(_._1), cbfBefore()), reuse(prev.map(_._2), cbfAfter()))
     protected[this] def newSubtask(p: IterableSplitter[T]) = throw new UnsupportedOperationException
     override def split = {
       val pits = pit.splitWithSignalling
@@ -1244,7 +1244,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   (pos: Int, pred: T => Boolean, cbf: CombinerFactory[U, This], protected[this] val pit: IterableSplitter[T])
   extends Transformer[(Combiner[U, This], Boolean), TakeWhile[U, This]] {
     @volatile var result: (Combiner[U, This], Boolean) = null
-    def leaf(prev: Option[(Combiner[U, This], Boolean)]) = if (pos < pit.indexFlag) {
+    def leaf(prev: Option[(Combiner[U, This], Boolean)])(@local cc: CanThrow) = if (pos < pit.indexFlag) {
       result = pit.takeWhile2combiner(pred, reuse(prev.map(_._1), cbf()))
       if (!result._2) pit.setIndexFlagIfLesser(pos)
     } else result = (reuse(prev.map(_._1), cbf()), false)
@@ -1345,7 +1345,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   protected[this] class ToParCollection[U >: T, That](cbf: CombinerFactory[U, That], protected[this] val pit: IterableSplitter[T])
   extends Transformer[Combiner[U, That], ToParCollection[U, That]] {
     @volatile var result: Result = null
-    def leaf(prev: Option[Combiner[U, That]]) {
+    def leaf(prev: Option[Combiner[U, That]])(@local cc: CanThrow) {
       result = cbf()
       while (pit.hasNext) result += pit.next
     }
@@ -1356,7 +1356,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   protected[this] class ToParMap[K, V, That](cbf: CombinerFactory[(K, V), That], protected[this] val pit: IterableSplitter[T])(implicit ev: T <:< (K, V))
   extends Transformer[Combiner[(K, V), That], ToParMap[K, V, That]] {
     @volatile var result: Result = null
-    def leaf(prev: Option[Combiner[(K, V), That]]) {
+    def leaf(prev: Option[Combiner[(K, V), That]])(@local cc: CanThrow) {
       result = cbf()
       while (pit.hasNext) result += pit.next
     }
@@ -1406,7 +1406,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
   (tree: ScanTree[U], z: U, op: (U, U) => U, cbf: CombinerFactory[U, That])
   extends StrictSplitterCheckTask[Combiner[U, That], FromScanTree[U, That]] {
     @volatile var result: Combiner[U, That] = null
-    def leaf(prev: Option[Combiner[U, That]]) {
+    def leaf(prev: Option[Combiner[U, That]])(@local cc: CanThrow) {
       val cb = reuse(prev, cbf())
       iterate(tree, cb)
       result = cb

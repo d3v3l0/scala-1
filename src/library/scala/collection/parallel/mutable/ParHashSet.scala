@@ -241,7 +241,7 @@ with scala.collection.mutable.FlatHashTable.HashUtils[T] {
   extends Task[(Int, UnrolledBuffer[AnyRef]), FillBlocks] {
     var result = (Int.MinValue, new UnrolledBuffer[AnyRef])
 
-    def leaf(prev: Option[(Int, UnrolledBuffer[AnyRef])]) {
+    def leaf(prev: Option[(Int, UnrolledBuffer[AnyRef])])(@local cc: CanThrow) {
       var i = offset
       var totalinserts = 0
       var leftover = new UnrolledBuffer[AnyRef]()
