@@ -220,7 +220,7 @@ override def companion: GenericCompanion[Vector] = Vector
     if (isDefaultCBF(bf)) {
       // We are sure we will create a Vector, so let's do it efficiently
       import Vector.{Log2ConcatFaster, TinyAppendFaster}
-      if (that.isEmpty) this.asInstanceOf[That]
+      if (ESC.TRY(cc => that.isEmpty(cc))) this.asInstanceOf[That] // XXX(leo)
       else {
         val again = if (!that.isTraversableAgain) that.toVector(new CanThrow {}) else that.seq // XXX(leo)
         again.size match {

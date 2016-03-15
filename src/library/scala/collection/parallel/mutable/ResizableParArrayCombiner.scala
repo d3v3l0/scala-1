@@ -40,7 +40,7 @@ trait ResizableParArrayCombiner[T] extends LazyCombiner[T, ParArray[T], ExposedA
     new ParArray(new ExposedArraySeq[T](chain(0).internalArray, size(cc)))
   }
 
-  override def toString = "ResizableParArrayCombiner(" + ESC.TRY(implicit cc => size) + "): " //+ chain // XXX(leo)
+  override def toString = "ResizableParArrayCombiner(" + ESC.TRY(cc => size(cc)) + "): " //+ chain // XXX(leo)
 
   /* tasks */
 

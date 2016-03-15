@@ -42,7 +42,7 @@ object ScalaRunTime {
 
   // A helper method to make my life in the pattern matcher a lot easier.
   def drop[Repr](coll: Repr, num: Int)(implicit traversable: IsTraversableLike[Repr]): Repr =
-    ESC.TRY { implicit cc => traversable conversion coll drop num }
+    { @local implicit val cc = new CanThrow{}; traversable conversion coll drop num } // XXX(leo)
 
   /** Return the class object representing an array with element class `clazz`.
    */

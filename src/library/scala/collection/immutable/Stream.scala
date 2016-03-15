@@ -685,11 +685,11 @@ self =>
    */
   override final def zip[A1 >: A, B, That](that: scala.collection.GenIterable[B])(implicit bf: CanBuildFrom[Stream[A], (A1, B), That], @local mct: MaybeCanThrow = mct): That =
     // we assume there is no other builder factory on streams and therefore know that That = Stream[(A1, B)]
-    if (isStreamBuilder(bf)) asThat(
+    if (isStreamBuilder(bf)) asThat({@local implicit val cc = new CanThrow {} // XXX(leo)
       if (this.isEmpty || that.isEmpty) Stream.Empty
-      else cons((this.head, that.head), asStream[(A1, B)](ESC.TRY { implicit cc => this.tail zip that.tail })) // XXX(leo)
-    )
-    else super.zip(that)(bf)
+      else cons((this.head, that.head), asStream[(A1, B)](this.tail zip that.tail))
+    })
+    else super.zip(that)(bf, mct)
 
   /** Zips this iterable with its indices. `s.zipWithIndex` is equivalent to `s
    * zip s.indices`.
@@ -1075,7 +1075,7 @@ self =>
     var st: Stream[A] = this
     while (st.nonEmpty) {
       val h = asTraversable(st.head)
-      if (h.isEmpty) {
+      if (ESC.TRY(cc => h.isEmpty(cc))) { // XXX(leo)
         st = st.tail
       } else {
         return h.toStream #::: st.tail.flatten

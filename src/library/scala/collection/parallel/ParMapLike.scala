@@ -123,7 +123,7 @@ self =>
     def splitter = filtered.splitter
     override def contains(key: K) = self.contains(key) && p(key)
     def get(key: K) = if (!p(key)) None else self.get(key)
-    def seq = ESC.TRY { implicit cc => self.seq.filterKeys(p) } // XXX(leo)
+    def seq = ESC.TRY { cc => self.seq.filterKeys(p)(cc) } // XXX(leo)
     def size(implicit @local cc: CanThrow) = filtered.size
     def + [U >: V](kv: (K, U))(implicit @local cc: CanThrow): ParMap[K, U] = ParMap[K, U]() ++ this + kv
     def - (key: K)(implicit @local cc: CanThrow): ParMap[K, V] = ParMap[K, V]() ++ this - key

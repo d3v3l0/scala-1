@@ -102,7 +102,7 @@ class ListSet[A] extends AbstractSet[A]
    *  a new builder.
    */
   override def ++(xs: GenTraversableOnce[A]): ListSet[A] =
-    if (xs.isEmpty) this
+    if (ESC.TRY(cc => xs.isEmpty(cc))) this // XXX(leo)
     else (new ListSet.ListSetBuilder(this) ++= xs.seq).result()
 
   private[ListSet] def unchecked_+(e: A): ListSet[A] = new Node(e)
