@@ -161,13 +161,13 @@ self =>
       cnt
     }
 
-    override def foldLeft[S](z: S)(op: (S, T) => S): S = {
+    override def foldLeft[S](z: S)(@local op: (S, T) => S): S = {
       val r = foldLeft_quick(arr, until, op, z)
       i = until
       r
     }
 
-    private def foldLeft_quick[S](a: Array[Any], ntil: Int, op: (S, T) => S, z: S): S = {
+    private def foldLeft_quick[S](a: Array[Any], ntil: Int, @local op: (S, T) => S, z: S): S = {
       var j = i
       var sum = z
       while (j < ntil) {

@@ -43,7 +43,7 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def exists(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = underlying exists p
   override def count(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = underlying count p
   override def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A] = underlying find p
-  override def foldLeft[B](z: B)(@plocal op: (B, A) => B): B = underlying.foldLeft(z)(op)
+  override def foldLeft[B](z: B)(@local op: (B, A) => B): B = underlying.foldLeft(z)(op)
   override def /: [B](z: B)(op: (B, A) => B): B = underlying./:(z)(op)
   override def foldRight[B](z: B)(op: (A, B) => B): B = underlying.foldRight(z)(op)
   override def :\ [B](z: B)(op: (A, B) => B): B = underlying.:\(z)(op)

@@ -156,7 +156,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   def :\[B](z: B)(@plocal op: (A, B) => B): B = foldRight(z)(op)
 
-  def foldLeft[B](z: B)(@plocal op: (B, A) => B): B = {
+  def foldLeft[B](z: B)(@local op: (B, A) => B): B = {
     var result = z
     this foreach (x => result = op(result, x))
     result

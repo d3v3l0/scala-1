@@ -607,7 +607,7 @@ self =>
    * @return The accumulated value from successive applications of `op`.
    */
   @tailrec
-  override final def foldLeft[B](z: B)(@plocal op: (B, A) => B): B = {
+  override final def foldLeft[B](z: B)(@local op: (B, A) => B): B = {
     if (this.isEmpty) z
     else tail.foldLeft(op(z, head))(op)
   }

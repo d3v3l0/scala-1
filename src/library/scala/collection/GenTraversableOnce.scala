@@ -210,7 +210,7 @@ trait GenTraversableOnce[+A] extends Any {
    *           }}}
    *           where `x,,1,,, ..., x,,n,,` are the elements of this $coll.
    */
-  def foldLeft[B](z: B)(@plocal op: (B, A) => B): B
+  def foldLeft[B](z: B)(@local op: (B, A) => B): B
 
   /** Applies a binary operator to all elements of this $coll and a start value,
    *  going right to left.
