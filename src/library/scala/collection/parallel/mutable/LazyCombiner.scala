@@ -27,7 +27,7 @@ trait LazyCombiner[Elem, +To, Buff <: Growable[Elem] with Sizing] extends Combin
   val chain: ArrayBuffer[Buff]
   val lastbuff = chain.last
   def +=(elem: Elem) = { lastbuff += elem; this }
-  def result(@local cc: CanThrow): To = allocateAndCopy
+  def result(@local cc: CanThrow): To = allocateAndCopy(cc)
   def clear() = { chain.clear() }
   def combine[N <: Elem, NewTo >: To](other: Combiner[N, NewTo]): Combiner[N, NewTo] = if (this ne other) {
     import language.existentials // FIXME: See SI-7750
@@ -41,6 +41,6 @@ trait LazyCombiner[Elem, +To, Buff <: Growable[Elem] with Sizing] extends Combin
   /** Method that allocates the data structure and copies elements into it using
    *  `size` and `chain` members.
    */
-  def allocateAndCopy: To
+  def allocateAndCopy(@local cc: CanThrow): To
   def newLazyCombiner(buffchain: ArrayBuffer[Buff]): LazyCombiner[Elem, To, Buff]
 }
