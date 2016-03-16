@@ -284,7 +284,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
   def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow): Unit =
     copyToArray(xs, 0, xs.length)
 
-  def toArray[B >: A : ClassTag]: Array[B] = {
+  def toArray[B >: A : ClassTag](implicit @local mct: MaybeCanThrow = mct): Array[B] = {
     if (isTraversableAgain) {
       val result = new Array[B](size)
       copyToArray(result, 0)
@@ -305,7 +305,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   def toBuffer[B >: A]: mutable.Buffer[B] = to[ArrayBuffer].asInstanceOf[mutable.Buffer[B]]
 
-  def toSet[B >: A]: immutable.Set[B] = to[immutable.Set].asInstanceOf[immutable.Set[B]]
+  def toSet[B >: A](implicit @local mct: MaybeCanThrow = mct): immutable.Set[B] = to[immutable.Set].asInstanceOf[immutable.Set[B]]
 
   def toVector(implicit @local mct: MaybeCanThrow = mct): Vector[A] = to[Vector]
 

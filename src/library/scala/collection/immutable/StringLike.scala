@@ -292,7 +292,7 @@ self =>
     else
       throw new IllegalArgumentException("For input string: \"null\"")
 
-  override def toArray[B >: Char : ClassTag]: Array[B] =
+  override def toArray[B >: Char : ClassTag](implicit @local mct: MaybeCanThrow = mct): Array[B] =
     toString.toCharArray.asInstanceOf[Array[B]]
 
   private def unwrapArg(arg: Any): AnyRef = arg match {

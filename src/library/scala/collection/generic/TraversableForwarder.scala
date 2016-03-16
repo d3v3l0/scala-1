@@ -63,14 +63,14 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) = underlying.copyToArray(xs, start, len)
   override def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow) = underlying.copyToArray(xs, start)
   override def copyToArray[B >: A](xs: Array[B])(implicit @local mct: MaybeCanThrow) = underlying.copyToArray(xs)
-  override def toArray[B >: A: ClassTag]: Array[B] = underlying.toArray
+  override def toArray[B >: A: ClassTag](implicit @local mct: MaybeCanThrow = mct): Array[B] = underlying.toArray
   override def toList: List[A] = underlying.toList
   override def toIterable: Iterable[A] = underlying.toIterable
   override def toSeq(implicit @local mct: MaybeCanThrow = mct): Seq[A] = underlying.toSeq
   override def toIndexedSeq = underlying.toIndexedSeq
   override def toBuffer[B >: A] = underlying.toBuffer
   override def toStream: Stream[A] = underlying.toStream
-  override def toSet[B >: A]: immutable.Set[B] = underlying.toSet
+  override def toSet[B >: A](implicit @local mct: MaybeCanThrow = mct): immutable.Set[B] = underlying.toSet
   override def toMap[T, U](implicit ev: A <:< (T, U), @local mct: MaybeCanThrow = mct): immutable.Map[T, U] = underlying.toMap(ev)
   override def mkString(start: String, sep: String, end: String): String = underlying.mkString(start, sep, end)
   override def mkString(sep: String): String = underlying.mkString(sep)

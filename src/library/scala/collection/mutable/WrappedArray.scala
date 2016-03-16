@@ -65,7 +65,7 @@ extends AbstractSeq[T]
   private def elementClass: Class[_] =
     arrayElementClass(array.getClass)
 
-  override def toArray[U >: T : ClassTag]: Array[U] = {
+  override def toArray[U >: T : ClassTag](implicit @local mct: MaybeCanThrow = mct): Array[U] = {
     val thatElementClass = arrayElementClass(implicitly[ClassTag[U]])
     if (elementClass eq thatElementClass)
       array.asInstanceOf[Array[U]]

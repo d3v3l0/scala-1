@@ -92,7 +92,7 @@ self =>
       ind = len
     }
 
-    override def reduce[U >: Int](op: (U, U) => U)(implicit @local cc: CanThrow): U = {
+    override def reduce[U >: Int](op: (U, U) => U)(implicit @local mct: MaybeCanThrow): U = {
       val r = rangeleft.reduceLeft(op)
       ind = len
       r

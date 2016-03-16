@@ -47,7 +47,7 @@ trait ArrayOps[T] extends Any with ArrayLike[T, Array[T]] with CustomParalleliza
     Array.copy(repr, 0, xs, start, l)
   }
 
-  override def toArray[U >: T : ClassTag]: Array[U] = {
+  override def toArray[U >: T : ClassTag](implicit @local mct: MaybeCanThrow = mct): Array[U] = {
     val thatElementClass = arrayElementClass(implicitly[ClassTag[U]])
     if (elementClass eq thatElementClass)
       repr.asInstanceOf[Array[U]]

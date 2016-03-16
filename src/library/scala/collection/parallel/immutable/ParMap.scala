@@ -43,7 +43,7 @@ self =>
 
   override def stringPrefix = "ParMap"
 
-  override def toMap[P, Q](implicit ev: (K, V) <:< (P, Q)): ParMap[P, Q] = this.asInstanceOf[ParMap[P, Q]]
+  override def toMap[P, Q](implicit ev: (K, V) <:< (P, Q), @local mct: MaybeCanThrow): ParMap[P, Q] = this.asInstanceOf[ParMap[P, Q]]
 
   override def updated [U >: V](key: K, value: U): ParMap[K, U] = this + ((key, value))
 

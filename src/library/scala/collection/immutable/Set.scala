@@ -35,7 +35,7 @@ trait Set[A] extends Iterable[A]
   override def companion: GenericCompanion[Set] = Set
 
 
-  override def toSet[B >: A]: Set[B] = to[({type l[a] = immutable.Set[B]})#l] // for bincompat; remove in dev
+  override def toSet[B >: A](implicit @local mct: MaybeCanThrow = mct): Set[B] = to[({type l[a] = immutable.Set[B]})#l] // for bincompat; remove in dev
 
   override def seq: Set[A] = this
   protected override def parCombiner = ParSet.newCombiner[A] // if `immutable.SetLike` gets introduced, please move this there!
@@ -57,7 +57,7 @@ object Set extends ImmutableSetFactory[Set] {
     def - (elem: Any): Set[Any] = this
     def iterator: Iterator[Any] = Iterator.empty
     override def foreach[U](f: Any =>  U)(implicit @local mct: MaybeCanThrow = mct): Unit = {}
-    override def toSet[B >: Any]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: Any](implicit @local mct: MaybeCanThrow = mct): Set[B] = this.asInstanceOf[Set[B]]
   }
   private[collection] def emptyInstance: Set[Any] = EmptySet
 
@@ -89,7 +89,7 @@ object Set extends ImmutableSetFactory[Set] {
       else None
     }
     @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-    override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: A](implicit @local mct: MaybeCanThrow = mct): Set[B] = this.asInstanceOf[Set[B]]
   }
 
   /** An optimized representation for immutable sets of size 2 */
@@ -122,7 +122,7 @@ object Set extends ImmutableSetFactory[Set] {
       else None
     }
     @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-    override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: A](implicit @local mct: MaybeCanThrow = mct): Set[B] = this.asInstanceOf[Set[B]]
   }
 
   /** An optimized representation for immutable sets of size 3 */
@@ -157,7 +157,7 @@ object Set extends ImmutableSetFactory[Set] {
       else None
     }
     @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-    override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: A](implicit @local mct: MaybeCanThrow = mct): Set[B] = this.asInstanceOf[Set[B]]
   }
 
   /** An optimized representation for immutable sets of size 4 */
@@ -194,6 +194,6 @@ object Set extends ImmutableSetFactory[Set] {
       else None
     }
     @deprecatedOverriding("Immutable sets should do nothing on toSet but return themselves cast as a Set.", "2.11.0")
-    override def toSet[B >: A]: Set[B] = this.asInstanceOf[Set[B]]
+    override def toSet[B >: A](implicit @local mct: MaybeCanThrow = mct): Set[B] = this.asInstanceOf[Set[B]]
   }
 }

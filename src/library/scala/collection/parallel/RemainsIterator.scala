@@ -42,37 +42,37 @@ private[collection] trait AugmentedIterableIterator[+T] extends RemainsIterator[
 
   /* accessors */
 
-  override def count(@plocal p: T => Boolean)(implicit @local cc: CanThrow): Int = {
+  override def count(@plocal p: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = 0
     while (hasNext) if (p(next())) i += 1
     i
   }
 
-  override def reduce[U >: T](op: (U, U) => U)(implicit @local cc: CanThrow): U = {
+  override def reduce[U >: T](op: (U, U) => U)(implicit @local mct: MaybeCanThrow = mct): U = {
     var r: U = next()
     while (hasNext) r = op(r, next())
     r
   }
 
-  override def fold[U >: T](z: U)(op: (U, U) => U)(implicit @local cc: CanThrow): U = {
+  override def fold[U >: T](z: U)(op: (U, U) => U)(implicit @local mct: MaybeCanThrow = mct): U = {
     var r = z
     while (hasNext) r = op(r, next())
     r
   }
 
-  override def sum[U >: T](implicit num: Numeric[U]): U = {
+  override def sum[U >: T](implicit num: Numeric[U], @local mct: MaybeCanThrow = mct): U = {
     var r: U = num.zero
     while (hasNext) r = num.plus(r, next())
     r
   }
 
-  override def product[U >: T](implicit num: Numeric[U]): U = {
+  override def product[U >: T](implicit num: Numeric[U], @local mct: MaybeCanThrow = mct): U = {
     var r: U = num.one
     while (hasNext) r = num.times(r, next())
     r
   }
 
-  override def min[U >: T](implicit ord: Ordering[U]): T = {
+  override def min[U >: T](implicit ord: Ordering[U], @local mct: MaybeCanThrow = mct): T = {
     var r = next()
     while (hasNext) {
       val curr = next()
@@ -81,7 +81,7 @@ private[collection] trait AugmentedIterableIterator[+T] extends RemainsIterator[
     r
   }
 
-  override def max[U >: T](implicit ord: Ordering[U]): T = {
+  override def max[U >: T](implicit ord: Ordering[U], @local mct: MaybeCanThrow = mct): T = {
     var r = next()
     while (hasNext) {
       val curr = next()
@@ -294,7 +294,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
 
   /* accessors */
 
-  def prefixLength(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
+  def prefixLength(@plocal pred: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var total = 0
     var loop = true
     while (hasNext && loop) {
@@ -304,7 +304,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
     total
   }
 
-  override def indexWhere(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
+  override def indexWhere(@plocal pred: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var i = 0
     var loop = true
     while (hasNext && loop) {
@@ -314,7 +314,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
     if (loop) -1 else i
   }
 
-  def lastIndexWhere(pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
+  def lastIndexWhere(pred: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var pos = -1
     var i = 0
     while (hasNext) {
@@ -324,7 +324,7 @@ private[collection] trait AugmentedSeqIterator[+T] extends AugmentedIterableIter
     pos
   }
 
-  def corresponds[S](corr: (T, S) => Boolean)(that: Iterator[S])(implicit @local cc: CanThrow): Boolean = {
+  def corresponds[S](corr: (T, S) => Boolean)(that: Iterator[S])(implicit @local mct: that.MaybeCanThrow = mct): Boolean = {
     while (hasNext && that.hasNext) {
       if (!corr(next(), that.next())) return false
     }
@@ -460,8 +460,8 @@ self =>
     }
     it
   }
-  override def take(n: Int)(implicit @local cc: CanThrow): IterableSplitter[T] = newTaken(n)
-  override def slice(from1: Int, until1: Int)(implicit @local cc: CanThrow): IterableSplitter[T] = newSliceInternal(newTaken(until1), from1)
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): IterableSplitter[T] = newTaken(n)
+  override def slice(from1: Int, until1: Int)(implicit @local mct: MaybeCanThrow = mct): IterableSplitter[T] = newSliceInternal(newTaken(until1), from1)
 
   class Mapped[S](f: T => S) extends IterableSplitter[S] {
     signalDelegate = self.signalDelegate
@@ -472,7 +472,7 @@ self =>
     def split: Seq[IterableSplitter[S]] = self.split.map { _ map f }
   }
 
-  override def map[S](f: T => S) = new Mapped(f)
+  override def map[S](f: T => S)(implicit @local mct: MaybeCanThrow = mct) = new Mapped(f)
 
   class Appended[U >: T, PI <: IterableSplitter[U]](protected val that: PI) extends IterableSplitter[U] {
     signalDelegate = self.signalDelegate
@@ -576,8 +576,8 @@ self =>
     def psplit(sizes: Int*): Seq[SeqSplitter[T]] = takeSeq(self.psplit(sizes: _*)) { (p, n) => ESC.TRY { cc => p.take(n)(cc) } } // XXX(leo)
   }
   override private[collection] def newTaken(until: Int): Taken = new Taken(until)
-  override def take(n: Int)(implicit @local cc: CanThrow): SeqSplitter[T] = newTaken(n)
-  override def slice(from1: Int, until1: Int)(implicit @local cc: CanThrow): SeqSplitter[T] = newSliceInternal(newTaken(until1), from1)
+  override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): SeqSplitter[T] = newTaken(n)
+  override def slice(from1: Int, until1: Int)(implicit @local mct: MaybeCanThrow = mct): SeqSplitter[T] = newSliceInternal(newTaken(until1), from1)
 
   class Mapped[S](f: T => S) extends super.Mapped[S](f) with SeqSplitter[S] {
     override def dup = super.dup.asInstanceOf[SeqSplitter[S]]
@@ -585,7 +585,7 @@ self =>
     def psplit(sizes: Int*): Seq[SeqSplitter[S]] = self.psplit(sizes: _*).map { _ map f }
   }
 
-  override def map[S](f: T => S) = new Mapped(f)
+  override def map[S](f: T => S)(implicit @local mct: MaybeCanThrow = mct) = new Mapped(f)
 
   class Appended[U >: T, PI <: SeqSplitter[U]](it: PI) extends super.Appended[U, PI](it) with SeqSplitter[U] {
     override def dup = super.dup.asInstanceOf[SeqSplitter[U]]
@@ -649,10 +649,10 @@ self =>
 
   override def zipAllParSeq[S, U >: T, R >: S](that: SeqSplitter[S], thisElem: U, thatElem: R) = new ZippedAll[U, R](that, thisElem, thatElem)
 
-  def reverse(implicit @local cc: CanThrow): SeqSplitter[T] = {
-    val pa = mutable.ParArray.fromTraversables(self).reverse(cc)
+  def reverse(implicit @local mct: MaybeCanThrow = mct): SeqSplitter[T] = {
+    val pa = ESC.TRY { cc => mutable.ParArray.fromTraversables(self).reverse(cc) } // XXX(leo)
     new pa.ParArrayIterator {
-      override def reverse(implicit @local mct: MaybeCanThrow = mct) = self
+      override def reverse(implicit @local mct: CannotThrow = mct) = self
     }
   }
 

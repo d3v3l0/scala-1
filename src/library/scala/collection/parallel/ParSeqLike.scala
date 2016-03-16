@@ -277,9 +277,9 @@ self =>
    *                   `p(x, y)` is `true` for all corresponding elements `x` of this $coll
    *                   and `y` of `that`, otherwise `false`
    */
-  def corresponds[S](that: GenSeq[S])(p: (T, S) => Boolean)(implicit @local cc: CanThrow): Boolean = that ifParSeq { pthat =>
+  def corresponds[S](that: GenSeq[S])(p: (T, S) => Boolean)(implicit @local cc: that.MaybeCanThrow): Boolean = that ifParSeq { pthat =>
     val ctx = new DefaultSignalling with VolatileAbort
-    length == pthat.length && tasksupport.executeAndWaitResult(new Corresponds(p, splitter assign ctx, pthat.splitter))(cc)
+    length == pthat.length && ESC.TRY(cc => tasksupport.executeAndWaitResult(new Corresponds(p, splitter assign ctx, pthat.splitter))(cc)) // FIXME(leo)
   } otherwise seq.corresponds(that)(p)
 
   def diff[U >: T](that: GenSeq[U]): Repr = sequentially {

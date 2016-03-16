@@ -495,7 +495,7 @@ trait GenTraversableOnce[+A] extends Any {
    *    @return  an array containing all elements of this $coll.
    *             An `ClassTag` must be available for the element type of this $coll.
    */
-  def toArray[A1 >: A: ClassTag]: Array[A1]
+  def toArray[A1 >: A: ClassTag](implicit @local mct: MaybeCanThrow): Array[A1]
 
   /** Converts this $coll to a list.
    *  $willNotTerminateInf
@@ -557,7 +557,7 @@ trait GenTraversableOnce[+A] extends Any {
    *  $willNotTerminateInf
    *  @return      a set containing all elements of this $coll.
    */
-  def toSet[A1 >: A]: GenSet[A1]
+  def toSet[A1 >: A](implicit @local mct: MaybeCanThrow): GenSet[A1]
 
   /** Converts this $coll to a map.  This method is unavailable unless
    *  the elements are members of Tuple2, each ((T, U)) becoming a key-value

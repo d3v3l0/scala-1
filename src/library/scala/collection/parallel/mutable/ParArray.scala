@@ -145,7 +145,7 @@ self =>
       }
     }
 
-    override def count(@plocal p: T => Boolean)(implicit @local cc: CanThrow) = {
+    override def count(@plocal p: T => Boolean)(implicit @local mct: MaybeCanThrow = mct) = {
       val c = count_quick(p, arr, until, i)
       i = until
       c
@@ -177,11 +177,11 @@ self =>
       sum
     }
 
-    override def fold[U >: T](z: U)(op: (U, U) => U)(implicit @local cc: CanThrow): U = foldLeft[U](z)(op)
+    override def fold[U >: T](z: U)(op: (U, U) => U)(implicit @local mct: MaybeCanThrow = mct): U = foldLeft[U](z)(op)
 
     override def aggregate[S](z: =>S)(seqop: (S, T) => S, combop: (S, S) => S)(implicit @local cc: MaybeCanThrow = mct): S = foldLeft[S](z)(seqop)
 
-    override def sum[U >: T](implicit num: Numeric[U]): U = {
+    override def sum[U >: T](implicit num: Numeric[U], @local mct: MaybeCanThrow = mct): U = {
       val s = sum_quick(num, arr, until, i, num.zero)
       i = until
       s
@@ -197,7 +197,7 @@ self =>
       sum
     }
 
-    override def product[U >: T](implicit num: Numeric[U]): U = {
+    override def product[U >: T](implicit num: Numeric[U], @local mct: MaybeCanThrow = mct): U = {
         val p = product_quick(num, arr, until, i, num.one)
         i = until
         p
@@ -310,7 +310,7 @@ self =>
       i += totallen
     }
 
-    override def prefixLength(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
+    override def prefixLength(@plocal pred: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
       val r = prefixLength_quick(pred, arr, until, i)
       i += r + 1
       r
@@ -326,7 +326,7 @@ self =>
       endpos - startpos
     }
 
-    override def indexWhere(@plocal pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
+    override def indexWhere(@plocal pred: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
       val r = indexWhere_quick(pred, arr, until, i)
       val ret = if (r != -1) r - i else r
       i = until
@@ -345,7 +345,7 @@ self =>
       pos
     }
 
-    override def lastIndexWhere(pred: T => Boolean)(implicit @local cc: CanThrow): Int = {
+    override def lastIndexWhere(pred: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
       val r = lastIndexWhere_quick(pred, arr, i, until)
       val ret = if (r != -1) r - i else r
       i = until

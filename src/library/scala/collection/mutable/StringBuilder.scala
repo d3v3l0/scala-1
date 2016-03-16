@@ -66,7 +66,7 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    */
   def this(str: String) = this(16, str)
 
-  def toArray(implicit @local mct: MaybeCanThrow = mct): Array[Char] = {
+  def toArray: Array[Char] = {
     val arr = new Array[Char](length)
     underlying.getChars(0, length, arr, 0)
     arr
