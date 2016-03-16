@@ -154,7 +154,7 @@ trait TraversableLike[+A, +Repr] extends Any
    */
   def hasDefiniteSize = true
 
-  def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+  def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That = {
     val b = bf(repr)
     if (that.isInstanceOf[IndexedSeqLike[_, _]]) b.sizeHint(this, that.seq.size)
     b ++= thisCollection
@@ -236,7 +236,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *                of this $coll followed by all elements of `that`.
    */
   def ++:[B >: A, That](that: Traversable[B])(implicit bf: CanBuildFrom[Repr, B, That]): That =
-    (that ++ seq)(breakOut)
+    (that ++ seq)(breakOut, new CanThrow {}) // XXX(leo)
 
   def map[B, That](@plocal f: A => B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     def builder = { // extracted to keep method size under 35 bytes, so that it can be JIT-inlined

@@ -184,7 +184,7 @@ object Iterator {
     def hasNext = (current ne null) && (current.hasNext || advance())
     @local def next()  = if (hasNext) current.next else Iterator.empty.next
 
-    override def ++[B >: A](that: => GenTraversableOnce[B]): Iterator[B] =
+    override def ++[B >: A](that: => GenTraversableOnce[B])(implicit @local mct: MaybeCanThrow = mct): Iterator[B] =
       new ConcatIterator(current, queue :+ (() => that.toIterator))
   }
 
@@ -193,7 +193,7 @@ object Iterator {
     def hasNext = lhs.hasNext || rhs.hasNext
     @local def next    = if (lhs.hasNext) lhs.next else rhs.next
 
-    override def ++[B >: A](that: => GenTraversableOnce[B]) =
+    override def ++[B >: A](that: => GenTraversableOnce[B])(implicit @local mct: MaybeCanThrow = mct) =
       new ConcatIterator(this, Vector(() => that.toIterator))
   }
 }
@@ -379,10 +379,10 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *  iterator followed by the values produced by iterator `that`.
    *  @note    Reuse: $consumesTwoAndProducesOneIterator
    *
-   *  @usecase def ++(that: => Iterator[A]): Iterator[A]
+   *  @usecase def ++(that: => Iterator[A])(implicit @local mct: MaybeCanThrow = mct): Iterator[A]
    *    @inheritdoc
    */
-  def ++[B >: A](that: => GenTraversableOnce[B]): Iterator[B] = new Iterator.JoinIterator(self, that)
+  def ++[B >: A](that: => GenTraversableOnce[B])(implicit @local mct: MaybeCanThrow = mct): Iterator[B] = new Iterator.JoinIterator(self, that)
 
   /** Creates a new iterator by applying a function to all values produced by this iterator
    *  and concatenating the results.

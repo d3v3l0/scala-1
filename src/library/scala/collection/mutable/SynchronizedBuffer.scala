@@ -56,7 +56,7 @@ trait SynchronizedBuffer[A] extends Buffer[A] {
    *
    *  @param xs the traversable object.
    */
-  override def ++(xs: GenTraversableOnce[A]): Self = synchronized {
+  override def ++(xs: GenTraversableOnce[A])(implicit @local mct: MaybeCanThrow = mct): Self = synchronized {
     super.++(xs)
   }
 

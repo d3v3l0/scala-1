@@ -225,7 +225,7 @@ trait BufferLike[A, +This <: BufferLike[A, This] with Buffer[A]]
    *  @return       a new collection consisting of all the elements of this collection and `xs`.
    */
   @migration("`++` creates a new buffer. Use `++=` to add an element from this buffer and return that buffer itself.", "2.8.0")
-  def ++(xs: GenTraversableOnce[A]): This = clone() ++= xs.seq
+  def ++(xs: GenTraversableOnce[A])(implicit @local mct: MaybeCanThrow = mct): This = clone() ++= xs.seq
 
   /** Creates a new collection with all the elements of this collection except `elem`.
    *

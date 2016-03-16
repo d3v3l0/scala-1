@@ -265,7 +265,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return       a new collection of type `That` which contains all elements
    *                of this $coll followed by all elements of `that`.
    *
-   *  @usecase def ++[B](that: GenTraversableOnce[B]): $Coll[B]
+   *  @usecase def ++[B](that: GenTraversableOnce[B])(implicit @local mct: MaybeCanThrow = mct): $Coll[B]
    *    @inheritdoc
    *
    *    Example:
@@ -289,7 +289,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *    @return       a new $coll which contains all elements of this $coll
    *                  followed by all elements of `that`.
    */
-  def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
 
   /** Selects all elements of this $coll which satisfy a predicate.
    *

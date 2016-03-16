@@ -300,7 +300,7 @@ self =>
    *  @usecase  def ++ (xs: Traversable[(A, B)]): Map[A, B]
    *    @inheritdoc
    */
-  def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)]): Map[A, B1] =
+  def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] =
     ((repr: Map[A, B1]) /: xs.seq) (_ + _)
 
   /** Returns a new map obtained by removing all key/value pairs for which the predicate

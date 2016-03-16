@@ -102,7 +102,7 @@ class ListSet[A] extends AbstractSet[A]
    *  so we take the easy way out and add ourselves and the argument to
    *  a new builder.
    */
-  override def ++(xs: GenTraversableOnce[A]): ListSet[A] =
+  override def ++(xs: GenTraversableOnce[A])(implicit @local mct: MaybeCanThrow = mct): ListSet[A] =
     if (ESC.TRY(cc => xs.isEmpty(cc))) this // XXX(leo)
     else (new ListSet.ListSetBuilder(this) ++= xs.seq).result()
 

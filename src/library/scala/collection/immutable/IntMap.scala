@@ -424,8 +424,11 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
   def intersection[R](that: IntMap[R]): IntMap[T] =
     this.intersectionWith(that, (key: Int, value: T, value2: R) => value)
 
-  def ++[S >: T](that: IntMap[S]) =
+  def ++[S >: T](that: IntMap[S])(implicit @local mct: MaybeCanThrow) =
     this.unionWith[S](that, (key, x, y) => y)
+
+  // TODO(leo) use default implicit on most specific overload (above)
+  // override def ++[S >: T](xs: GenTraversableOnce[(Int, S)])(implicit @local mct: MaybeCanThrow): Map[Int, S] = super.++(xs)(mct) // [Leo] override without default implicit
 
   /**
    * The entry with the lowest key value considered in unsigned order.

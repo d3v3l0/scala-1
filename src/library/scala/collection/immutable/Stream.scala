@@ -367,13 +367,13 @@ self =>
    * @return A new collection containing the result of concatenating `this` with
    * `that`.
    */
-  override def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Stream[A], B, That]): That =
+  override def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow): That =
     // we assume there is no other builder factory on streams and therefore know that That = Stream[A]
     if (isStreamBuilder(bf)) asThat(
       if (isEmpty) that.toStream
       else cons(head, asStream[A](tail ++ that))
     )
-    else super.++(that)(bf)
+    else super.++(that)(bf, mct)
 
   override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Stream[A], B, That]): That =
     if (isStreamBuilder(bf)) asThat(cons(elem, this))

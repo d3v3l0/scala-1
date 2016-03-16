@@ -415,7 +415,7 @@ extends AbstractMap[Long, T]
   def intersection[R](that: LongMap[R]): LongMap[T] =
     this.intersectionWith(that, (key: Long, value: T, value2: R) => value)
 
-  def ++[S >: T](that: LongMap[S]) =
+  def ++[S >: T](that: LongMap[S])(implicit @local mct: MaybeCanThrow) = // TODO(leo) see IntMap#++
     this.unionWith[S](that, (key, x, y) => y)
 
   @tailrec

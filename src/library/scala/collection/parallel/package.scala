@@ -144,10 +144,10 @@ package parallel {
 
   /** Composite throwable - thrown when multiple exceptions are thrown at the same time. */
   @deprecated("This class will be removed.", "2.11.0")
-  final case class CompositeThrowable(throwables: Set[Throwable]) extends Exception(
+  final case class CompositeThrowable(throwables: Set[Throwable]) extends Exception({ @local implicit val mct = new CannotThrow {} // XXX(leo)
     "Multiple exceptions thrown during a parallel computation: " +
       throwables.map(t => t + "\n" + t.getStackTrace.take(10).++("...").mkString("\n")).mkString("\n\n")
-  )
+  })
 
 
   /** A helper iterator for iterating very small array buffers.
