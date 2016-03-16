@@ -96,6 +96,6 @@ class BufferedSource(inputStream: InputStream, bufferSize: Int)(implicit val cod
       n = ESC.NO(allReader.read(buf))
       if (n>0) sb.appendAll(buf, 0, n)
     }
-    sb.result
+    sb.result()
   }
 }

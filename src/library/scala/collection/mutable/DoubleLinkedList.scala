@@ -85,6 +85,7 @@ object DoubleLinkedList extends SeqFactory[DoubleLinkedList] {
 
   def newBuilder[A]: Builder[A, DoubleLinkedList[A]] =
     new Builder[A, DoubleLinkedList[A]] {
+      type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
       def emptyList() = new DoubleLinkedList[A]()
       var current = emptyList()
 

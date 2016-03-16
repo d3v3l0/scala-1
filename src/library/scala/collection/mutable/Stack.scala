@@ -25,10 +25,11 @@ import scala.annotation.migration
  */
 object Stack extends SeqFactory[Stack] {
   class StackBuilder[A] extends Builder[A, Stack[A]] {
+    type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
     val lbuff = new ListBuffer[A]
     def +=(elem: A) = { lbuff += elem; this }
     def clear() = lbuff.clear()
-    def result = new Stack(lbuff.result)
+    def result = new Stack(lbuff.result())
   }
 
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Stack[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]

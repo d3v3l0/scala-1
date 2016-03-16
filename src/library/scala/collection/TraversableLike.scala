@@ -159,7 +159,7 @@ trait TraversableLike[+A, +Repr] extends Any
     if (that.isInstanceOf[IndexedSeqLike[_, _]]) b.sizeHint(this, that.seq.size)
     b ++= thisCollection
     b ++= that.seq
-    b.result
+    b.result()
   }
 
   /** As with `++`, returns a new collection containing the elements from the left operand followed by the
@@ -199,7 +199,7 @@ trait TraversableLike[+A, +Repr] extends Any
     if (that.isInstanceOf[IndexedSeqLike[_, _]]) b.sizeHint(this, that.size)
     b ++= that
     b ++= thisCollection
-    b.result
+    b.result()
   }
 
   /** As with `++`, returns a new collection containing the elements from the
@@ -246,14 +246,14 @@ trait TraversableLike[+A, +Repr] extends Any
     }
     val b = builder
     for (x <- this) b += f(x)
-    b.result
+    b.result()
   }
 
   def flatMap[B, That](@plocal f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     def builder = bf(repr) // extracted to keep method size under 35 bytes, so that it can be JIT-inlined
     val b = builder
     for (x <- this) b ++= f(x).seq
-    b.result
+    b.result()
   }
 
   private def filterImpl(@local p: A => Boolean, isFlipped: Boolean): Repr = {
@@ -261,7 +261,7 @@ trait TraversableLike[+A, +Repr] extends Any
     for (x <- this)
       if (p(x) != isFlipped) b += x
 
-    b.result
+    b.result()
   }
 
   /** Selects all elements of this $coll which satisfy a predicate.
@@ -283,7 +283,7 @@ trait TraversableLike[+A, +Repr] extends Any
   def collect[B, That](@plocal pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow = mct): That = {
     val b = bf(repr)
     foreach(pf.runWith(b += _))
-    b.result
+    b.result()
   }
 
   /** Builds a new collection by applying an option-valued function to all
@@ -326,7 +326,7 @@ trait TraversableLike[+A, +Repr] extends Any
   def partition(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = {
     val l, r = newBuilder
     for (x <- this) (if (p(x)) l else r) += x
-    (l.result, r.result)
+    (l.result(), r.result())
   }
 
   def groupBy[K](@plocal f: A => K)(implicit @local mct: MaybeCanThrow = mct): immutable.Map[K, Repr] = {
@@ -338,9 +338,9 @@ trait TraversableLike[+A, +Repr] extends Any
     }
     val b = immutable.Map.newBuilder[K, Repr]
     for ((k, v) <- m)
-      b += ((k, v.result))
+      b += ((k, v.result()))
 
-    b.result
+    b.result()
   }
 
   /** Tests whether a predicate holds for all elements of this $coll.
@@ -403,7 +403,7 @@ trait TraversableLike[+A, +Repr] extends Any
     var acc = z
     b += acc
     for (x <- this) { acc = op(acc, x); b += acc }
-    b.result
+    b.result()
   }
 
   @migration("The behavior of `scanRight` has changed. The previous behavior can be reproduced with scanRight.reverse.", "2.9.0")
@@ -416,7 +416,7 @@ trait TraversableLike[+A, +Repr] extends Any
     }
     val b = bf(repr)
     for (elem <- scanned) b += elem
-    b.result
+    b.result()
   }
 
   /** Selects the first element of this $coll.
@@ -489,7 +489,7 @@ trait TraversableLike[+A, +Repr] extends Any
       else follow = true
       lst = x
     }
-    b.result
+    b.result()
   }
 
   def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Repr = slice(0, n)
@@ -498,7 +498,7 @@ trait TraversableLike[+A, +Repr] extends Any
     if (n <= 0) {
       val b = newBuilder
       b.sizeHint(this)
-      (b ++= thisCollection).result
+      (b ++= thisCollection).result()
     }
     else sliceWithKnownDelta(n, Int.MaxValue, -n)
 
@@ -515,12 +515,12 @@ trait TraversableLike[+A, +Repr] extends Any
         if (i >= until) break
       }
     }
-    b.result
+    b.result()
   }
   // Precondition: from >= 0
   private[scala] def sliceWithKnownDelta(from: Int, until: Int, delta: Int): Repr = {
     val b = newBuilder
-    if (until <= from) b.result
+    if (until <= from) b.result()
     else {
       b.sizeHint(this, delta)
       sliceInternal(from, until, b)
@@ -529,7 +529,7 @@ trait TraversableLike[+A, +Repr] extends Any
   // Precondition: from >= 0
   private[scala] def sliceWithKnownBound(from: Int, until: Int): Repr = {
     val b = newBuilder
-    if (until <= from) b.result
+    if (until <= from) b.result()
     else {
       b.sizeHintBounded(until - from, this)
       sliceInternal(from, until, b)
@@ -544,7 +544,7 @@ trait TraversableLike[+A, +Repr] extends Any
         b += x
       }
     }
-    b.result
+    b.result()
   }
 
   def dropWhile(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Repr = {
@@ -554,7 +554,7 @@ trait TraversableLike[+A, +Repr] extends Any
       if (!go && !p(x)) go = true
       if (go) b += x
     }
-    b.result
+    b.result()
   }
 
   def span(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = {
@@ -564,7 +564,7 @@ trait TraversableLike[+A, +Repr] extends Any
       toLeft = toLeft && p(x)
       (if (toLeft) l else r) += x
     }
-    (l.result, r.result)
+    (l.result(), r.result())
   }
 
   def splitAt(n: Int)(implicit @local mct: MaybeCanThrow = mct): (Repr, Repr) = {
@@ -576,7 +576,7 @@ trait TraversableLike[+A, +Repr] extends Any
       (if (i < n) l else r) += x
       i += 1
     }
-    (l.result, r.result)
+    (l.result(), r.result())
   }
 
   /** Iterates over the tails of this $coll. The first value will be this
@@ -636,7 +636,7 @@ trait TraversableLike[+A, +Repr] extends Any
     val b = cbf()
     b.sizeHint(this)
     b ++= thisCollection
-    b.result
+    b.result()
   }
 
   /** Converts this $coll to a string.
@@ -732,7 +732,7 @@ trait TraversableLike[+A, +Repr] extends Any
       val b = bf(repr)
       for (x <- self)
         if (p(x)) b += f(x)
-      b.result
+      b.result()
     }
 
     /** Builds a new collection by applying a function to all elements of the
@@ -763,7 +763,7 @@ trait TraversableLike[+A, +Repr] extends Any
       val b = bf(repr)
       for (x <- self)
         if (p(x)) b ++= f(x).seq
-      b.result
+      b.result()
     }
 
     /** Applies a function `f` to all elements of the outer $coll containing
@@ -798,6 +798,6 @@ trait TraversableLike[+A, +Repr] extends Any
   // A helper for tails and inits.
   private def iterateUntilEmpty(f: Traversable[A @uV] => Traversable[A @uV]): Iterator[Repr] = {
     val it = Iterator.iterate(thisCollection)(f) takeWhile (x => !x.isEmpty)
-    it ++ Iterator(Nil) map (x => (newBuilder ++= x).result)
+    it ++ Iterator(Nil) map (x => (newBuilder ++= x).result())
   }
 }
