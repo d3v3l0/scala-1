@@ -84,7 +84,7 @@ self =>
   }
 
   class ParArrayIterator(var i: Int = 0, val until: Int = length, val arr: Array[Any] = array)
-  extends SeqSplitter[T] {
+  extends SeqSplitter[T] { // FIXME(leo) should have MaybeCanThrow = CanThrow
     def hasNext = i < until
 
     @local def next = {
@@ -179,7 +179,7 @@ self =>
 
     override def fold[U >: T](z: U)(op: (U, U) => U)(implicit @local cc: CanThrow): U = foldLeft[U](z)(op)
 
-    override def aggregate[S](z: =>S)(seqop: (S, T) => S, combop: (S, S) => S)(implicit @local cc: CanThrow): S = foldLeft[S](z)(seqop)
+    override def aggregate[S](z: =>S)(seqop: (S, T) => S, combop: (S, S) => S)(implicit @local cc: MaybeCanThrow = mct): S = foldLeft[S](z)(seqop)
 
     override def sum[U >: T](implicit num: Numeric[U]): U = {
       val s = sum_quick(num, arr, until, i, num.zero)
@@ -213,7 +213,7 @@ self =>
         prod
     }
 
-    override def forall(@plocal p: T => Boolean)(implicit @local cc: CanThrow): Boolean = {
+    override def forall(@plocal p: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
       if (isAborted) return false
 
       var all = true
@@ -242,7 +242,7 @@ self =>
       true
     }
 
-    override def exists(@plocal p: T => Boolean)(implicit @local cc: CanThrow): Boolean = {
+    override def exists(@plocal p: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = {
       if (isAborted) return true
 
       var some = false
@@ -270,7 +270,7 @@ self =>
       false
     }
 
-    override def find(@plocal p: T => Boolean)(implicit @local cc: CanThrow): Option[T] = {
+    override def find(@plocal p: T => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[T] = {
       if (isAborted) return None
 
       var r: Option[T] = None
@@ -299,7 +299,7 @@ self =>
       None
     }
 
-    override def drop(n: Int)(implicit @local cc: CanThrow): ParArrayIterator = {
+    override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): ParArrayIterator = {
       i += n
       this
     }
@@ -364,7 +364,7 @@ self =>
       pos
     }
 
-    override def sameElements(that: Iterator[_])(implicit @local cc: CanThrow): Boolean = {
+    override def sameElements(that: Iterator[_])(implicit @local mct: MaybeCanThrow = mct): Boolean = {
       var same = true
       while (i < until && that.hasNext) {
         if (arr(i) != that.next) {
