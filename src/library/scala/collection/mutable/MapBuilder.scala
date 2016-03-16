@@ -24,6 +24,7 @@ package mutable
  */
 class MapBuilder[A, B, Coll <: scala.collection.GenMap[A, B] with scala.collection.GenMapLike[A, B, Coll]](empty: Coll)
 extends Builder[(A, B), Coll] {
+  type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
   protected var elems: Coll = empty
   def +=(x: (A, B)): this.type = {
     elems = (elems + x).asInstanceOf[Coll]
@@ -33,5 +34,5 @@ extends Builder[(A, B), Coll] {
     this
   }
   def clear() { elems = empty }
-  def result: Coll = elems
+  def result(@local mct: MaybeCanThrow = mctBuilder): Coll = elems
 }

@@ -714,7 +714,7 @@ object ParArray extends ParFactory[ParArray] {
     for (xs <- xss) {
       cb ++= xs.seq
     }
-    cb.result
+    cb.result(new CanThrow {}) // XXX(leo)
   }
 
 }

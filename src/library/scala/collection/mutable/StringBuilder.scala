@@ -439,7 +439,7 @@ final class StringBuilder(private val underlying: JavaStringBuilder)
    *
    *  @return  the string assembled by this StringBuilder
    */
-  def result(): String = toString
+  def result(@local mct: MaybeCanThrow = mct): String = toString
 }
 
 object StringBuilder {

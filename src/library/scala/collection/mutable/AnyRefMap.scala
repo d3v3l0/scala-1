@@ -408,13 +408,14 @@ object AnyRefMap {
     }
 
   final class AnyRefMapBuilder[K <: AnyRef, V] extends Builder[(K, V), AnyRefMap[K, V]] {
+    type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
     private[collection] var elems: AnyRefMap[K, V] = new AnyRefMap[K, V]
     def +=(entry: (K, V)): this.type = {
       elems += entry
       this
     }
     def clear() { elems = new AnyRefMap[K, V] }
-    def result(): AnyRefMap[K, V] = elems
+    def result(@local mct: MaybeCanThrow = mctBuilder): AnyRefMap[K, V] = elems
   }
 
   /** Creates a new `AnyRefMap` with zero or more key/value pairs. */

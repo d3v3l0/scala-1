@@ -1162,7 +1162,7 @@ object Stream extends SeqFactory[Stream] {
    *        this builder should be bypassed.
    */
   class StreamBuilder[A] extends scala.collection.mutable.LazyBuilder[A, Stream[A]] {
-    def result: Stream[A] = parts.toStream flatMap (_.toStream)
+    def result(@local mct: MaybeCanThrow = mctBuilder): Stream[A] = parts.toStream flatMap (_.toStream)
   }
 
   object Empty extends Stream[Nothing] {

@@ -171,7 +171,7 @@ class ArrayBuffer[A](override protected val initialSize: Int)
     result
   }
 
-  def result: ArrayBuffer[A] = this
+  def result(@local mct: MaybeCanThrow = mct): ArrayBuffer[A] = this
 
   /** Defines the prefix of the string representation.
    */
@@ -190,4 +190,3 @@ object ArrayBuffer extends SeqFactory[ArrayBuffer] {
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, ArrayBuffer[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]
   def newBuilder[A]: Builder[A, ArrayBuffer[A]] = new ArrayBuffer[A]
 }
-

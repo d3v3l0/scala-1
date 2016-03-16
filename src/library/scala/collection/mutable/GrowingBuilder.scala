@@ -23,8 +23,9 @@ import generic._
  *  @define coll growing builder
  */
 class GrowingBuilder[Elem, To <: Growable[Elem]](empty: To) extends Builder[Elem, To] {
+  type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
   protected var elems: To = empty
   def +=(x: Elem): this.type = { elems += x; this }
   def clear() { elems = empty }
-  def result: To = elems
+  def result(@local mct: MaybeCanThrow = mctBuilder): To = elems
 }

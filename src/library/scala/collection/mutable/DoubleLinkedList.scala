@@ -99,6 +99,6 @@ object DoubleLinkedList extends SeqFactory[DoubleLinkedList] {
       }
 
       def clear(): Unit = current = emptyList()
-      def result() = current
+      def result(@local mct: MaybeCanThrow = mctBuilder) = current
     }
 }

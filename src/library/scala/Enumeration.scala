@@ -280,10 +280,11 @@ abstract class Enumeration (initial: Int) extends Serializable {
     def fromBitMask(elems: Array[Long]): ValueSet = new ValueSet(immutable.BitSet.fromBitMask(elems))
     /** A builder object for value sets */
     def newBuilder: mutable.Builder[Value, ValueSet] = new mutable.Builder[Value, ValueSet] {
+      type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
       private[this] val b = new mutable.BitSet
       def += (x: Value) = { b += (x.id - bottomId); this }
       def clear() = b.clear()
-      def result() = new ValueSet(b.toImmutable)
+      override def result(@local mct: MaybeCanThrow = mctBuilder) = new ValueSet(b.toImmutable)
     }
     /** The implicit builder for value sets */
     implicit def canBuildFrom: CanBuildFrom[ValueSet, Value, ValueSet] =

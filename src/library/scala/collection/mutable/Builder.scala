@@ -24,6 +24,7 @@ import generic._
  *  @since 2.8
  */
 trait Builder[-Elem, +To] extends Growable[Elem] {
+  type MaybeCanThrow >: CanThrow
 
   /** Adds a single element to the builder.
    *  @param elem the element to be added.
@@ -40,7 +41,7 @@ trait Builder[-Elem, +To] extends Growable[Elem] {
    *  The builder's contents are undefined after this operation.
    *  @return a collection containing the elements added to this builder.
    */
-  def result(): To
+  def result(@local mct: MaybeCanThrow = new CanThrow {}): To // FIXME(leo)
 
   /** Gives a hint how many elements are expected to be added
    *  when the next `result` is called. Some builder classes
@@ -121,7 +122,6 @@ trait Builder[-Elem, +To] extends Growable[Elem] {
       override def ++=(xs: TraversableOnce[Elem]): this.type = { self ++= xs; this }
       override def sizeHint(size: Int) = self.sizeHint(size)
       override def sizeHintBounded(size: Int, boundColl: TraversableLike[_, _]) = self.sizeHintBounded(size, boundColl)
-      def result: NewTo = f(self.result())
+      def result(@local mct: MaybeCanThrow): NewTo = f(self.result())
     }
 }
-

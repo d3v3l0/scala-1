@@ -502,13 +502,14 @@ object LongMap {
     }
 
   final class LongMapBuilder[V] extends Builder[(Long, V), LongMap[V]] {
+    type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
     private[collection] var elems: LongMap[V] = new LongMap[V]
     def +=(entry: (Long, V)): this.type = {
       elems += entry
       this
     }
     def clear() { elems = new LongMap[V] }
-    def result(): LongMap[V] = elems
+    def result(@local mct: MaybeCanThrow = mctBuilder): LongMap[V] = elems
   }
 
   /** Creates a new `LongMap` with zero or more key/value pairs. */

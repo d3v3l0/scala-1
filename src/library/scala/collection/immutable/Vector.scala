@@ -706,6 +706,7 @@ extends AbstractIterator[A]
 
 
 final class VectorBuilder[A]() extends Builder[A,Vector[A]] with VectorPointer[A @uncheckedVariance] {
+  type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
 
   // possible alternative: start with display0 = null, blockIndex = -32, lo = 32
   // to avoid allocating initial array if the result will be empty anyways
@@ -731,7 +732,7 @@ final class VectorBuilder[A]() extends Builder[A,Vector[A]] with VectorPointer[A
   override def ++=(xs: TraversableOnce[A]): this.type =
     super.++=(xs)
 
-  def result: Vector[A] = {
+  def result(@local mct: MaybeCanThrow = mctBuilder): Vector[A] = {
     val size = blockIndex + lo
     if (size == 0)
       return Vector.empty

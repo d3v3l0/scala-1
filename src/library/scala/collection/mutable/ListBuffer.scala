@@ -301,7 +301,7 @@ final class ListBuffer[A]
 
 // Implementation of abstract method in Builder
 
-  def result: List[A] = toList
+  def result(@local mct: MaybeCanThrow = mct): List[A] = toList
 
   /** Converts this buffer to a list. Takes constant time. The buffer is
    *  copied lazily, the first time it is mutated.

@@ -19,7 +19,10 @@ import scala.runtime.ScalaRunTime
  *
  *  @tparam T    the type of the elements for the builder.
  */
-abstract class ArrayBuilder[T] extends Builder[T, Array[T]] with Serializable
+abstract class ArrayBuilder[T] extends Builder[T, Array[T]] with Serializable {
+  type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
+  override def result(@local mct: MaybeCanThrow = mctBuilder): Array[T]
+}
 
 /** A companion object for array builders.
  *
@@ -103,7 +106,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -168,7 +171,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -233,7 +236,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -298,7 +301,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -363,7 +366,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -428,7 +431,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -493,7 +496,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -558,7 +561,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -622,7 +625,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }
@@ -687,7 +690,7 @@ object ArrayBuilder {
       size = 0
     }
 
-    def result() = {
+    override def result(@local mct: MaybeCanThrow = mctBuilder) = {
       if (capacity != 0 && capacity == size) elems
       else mkArray(size)
     }

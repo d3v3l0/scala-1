@@ -18,8 +18,9 @@ package mutable
  *  @since 2.8
  */
 class SetBuilder[A, Coll <: scala.collection.Set[A] with scala.collection.SetLike[A, Coll]](empty: Coll) extends Builder[A, Coll] {
+  type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
   protected var elems: Coll = empty
   def +=(x: A): this.type = { elems = elems + x; this }
   def clear() { elems = empty }
-  def result: Coll = elems
+  def result(@local mct: MaybeCanThrow): Coll = elems
 }

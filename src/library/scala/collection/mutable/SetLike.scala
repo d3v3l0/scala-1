@@ -136,7 +136,7 @@ trait SetLike[A, +This <: SetLike[A, This] with Set[A]]
   /** The result when this set is used as a builder
    *  @return  the set representation itself.
    */
-  def result: This = repr
+  def result(@local mct: MaybeCanThrow = mct): This = repr
 
   /** Creates a new set consisting of all the elements of this set and `elem`.
    *

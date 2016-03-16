@@ -23,6 +23,7 @@ import scala.runtime.ScalaRunTime._
  *  @since 2.8
  */
 class WrappedArrayBuilder[A](tag: ClassTag[A]) extends Builder[A, WrappedArray[A]] {
+  type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
 
   @deprecated("use tag instead", "2.10.0")
   val manifest: ClassTag[A] = tag
@@ -77,7 +78,7 @@ class WrappedArrayBuilder[A](tag: ClassTag[A]) extends Builder[A, WrappedArray[A
     size = 0
   }
 
-  def result() = {
+  def result(@local mct: MaybeCanThrow = mctBuilder) = {
     if (capacity != 0 && capacity == size) elems
     else mkArray(size)
   }

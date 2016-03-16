@@ -155,7 +155,7 @@ extends AbstractSeq[A]
     len = 0
   }
 
-  def result = this
+  def result(@local mct: MaybeCanThrow = mct) = this
 
   override def clone(): MutableList[A]  = {
     val bf = newBuilder

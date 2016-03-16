@@ -29,7 +29,7 @@ object Stack extends SeqFactory[Stack] {
     val lbuff = new ListBuffer[A]
     def +=(elem: A) = { lbuff += elem; this }
     def clear() = lbuff.clear()
-    def result = new Stack(lbuff.result())
+    def result(@local mct: MaybeCanThrow = mctBuilder) = new Stack(lbuff.result())
   }
 
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, Stack[A]] = ReusableCBF.asInstanceOf[GenericCanBuildFrom[A]]

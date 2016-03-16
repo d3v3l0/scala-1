@@ -166,7 +166,7 @@ extends AbstractSeq[T]
    */
   def +=(x: T): this.type = { push(x); this }
 
-  def result = {
+  def result(@local mct: MaybeCanThrow = mct) = {
     reverseTable()
     this
   }

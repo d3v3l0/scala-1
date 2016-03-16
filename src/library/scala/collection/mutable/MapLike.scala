@@ -225,7 +225,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
   /** The result when this map is used as a builder
    *  @return  the map representation itself.
    */
-  def result: This = repr
+  def result(@local mct: MaybeCanThrow = mct): This = repr
 
   /** Creates a new map with all the key/value mappings of this map except mappings with keys
    *  equal to any of the two or more specified keys.

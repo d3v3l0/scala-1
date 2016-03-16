@@ -34,6 +34,7 @@ object ListSet extends ImmutableSetFactory[ListSet] {
    *  become large enough for this to matter given its pricy element lookup.
    */
   class ListSetBuilder[Elem](initial: ListSet[Elem]) extends Builder[Elem, ListSet[Elem]] {
+    type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
     def this() = this(empty[Elem])
     protected val elems = (new mutable.ListBuffer[Elem] ++= initial).reverse
     protected val seen  = new mutable.HashSet[Elem] ++= initial
@@ -46,7 +47,7 @@ object ListSet extends ImmutableSetFactory[ListSet] {
       this
     }
     def clear() = { elems.clear() ; seen.clear() }
-    def result() = elems.foldLeft(empty[Elem])(_ unchecked_+ _)
+    def result(@local mct: MaybeCanThrow = mctBuilder) = elems.foldLeft(empty[Elem])(_ unchecked_+ _)
   }
 }
 

@@ -66,7 +66,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
   override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = resarr.p_size0 < 2
   override def repr = this
 
-  def result = this
+  def result(@local mct: MaybeCanThrow = mct) = this
 
   override def orderedCompanion = PriorityQueue
 
