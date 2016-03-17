@@ -243,11 +243,11 @@ trait SeqViewLike[+A,
     patch(index, List(elem), 1)(bf)
   }
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[This, B, That]): That =
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That =
     newPrepended(elem).asInstanceOf[That]
 
-  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[This, B, That]): That =
-    ++(Iterator.single(elem))(bf, new CanThrow {}) // XXX(leo)
+  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That =
+    ++(Iterator.single(elem))(bf, mct)
 
   override def union[B >: A, That](that: GenSeq[B])(implicit bf: CanBuildFrom[This, B, That], @local mct: MaybeCanThrow = mct): That =
     newForced(thisSeq union that).asInstanceOf[That]

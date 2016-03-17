@@ -321,7 +321,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    @return a new $coll consisting of `elem` followed
    *            by all elements of this $coll.
    */
-  def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
 
   /** A copy of this $coll with an element appended.
    *
@@ -354,7 +354,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *    @return a new $coll consisting of
    *            all elements of this $coll followed by `elem`.
    */
-  def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That]): That
+  def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Repr, B, That], @local mct: MaybeCanThrow): That
 
   /** A copy of this $coll with an element value appended until a given target length is reached.
    *

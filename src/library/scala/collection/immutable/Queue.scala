@@ -90,12 +90,12 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
    */
   override def length = in.length + out.length
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Queue[A], B, That]): That = bf match {
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Queue[A], B, That], @local mct: MaybeCanThrow = mct): That = bf match {
     case _: Queue.GenericCanBuildFrom[_] => new Queue(in, elem :: out).asInstanceOf[That]
     case _                               => super.+:(elem)(bf)
   }
 
-  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Queue[A], B, That]): That = bf match {
+  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Queue[A], B, That], @local mct: MaybeCanThrow = mct): That = bf match {
     case _: Queue.GenericCanBuildFrom[_] => enqueue(elem).asInstanceOf[That]
     case _                               => super.:+(elem)(bf)
   }

@@ -143,12 +143,12 @@ override def companion: GenericCompanion[Vector] = Vector
       updateAt(index, elem).asInstanceOf[That] // ignore bf--it will just give a Vector, and slowly
     else super.updated(index, elem)(bf)
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That]): That =
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That], @local mct: MaybeCanThrow = mct): That =
     if (isDefaultCBF[A, B, That](bf))
       appendFront(elem).asInstanceOf[That] // ignore bf--it will just give a Vector, and slowly
     else super.+:(elem)(bf)
 
-  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That]): That =
+  override def :+[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Vector[A], B, That], @local mct: MaybeCanThrow = mct): That =
     if (isDefaultCBF(bf))
       appendBack(elem).asInstanceOf[That] // ignore bf--it will just give a Vector, and slowly
     else super.:+(elem)(bf)

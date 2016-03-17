@@ -198,7 +198,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
     if (bf eq List.ReusableCBF) (this ::: that.seq.toList).asInstanceOf[That]
     else super.++(that)
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[List[A], B, That]): That = bf match {
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[List[A], B, That], @local mct: MaybeCanThrow = mct): That = bf match {
     case _: List.GenericCanBuildFrom[_] => (elem :: this).asInstanceOf[That]
     case _ => super.+:(elem)(bf)
   }

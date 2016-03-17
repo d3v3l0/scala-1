@@ -375,7 +375,7 @@ self =>
     )
     else super.++(that)(bf, mct)
 
-  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Stream[A], B, That]): That =
+  override def +:[B >: A, That](elem: B)(implicit bf: CanBuildFrom[Stream[A], B, That], @local mct: MaybeCanThrow = mct): That =
     if (isStreamBuilder(bf)) asThat(cons(elem, this))
     else super.+:(elem)(bf)
 
