@@ -55,7 +55,7 @@ trait GenericTraversableTemplate[+A, +CC[X] <: GenTraversable[X]] extends HasNew
    *
    *  @return    `true` if the $coll contain no elements, `false` otherwise.
    */
-  def isEmpty: Boolean
+  def isEmpty(implicit @local mct: MaybeCanThrow): Boolean
 
   /** The factory companion object that builds instances of class $Coll.
    *  (or its `Iterable` superclass where class $Coll is not a `Seq`.)

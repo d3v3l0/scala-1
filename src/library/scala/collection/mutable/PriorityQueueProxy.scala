@@ -40,7 +40,7 @@ abstract class PriorityQueueProxy[A](implicit ord: Ordering[A]) extends Priority
    *
    *  @return true, iff there is no element in the queue.
    */
-  override def isEmpty: Boolean = self.isEmpty
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = self.isEmpty
 
   /** Inserts a single element into the priority queue.
    *

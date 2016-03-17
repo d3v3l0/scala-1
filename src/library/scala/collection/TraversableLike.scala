@@ -130,7 +130,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *
    *  @return    `true` if the $coll contain no elements, `false` otherwise.
    */
-  def isEmpty: Boolean = {
+  def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = {
     var result = true
     breakable {
       for (x <- this) {
@@ -440,7 +440,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @return  the first element of this $coll if it is nonempty,
    *           `None` if it is empty.
    */
-  def headOption: Option[A] = if (isEmpty) None else Some(head)
+  def headOption(implicit @local mct: MaybeCanThrow = mct): Option[A] = if (isEmpty) None else Some(head)
 
   /** Selects all elements except the first.
    *  $orderDependent
@@ -470,7 +470,7 @@ trait TraversableLike[+A, +Repr] extends Any
    *  @return  the last element of this $coll$ if it is nonempty,
    *           `None` if it is empty.
    */
-  def lastOption: Option[A] = if (isEmpty) None else Some(last)
+  def lastOption(implicit @local mct: MaybeCanThrow = mct): Option[A] = if (isEmpty) None else Some(last)
 
   /** Selects all elements except the last.
    *  $orderDependent

@@ -80,7 +80,7 @@ self =>
     iterator.exists(p)
   override /*TraversableLike*/ def find(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Option[A] =
     iterator.find(p)
-  override /*TraversableLike*/ def isEmpty: Boolean =
+  override /*TraversableLike*/ def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean =
     !iterator.hasNext
   override /*TraversableLike*/ def foldRight[B](z: B)(op: (A, B) => B): B =
     iterator.foldRight(z)(op)

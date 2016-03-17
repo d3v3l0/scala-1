@@ -40,7 +40,7 @@ trait QueueProxy[A] extends Queue[A] with Proxy {
    *
    *  @return true, iff there is no element in the queue.
    */
-  override def isEmpty: Boolean = self.isEmpty
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = self.isEmpty
 
   /** Inserts a single element at the end of the queue.
    *

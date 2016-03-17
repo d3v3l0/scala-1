@@ -36,7 +36,7 @@ extends AbstractMap[A, B]
 
   def get(key: A): Option[B] = imap.get(key)
 
-  override def isEmpty: Boolean = imap.isEmpty
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = imap.isEmpty
 
   override def apply(key: A): B = imap.apply(key)
 

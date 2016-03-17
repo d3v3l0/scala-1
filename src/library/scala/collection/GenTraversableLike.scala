@@ -75,7 +75,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return  the first element of this $coll if it is nonempty,
    *           `None` if it is empty.
    */
-  def headOption: Option[A]
+  def headOption(implicit @local mct: MaybeCanThrow): Option[A]
 
   /** Tests whether this $coll can be repeatedly traversed.
    *  @return   `true`
@@ -102,7 +102,7 @@ trait GenTraversableLike[+A, +Repr] extends Any with GenTraversableOnce[A] with 
    *  @return  the last element of this $coll$ if it is nonempty,
    *           `None` if it is empty.
    */
-  def lastOption: Option[A]
+  def lastOption(implicit @local mct: MaybeCanThrow): Option[A]
 
   /** Selects all elements except the last.
    *  $orderDependent

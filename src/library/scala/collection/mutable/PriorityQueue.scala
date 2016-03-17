@@ -63,7 +63,7 @@ class PriorityQueue[A](implicit val ord: Ordering[A])
   resarr.p_size0 += 1                  // we do not use array(0)
   def length: Int = resarr.length - 1  // adjust length accordingly
   override def size(implicit @local mct: MaybeCanThrow = mct): Int = length
-  override def isEmpty: Boolean = resarr.p_size0 < 2
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = resarr.p_size0 < 2
   override def repr = this
 
   def result = this

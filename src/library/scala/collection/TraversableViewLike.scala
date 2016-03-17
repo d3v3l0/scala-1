@@ -108,13 +108,13 @@ trait TraversableViewLike[+A,
     // Methods whose standard implementations use "isEmpty" need to be rewritten
     // for views, else they will end up traversing twice in a situation like:
     //   xs.view.flatMap(f).headOption
-    override def headOption: Option[B] = {
+    override def headOption(implicit @local mct: MaybeCanThrow = mct): Option[B] = {
       for (x <- this)
         return Some(x)
 
       None
     }
-    override def lastOption: Option[B] = {
+    override def lastOption(implicit @local mct: MaybeCanThrow = mct): Option[B] = {
       // (Should be) better than allocating a Some for every element.
       var empty = true
       var result: B = null.asInstanceOf[B]

@@ -100,7 +100,7 @@ trait SeqLike[+A, +Repr] extends Any with IterableLike[A, Repr] with GenSeqLike[
     }
   }
 
-  override /*IterableLike*/ def isEmpty: Boolean = lengthCompare(0) == 0
+  override /*IterableLike*/ def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = lengthCompare(0) == 0
 
   /** The size of this $coll, equivalent to `length`.
    *

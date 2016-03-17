@@ -93,7 +93,7 @@ sealed abstract class List[+A] extends AbstractSeq[A]
 
   import scala.collection.{Iterable, Traversable, Seq, IndexedSeq}
 
-  def isEmpty: Boolean
+  def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean
   def head: A
   def tail(implicit @local mct: MaybeCanThrow = mct): List[A]
 
@@ -441,7 +441,7 @@ case object Nil extends List[Nothing] {
 @SerialVersionUID(509929039250432923L) // value computed by serialver for 2.11.2, annotation added in 2.11.4
 final case class ::[B](override val head: B, private[scala] var tl: List[B]) extends List[B] {
   override def tail : List[B] = tl
-  override def isEmpty: Boolean = false
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = false
 }
 
 /** $factoryInfo

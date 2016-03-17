@@ -78,7 +78,7 @@ class ListSet[A] extends AbstractSet[A]
    *  @return number of set elements.
    */
   override def size(implicit @local mct: MaybeCanThrow = mct): Int = 0
-  override def isEmpty: Boolean = true
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = true
 
   /** Checks if this set contains element `elem`.
    *
@@ -163,7 +163,7 @@ class ListSet[A] extends AbstractSet[A]
      *
      *  @return true, iff there is no element in the set.
      */
-    override def isEmpty: Boolean = false
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = false
 
     /** Checks if this set contains element `elem`.
      *

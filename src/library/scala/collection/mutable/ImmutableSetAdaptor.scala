@@ -28,7 +28,7 @@ extends AbstractSet[A]
 
   override def size(implicit @local mct: MaybeCanThrow = mct): Int = set.size
 
-  override def isEmpty: Boolean = set.isEmpty
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = set.isEmpty
 
   def contains(elem: A): Boolean = set.contains(elem)
 

@@ -50,7 +50,7 @@ trait SynchronizedMap[A, B] extends Map[A, B] {
   @migration("`keys` returns `Iterable[A]` rather than `Iterator[A]`.", "2.8.0")
   override def keys: scala.collection.Iterable[A] = synchronized { super.keys }
   override def keysIterator: Iterator[A] = synchronized { super.keysIterator }
-  override def isEmpty: Boolean = synchronized { super.isEmpty }
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = synchronized { super.isEmpty }
   override def contains(key: A): Boolean = synchronized {super.contains(key) }
   override def isDefinedAt(key: A) = synchronized { super.isDefinedAt(key) }
 

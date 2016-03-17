@@ -33,7 +33,7 @@ class SynchronizedStack[A] extends Stack[A] {
    *
    *  @return true, iff there is no element on the stack
    */
-  override def isEmpty: Boolean = synchronized { super.isEmpty }
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = synchronized { super.isEmpty }
 
   /** Pushes a single element on top of the stack.
    *

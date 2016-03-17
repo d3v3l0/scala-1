@@ -219,7 +219,7 @@ extends AbstractSeq[T]
     }
   }
 
-  override def isEmpty: Boolean = index == 0
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = index == 0
 
   /** Creates and iterator over the stack in LIFO order.
    *  @return an iterator over the elements of the stack.

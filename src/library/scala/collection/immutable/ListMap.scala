@@ -148,7 +148,7 @@ extends AbstractMap[A, B]
      *
      *  @return true, iff the map is empty.
      */
-    override def isEmpty: Boolean = false
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = false
 
     /** Retrieves the value which is associated with the given key. This
      *  method throws an exception if there is no mapping from the given

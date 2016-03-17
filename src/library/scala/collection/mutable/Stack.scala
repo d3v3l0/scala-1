@@ -70,7 +70,7 @@ extends AbstractSeq[A]
    *
    *  @return true, iff there is no element on the stack
    */
-  override def isEmpty: Boolean = elems.isEmpty
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = elems.isEmpty
 
   /** The number of elements in the stack */
   override def length = elems.length

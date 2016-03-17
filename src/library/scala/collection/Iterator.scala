@@ -290,7 +290,7 @@ trait Iterator[+A] extends TraversableOnce[A] {
    *  @return   `true` if hasNext is false, `false` otherwise.
    *  @note     Reuse: $preservesIterator
    */
-  def isEmpty: Boolean = !hasNext
+  def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = !hasNext
 
   /** Tests whether this Iterator can be repeatedly traversed.
    *

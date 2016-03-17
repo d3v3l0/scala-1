@@ -71,13 +71,13 @@ trait GenTraversableOnce[+A] extends Any {
    *
    *  @return    `true` if the $coll contains no elements, `false` otherwise.
    */
-  def isEmpty: Boolean
+  def isEmpty(implicit @local mct: MaybeCanThrow): Boolean
 
   /** Tests whether the $coll is not empty.
    *
    *  @return    `true` if the $coll contains at least one element, `false` otherwise.
    */
-  def nonEmpty: Boolean
+  def nonEmpty(implicit @local mct: MaybeCanThrow): Boolean
 
   /** Tests whether this $coll can be repeatedly traversed.  Always
    *  true for Traversables and false for Iterators unless overridden.

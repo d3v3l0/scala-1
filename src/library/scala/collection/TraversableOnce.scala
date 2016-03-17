@@ -69,7 +69,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
 
   /** Self-documenting abstract methods. */
   def foreach[U](@local f: A => U)(implicit @local mct: MaybeCanThrow = mct): Unit
-  def isEmpty: Boolean
+  def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean
   def hasDefiniteSize: Boolean
 
   // Note: We could redefine this in TraversableLike to always return `repr`
@@ -112,7 +112,7 @@ trait TraversableOnce[+A] extends Any with GenTraversableOnce[A] {
     result
   }
 
-  def nonEmpty: Boolean = !isEmpty
+  def nonEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = !isEmpty
 
   def count(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Int = {
     var cnt = 0

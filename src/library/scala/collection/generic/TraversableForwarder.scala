@@ -35,8 +35,8 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   protected def underlying: Traversable[A] { type LT = self.LT }
 
   override def foreach[B](@local f: A => B)(implicit @local mct: MaybeCanThrow = mct): Unit = underlying foreach f
-  override def isEmpty: Boolean = underlying.isEmpty
-  override def nonEmpty: Boolean = underlying.nonEmpty
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = underlying.isEmpty
+  override def nonEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = underlying.nonEmpty
   override def size(implicit @local mct: MaybeCanThrow = mct): Int = underlying.size
   override def hasDefiniteSize = underlying.hasDefiniteSize
   override def forall(@plocal p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): Boolean = underlying forall p
@@ -56,9 +56,9 @@ trait TraversableForwarder[+A] extends Traversable[A] { self =>
   override def min[B >: A](implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A = underlying min cmp
   override def max[B >: A](implicit cmp: Ordering[B], @local mct: MaybeCanThrow = mct): A = underlying max cmp
   override def head: A = underlying.head
-  override def headOption: Option[A] = underlying.headOption
+  override def headOption(implicit @local mct: MaybeCanThrow = mct): Option[A] = underlying.headOption
   override def last: A = underlying.last
-  override def lastOption: Option[A] = underlying.lastOption
+  override def lastOption(implicit @local mct: MaybeCanThrow = mct): Option[A] = underlying.lastOption
   override def copyToBuffer[B >: A](dest: Buffer[B]) = underlying.copyToBuffer(dest)
   override def copyToArray[B >: A](xs: Array[B], start: Int, len: Int)(implicit @local mct: MaybeCanThrow = mct) = underlying.copyToArray(xs, start, len)
   override def copyToArray[B >: A](xs: Array[B], start: Int)(implicit @local mct: MaybeCanThrow) = underlying.copyToArray(xs, start)

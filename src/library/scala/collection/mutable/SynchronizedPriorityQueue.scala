@@ -31,7 +31,7 @@ class SynchronizedPriorityQueue[A](implicit ord: Ordering[A]) extends PriorityQu
    *
    *  @return true, iff there is no element in the queue.
    */
-  override def isEmpty: Boolean = synchronized { super.isEmpty }
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = synchronized { super.isEmpty }
 
   /** Inserts a single element into the priority queue.
    *

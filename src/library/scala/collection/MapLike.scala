@@ -112,7 +112,7 @@ self =>
    *
    *  @return `true` if the map does not contain any key/value binding, `false` otherwise.
    */
-  override def isEmpty: Boolean = size == 0
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = size == 0
 
   /**  Returns the value associated with a key, or a default value if the key is not contained in the map.
    *   @param   key      the key.

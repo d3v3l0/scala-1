@@ -152,7 +152,7 @@ self =>
    *
    *  @return `true` if there is no element in the set, `false` otherwise.
    */
-  override def isEmpty: Boolean = size == 0
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = size == 0
 
   /** Computes the union between of set and another set.
    *

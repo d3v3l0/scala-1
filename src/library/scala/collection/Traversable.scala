@@ -30,7 +30,7 @@ trait Traversable[+A] extends TraversableLike[A, Traversable[A]]
 
   /* The following methods are inherited from TraversableLike
    *
-  override def isEmpty: Boolean
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean
   override def size(implicit @local mct: MaybeCanThrow = mct): Int
   override def hasDefiniteSize
   override def ++[B >: A, That](xs: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Traversable[A], B, That]): That
@@ -54,10 +54,10 @@ trait Traversable[+A] extends TraversableLike[A, Traversable[A]]
   override def reduceRight[B >: A](op: (A, B) => B): B
   override def reduceRightOption[B >: A](op: (A, B) => B): Option[B]
   override def head: A
-  override def headOption: Option[A]
+  override def headOption(implicit @local mct: MaybeCanThrow = mct): Option[A]
   override def tail(implicit @local mct: MaybeCanThrow = mct): Traversable[A]
   override def last: A
-  override def lastOption: Option[A]
+  override def lastOption(implicit @local mct: MaybeCanThrow = mct): Option[A]
   override def init(implicit @local mct: MaybeCanThrow = mct): Traversable[A]
   override def take(n: Int)(implicit @local mct: MaybeCanThrow = mct): Traversable[A]
   override def drop(n: Int)(implicit @local mct: MaybeCanThrow = mct): Traversable[A]

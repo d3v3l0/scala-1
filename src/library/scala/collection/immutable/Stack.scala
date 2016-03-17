@@ -61,7 +61,7 @@ class Stack[+A] protected (protected val elems: List[A])
    *
    *  @return true, iff there is no element on the stack.
    */
-  override def isEmpty: Boolean = elems.isEmpty
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = elems.isEmpty
 
   override def head = elems.head
   override def tail(implicit @local mct: MaybeCanThrow = mct) = new Stack(elems.tail)

@@ -30,7 +30,7 @@ trait SynchronizedSet[A] extends Set[A] {
     super.size
   }
 
-  override def isEmpty: Boolean = synchronized {
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = synchronized {
     super.isEmpty
   }
 

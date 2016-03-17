@@ -22,7 +22,7 @@ import scala.annotation.tailrec
  *  Linear-optimized sequences implement most operations in in terms of three methods,
  *  which are assumed to have efficient implementations. These are:
  *  {{{
- *     def isEmpty: Boolean
+ *     def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean
  *     def head: A
  *     def tail(implicit @local mct: MaybeCanThrow = mct): Repr
  *  }}}
@@ -37,7 +37,7 @@ trait LinearSeqOptimized[+A, +Repr <: LinearSeqOptimized[A, Repr]] extends Linea
   type LT
 
 
-  def isEmpty: Boolean
+  def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean
 
   def head: A
 

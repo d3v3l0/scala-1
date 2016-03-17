@@ -215,7 +215,7 @@ self =>
    *
    * @return `true` if the `Stream` is empty and `false` otherwise.
    */
-  def isEmpty: Boolean
+  def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean
 
   /** Gives constant time access to the first element of this `Stream`.  Using
    * the `fibs` example from earlier:

@@ -74,7 +74,7 @@ class Queue[+A] protected(protected val in: List[A], protected val out: List[A])
    *
    *  @return true, iff there is no element in the queue.
    */
-  override def isEmpty: Boolean = in.isEmpty && out.isEmpty
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = in.isEmpty && out.isEmpty
 
   override def head: A =
     if (out.nonEmpty) out.head

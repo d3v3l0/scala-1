@@ -31,7 +31,7 @@ class SynchronizedQueue[A] extends Queue[A] {
    *
    *  @return true, iff there is no element in the queue.
    */
-  override def isEmpty: Boolean = synchronized { super.isEmpty }
+  override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = synchronized { super.isEmpty }
 
   /** Inserts a single element at the end of the queue.
    *
