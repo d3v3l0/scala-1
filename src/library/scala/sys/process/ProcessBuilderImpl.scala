@@ -94,7 +94,7 @@ private[process] trait ProcessBuilderImpl {
     def #&&(other: ProcessBuilder): ProcessBuilder = new AndBuilder(this, other)
     def ###(other: ProcessBuilder): ProcessBuilder = new SequenceBuilder(this, other)
 
-    def run()(@local cc: CanThrow): Process                                          = run(connectInput = false)(cc)
+    def run(@local cc: CanThrow): Process                                          = run(connectInput = false)(cc)
     def run(connectInput: Boolean)(@local cc: CanThrow): Process                     = run(BasicIO.standard(connectInput))(cc)
     def run(log: ProcessLogger)(@local cc: CanThrow): Process                        = run(log, connectInput = false)(cc)
     def run(log: ProcessLogger, connectInput: Boolean)(@local cc: CanThrow): Process = run(BasicIO(connectInput, log))(cc)

@@ -97,7 +97,7 @@ trait Tasks {
 
     def split: Seq[WrappedTask[R, Tp]]
     /** Code that gets called after the task gets started - it may spawn other tasks instead of calling `leaf`. */
-    def compute()(@local cc: CanThrow)
+    def compute(@local cc: CanThrow)
     /** Start task. */
     def start()
     /** Wait for task to finish. */
@@ -145,7 +145,7 @@ trait AdaptiveWorkStealingTasks extends Tasks {
 
     def split: Seq[WrappedTask[R, Tp]]
 
-    def compute()(@local cc: CanThrow) = if (body.shouldSplitFurther) {
+    def compute(@local cc: CanThrow) = if (body.shouldSplitFurther) {
       internal()(cc)
       release()
     } else {
@@ -250,7 +250,8 @@ trait ThreadPoolTasks extends Tasks {
         true
       } else false
     }
-    def run()(@local cc: CanThrow) = {
+    override def run() { ESC.TRY(run) } // [Leo] comes from Java
+    def run(@local cc: CanThrow) = {
       // utb: compute
       var isOkToRun = false
       synchronized {
@@ -261,7 +262,7 @@ trait ThreadPoolTasks extends Tasks {
       }
       if (isOkToRun) {
         // debuglog("Running body of " + body)
-        compute()(cc)
+        compute(cc)
       } else {
         // just skip
         // debuglog("skipping body of " + body)
@@ -374,6 +375,8 @@ trait HavingForkJoinPool {
 trait ForkJoinTasks extends Tasks with HavingForkJoinPool {
 
   trait WrappedTask[R, +Tp] extends RecursiveAction with super.WrappedTask[R, Tp] {
+    override protected def compute() { ESC.TRY(compute) } // [Leo] needed since it comes from a Java interface
+
     def start() = fork
     def sync()(@local cc: CanThrow) = join
     def tryCancel = tryUnfork

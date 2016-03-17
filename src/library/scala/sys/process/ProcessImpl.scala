@@ -153,7 +153,7 @@ private[process] trait ProcessImpl {
   }
 
   private[process] abstract class PipeThread(isSink: Boolean, labelFn: () => String) extends Thread {
-    def run()(@local cc: CanThrow): Unit
+    def run(@local cc: CanThrow): Unit
 
     private[process] def runloop(src: InputStream, dst: OutputStream)(@local cc: CanThrow): Unit = ESC.THROW {
       try     BasicIO.transferFully(src, dst)(cc)
@@ -174,12 +174,12 @@ private[process] trait ProcessImpl {
     label: => String
   ) extends PipeThread(false, () => label) {
 
-    final override def run()(@local cc: CanThrow): Unit = currentSource.get(cc) match {
+    final override def run(@local cc: CanThrow): Unit = currentSource.get(cc) match {
       case Some(source) =>
         try runloop(source, pipe)(cc)
         finally currentSource.unset()
 
-        run()(cc)
+        run(cc)
       case None =>
         currentSource.unset()
         BasicIO close pipe
@@ -191,12 +191,12 @@ private[process] trait ProcessImpl {
     label: => String
   ) extends PipeThread(true, () => label) {
 
-    final override def run()(@local cc: CanThrow): Unit = currentSink.get(cc) match {
+    final override def run(@local cc: CanThrow): Unit = currentSink.get(cc) match {
       case Some(sink) =>
         try runloop(pipe, sink)(cc)
         finally currentSink.unset()
 
-        run()(cc)
+        run(cc)
       case None =>
         currentSink.unset()
     }

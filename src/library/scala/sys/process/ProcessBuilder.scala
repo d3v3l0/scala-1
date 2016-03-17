@@ -239,7 +239,7 @@ trait ProcessBuilder extends Source with Sink {
 
   /** Starts the process represented by this builder.  Standard output and error
    * are sent to the console.*/
-  def run()(@local cc: CanThrow): Process
+  def run(@local cc: CanThrow): Process
 
   /** Starts the process represented by this builder.  Standard output and error
     * are sent to the given ProcessLogger.
