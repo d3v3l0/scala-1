@@ -39,14 +39,14 @@ self =>
     SortedMap.newBuilder[A, B]
 
   override def empty: SortedMap[A, B] = SortedMap.empty
-  override def updated [B1 >: B](key: A, value: B1): SortedMap[A, B1] = this + ((key, value))
+  override def updated [B1 >: B](key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B1] = this + ((key, value))
   override def keySet: immutable.SortedSet[A] = new DefaultKeySortedSet
 
   protected class DefaultKeySortedSet extends super.DefaultKeySortedSet with immutable.SortedSet[A] {
-    override def + (elem: A): SortedSet[A] =
+    override def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): SortedSet[A] =
       if (this(elem)) this
       else SortedSet[A]() ++ this + elem
-    override def - (elem: A): SortedSet[A] =
+    override def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): SortedSet[A] =
       if (this(elem)) SortedSet[A]() ++ this - elem
       else this
     override def rangeImpl(from : Option[A], until : Option[A]) : SortedSet[A] = {
@@ -60,7 +60,7 @@ self =>
    *  @return   A new map with the new binding added to this map
    *  @note     needs to be overridden in subclasses
    */
-  def + [B1 >: B](kv: (A, B1)): SortedMap[A, B1] = throw new AbstractMethodError("SortedMap.+")
+  def + [B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B1] = throw new AbstractMethodError("SortedMap.+")
 
   /** Adds two or more elements to this collection and returns
    *  a new collection.
@@ -69,7 +69,7 @@ self =>
    *  @param elem2 the second element to add.
    *  @param elems the remaining elements to add.
    */
-  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): SortedMap[A, B1] =
+  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *)(implicit @local mct: MaybeCanThrow): SortedMap[A, B1] =
     this + elem1 + elem2 ++ elems
 
   /** Adds a number of elements provided by a traversable object
@@ -78,7 +78,7 @@ self =>
    *  @param xs     the traversable object.
    */
   override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow): SortedMap[A, B1] =
-    ((repr: SortedMap[A, B1]) /: xs.seq) (_ + _)
+    ((repr: SortedMap[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   override def filterKeys(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B] = new FilteredKeys(p) with SortedMap.Default[A, B] {
     implicit def ordering: Ordering[A] = self.ordering
@@ -109,14 +109,14 @@ object SortedMap extends ImmutableSortedMapFactory[SortedMap] {
 
   private[collection] trait Default[A, +B] extends SortedMap[A, B] with scala.collection.SortedMap.Default[A, B] {
   self =>
-    override def +[B1 >: B](kv: (A, B1)): SortedMap[A, B1] = {
+    override def +[B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B1] = {
       val b = SortedMap.newBuilder[A, B1]
       b ++= this
       b += ((kv._1, kv._2))
       b.result()
     }
 
-    override def - (key: A): SortedMap[A, B] = {
+    override def - (key: A)(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B] = {
       val b = newBuilder
       for (kv <- this; if kv._1 != key) b += kv
       b.result()

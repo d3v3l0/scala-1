@@ -103,7 +103,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return       A fresh immutable map with the binding from `key` to
    *                `value` added to this map.
    */
-  override def updated[B1 >: B](key: A, value: B1): Map[A, B1] = this + ((key, value))
+  override def updated[B1 >: B](key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] = this + ((key, value))
 
   /** Creates a new map containing a new key/value mapping and all the key/value mappings
    *  of this map.
@@ -114,7 +114,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return      a new map containing mappings of this map and the mapping `kv`.
    */
   @migration("`+` creates a new map. Use `+=` to add an element to this map and return that map itself.", "2.8.0")
-  def + [B1 >: B] (kv: (A, B1)): Map[A, B1] = clone().asInstanceOf[Map[A, B1]] += kv
+  def + [B1 >: B] (kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] = clone().asInstanceOf[Map[A, B1]] += kv
 
   /** Creates a new map containing two or more key/value mappings and all the key/value
    *  mappings of this map.
@@ -127,7 +127,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return      a new map containing mappings of this map and two or more specified mappings.
    */
   @migration("`+` creates a new map. Use `+=` to add an element to this map and return that map itself.", "2.8.0")
-  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): Map[A, B1] =
+  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *)(implicit @local mct: MaybeCanThrow): Map[A, B1] =
     clone().asInstanceOf[Map[A, B1]] += elem1 += elem2 ++= elems
 
   /** Creates a new map containing the key/value mappings provided by the specified traversable object
@@ -167,7 +167,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *  @return   a new map with all the mappings of this map except that with a key `key`.
    */
   @migration("`-` creates a new map. Use `-=` to remove an element from this map and return that map itself.", "2.8.0")
-  override def -(key: A): This = clone() -= key
+  override def -(key: A)(implicit @local mct: MaybeCanThrow = mct): This = clone() -= key
 
   /** Removes all bindings from the map. After this operation has completed,
    *  the map will be empty.
@@ -237,7 +237,7 @@ trait MapLike[A, B, +This <: MapLike[A, B, This] with Map[A, B]]
    *               with a key equal to `elem1`, `elem2` or any of `elems`.
    */
   @migration("`-` creates a new map. Use `-=` to remove an element from this map and return that map itself.", "2.8.0")
-  override def -(elem1: A, elem2: A, elems: A*): This =
+  override def -(elem1: A, elem2: A, elems: A*)(implicit @local mct: MaybeCanThrow): This =
     clone() -= elem1 -= elem2 --= elems
 
   /** Creates a new map with all the key/value mappings of this map except mappings with keys

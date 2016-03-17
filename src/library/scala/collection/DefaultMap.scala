@@ -27,7 +27,7 @@ trait DefaultMap[A, +B] extends Map[A, B] { self =>
 
   /** A default implementation which creates a new immutable map.
    */
-  override def +[B1 >: B](kv: (A, B1)): Map[A, B1] = {
+  override def +[B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] = {
     val b = Map.newBuilder[A, B1]
     b ++= this
     b += ((kv._1, kv._2))
@@ -36,7 +36,7 @@ trait DefaultMap[A, +B] extends Map[A, B] { self =>
 
   /** A default implementation which creates a new immutable map.
    */
-  override def - (key: A): Map[A, B] = {
+  override def - (key: A)(implicit @local mct: MaybeCanThrow = mct): Map[A, B] = {
     val b = newBuilder
     b ++= this filter (key != _._1)
     b.result()

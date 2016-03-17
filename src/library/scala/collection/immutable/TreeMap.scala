@@ -128,14 +128,14 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
    *  @param value   the value to be associated with `key`
    *  @return        a new $coll with the updated binding
    */
-  override def updated [B1 >: B](key: A, value: B1): TreeMap[A, B1] = new TreeMap(RB.update(tree, key, value, overwrite = true))
+  override def updated [B1 >: B](key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): TreeMap[A, B1] = new TreeMap(RB.update(tree, key, value, overwrite = true))
 
   /** Add a key/value pair to this map.
    *  @tparam   B1   type of the value of the new binding, a supertype of `B`
    *  @param    kv   the key/value pair
    *  @return        A new $coll with the new binding added to this map
    */
-  override def + [B1 >: B] (kv: (A, B1)): TreeMap[A, B1] = updated(kv._1, kv._2)
+  override def + [B1 >: B] (kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): TreeMap[A, B1] = updated(kv._1, kv._2)
 
   /** Adds two or more elements to this collection and returns
    *  either the collection itself (if it is mutable), or a new collection
@@ -147,7 +147,7 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
    *  @param elems the remaining elements to add.
    *  @return      a new $coll with the updated bindings
    */
-  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): TreeMap[A, B1] =
+  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *)(implicit @local mct: MaybeCanThrow): TreeMap[A, B1] =
     this + elem1 + elem2 ++ elems
 
   /** Adds a number of elements provided by a traversable object
@@ -156,7 +156,7 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
    *  @param xs     the traversable object.
    */
   override def ++[B1 >: B] (xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow = mct): TreeMap[A, B1] =
-    ((repr: TreeMap[A, B1]) /: xs.seq) (_ + _)
+    ((repr: TreeMap[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** A new TreeMap with the entry added is returned,
    *  assuming that key is <em>not</em> in the TreeMap.
@@ -171,7 +171,7 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
     new TreeMap(RB.update(tree, key, value, overwrite = true))
   }
 
-  def - (key:A): TreeMap[A, B] =
+  def - (key:A)(implicit @local mct: MaybeCanThrow = mct): TreeMap[A, B] =
     if (!RB.contains(tree, key)) this
     else new TreeMap(RB.delete(tree, key))
 

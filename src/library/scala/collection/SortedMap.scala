@@ -37,14 +37,14 @@ object SortedMap extends SortedMapFactory[SortedMap] {
 
   private[collection] trait Default[A, +B] extends SortedMap[A, B] {
   self =>
-    override def +[B1 >: B](kv: (A, B1)): SortedMap[A, B1] = {
+    override def +[B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B1] = {
       val b = SortedMap.newBuilder[A, B1]
       b ++= this
       b += ((kv._1, kv._2))
       b.result()
     }
 
-    override def - (key: A): SortedMap[A, B] = {
+    override def - (key: A)(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B] = {
       val b = newBuilder
       for (kv <- this; if kv._1 != key) b += kv
       b.result()

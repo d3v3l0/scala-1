@@ -24,6 +24,7 @@ package generic
  *  @define   Coll Subtractable
  */
 trait Subtractable[A, +Repr <: Subtractable[A, Repr]] { self =>
+  type MaybeCanThrow >: CanThrow
 
   /** The representation object of type `Repr` which contains the collection's elements
    */
@@ -34,7 +35,7 @@ trait Subtractable[A, +Repr <: Subtractable[A, Repr]] { self =>
    *  @return a new collection that contains all elements of the current $coll
    *  except one less occurrence of `elem`.
    */
-  def -(elem: A): Repr
+  def -(elem: A)(implicit @local mct: MaybeCanThrow): Repr
 
   /** Creates a new $coll from this $coll with some elements removed.
    *
@@ -47,8 +48,8 @@ trait Subtractable[A, +Repr <: Subtractable[A, Repr]] { self =>
    *  @return a new $coll that contains all elements of the current $coll
    *  except one less occurrence of each of the given elements.
    */
-  def -(elem1: A, elem2: A, elems: A*): Repr =
-    this - elem1 - elem2 -- elems
+  def -(elem1: A, elem2: A, elems: A*)(implicit @local mct: MaybeCanThrow): Repr =
+    { @local implicit val cc = new CanThrow {}; this - elem1 - elem2 -- elems } // FIXME(leo)
 
   /** Creates a new $coll from this $coll by removing all elements of another
    *  collection.
@@ -57,5 +58,5 @@ trait Subtractable[A, +Repr <: Subtractable[A, Repr]] { self =>
    *  @return a new $coll that contains all elements of the current $coll
    *  except one less occurrence of each of the elements of `elems`.
    */
-  def --(xs: GenTraversableOnce[A]): Repr = (repr /: xs.seq) (_ - _)
+  def --(xs: GenTraversableOnce[A]): Repr = (repr /: xs.seq) ({implicit val cc = new CanThrow {}; _ - _}) // FIXME(leo)
 }

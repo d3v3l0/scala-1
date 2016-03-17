@@ -60,9 +60,9 @@ self =>
 
   override def seq = trie
 
-  def -(k: K) = new ParHashMap(trie - k)
+  def -(k: K)(implicit @local cc: CanThrow) = new ParHashMap(trie - k)
 
-  def +[U >: V](kv: (K, U)) = new ParHashMap(trie + kv)
+  def +[U >: V](kv: (K, U))(implicit @local cc: CanThrow) = new ParHashMap(trie + kv)
 
   def get(k: K) = trie.get(k)
 

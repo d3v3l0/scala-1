@@ -27,6 +27,7 @@ extends Builder[(A, B), Coll] {
   type MaybeCanThrow = CannotThrow; @local protected val mctBuilder = new CannotThrow {}
   protected var elems: Coll = empty
   def +=(x: (A, B)): this.type = {
+    @local implicit val cc = new CanThrow {} // FIXME(leo)
     elems = (elems + x).asInstanceOf[Coll]
       // the cast is necessary because right now we cannot enforce statically that
       // for every map of type Coll, `+` yields again a Coll. With better support

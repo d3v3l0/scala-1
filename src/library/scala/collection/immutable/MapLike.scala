@@ -59,13 +59,13 @@ self =>
    *  @param    value the value
    *  @return   A new map with the new key/value mapping
    */
-  override def updated [B1 >: B](key: A, value: B1): immutable.Map[A, B1] = this + ((key, value))
+  override def updated [B1 >: B](key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): immutable.Map[A, B1] = this + ((key, value))
 
   /** Add a key/value pair to this map, returning a new map.
    *  @param    kv the key/value pair.
    *  @return   A new map with the new binding added to this map.
    */
-  def + [B1 >: B] (kv: (A, B1)): immutable.Map[A, B1]
+  def + [B1 >: B] (kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): immutable.Map[A, B1]
 
   /** Adds two or more elements to this collection and returns
    *  a new collection.
@@ -75,7 +75,7 @@ self =>
    *  @param elems the remaining elements to add.
    *  @return A new map with the new bindings added to this map.
    */
-  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): immutable.Map[A, B1] =
+  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *)(implicit @local mct: MaybeCanThrow): immutable.Map[A, B1] =
     this + elem1 + elem2 ++ elems
 
   /** Adds a number of elements provided by a traversable object
@@ -85,7 +85,7 @@ self =>
    *  @return        a new immutable map with the bindings of this map and those from `xs`.
    */
   override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow): immutable.Map[A, B1] =
-    ((repr: immutable.Map[A, B1]) /: xs.seq) (_ + _)
+    ((repr: immutable.Map[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** Filters this map by retaining only keys satisfying a predicate.
    *  @param  p   the predicate used to test keys
@@ -107,10 +107,10 @@ self =>
   override def keySet: immutable.Set[A] = new ImmutableDefaultKeySet
 
   protected class ImmutableDefaultKeySet extends super.DefaultKeySet with immutable.Set[A] {
-    override def + (elem: A): immutable.Set[A] =
+    override def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): immutable.Set[A] =
       if (this(elem)) this
       else immutable.Set[A]() ++ this + elem
-    override def - (elem: A): immutable.Set[A] =
+    override def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): immutable.Set[A] =
       if (this(elem)) immutable.Set[A]() ++ this - elem
       else this
   }

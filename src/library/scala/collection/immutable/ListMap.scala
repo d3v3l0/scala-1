@@ -79,14 +79,14 @@ extends AbstractMap[A, B]
    *  @param key  the key element of the updated entry.
    *  @param value the value element of the updated entry.
    */
-  override def updated [B1 >: B] (key: A, value: B1): ListMap[A, B1] =
+  override def updated [B1 >: B] (key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): ListMap[A, B1] =
     new Node[B1](key, value)
 
   /** Add a key/value pair to this map.
    *  @param    kv the key/value pair
    *  @return   A new map with the new binding added to this map
    */
-  def + [B1 >: B] (kv: (A, B1)): ListMap[A, B1] = updated(kv._1, kv._2)
+  def + [B1 >: B] (kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): ListMap[A, B1] = updated(kv._1, kv._2)
 
   /** Adds two or more elements to this collection and returns
    *  either the collection itself (if it is mutable), or a new collection
@@ -96,7 +96,7 @@ extends AbstractMap[A, B]
    *  @param elem2 the second element to add.
    *  @param elems the remaining elements to add.
    */
-  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): ListMap[A, B1] =
+  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *)(implicit @local mct: MaybeCanThrow): ListMap[A, B1] =
     this + elem1 + elem2 ++ elems
 
   /** Adds a number of elements provided by a traversable object
@@ -105,7 +105,7 @@ extends AbstractMap[A, B]
    *  @param xs     the traversable object.
    */
   override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow = mct): ListMap[A, B1] =
-    ((repr: ListMap[A, B1]) /: xs.seq) (_ + _)
+    ((repr: ListMap[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** This creates a new mapping without the given `key`.
    *  If the map does not contain a mapping for the given key, the
@@ -113,7 +113,7 @@ extends AbstractMap[A, B]
    *
    *  @param key a map without a mapping for the given key.
    */
-  def - (key: A): ListMap[A, B] = this
+  def - (key: A)(implicit @local mct: MaybeCanThrow = mct): ListMap[A, B] = this
 
   /** Returns an iterator over key-value pairs.
    */
@@ -181,7 +181,7 @@ extends AbstractMap[A, B]
      *  from `key` to `value`. If the map contains already a mapping for `key`,
      *  it will be overridden by this function.
      */
-    override def updated [B2 >: B1](k: A, v: B2): ListMap[A, B2] = {
+    override def updated [B2 >: B1](k: A, v: B2)(implicit @local mct: MaybeCanThrow = mct): ListMap[A, B2] = {
       val m = this - k
       new m.Node[B2](k, v)
     }
@@ -190,7 +190,7 @@ extends AbstractMap[A, B]
      *  If the map does not contain a mapping for the given key, the
      *  method returns the same map.
      */
-    override def - (k: A): ListMap[A, B1] = remove0(k, this, Nil)
+    override def - (k: A)(implicit @local mct: MaybeCanThrow = mct): ListMap[A, B1] = remove0(k, this, Nil)
 
     @tailrec private def remove0(k: A, cur: ListMap[A, B1], acc: List[ListMap[A, B1]]): ListMap[A, B1] =
       if (cur.isEmpty)

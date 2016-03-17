@@ -53,8 +53,8 @@ object Set extends ImmutableSetFactory[Set] {
   private object EmptySet extends AbstractSet[Any] with Set[Any] with Serializable {
     override def size(implicit @local mct: MaybeCanThrow = mct): Int = 0
     def contains(elem: Any): Boolean = false
-    def + (elem: Any): Set[Any] = new Set1(elem)
-    def - (elem: Any): Set[Any] = this
+    def + (elem: Any)(implicit @local mct: MaybeCanThrow = mct): Set[Any] = new Set1(elem)
+    def - (elem: Any)(implicit @local mct: MaybeCanThrow = mct): Set[Any] = this
     def iterator: Iterator[Any] = Iterator.empty
     override def foreach[U](f: Any =>  U)(implicit @local mct: MaybeCanThrow = mct): Unit = {}
     override def toSet[B >: Any](implicit @local mct: MaybeCanThrow = mct): Set[B] = this.asInstanceOf[Set[B]]
@@ -67,10 +67,10 @@ object Set extends ImmutableSetFactory[Set] {
     override def size(implicit @local mct: MaybeCanThrow = mct): Int = 1
     def contains(elem: A): Boolean =
       elem == elem1
-    def + (elem: A): Set[A] =
+    def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] =
       if (contains(elem)) this
       else new Set2(elem1, elem)
-    def - (elem: A): Set[A] =
+    def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] =
       if (elem == elem1) Set.empty
       else this
     def iterator: Iterator[A] =
@@ -98,10 +98,10 @@ object Set extends ImmutableSetFactory[Set] {
     override def size(implicit @local mct: MaybeCanThrow = mct): Int = 2
     def contains(elem: A): Boolean =
       elem == elem1 || elem == elem2
-    def + (elem: A): Set[A] =
+    def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] =
       if (contains(elem)) this
       else new Set3(elem1, elem2, elem)
-    def - (elem: A): Set[A] =
+    def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] =
       if (elem == elem1) new Set1(elem2)
       else if (elem == elem2) new Set1(elem1)
       else this
@@ -131,10 +131,10 @@ object Set extends ImmutableSetFactory[Set] {
     override def size(implicit @local mct: MaybeCanThrow = mct): Int = 3
     def contains(elem: A): Boolean =
       elem == elem1 || elem == elem2 || elem == elem3
-    def + (elem: A): Set[A] =
+    def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] =
       if (contains(elem)) this
       else new Set4(elem1, elem2, elem3, elem)
-    def - (elem: A): Set[A] =
+    def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] =
       if (elem == elem1) new Set2(elem2, elem3)
       else if (elem == elem2) new Set2(elem1, elem3)
       else if (elem == elem3) new Set2(elem1, elem2)
@@ -166,10 +166,10 @@ object Set extends ImmutableSetFactory[Set] {
     override def size(implicit @local mct: MaybeCanThrow = mct): Int = 4
     def contains(elem: A): Boolean =
       elem == elem1 || elem == elem2 || elem == elem3 || elem == elem4
-    def + (elem: A): Set[A] =
+    def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] =
       if (contains(elem)) this
       else new HashSet[A] + (elem1, elem2, elem3, elem4, elem)
-    def - (elem: A): Set[A] =
+    def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] =
       if (elem == elem1) new Set3(elem2, elem3, elem4)
       else if (elem == elem2) new Set3(elem1, elem3, elem4)
       else if (elem == elem3) new Set3(elem1, elem2, elem4)

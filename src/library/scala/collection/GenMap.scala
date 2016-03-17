@@ -24,7 +24,7 @@ extends GenMapLike[A, B, GenMap[A, B]]
 {
   def seq: Map[A, B]
 
-  def updated [B1 >: B](key: A, value: B1): GenMap[A, B1]
+  def updated [B1 >: B](key: A, value: B1)(implicit @local mct: MaybeCanThrow): GenMap[A, B1]
 }
 
 object GenMap extends GenMapFactory[GenMap] {

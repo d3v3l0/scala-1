@@ -40,7 +40,7 @@ abstract class BitSet extends scala.collection.AbstractSet[Int]
 
   /** Adds element to bitset, returning a new set.
    */
-  def + (elem: Int): BitSet = {
+  def + (elem: Int)(implicit @local mct: MaybeCanThrow = mct): BitSet = {
     require(elem >= 0, "bitset element must be >= 0")
     if (contains(elem)) this
     else {
@@ -51,7 +51,7 @@ abstract class BitSet extends scala.collection.AbstractSet[Int]
 
   /** Removes element from bitset, returning a new set
    */
-  def - (elem: Int): BitSet = {
+  def - (elem: Int)(implicit @local mct: MaybeCanThrow = mct): BitSet = {
     require(elem >= 0, "bitset element must be >= 0")
     if (contains(elem)) {
       val idx = elem >> LogWL

@@ -81,9 +81,9 @@ class HashSet[A] extends AbstractSet[A]
     true
   }
 
-  override def + (e: A): HashSet[A] = updated0(e, computeHash(e), 0)
+  override def + (e: A)(implicit @local mct: MaybeCanThrow = mct): HashSet[A] = updated0(e, computeHash(e), 0)
 
-  override def + (elem1: A, elem2: A, elems: A*): HashSet[A] =
+  override def + (elem1: A, elem2: A, elems: A*)(implicit @local mct: MaybeCanThrow): HashSet[A] =
     this + elem1 + elem2 ++ elems
 
   override def union(that: GenSet[A]): HashSet[A] = that match {
@@ -159,7 +159,7 @@ class HashSet[A] extends AbstractSet[A]
     null
   }
 
-  def - (e: A): HashSet[A] =
+  def - (e: A)(implicit @local mct: MaybeCanThrow = mct): HashSet[A] =
     nullToEmpty(removed0(e, computeHash(e), 0))
 
   /** Returns this $coll as an immutable set.

@@ -146,7 +146,7 @@ trait SetLike[A, +This <: SetLike[A, This] with Set[A]]
    *  @return      a new set consisting of elements of this set and `elem`.
    */
   @migration("`+` creates a new set. Use `+=` to add an element to this set and return that set itself.", "2.8.0")
-  override def + (elem: A): This = clone() += elem
+  override def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): This = clone() += elem
 
   /** Creates a new set consisting of all the elements of this set and two or more
    *  specified elements.
@@ -160,7 +160,7 @@ trait SetLike[A, +This <: SetLike[A, This] with Set[A]]
    *               `elem2` and those in `elems`.
    */
   @migration("`+` creates a new set. Use `+=` to add an element to this set and return that set itself.", "2.8.0")
-  override def + (elem1: A, elem2: A, elems: A*): This =
+  override def + (elem1: A, elem2: A, elems: A*)(implicit @local mct: MaybeCanThrow): This =
     clone() += elem1 += elem2 ++= elems
 
   /** Creates a new set consisting of all the elements of this set and those
@@ -180,7 +180,7 @@ trait SetLike[A, +This <: SetLike[A, This] with Set[A]]
    *  @return      a new set consisting of all the elements of this set except `elem`.
    */
   @migration("`-` creates a new set. Use `-=` to remove an element from this set and return that set itself.", "2.8.0")
-  override def -(elem: A): This = clone() -= elem
+  override def -(elem: A)(implicit @local mct: MaybeCanThrow = mct): This = clone() -= elem
 
   /** Creates a new set consisting of all the elements of this set except the two
    *  or more specified elements.
@@ -192,7 +192,7 @@ trait SetLike[A, +This <: SetLike[A, This] with Set[A]]
    *               `elem1`, `elem2` and `elems`.
    */
   @migration("`-` creates a new set. Use `-=` to remove an element from this set and return that set itself.", "2.8.0")
-  override def -(elem1: A, elem2: A, elems: A*): This =
+  override def -(elem1: A, elem2: A, elems: A*)(implicit @local mct: MaybeCanThrow): This =
     clone() -= elem1 -= elem2 --= elems
 
   /** Creates a new set consisting of all the elements of this set except those

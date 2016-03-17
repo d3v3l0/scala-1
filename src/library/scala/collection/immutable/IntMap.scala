@@ -271,9 +271,9 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
     case IntMap.Nil => sys.error("key not found")
   }
 
-  def + [S >: T] (kv: (Int, S)): IntMap[S] = updated(kv._1, kv._2)
+  def + [S >: T] (kv: (Int, S))(implicit @local mct: MaybeCanThrow = mct): IntMap[S] = updated(kv._1, kv._2)
 
-  override def updated[S >: T](key: Int, value: S): IntMap[S] = this match {
+  override def updated[S >: T](key: Int, value: S)(implicit @local mct: MaybeCanThrow = mct): IntMap[S] = this match {
     case IntMap.Bin(prefix, mask, left, right) =>
       if (!hasMatch(key, prefix, mask)) join(key, IntMap.Tip(key, value), prefix, this)
       else if (zero(key, mask)) IntMap.Bin(prefix, mask, left.updated(key, value), right)
@@ -312,7 +312,7 @@ sealed abstract class IntMap[+T] extends AbstractMap[Int, T]
     case IntMap.Nil => IntMap.Tip(key, value)
   }
 
-  def - (key: Int): IntMap[T] = this match {
+  def - (key: Int)(implicit @local mct: MaybeCanThrow = mct): IntMap[T] = this match {
     case IntMap.Bin(prefix, mask, left, right) =>
       if (!hasMatch(key, prefix, mask)) this
       else if (zero(key, mask)) bin(prefix, mask, left - key, right)

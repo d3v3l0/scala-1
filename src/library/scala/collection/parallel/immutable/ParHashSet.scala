@@ -61,9 +61,9 @@ self =>
 
   override def seq = trie
 
-  def -(e: T) = new ParHashSet(trie - e)
+  def -(e: T)(implicit @local cc: CanThrow) = new ParHashSet(trie - e)
 
-  def +(e: T) = new ParHashSet(trie + e)
+  def +(e: T)(implicit @local cc: CanThrow) = new ParHashSet(trie + e)
 
   def contains(e: T): Boolean = trie.contains(e)
 

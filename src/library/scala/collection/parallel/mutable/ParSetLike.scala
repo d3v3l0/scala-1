@@ -44,9 +44,9 @@ self =>
 
   def -=(elem: T): this.type
 
-  def +(elem: T) = this.clone() += elem
+  def +(elem: T)(implicit @local cc: CanThrow) = this.clone() += elem
 
-  def -(elem: T) = this.clone() -= elem
+  def -(elem: T)(implicit @local cc: CanThrow) = this.clone() -= elem
 
   // note: should not override toSet
 }

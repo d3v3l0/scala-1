@@ -233,7 +233,7 @@ trait BufferLike[A, +This <: BufferLike[A, This] with Buffer[A]]
    *  @return      a new collection consisting of all the elements of this collection except `elem`.
    */
   @migration("`-` creates a new buffer. Use `-=` to remove an element from this buffer and return that buffer itself.", "2.8.0")
-  override def -(elem: A): This = clone() -= elem
+  override def -(elem: A)(implicit @local mct: MaybeCanThrow = mct): This = clone() -= elem
 
   /** Creates a new collection with all the elements of this collection except the two
    *  or more specified elements.
@@ -245,7 +245,7 @@ trait BufferLike[A, +This <: BufferLike[A, This] with Buffer[A]]
    *               `elem1`, `elem2` and those in `elems`.
    */
   @migration("`-` creates a new buffer. Use `-=` to remove an element from this buffer and return that buffer itself.", "2.8.0")
-  override def -(elem1: A, elem2: A, elems: A*): This = clone() -= elem1 -= elem2 --= elems
+  override def -(elem1: A, elem2: A, elems: A*)(implicit @local mct: MaybeCanThrow): This = clone() -= elem1 -= elem2 --= elems
 
   /** Creates a new collection with all the elements of this collection except those
    *  provided by the specified traversable object.

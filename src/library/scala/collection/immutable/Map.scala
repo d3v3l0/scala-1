@@ -68,8 +68,8 @@ trait Map[A, +B] extends Iterable[(A, B)]
    *  @param    value the value
    *  @return   A new map with the new binding added to this map
    */
-  override def updated [B1 >: B](key: A, value: B1): Map[A, B1]
-  def + [B1 >: B](kv: (A, B1)): Map[A, B1]
+  override def updated [B1 >: B](key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): Map[A, B1]
+  def + [B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): Map[A, B1]
 }
 
 /** $factoryInfo
@@ -85,9 +85,9 @@ object Map extends ImmutableMapFactory[Map] {
 
   class WithDefault[A, +B](underlying: Map[A, B], d: A => B) extends scala.collection.Map.WithDefault[A, B](underlying, d) with Map[A, B] {
     override def empty = new WithDefault(underlying.empty, d)
-    override def updated[B1 >: B](key: A, value: B1): WithDefault[A, B1] = new WithDefault[A, B1](underlying.updated[B1](key, value), d)
-    override def + [B1 >: B](kv: (A, B1)): WithDefault[A, B1] = updated(kv._1, kv._2)
-    override def - (key: A): WithDefault[A, B] = new WithDefault(underlying - key, d)
+    override def updated[B1 >: B](key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): WithDefault[A, B1] = new WithDefault[A, B1](underlying.updated[B1](key, value), d)
+    override def + [B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): WithDefault[A, B1] = updated(kv._1, kv._2)
+    override def - (key: A)(implicit @local mct: MaybeCanThrow = mct): WithDefault[A, B] = new WithDefault(underlying - key, d)
     override def withDefault[B1 >: B](d: A => B1): immutable.Map[A, B1] = new WithDefault[A, B1](underlying, d)
     override def withDefaultValue[B1 >: B](d: B1): immutable.Map[A, B1] = new WithDefault[A, B1](underlying, x => d)
   }
@@ -96,9 +96,9 @@ object Map extends ImmutableMapFactory[Map] {
     override def size(implicit @local mct: MaybeCanThrow = mct): Int = 0
     def get(key: Any): Option[Nothing] = None
     def iterator: Iterator[(Any, Nothing)] = Iterator.empty
-    override def updated [B1] (key: Any, value: B1): Map[Any, B1] = new Map1(key, value)
-    def + [B1](kv: (Any, B1)): Map[Any, B1] = updated(kv._1, kv._2)
-    def - (key: Any): Map[Any, Nothing] = this
+    override def updated [B1] (key: Any, value: B1)(implicit @local mct: MaybeCanThrow = mct): Map[Any, B1] = new Map1(key, value)
+    def + [B1](kv: (Any, B1))(implicit @local mct: MaybeCanThrow = mct): Map[Any, B1] = updated(kv._1, kv._2)
+    def - (key: Any)(implicit @local mct: MaybeCanThrow = mct): Map[Any, Nothing] = this
   }
 
   class Map1[A, +B](key1: A, value1: B) extends AbstractMap[A, B] with Map[A, B] with Serializable {
@@ -106,11 +106,11 @@ object Map extends ImmutableMapFactory[Map] {
     def get(key: A): Option[B] =
       if (key == key1) Some(value1) else None
     def iterator = Iterator((key1, value1))
-    override def updated [B1 >: B] (key: A, value: B1): Map[A, B1] =
+    override def updated [B1 >: B] (key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] =
       if (key == key1) new Map1(key1, value)
       else new Map2(key1, value1, key, value)
-    def + [B1 >: B](kv: (A, B1)): Map[A, B1] = updated(kv._1, kv._2)
-    def - (key: A): Map[A, B] =
+    def + [B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] = updated(kv._1, kv._2)
+    def - (key: A)(implicit @local mct: MaybeCanThrow = mct): Map[A, B] =
       if (key == key1) Map.empty else this
     override def foreach[U](f: ((A, B)) =>  U)(implicit @local mct: MaybeCanThrow = mct): Unit = {
       f((key1, value1))
@@ -124,12 +124,12 @@ object Map extends ImmutableMapFactory[Map] {
       else if (key == key2) Some(value2)
       else None
     def iterator = Iterator((key1, value1), (key2, value2))
-    override def updated [B1 >: B] (key: A, value: B1): Map[A, B1] =
+    override def updated [B1 >: B] (key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] =
       if (key == key1) new Map2(key1, value, key2, value2)
       else if (key == key2) new Map2(key1, value1, key2, value)
       else new Map3(key1, value1, key2, value2, key, value)
-    def + [B1 >: B](kv: (A, B1)): Map[A, B1] = updated(kv._1, kv._2)
-    def - (key: A): Map[A, B] =
+    def + [B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] = updated(kv._1, kv._2)
+    def - (key: A)(implicit @local mct: MaybeCanThrow = mct): Map[A, B] =
       if (key == key1) new Map1(key2, value2)
       else if (key == key2) new Map1(key1, value1)
       else this
@@ -146,13 +146,13 @@ object Map extends ImmutableMapFactory[Map] {
       else if (key == key3) Some(value3)
       else None
     def iterator = Iterator((key1, value1), (key2, value2), (key3, value3))
-    override def updated [B1 >: B] (key: A, value: B1): Map[A, B1] =
+    override def updated [B1 >: B] (key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] =
       if (key == key1)      new Map3(key1, value, key2, value2, key3, value3)
       else if (key == key2) new Map3(key1, value1, key2, value, key3, value3)
       else if (key == key3) new Map3(key1, value1, key2, value2, key3, value)
       else new Map4(key1, value1, key2, value2, key3, value3, key, value)
-    def + [B1 >: B](kv: (A, B1)): Map[A, B1] = updated(kv._1, kv._2)
-    def - (key: A): Map[A, B] =
+    def + [B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] = updated(kv._1, kv._2)
+    def - (key: A)(implicit @local mct: MaybeCanThrow = mct): Map[A, B] =
       if (key == key1)      new Map2(key2, value2, key3, value3)
       else if (key == key2) new Map2(key1, value1, key3, value3)
       else if (key == key3) new Map2(key1, value1, key2, value2)
@@ -171,14 +171,14 @@ object Map extends ImmutableMapFactory[Map] {
       else if (key == key4) Some(value4)
       else None
     def iterator = Iterator((key1, value1), (key2, value2), (key3, value3), (key4, value4))
-    override def updated [B1 >: B] (key: A, value: B1): Map[A, B1] =
+    override def updated [B1 >: B] (key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] =
       if (key == key1)      new Map4(key1, value, key2, value2, key3, value3, key4, value4)
       else if (key == key2) new Map4(key1, value1, key2, value, key3, value3, key4, value4)
       else if (key == key3) new Map4(key1, value1, key2, value2, key3, value, key4, value4)
       else if (key == key4) new Map4(key1, value1, key2, value2, key3, value3, key4, value)
       else new HashMap + ((key1, value1), (key2, value2), (key3, value3), (key4, value4), (key, value))
-    def + [B1 >: B](kv: (A, B1)): Map[A, B1] = updated(kv._1, kv._2)
-    def - (key: A): Map[A, B] =
+    def + [B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] = updated(kv._1, kv._2)
+    def - (key: A)(implicit @local mct: MaybeCanThrow = mct): Map[A, B] =
       if (key == key1)      new Map3(key2, value2, key3, value3, key4, value4)
       else if (key == key2) new Map3(key1, value1, key3, value3, key4, value4)
       else if (key == key3) new Map3(key1, value1, key2, value2, key4, value4)

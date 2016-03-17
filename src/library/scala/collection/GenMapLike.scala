@@ -27,8 +27,8 @@ trait GenMapLike[A, +B, +Repr] extends GenIterableLike[(A, B), Repr] with Equals
   def get(key: A): Option[B]
   def apply(key: A): B
   def seq: Map[A, B]
-  def +[B1 >: B](kv: (A, B1)): GenMap[A, B1]
-  def - (key: A): Repr
+  def +[B1 >: B](kv: (A, B1))(implicit @local mct: MaybeCanThrow): GenMap[A, B1]
+  def - (key: A)(implicit @local mct: MaybeCanThrow): Repr
 
   // This hash code must be symmetric in the contents but ought not
   // collide trivially.

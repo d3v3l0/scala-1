@@ -90,11 +90,11 @@ class ListSet[A] extends AbstractSet[A]
 
   /** This method creates a new set with an additional element.
    */
-  def + (elem: A): ListSet[A] = new Node(elem)
+  def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): ListSet[A] = new Node(elem)
 
   /** `-` can be used to remove a single element.
    */
-  def - (elem: A): ListSet[A] = this
+  def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): ListSet[A] = this
 
   /** If we are bulk adding elements and desire a runtime measured in
    *  sub-interstellar time units, we better find a way to avoid traversing
@@ -177,11 +177,11 @@ class ListSet[A] extends AbstractSet[A]
 
     /** This method creates a new set with an additional element.
      */
-    override def +(e: A): ListSet[A] = if (contains(e)) this else new Node(e)
+    override def +(e: A)(implicit @local mct: MaybeCanThrow = mct): ListSet[A] = if (contains(e)) this else new Node(e)
 
     /** `-` can be used to remove a single element from a set.
      */
-    override def -(e: A): ListSet[A] = if (e == head) self else {
+    override def -(e: A)(implicit @local mct: MaybeCanThrow = mct): ListSet[A] = if (e == head) self else {
       val tail = self - e; new tail.Node(head)
     }
 

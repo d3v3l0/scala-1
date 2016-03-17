@@ -97,7 +97,7 @@ self =>
    *  @usecase  def + (kv: (A, B)): Map[A, B]
    *    @inheritdoc
    */
-  def + [B1 >: B] (kv: (A, B1)): Map[A, B1]
+  def + [B1 >: B] (kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): Map[A, B1]
 
   /** Removes a key from this map, returning a new map.
    *  @param    key the key to be removed
@@ -106,7 +106,7 @@ self =>
    *  @usecase  def - (key: A): Map[A, B]
    *    @inheritdoc
    */
-  def - (key: A): This
+  def - (key: A)(implicit @local mct: MaybeCanThrow = mct): This
 
   /** Tests whether the map is empty.
    *
@@ -170,8 +170,8 @@ self =>
   protected class DefaultKeySet extends AbstractSet[A] with Set[A] with Serializable {
     def contains(key : A) = self.contains(key)
     def iterator = keysIterator
-    def + (elem: A): Set[A] = (Set[A]() ++ this + elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
-    def - (elem: A): Set[A] = (Set[A]() ++ this - elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
+    def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] = (Set[A]() ++ this + elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
+    def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): Set[A] = (Set[A]() ++ this - elem).asInstanceOf[Set[A]] // !!! concrete overrides abstract problem
     override def size(implicit @local mct: MaybeCanThrow = mct) = self.size
     override def foreach[C](f: A => C)(implicit @local mct: MaybeCanThrow = mct) = self.keysIterator foreach f
   }
@@ -271,7 +271,7 @@ self =>
    *  @usecase  def updated(key: A, value: B): Map[A, B]
    *    @inheritdoc
    */
-  def updated [B1 >: B](key: A, value: B1): Map[A, B1] = this + ((key, value))
+  def updated [B1 >: B](key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] = this + ((key, value))
 
   /** Adds key/value pairs to this map, returning a new map.
    *
@@ -288,7 +288,7 @@ self =>
    *    @inheritdoc
    *    @param    kvs the key/value pairs
    */
-  def + [B1 >: B] (kv1: (A, B1), kv2: (A, B1), kvs: (A, B1) *): Map[A, B1] =
+  def + [B1 >: B] (kv1: (A, B1), kv2: (A, B1), kvs: (A, B1) *)(implicit @local mct: MaybeCanThrow): Map[A, B1] =
     this + kv1 + kv2 ++ kvs
 
   /** Adds all key/value pairs in a traversable collection to this map, returning a new map.
@@ -301,7 +301,7 @@ self =>
    *    @inheritdoc
    */
   def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] =
-    ((repr: Map[A, B1]) /: xs.seq) (_ + _)
+    ((repr: Map[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** Returns a new map obtained by removing all key/value pairs for which the predicate
    *  `p` returns `true`.

@@ -30,8 +30,8 @@ extends GenIterableLike[A, Repr]
 
   def iterator: Iterator[A]
   def contains(elem: A): Boolean
-  def +(elem: A): Repr
-  def -(elem: A): Repr
+  def +(elem: A)(implicit @local mct: MaybeCanThrow): Repr
+  def -(elem: A)(implicit @local mct: MaybeCanThrow): Repr
 
   def seq: Set[A]
 

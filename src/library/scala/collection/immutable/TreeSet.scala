@@ -114,7 +114,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
    *  @param elem    a new element to add.
    *  @return        a new $coll containing `elem` and all the elements of this $coll.
    */
-  def + (elem: A): TreeSet[A] = newSet(RB.update(tree, elem, (), overwrite = false))
+  def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): TreeSet[A] = newSet(RB.update(tree, elem, (), overwrite = false))
 
   /** A new `TreeSet` with the entry added is returned,
    *  assuming that elem is <em>not</em> in the TreeSet.
@@ -132,7 +132,7 @@ class TreeSet[A] private (tree: RB.Tree[A, Unit])(implicit val ordering: Orderin
    *  @param elem    a new element to add.
    *  @return        a new $coll containing all the elements of this $coll except `elem`.
    */
-  def - (elem:A): TreeSet[A] =
+  def - (elem:A)(implicit @local mct: MaybeCanThrow = mct): TreeSet[A] =
     if (!RB.contains(tree, elem)) this
     else newSet(RB.delete(tree, elem))
 

@@ -46,9 +46,9 @@ extends scala.collection.GenMapLike[K, V, Repr]
 
   def -=(key: K): this.type
 
-  def +[U >: V](kv: (K, U)) = this.clone().asInstanceOf[ParMap[K, U]] += kv
+  def +[U >: V](kv: (K, U))(implicit @local cc: CanThrow) = this.clone().asInstanceOf[ParMap[K, U]] += kv
 
-  def -(key: K) = this.clone() -= key
+  def -(key: K)(implicit @local cc: CanThrow) = this.clone() -= key
 
   def clear(): Unit
 }

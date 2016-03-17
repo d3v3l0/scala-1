@@ -105,7 +105,7 @@ self =>
    *  @return a new set that contains all elements of this set and that also
    *          contains `elem`.
    */
-  def + (elem: A): This
+  def + (elem: A)(implicit @local mct: MaybeCanThrow = mct): This
 
   /** Creates a new $coll with additional elements, omitting duplicates.
    *
@@ -123,7 +123,7 @@ self =>
    *  @param elems the remaining elements to add.
    *  @return   a new $coll with the given elements added, omitting duplicates.
    */
-  def + (elem1: A, elem2: A, elems: A*): This = this + elem1 + elem2 ++ elems
+  def + (elem1: A, elem2: A, elems: A*)(implicit @local mct: MaybeCanThrow): This = this + elem1 + elem2 ++ elems
 
   /** Creates a new $coll by adding all elements contained in another collection to this $coll, omitting duplicates.
    *
@@ -138,7 +138,7 @@ self =>
    *  @param elems     the collection containing the elements to add.
    *  @return a new $coll with the given elements added, omitting duplicates.
    */
-  def ++ (elems: GenTraversableOnce[A])(implicit @local mct: MaybeCanThrow = mct): This = (repr /: elems.seq)(_ + _)
+  def ++ (elems: GenTraversableOnce[A])(implicit @local mct: MaybeCanThrow = mct): This = (repr /: elems.seq)({implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** Creates a new set with a given element removed from this set.
    *
@@ -146,7 +146,7 @@ self =>
    *  @return a new set that contains all elements of this set but that does not
    *          contain `elem`.
    */
-  def - (elem: A): This
+  def - (elem: A)(implicit @local mct: MaybeCanThrow = mct): This
 
   /** Tests if this set is empty.
    *

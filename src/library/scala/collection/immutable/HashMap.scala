@@ -53,16 +53,16 @@ class HashMap[A, +B] extends AbstractMap[A, B]
   def get(key: A): Option[B] =
     get0(key, computeHash(key), 0)
 
-  override def updated [B1 >: B] (key: A, value: B1): HashMap[A, B1] =
+  override def updated [B1 >: B] (key: A, value: B1)(implicit @local mct: MaybeCanThrow = mct): HashMap[A, B1] =
     updated0(key, computeHash(key), 0, value, null, null)
 
-  override def + [B1 >: B] (kv: (A, B1)): HashMap[A, B1] =
+  override def + [B1 >: B] (kv: (A, B1))(implicit @local mct: MaybeCanThrow = mct): HashMap[A, B1] =
     updated0(kv._1, computeHash(kv._1), 0, kv._2, kv, null)
 
-  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *): HashMap[A, B1] =
+  override def + [B1 >: B] (elem1: (A, B1), elem2: (A, B1), elems: (A, B1) *)(implicit @local mct: MaybeCanThrow): HashMap[A, B1] =
     this + elem1 + elem2 ++ elems
 
-  def - (key: A): HashMap[A, B] =
+  def - (key: A)(implicit @local mct: MaybeCanThrow = mct): HashMap[A, B] =
     removed0(key, computeHash(key), 0)
 
   override def filter(@plocal p: ((A, B)) => Boolean)(implicit @local mct: MaybeCanThrow) = {

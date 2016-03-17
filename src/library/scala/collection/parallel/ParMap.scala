@@ -43,9 +43,9 @@ self =>
 
   override def stringPrefix = "ParMap"
 
-  override def updated [U >: V](key: K, value: U): ParMap[K, U] = this + ((key, value))
+  override def updated [U >: V](key: K, value: U)(implicit @local cc: CanThrow): ParMap[K, U] = this + ((key, value))
 
-  def + [U >: V](kv: (K, U)): ParMap[K, U]
+  def + [U >: V](kv: (K, U))(implicit @local cc: CanThrow): ParMap[K, U]
 }
 
 

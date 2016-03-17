@@ -263,9 +263,9 @@ extends AbstractMap[Long, T]
     case LongMap.Nil => sys.error("key not found")
   }
 
-  def + [S >: T] (kv: (Long, S)): LongMap[S] = updated(kv._1, kv._2)
+  def + [S >: T] (kv: (Long, S))(implicit @local mct: MaybeCanThrow = mct): LongMap[S] = updated(kv._1, kv._2)
 
-  override def updated[S >: T](key: Long, value: S): LongMap[S] = this match {
+  override def updated[S >: T](key: Long, value: S)(implicit @local mct: MaybeCanThrow = mct): LongMap[S] = this match {
     case LongMap.Bin(prefix, mask, left, right) =>
       if (!hasMatch(key, prefix, mask)) join(key, LongMap.Tip(key, value), prefix, this)
       else if (zero(key, mask)) LongMap.Bin(prefix, mask, left.updated(key, value), right)
@@ -304,7 +304,7 @@ extends AbstractMap[Long, T]
     case LongMap.Nil => LongMap.Tip(key, value)
   }
 
-  def -(key: Long): LongMap[T] = this match {
+  def -(key: Long)(implicit @local mct: MaybeCanThrow = mct): LongMap[T] = this match {
     case LongMap.Bin(prefix, mask, left, right) =>
       if (!hasMatch(key, prefix, mask)) this
       else if (zero(key, mask)) bin(prefix, mask, left - key, right)
