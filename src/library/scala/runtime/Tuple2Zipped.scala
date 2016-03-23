@@ -35,7 +35,7 @@ object ZippedTraversable2 {
 
 trait HasMaybeCanThrow { // TODO(leo) move if also used elsewhere
   type MaybeCanThrow
-  @local implicit def mct: MaybeCanThrow
+  implicit def mct: MaybeCanThrow
 }
 
 final class Tuple2Zipped[El1, Repr1 <: HasMaybeCanThrow, El2, Repr2](val colls: (TraversableLike[El1, Repr1], IterableLike[El2, Repr2])) extends AnyVal with ZippedTraversable2[El1, El2] {

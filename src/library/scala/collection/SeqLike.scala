@@ -776,7 +776,7 @@ object SeqLike {
    *  @return Index of start of sequence if found, -1 if not (relative to beginning of S, not m0).
    */
   private def kmpSearch[B](S: Seq[B], m0: Int, m1: Int, W: Seq[B], n0: Int, n1: Int, forward: Boolean): Int = {
-    @local implicit val mct = W.mct
+    @local implicit val mct = new CannotThrow {}
     // Check for redundant case when target has single valid element
     def clipR(x: Int, y: Int) = if (x < y) x else -1
     def clipL(x: Int, y: Int) = if (x > y) x else -1

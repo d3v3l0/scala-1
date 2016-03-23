@@ -132,7 +132,7 @@ self =>
 
     /* accessors */
 
-    override def foreach[U](f: T => U)(implicit @local mct: MaybeCanThrow) = {
+    override def foreach[U](f: T => U)(implicit @local mct: MaybeCanThrow = mct) = {
       foreach_quick(f, arr, until, i)
       i = until
     }
@@ -304,7 +304,7 @@ self =>
       this
     }
 
-    override def copyToArray[U >: T](array: Array[U], from: Int, len: Int)(implicit @local cc: CannotThrow) {
+    override def copyToArray[U >: T](array: Array[U], from: Int, len: Int)(implicit @local cc: MaybeCanThrow = mct) {
       val totallen = (self.length - i) min len min (array.length - from)
       Array.copy(arr, i, array, from, totallen)
       i += totallen
