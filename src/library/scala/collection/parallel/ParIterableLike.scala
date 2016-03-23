@@ -968,7 +968,7 @@ self: ParIterableLike[T, Repr, Sequential] =>
 
   protected trait Transformer[R, Tp] extends Accessor[R, Tp]
 
-  protected[this] class Foreach[S](@local op: T => S, protected[this] val pit: IterableSplitter[T]) // XXX(leo)
+  protected[this] class Foreach[S](@local op: T => S, protected[this] val pit: IterableSplitter[T]) // TODO(leo) is this correct?
   extends Accessor[Unit, Foreach[S]] {
     @volatile var result: Unit = ()
     def leaf(prevr: Option[Unit])(@local cc: CanThrow) = pit.foreach(op)

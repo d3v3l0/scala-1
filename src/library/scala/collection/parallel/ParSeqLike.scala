@@ -279,7 +279,7 @@ self =>
    */
   def corresponds[S](that: GenSeq[S])(p: (T, S) => Boolean)(implicit @local cc: that.MaybeCanThrow): Boolean = that ifParSeq { pthat =>
     val ctx = new DefaultSignalling with VolatileAbort
-    length == pthat.length && ESC.TRY(cc => tasksupport.executeAndWaitResult(new Corresponds(p, splitter assign ctx, pthat.splitter))(cc)) // FIXME(leo)
+    length == pthat.length && ESC.TRY(cc => tasksupport.executeAndWaitResult(new Corresponds(p, splitter assign ctx, pthat.splitter))(cc)) // [Leo] ok, since that.MaybeCanThrow might be parallel
   } otherwise seq.corresponds(that)(p)
 
   def diff[U >: T](that: GenSeq[U]): Repr = sequentially {
