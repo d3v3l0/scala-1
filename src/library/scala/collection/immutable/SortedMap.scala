@@ -78,7 +78,7 @@ self =>
    *  @param xs     the traversable object.
    */
   override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow): SortedMap[A, B1] =
-    ((repr: SortedMap[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
+    ((repr: SortedMap[A, B1]) /: xs.seq) ({ implicit val mcc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   override def filterKeys(p: A => Boolean)(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B] = new FilteredKeys(p) with SortedMap.Default[A, B] {
     implicit def ordering: Ordering[A] = self.ordering

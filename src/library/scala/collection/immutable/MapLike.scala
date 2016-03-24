@@ -85,7 +85,7 @@ self =>
    *  @return        a new immutable map with the bindings of this map and those from `xs`.
    */
   override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow): immutable.Map[A, B1] =
-    ((repr: immutable.Map[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
+    ((repr: immutable.Map[A, B1]) /: xs.seq) ({ implicit val mcc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** Filters this map by retaining only keys satisfying a predicate.
    *  @param  p   the predicate used to test keys

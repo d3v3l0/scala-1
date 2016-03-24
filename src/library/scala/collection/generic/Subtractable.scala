@@ -49,7 +49,7 @@ trait Subtractable[A, +Repr <: Subtractable[A, Repr]] { self =>
    *  except one less occurrence of each of the given elements.
    */
   def -(elem1: A, elem2: A, elems: A*)(implicit @local mct: MaybeCanThrow): Repr =
-    { @local implicit val cc = new CanThrow {}; this - elem1 - elem2 -- elems } // FIXME(leo)
+    { @local implicit val mcc = new CanThrow {}; this - elem1 - elem2 -- elems } // XXX(leo)
 
   /** Creates a new $coll from this $coll by removing all elements of another
    *  collection.
@@ -58,5 +58,5 @@ trait Subtractable[A, +Repr <: Subtractable[A, Repr]] { self =>
    *  @return a new $coll that contains all elements of the current $coll
    *  except one less occurrence of each of the elements of `elems`.
    */
-  def --(xs: GenTraversableOnce[A]): Repr = (repr /: xs.seq) ({implicit val cc = new CanThrow {}; _ - _}) // FIXME(leo)
+  def --(xs: GenTraversableOnce[A]): Repr = (repr /: xs.seq) ({implicit val mcc = new CanThrow {}; _ - _}) // FIXME(leo)
 }

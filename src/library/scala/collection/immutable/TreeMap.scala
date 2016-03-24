@@ -156,7 +156,7 @@ class TreeMap[A, +B] private (tree: RB.Tree[A, B])(implicit val ordering: Orderi
    *  @param xs     the traversable object.
    */
   override def ++[B1 >: B] (xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow = mct): TreeMap[A, B1] =
-    ((repr: TreeMap[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
+    ((repr: TreeMap[A, B1]) /: xs.seq) ({ implicit val mcc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** A new TreeMap with the entry added is returned,
    *  assuming that key is <em>not</em> in the TreeMap.

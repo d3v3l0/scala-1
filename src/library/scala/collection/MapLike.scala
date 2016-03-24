@@ -301,7 +301,7 @@ self =>
    *    @inheritdoc
    */
   def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow = mct): Map[A, B1] =
-    ((repr: Map[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
+    ((repr: Map[A, B1]) /: xs.seq) ({ implicit val mcc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** Returns a new map obtained by removing all key/value pairs for which the predicate
    *  `p` returns `true`.

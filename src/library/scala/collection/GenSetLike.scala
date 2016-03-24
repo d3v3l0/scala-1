@@ -114,7 +114,7 @@ extends GenIterableLike[A, Repr]
    */
   override def equals(that: Any): Boolean = that match {
     case that: GenSet[_] =>
-      @local implicit val mct = new CanThrow {} // XXX(leo)
+      @local implicit val mcc = new CanThrow {} // XXX(leo)
       (this eq that) ||
       (that canEqual this) &&
       (this.size == that.size) &&

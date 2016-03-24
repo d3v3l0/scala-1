@@ -95,7 +95,7 @@ self =>
    *  @param xs     the traversable object.
    */
   override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow = mct): SortedMap[A, B1] =
-    ((repr: SortedMap[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
+    ((repr: SortedMap[A, B1]) /: xs.seq) ({ implicit val mcc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /**
    * Creates an iterator over all the key/value pairs

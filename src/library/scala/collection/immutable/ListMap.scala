@@ -105,7 +105,7 @@ extends AbstractMap[A, B]
    *  @param xs     the traversable object.
    */
   override def ++[B1 >: B](xs: GenTraversableOnce[(A, B1)])(implicit @local mct: MaybeCanThrow = mct): ListMap[A, B1] =
-    ((repr: ListMap[A, B1]) /: xs.seq) ({ implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
+    ((repr: ListMap[A, B1]) /: xs.seq) ({ implicit val mcc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** This creates a new mapping without the given `key`.
    *  If the map does not contain a mapping for the given key, the

@@ -477,7 +477,7 @@ trait GenSeqLike[+A, +Repr] extends Any with GenIterableLike[A, Repr] with Equal
    *  @return   `true` if `that` is a sequence that has the same elements as
    *            this sequence in the same order, `false` otherwise
    */
-  override def equals(that: Any): Boolean = { @local implicit val cc = new CanThrow {}; that match { // XXX(leo)
+  override def equals(that: Any): Boolean = { @local implicit val mcc = new CanThrow {}; that match { // XXX(leo)
     case that: GenSeq[_] => (that canEqual this) && (this sameElements that)
     case _               => false
   }}

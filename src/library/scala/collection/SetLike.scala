@@ -138,7 +138,7 @@ self =>
    *  @param elems     the collection containing the elements to add.
    *  @return a new $coll with the given elements added, omitting duplicates.
    */
-  def ++ (elems: GenTraversableOnce[A])(implicit @local mct: MaybeCanThrow = mct): This = (repr /: elems.seq)({implicit val cc = new CanThrow {}; _ + _}) // FIXME(leo)
+  def ++ (elems: GenTraversableOnce[A])(implicit @local mct: MaybeCanThrow = mct): This = (repr /: elems.seq)({implicit val mcc = new CanThrow {}; _ + _}) // FIXME(leo)
 
   /** Creates a new set with a given element removed from this set.
    *

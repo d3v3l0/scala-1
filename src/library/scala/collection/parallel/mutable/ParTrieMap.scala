@@ -119,9 +119,8 @@ private[collection] class ParTrieMapSplitter[K, V](lev: Int, ct: TrieMap[K, V], 
 extends TrieMapIterator[K, V](lev, ct, mustInit)
    with IterableSplitter[(K, V)]
 {
-  @local val canThrow = new CanThrow {} // XXX(leo)
   // only evaluated if `remaining` is invoked (which is not used by most tasks)
-  lazy val totalsize = ct.par.size(canThrow)
+  lazy val totalsize = ESC.TRY(cc => ct.par.size(cc)) // XXX(leo)
   var iterated = 0
 
   protected override def newIterator(_lev: Int, _ct: TrieMap[K, V], _mustInit: Boolean) = new ParTrieMapSplitter[K, V](_lev, _ct, _mustInit)

@@ -185,7 +185,7 @@ trait TraversableViewLike[+A,
 
   trait Appended[B >: A] extends Transformed[B] {
     protected[this] val rest: GenTraversable[B]
-    def foreach[U](@local f: B => U)(implicit @local mct: MaybeCanThrow) { @local implicit val cc = new CanThrow {}; // XXX(leo) not sure how to properly fix this
+    def foreach[U](@local f: B => U)(implicit @local mct: MaybeCanThrow) { @local implicit val mcc = new CanThrow {}; // XXX(leo) not sure how to properly fix this
       self foreach f
       rest foreach f
     }
