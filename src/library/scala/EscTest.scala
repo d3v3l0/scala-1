@@ -1,6 +1,7 @@
 package scala
 
 object BugImplicitLocalDefaultDisallows2ndClassFn {
+  import ESC._
   trait NonPar
   @local val nonPar = new NonPar {}
 
@@ -24,8 +25,8 @@ object BugImplicitLocalDefaultDisallows2ndClassFn {
     ap2Dflt((x: Int) => x + 1) // ok, 1st class and using default implicit arg
 
     implicit val ic = new NonPar {}
-    ap((x: Int) => ESC.TRY { c => mkEfapct(c) }) // ok, 1st class
-    ap2((x: Int) => ESC.TRY { c => mkEfapct(c) }) // ok, 1st class
+    ap((x: Int) => TRY { c => mkEfapct(c) }) // ok, 1st class
+    ap2((x: Int) => TRY { c => mkEfapct(c) }) // ok, 1st class
     ap((x: Int) => x + 1) // ok, 1st class
     ap2((x: Int) => x + 1) // ok, 1st class
   }
