@@ -218,7 +218,6 @@ private[concurrent] object Promise {
       if (tryAwait(atMost)(cc)) this
       else ESC.THROW { throw new TimeoutException("Futures timed out after [" + atMost + "]") }(cc)
 
-    @throws(classOf[Exception])
     def result(atMost: Duration)(@local cc: CanThrow)(implicit permit: CanAwait): T =
       ESC.NO { ready(atMost)(cc).value.get.get(cc) /* TODO(leo) what is wrong here? */ } // ready throws TimeoutException if timeout so value.get is safe here
 
