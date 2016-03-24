@@ -272,7 +272,7 @@ object ScalaRunTime {
     def isSubClassOf(potentialSubClass: Class[_], ofClass: String) =
       try {
         val classLoader = potentialSubClass.getClassLoader
-        val clazz = Class.forName(ofClass, /*initialize =*/ false, classLoader)
+        val clazz = ESC.NO(Class.forName(ofClass, /*initialize =*/ false, classLoader)) // XXX(leo)
         clazz.isAssignableFrom(potentialSubClass)
       } catch {
         case cnfe: ClassNotFoundException => false

@@ -37,7 +37,7 @@ class Codec(val charSet: Charset) {
   private[this] var _onUnmappableCharacter: Action    = null
   private[this] var _encodingReplacement: Array[Byte] = null
   private[this] var _decodingReplacement: String      = null
-  private[this] var _onCodingException: Handler       = e => throw e
+  private[this] var _onCodingException: Handler       = e => ESC.NO(throw e) // XXX(leo)
 
   /** The name of the Codec. */
   override def toString = name
