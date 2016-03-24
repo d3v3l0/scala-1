@@ -18,16 +18,17 @@ RE_NONLOCAL_THROW = re.compile(r".*(" + (
     r'\w+Throw\b =>') + r").*")
 RE_NONCC_CANTHROW = re.compile(r'.*@local (?!cc)[^:]+: CanThrow.*')
 
-PAT_UNSAFE_SUFFIX = r".*// ?(XXX|FIXME)\(leo\).*"
+PAT_UNSAFE_SUFFIX = r".*// ?XXX\(leo\).*"
 RE_UNSAFE_SUFFIX = re.compile(PAT_UNSAFE_SUFFIX)
 RE_TRY_UNSAFE = re.compile(r".*ESC.TRY" + PAT_UNSAFE_SUFFIX)
-RE_PAR_UNSAFE = re.compile(r".*(\.mct)" + PAT_UNSAFE_SUFFIX)
+RE_PAR_UNSAFE = re.compile(r".*(\.mct|mcc = new CanThrow)" + PAT_UNSAFE_SUFFIX)
 
-RE_CANTHROW_PARAM = re.compile(r".*(\(@local cc: CanThrow.*|\bCanThrow ->).*")
+RE_CANTHROW_PARAM = re.compile(r".*(\(@local cc: CanThrow|\bCanThrow ->).*")
 RE_CAP_PARAM = re.compile(r".*[^(]@local \w+: (Maybe)?Can(not)?Throw.*")
+RE_CAP_TYPE = re.compile(r".*type MaybeCanThrow.*")
 
-def is_comment(line, pat=re.compile(r"^[[:space:]]*(\*|\*\*|[/\\]\*)")):
-    return pat.matches(line)
+def is_comment(line, pat=re.compile(r"^\s*(\*|\*\*|[/\\]\*|//)")):
+    return pat.match(line)
 
 def main(args=sys.argv):
     parser = argparse.ArgumentParser(
@@ -42,6 +43,9 @@ def main(args=sys.argv):
     parser.add_argument(
         "-w", "--canthrow-param", action='store_true',
         help="print lines matching regex: " + RE_CANTHROW_PARAM.pattern)
+    parser.add_argument(
+        "-C", "--no-cap-type", action='store_true',
+        help="do not print lines defining type Cap (MaybeCanThrow)")
     parser.add_argument(
         "-c", "--cap-param", action='store_true',
         help="print lines matching regex: " + RE_CAP_PARAM.pattern)
@@ -74,6 +78,10 @@ def main(args=sys.argv):
     v_print(3, "ARGS:", args)
 
     block_freq = dict(("ESC." + b, 0) for b in ["TRY", "THROW", "NO"])
+    canthrow_param_freq = 0
+    cap_param_freq = 0
+    cap_type_freq = 0
+    cap_unsafe_freq = 0
     chunk_relevant = False
     def print_relevant(*args, **kwargs):
         nonlocal chunk_relevant
@@ -91,24 +99,38 @@ def main(args=sys.argv):
         if not line.startswith("+"): continue # ignore removals
         line = line[1:]
 
+        if is_comment(line): continue
+
         relevant = False
+        def count_neg(matched, show):
+            nonlocal relevant
+            if matched: relevant |= show
+            return int(matched)
+        count_pos = count_neg   # TODO:
+
         for b in block_freq.keys():
             if b in line:
-                block_freq[b] += 1
-                relevant |= not ARGS.no_blocks
+                block_freq[b] += count_neg(1, not ARGS.no_blocks)
+        cap_type_freq += count_neg(
+            bool(RE_CAP_TYPE.match(line)), not ARGS.no_cap_type)
 
-        relevant |= ARGS.canthrow_param and bool(RE_CANTHROW_PARAM.match(line))
-        relevant |= ARGS.cap_param and bool(RE_CAP_PARAM.match(line))
+        canthrow_param_freq += count_pos(
+            bool(RE_CANTHROW_PARAM.match(line)), ARGS.canthrow_param)
+        cap_param_freq += count_pos(
+          bool(RE_CAP_PARAM.match(line)), ARGS.cap_param)
 
         # Unsafe / unfinished
-        relevant |= ARGS.try_unsafe and bool(RE_TRY_UNSAFE.match(line))
-        relevant |= ARGS.par_unsafe and bool(RE_PAR_UNSAFE.match(line))
+        cap_unsafe_freq += count_pos(
+            bool(RE_TRY_UNSAFE.match(line)), ARGS.try_unsafe
+        ) | count_pos(
+            bool(RE_PAR_UNSAFE.match(line)), ARGS.par_unsafe
+        )
 
         # Soft checks
-        relevant |= ARGS.check_nonlocal_throw and bool(
-            RE_NONLOCAL_THROW.match(line))
-        relevant |= ARGS.check_noncc_canthrow and bool(
-            RE_NONCC_CANTHROW.match(l))
+        count_pos(
+            bool(RE_NONLOCAL_THROW.match(line)), ARGS.check_nonlocal_throw)
+        count_pos(
+            bool(RE_NONCC_CANTHROW.match(line)), ARGS.check_noncc_canthrow)
 
         if relevant: print_relevant(line)
 
@@ -118,7 +140,14 @@ def main(args=sys.argv):
         ) and "ESC." not in line:
             raise Exception(line)
 
-    print(block_freq, file=sys.stderr)
+    def report(*args, **kwargs):
+        kwargs.setdefault('file', sys.stderr)
+        print(*args, **kwargs)
+    report(block_freq)
+    report("CanThrow param:", canthrow_param_freq)
+    report("Cap param:", cap_param_freq)
+    report("Cap type:", cap_type_freq)
+    report("Cap unsafe:", cap_unsafe_freq)
 
     return 0
 
