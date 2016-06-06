@@ -18,6 +18,11 @@ RE_NONLOCAL_THROW = re.compile(r".*(" + (
     r'\w+Throw\b =>') + r").*")
 RE_NONCC_CANTHROW = re.compile(r'.*@local (?!cc)[^:]+: CanThrow.*')
 
+RE_LOCAL_FN = re.compile(
+    # cc, ct, mct, mcc are used for @local vals and params related to exceptions
+    # use negative lookahead to eliminate @local followed by any of these
+    r".*@local (?!(?:(?:implicit|protected) val )?m?c[ct]).*")
+
 PAT_UNSAFE_SUFFIX = r".*// ?XXX\(leo\).*"
 RE_UNSAFE_SUFFIX = re.compile(PAT_UNSAFE_SUFFIX)
 RE_TRY_UNSAFE = re.compile(r".*ESC.TRY" + PAT_UNSAFE_SUFFIX)
@@ -50,6 +55,9 @@ def main(args=sys.argv):
         "-c", "--cap-param", action='store_true',
         help="print lines matching regex: " + RE_CAP_PARAM.pattern)
     parser.add_argument(
+        "-f", "--local-fn", action='store_true',
+        help="print lines matching regex: " + RE_LOCAL_FN.pattern)
+    parser.add_argument(
         "-y", "--try-unsafe", action='store_true',
         help="print lines matching regex: " + RE_TRY_UNSAFE.pattern)
     parser.add_argument(
@@ -81,6 +89,7 @@ def main(args=sys.argv):
     canthrow_param_freq = 0
     cap_param_freq = 0
     cap_type_freq = 0
+    local_fn_freq = 0
     cap_unsafe_freq = 0
     chunk_relevant = False
     def print_relevant(*args, **kwargs):
@@ -117,7 +126,9 @@ def main(args=sys.argv):
         canthrow_param_freq += count_pos(
             bool(RE_CANTHROW_PARAM.match(line)), ARGS.canthrow_param)
         cap_param_freq += count_pos(
-          bool(RE_CAP_PARAM.match(line)), ARGS.cap_param)
+            bool(RE_CAP_PARAM.match(line)), ARGS.cap_param)
+        local_fn_freq +=  count_pos(
+            bool(RE_LOCAL_FN.match(line)), ARGS.local_fn)
 
         # Unsafe / unfinished
         cap_unsafe_freq += count_pos(
