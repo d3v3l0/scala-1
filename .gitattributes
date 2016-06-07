@@ -30,3 +30,6 @@
 *.png     binary
 *.class   -text diff=class
 *.jar     -text diff=jar
+
+# Exclude non-library test code from diffs
+/src/library/scala/EscTest.scala    diff=nodiff
