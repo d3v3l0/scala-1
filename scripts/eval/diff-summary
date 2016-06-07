@@ -1,5 +1,5 @@
 ##!/bin/bash
-fork=esc-coll  # TODO: use git command?
+fork=v2.11.7-esc-base
 root=src/library/scala
 
 src_pat="$root/**.scala"
@@ -11,25 +11,28 @@ show_changes() {
 }
 
 show_source_nocomment() {
-    git ls-files $fork "$src_pat" | \
+    git ls-tree --name-only -r $fork $root | grep '\.scala$' | \
+	grep -vf <(git diff --name-status $fork | grep ^D | cut -f2) | \
 	sed "s/.*/$fork:&/" | xargs git show | \
 	grep -v '^[[:space:]]*\(\*\|\*\*\|[/\\]\*\)'  # code comment // OK (1k)
 }
 
+while [[ $# > 0 ]]; do
+    key="$1"
+    case $key in
+	--show-changes) show_changes ;;
+	--show-fork) show_source_nocomment ;;
+	--help|*)
+	    echo "Usage: $0 [--show-changes | --show-fork]" >&2
+	    [[ $key == --help ]]; exit $? ;;
+    esac
+    shift
+done
+
 sloc_affected=$(show_changes | wc -l)
-echo "Affected SLOC (excluding deletions): $sloc_affected"
-# show_changes
+echo "Affected SLOC (excluding deletions): $sloc_affected" >&2
 
 sloc_nocomment=$(show_source_nocomment | wc -l)
-echo "$src_pat SLOC (no comments): $sloc_nocomment"
-# show_source_nocomment
+echo "$src_pat SLOC (no comments): $sloc_nocomment" >&2
 
-echo "Affected code ratio: $(echo $sloc_affected / $sloc_nocomment | bc -l)"
-sloc_annot=$(show_changes | grep "@p\?local" | wc -l)
-echo "@[p]local annotations: $sloc_annot ($(echo $sloc_annot / $sloc_affected | bc -l))"
-
-for m in TRY THROW NO; do
-    pat="ESC\\.$m"
-    sloc=$(show_changes | grep "$pat" | wc -l)
-    echo "$pat SLOC: $sloc ($(echo $sloc / $sloc_affected | bc -l))"
-done
+echo "Affected code ratio: $(echo $sloc_affected / $sloc_nocomment | bc -l)" >&2
