@@ -234,7 +234,7 @@ object UnrolledBuffer extends ClassTagTraversableFactory[UnrolledBuffer] {
       next = new Unrolled[T](0, new Array[T](nextlength), null, buff)
       next append elem
     }
-    def foreach[U](@local[Any] f: T => U) {
+    def foreach[U](@local f: T => U) {
       var unrolled = this
       var i = 0
       while (unrolled ne null) {
