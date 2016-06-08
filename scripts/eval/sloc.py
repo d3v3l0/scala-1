@@ -21,7 +21,7 @@ RE_NONCC_CANTHROW = re.compile(r'.*@local (?!cc)[^:]+: CanThrow.*')
 RE_LOCAL_FN = re.compile(
     # cc, ct, mct, mcc are used for @local vals and params related to exceptions
     # use negative lookahead to eliminate @local followed by any of these
-    r".*@local (?!" +
+    r".*@p?local (?!" +
     r"(?:(?:(?:pr(?:otected|ivate)[^ ]* )?(?:implicit )?)(?:val|def) )?"
     r"m?c[ct]).*")
 
