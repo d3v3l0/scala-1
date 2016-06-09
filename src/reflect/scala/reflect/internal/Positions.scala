@@ -131,6 +131,7 @@ trait Positions extends api.Positions { self: SymbolTable =>
             case xs => {
               positionError("Overlapping trees "+xs.map { case (x, y) => (x.id, y.id) }.mkString("", ", ", "")) {
                 reportTree("Ancestor", tree)
+                @local implicit val mct0 = new CannotThrow {}
                 for((x, y) <- xs) {
                   reportTree("First overlapping", x)
                   reportTree("Second overlapping", y)

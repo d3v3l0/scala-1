@@ -503,6 +503,7 @@ class Flags extends ModifierFlags {
     val all   = 0 to MaxBitPosition map (1L << _)
     val front = mappedRawFlags map (_.toLong)
 
+    @local implicit val mct0 = new CannotThrow {}
     front.toList ++ (all filterNot (front contains _))
   }
   final val rawFlagPickledOrder: Array[Long] = pickledListOrder.toArray

@@ -752,6 +752,7 @@ abstract class TreeGen {
                      tmp, TypeTree(), matchExpr)
             }
           var cnt = 0
+          @local implicit val mct0 = new CannotThrow {}
           val restDefs = for ((vname, tpt, pos) <- vars) yield atPos(pos) {
             cnt += 1
             ValDef(mods, vname.toTermName, tpt, Select(Ident(tmp), newTermName("_" + cnt)))

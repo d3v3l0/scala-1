@@ -88,6 +88,8 @@ trait Types
   import definitions._
   import TypesStats._
 
+  @local private implicit val mct0 = new CannotThrow {}
+
   private var explainSwitch = false
   private final val emptySymbolSet = immutable.Set.empty[Symbol]
 

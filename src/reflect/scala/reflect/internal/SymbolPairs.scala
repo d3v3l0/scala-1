@@ -198,6 +198,7 @@ abstract class SymbolPairs {
       }
       for (p <- parents) {
         val pIndex = index(p.typeSymbol)
+        @local implicit val mct0 = new CannotThrow {}
         if (pIndex >= 0)
           for (bc <- p.baseClasses ; if sameInBaseClass(bc)(p, self)) {
             val bcIndex = index(bc)

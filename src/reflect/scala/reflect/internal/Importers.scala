@@ -9,6 +9,8 @@ import scala.reflect.internal.Flags._
 // SI-6241: move importers to a mirror
 trait Importers { to: SymbolTable =>
 
+  @local private implicit val mct0 = new CannotThrow {}
+
   override def mkImporter(from0: api.Universe): Importer { val from: from0.type } = (
     if (to eq from0) {
       new Importer {

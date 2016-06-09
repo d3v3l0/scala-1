@@ -76,6 +76,7 @@ object ScriptSourceFile {
     val headerPattern = Pattern.compile("""((?m)^(::)?!#.*|^.*/env .*)(\r|\n|\r\n)""")
     val headerStarts  = List("#!", "::#!")
 
+    @local implicit val mct0 = new CannotThrow {}
     if (headerStarts exists (cs startsWith _)) {
       val matcher = headerPattern matcher cs.mkString
       if (matcher.find) matcher.end

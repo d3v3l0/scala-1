@@ -99,9 +99,11 @@ quant)
   /** Create a new timer stack */
   def newTimerStack() = new TimerStack()
 
-  def allQuantities: Iterable[Quantity] =
+  def allQuantities: Iterable[Quantity] = {
+    @local implicit val mct0 = new CannotThrow {}
     for ((_, q) <- qs if q.underlying == q;
          r <- q :: q.children.toList if r.prefix.nonEmpty) yield r
+  }
 
   private def showPercent(x: Long, base: Long) =
     if (base == 0) "" else f" (${x.toDouble / base.toDouble * 100}%2.1f%%)"

@@ -12,6 +12,8 @@ private[internal] trait TypeMaps {
   self: SymbolTable =>
   import definitions._
 
+  @local private implicit val mct0 = new CannotThrow {}
+
   /** Normalize any type aliases within this type (@see Type#normalize).
     *  Note that this depends very much on the call to "normalize", not "dealias",
     *  so it is no longer carries the too-stealthy name "deAlias".

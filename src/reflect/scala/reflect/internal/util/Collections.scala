@@ -15,6 +15,8 @@ import mutable.ListBuffer
  *  methods in traits aren't inlined.
  */
 trait Collections {
+  @local private implicit val mct0 = new CannotThrow {}
+
   /** True if all three arguments have the same number of elements and
    *  the function is true for all the triples.
    */

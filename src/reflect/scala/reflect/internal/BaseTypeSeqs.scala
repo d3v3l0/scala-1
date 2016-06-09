@@ -221,7 +221,7 @@ trait BaseTypeSeqs {
       }
     }
     val elems = new Array[Type](btsSize)
-    buf.copyToArray(elems, 0)
+    buf.copyToArray(elems, 0)(buf.mct)
 //    Console.println("computed baseTypeSeq of " + tsym.tpe + " " + parents + ": "+elems.toString)//DEBUG
     newBaseTypeSeq(parents, elems)
   }

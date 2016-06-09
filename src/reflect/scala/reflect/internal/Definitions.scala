@@ -18,6 +18,8 @@ trait Definitions extends api.StandardDefinitions {
 
   import rootMirror.{getModuleByName, getPackage, getClassByName, getRequiredClass, getRequiredModule, getClassIfDefined, getModuleIfDefined, getPackageObject, getPackageIfDefined, getPackageObjectIfDefined, requiredClass, requiredModule}
 
+  @local private implicit val mct0 = new CannotThrow {}
+
   object definitions extends DefinitionsClass
 
   /** Since both the value parameter types and the result type may

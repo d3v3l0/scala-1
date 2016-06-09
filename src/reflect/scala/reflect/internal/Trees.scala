@@ -135,7 +135,7 @@ trait Trees extends api.Trees {
       f(this, that) || ((productArity == that.productArity) && {
         def equals0(this0: Any, that0: Any): Boolean = (this0, that0) match {
           case (x: Tree, y: Tree)         => f(x, y) || (x correspondsStructure y)(f)
-          case (xs: List[_], ys: List[_]) => (xs corresponds ys)(equals0)
+          case (xs: List[_], ys: List[_]) => (xs corresponds ys)(equals0)(ys.mct)
           case _                          => this0 == that0
         }
         def compareOriginals() = (this, that) match {

@@ -19,6 +19,8 @@ trait Symbols extends api.Symbols { self: SymbolTable =>
   import definitions._
   import SymbolsStats._
 
+  @local private implicit val mct0 = new CannotThrow {}
+
   protected var ids = 0
 
   protected def nextId() = { ids += 1; ids }

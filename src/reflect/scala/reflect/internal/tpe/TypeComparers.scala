@@ -165,7 +165,7 @@ trait TypeComparers {
     // corresponds does not check length of two sequences before checking the predicate,
     // but SubstMap assumes it has been checked (SI-2956)
     (     sameLength(tparams1, tparams2)
-      && (tparams1 corresponds tparams2)((p1, p2) => methodHigherOrderTypeParamsSameVariance(p1, p2) && p1.info =:= subst(p2.info))
+      && (tparams1 corresponds tparams2)((p1, p2) => methodHigherOrderTypeParamsSameVariance(p1, p2) && p1.info =:= subst(p2.info))(tparams2.mct)
       && (res1 =:= subst(res2))
     )
   }
@@ -336,7 +336,7 @@ trait TypeComparers {
          && sub2(p2.info) <:< sub1(p1.info)
       )
 
-      (tparams1 corresponds tparams2)(cmp) && (sub1(res1) <:< sub2(res2))
+      (tparams1 corresponds tparams2)(cmp)(tparams2.mct) && (sub1(res1) <:< sub2(res2))
     }
   }
   // This is looking for situations such as B.this.x.type <:< B.super.x.type.

@@ -1021,6 +1021,7 @@ trait StdNames {
       def mkName(str: String, term: Boolean): Name =
         if (term) newTermName(str) else newTypeName(str)
 
+      implicit val mct0 = new CannotThrow {}
       name.indexWhere(ch => ch == '.' || ch == '#') match {
         // it's the last segment: the parameter tells us whether type or term
         case -1     => if (name == "") scala.Nil else scala.List(mkName(name, assumeTerm))

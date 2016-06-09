@@ -13,6 +13,8 @@ private[internal] trait GlbLubs {
   import definitions._
   import TypesStats._
 
+  @local private implicit val mct0 = new CannotThrow {}
+
   private final val printLubs = scala.sys.props contains "scalac.debug.lub"
   private final val strictInference = settings.strictInference
 

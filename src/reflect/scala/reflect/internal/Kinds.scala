@@ -15,6 +15,8 @@ trait Kinds {
 
   import definitions._
 
+  @local private implicit val mct0 = new CannotThrow {}
+
   private type SymPair = ((Symbol, Symbol)) // ((Argument, Parameter))
 
   case class KindErrors(

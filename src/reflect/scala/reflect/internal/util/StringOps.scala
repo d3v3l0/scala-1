@@ -61,8 +61,10 @@ trait StringOps {
 
   def words(str: String): List[String] = decompose(str, ' ')
 
-  def splitWhere(str: String, f: Char => Boolean, doDropIndex: Boolean = false): Option[(String, String)] =
+  def splitWhere(str: String, f: Char => Boolean, doDropIndex: Boolean = false): Option[(String, String)] = {
+    @local implicit val mct0 = new CannotThrow {}
     splitAt(str, str indexWhere f, doDropIndex)
+  }
 
   def splitAt(str: String, idx: Int, doDropIndex: Boolean = false): Option[(String, String)] =
     if (idx == -1) None

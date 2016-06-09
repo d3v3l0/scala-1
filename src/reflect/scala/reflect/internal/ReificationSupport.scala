@@ -274,7 +274,7 @@ trait ReificationSupport { self: SymbolTable =>
         def result(ctorMods: Modifiers, vparamss: List[List[ValDef]], edefs: List[Tree], body: List[Tree]) =
           Some((parents, selfType, ctorMods, vparamss, edefs, body))
         def indexOfCtor(trees: List[Tree]) =
-          trees.indexWhere { case UnCtor(_, _, _) => true ; case _ => false }
+          trees.indexWhere { case UnCtor(_, _, _) => true ; case _ => false }(trees.mct)
 
         if (tbody forall treeInfo.isInterfaceMember)
           result(NoMods | Flag.TRAIT, Nil, Nil, tbody)
