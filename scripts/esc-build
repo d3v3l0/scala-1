@@ -1,11 +1,12 @@
 #!/bin/bash
 scriptdir=$(dirname "$(readlink -f "$0")")
-rootdir="$scriptdir/.."
+rootdir=$(dirname "$scriptdir")
 outdir="$rootdir/build"
 
 [ $# -ge 1 ] && args="$@" || args="quick.lib"
-rm -rf "$outdir/quick" && ant "$args" | tee "$rootdir/ant.out" >( \
+rm -rf "$outdir/quick" && ( cd "$rootdir" && ant "$args" ) \
+    | grep -v '\s\+\[echo\]' | tee "$outdir/ant.out" >( \
     grep '\[quick.library\]' | sed -e 's|\[quick\.library\] ||' \
-    -e "s|$(git root)/||" -e 's|\(\.scala:\)[0-9]*:|\1|' | \
+    -e "s|$rootdir/||" -e 's|\(\.scala:\)[0-9]*:|\1|' | \
     grep -v -e '^Compiling' -e '^warning: there' >"$outdir/esc-warns.last" \
 )
