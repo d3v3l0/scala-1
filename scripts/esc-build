@@ -4,9 +4,10 @@ rootdir=$(dirname "$scriptdir")
 outdir="$rootdir/build"
 
 [ $# -ge 1 ] && args="$@" || args="quick.lib"
-rm -rf "$outdir/quick" && ( cd "$rootdir" && ant "$args" ) \
-    | grep -v '\s\+\[echo\]' | tee "$outdir/ant.out" >( \
+( cd "$rootdir" && \
+    git clean -fxd build/\*/ && \
+    ant "$args" | grep -v '\s\+\[echo\]' | tee "$outdir/ant.out" >( \
     grep '\[quick.library\]' | sed -e 's|\[quick\.library\] ||' \
     -e "s|$rootdir/||" -e 's|\(\.scala:\)[0-9]*:|\1|' | \
-    grep -v -e '^Compiling' -e '^warning: there' >"$outdir/esc-warns.last" \
+    grep -v -e '^Compiling' -e '^warning: there' >"$outdir/esc-warns.last" )
 )
