@@ -33,20 +33,13 @@ object ZippedTraversable2 {
   }
 }
 
-trait HasMaybeCanThrow { // TODO(leo) move if also used elsewhere
-  type MaybeCanThrow
-  implicit def mct: MaybeCanThrow
-}
-
-final class Tuple2Zipped[El1, Repr1 <: HasMaybeCanThrow, El2, Repr2](val colls: (TraversableLike[El1, Repr1], IterableLike[El2, Repr2])) extends AnyVal with ZippedTraversable2[El1, El2] {
+final class Tuple2Zipped[El1, Repr1 <: Traversable[El1], El2, Repr2](val colls: (TraversableLike[El1, Repr1], IterableLike[El2, Repr2])) extends AnyVal with ZippedTraversable2[El1, El2] {
   // TODO(leo) this is useless, because compiler infers path dependent types
   // - Repr1#MaybeCanThrow (= CannotThrow)
   // - colls._1.mct.type
   // are the different, even though Repr1 (a representation of TraversableLike)
   // always implements TraversableLike for which MaybeCanThrow = CannotThrow
   // type MaybeCanThrow = Repr1#MaybeCanThrow
-  type MaybeCanThrow = CannotThrow
-  implicit def mct = colls._1.mct
 
   // This would be better as "private def coll1 = colls._1" but
   // SI-6215 precludes private methods in value classes.
@@ -142,7 +135,7 @@ object Tuple2Zipped {
         buf.result()
       }
 
-    def zipped[El1, Repr1 <: HasMaybeCanThrow, El2, Repr2]
+    def zipped[El1, Repr1 <: Traversable[El1], El2, Repr2]
       (implicit w1: T1 => TraversableLike[El1, Repr1],
                 w2: T2 => IterableLike[El2, Repr2]
       ): Tuple2Zipped[El1, Repr1, El2, Repr2] = new Tuple2Zipped((x._1, x._2))
