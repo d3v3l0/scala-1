@@ -83,10 +83,10 @@ trait Scopes extends api.Scopes { self: SymbolTable =>
     def cloneScope: Scope = newScopeWith(this.toList: _*)
 
     /** is the scope empty? */
-    override def isEmpty: Boolean = elems eq null
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = elems eq null
 
     /** the number of entries in this scope */
-    override def size: Int = {
+    override def size(implicit @local mct: MaybeCanThrow = mct): Int = {
       if (cachedSize < 0)
         cachedSize = directSize
 
@@ -370,13 +370,13 @@ trait Scopes extends api.Scopes { self: SymbolTable =>
      */
     def iterator: Iterator[Symbol] = toList.iterator
 
-    override def foreach[U](p: Symbol => U): Unit = toList foreach p
+    override def foreach[U](p: Symbol => U)(implicit @local mct: MaybeCanThrow = mct): Unit = toList foreach p
 
-    override def filterNot(p: Symbol => Boolean): Scope = (
+    override def filterNot(p: Symbol => Boolean)(implicit @local mct: MaybeCanThrow = mct): Scope = (
       if (toList exists p) newScopeWith(toList filterNot p: _*)
       else this
     )
-    override def filter(p: Symbol => Boolean): Scope = (
+    override def filter(p: Symbol => Boolean)(implicit @local mct: MaybeCanThrow = mct): Scope = (
       if (toList forall p) this
       else newScopeWith(toList filter p: _*)
     )

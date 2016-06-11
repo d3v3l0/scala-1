@@ -196,7 +196,7 @@ final class WeakHashSet[A <: AnyRef](val initialCapacity: Int, val loadFactor: D
   }
 
   // add an element to this set unless it's already in there and return this set
-  override def +(elem: A): this.type = elem match {
+  override def +(elem: A)(implicit @local mct: MaybeCanThrow = mct): this.type = elem match {
     case null => throw new NullPointerException("WeakHashSet cannot hold nulls")
     case _    => {
       removeStaleEntries()
@@ -228,7 +228,7 @@ final class WeakHashSet[A <: AnyRef](val initialCapacity: Int, val loadFactor: D
   override def addEntry(x: A) { this += x }
 
   // remove an element from this set and return this set
-  override def -(elem: A): this.type = elem match {
+  override def -(elem: A)(implicit @local mct: MaybeCanThrow = mct): this.type = elem match {
     case null => this
     case _ => {
       removeStaleEntries()
@@ -265,7 +265,7 @@ final class WeakHashSet[A <: AnyRef](val initialCapacity: Int, val loadFactor: D
   override def empty: This = new WeakHashSet[A](initialCapacity, loadFactor)
 
   // the number of elements in this set
-  override def size: Int = {
+  override def size(implicit @local mct: MaybeCanThrow = mct): Int = {
     removeStaleEntries()
     count
   }

@@ -44,8 +44,8 @@ private[reflect] trait SynchronizedOps extends internal.SymbolTable
     // fancy subclasses of internal.Scopes#Scope should do synchronization themselves (e.g. see PackageScope for an example)
     private lazy val syncLock = new Object
     def syncLockSynchronized[T](body: => T): T = if (isCompilerUniverse) body else syncLock.synchronized { body }
-    override def isEmpty: Boolean = syncLockSynchronized { super.isEmpty }
-    override def size: Int = syncLockSynchronized { super.size }
+    override def isEmpty(implicit @local mct: MaybeCanThrow = mct): Boolean = syncLockSynchronized { super.isEmpty }
+    override def size(implicit @local mct: MaybeCanThrow = mct): Int = syncLockSynchronized { super.size }
     override def enter[T <: Symbol](sym: T): T = syncLockSynchronized { super.enter(sym) }
     override def rehash(sym: Symbol, newname: Name) = syncLockSynchronized { super.rehash(sym, newname) }
     override def unlink(e: ScopeEntry) = syncLockSynchronized { super.unlink(e) }
