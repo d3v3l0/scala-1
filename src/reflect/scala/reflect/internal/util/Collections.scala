@@ -137,7 +137,7 @@ trait Collections {
       ys1 = ys1.tail
       ys2 = ys2.tail
     }
-    if (lb eq null) Nil else lb.result
+    if (lb eq null) Nil else lb.result(new CannotThrow {}) // TODO(leo) make it implicit in signature
   }
 
   final def flatCollect[A, B](elems: List[A])(pf: PartialFunction[A, Traversable[B]]): List[B] = {

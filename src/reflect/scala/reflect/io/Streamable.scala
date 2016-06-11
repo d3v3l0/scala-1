@@ -82,7 +82,7 @@ object Streamable {
      */
     def creationCodec: Codec = implicitly[Codec]
 
-    def chars(codec: Codec): BufferedSource = Source.fromInputStream(inputStream())(codec)
+    def chars(codec: Codec): BufferedSource = ESC.TRY { cc => Source.fromInputStream(inputStream())(cc)(codec) } // XXX(leo)
 
     def lines(): Iterator[String] = lines(creationCodec)
     def lines(codec: Codec): Iterator[String] = chars(codec).getLines()
