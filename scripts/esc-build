@@ -3,11 +3,18 @@ scriptdir=$(dirname "$(readlink -f "$0")")
 rootdir=$(dirname "$scriptdir")
 outdir="$rootdir/build"
 
-[ $# -ge 1 ] && args="$@" || args="quick.lib"
+target=$(for last; do true; done; echo $last)
 ( cd "$rootdir" && \
-    git clean -fxd build/\*/ && \
-    ant "$args" | grep -v '\s\+\[echo\]' | tee "$outdir/ant.out" >( \
-    grep '\[quick.library\]' | sed -e 's|\[quick\.library\] ||' \
-    -e "s|$rootdir/||" -e 's|\(\.scala:\)[0-9]*:|\1|' | \
-    grep -v -e '^Compiling' -e '^warning: there' >"$outdir/esc-warns.last" )
+    if [[ $target == quick.lib ]]; then
+	git clean -fxd build/\*/ && \
+	    git checkout -q v2.11.7-esc-base >/dev/null && \
+	    ( trap 'git checkout -q - >/dev/null' EXIT; ant locker.done ) && \
+	    ant "$@"
+    else
+	ant quick.lib
+    fi | grep -v '\s\+\[echo\]' | tee "$outdir/ant.out" >( \
+	grep '\[quick.library\]' | sed -e 's|\[quick\.library\] ||' \
+	-e "s|$rootdir/||" -e 's|\(\.scala:\)[0-9]*:|\1|' | \
+	grep -v -e '^Compiling' -e '^warning: there' >"$outdir/esc-warns.last"
+    )
 )
