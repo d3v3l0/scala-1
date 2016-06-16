@@ -13,7 +13,7 @@ target=$(for last; do true; done; echo $last)
 	    ( trap 'git checkout -fq - >/dev/null' EXIT; ant locker.done ) && \
 	    ant "$@"
     else
-	ant quick.lib
+	ant "$@" quick.lib
     fi | grep -v '\s\+\[echo\]' | tee "$outdir/ant.out" >( \
 	grep '\[quick.library\]' | sed -e 's|\[quick\.library\] ||' \
 	-e "s|$rootdir/||" -e 's|\(\.scala:\)[0-9]*:|\1|' | \
