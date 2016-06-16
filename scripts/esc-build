@@ -4,10 +4,10 @@ rootdir=$(dirname "$scriptdir")
 outdir="$rootdir/build"
 
 target=$(for last; do true; done; echo $last)
+[[ $target == quick.lib ]] && git clean -fxd :/build/\*/
 ( cd "$rootdir" && \
     if [[ $target == quick.lib ]]; then
-	git clean -fxd build/\*/ && \
-	    git checkout -q 3070ee4931f0429a80a517a0c167028ed3e5865d && \
+	git checkout -q 3070ee4931f0429a80a517a0c167028ed3e5865d && \
 	    git format-patch -1 752ba61a19800f017c32466261f2ee5a8d284add \
 	    --stdout | git apply && \
 	    ( trap 'git checkout -fq - >/dev/null' EXIT; ant locker.done ) && \
