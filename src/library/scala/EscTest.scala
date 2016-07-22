@@ -122,3 +122,78 @@ object MotivatingExamples {
     }
   }
 }
+
+// Note: must be top-level, so compiler phase can detect it by prefix "->"
+trait `->*`[P, -A,+B] extends Function1[A,B] {
+  def apply(@local[P] y: A): B
+}
+
+object Finer2ndClassValues {
+  object SecretCannotLeak {
+    // Secret can simply be the only level of 2nd-class
+    // type Secret = Any
+    // type Public = Nothing
+
+    // Nevertheless, let's make both 2nd-class values...
+    trait Secret extends Any
+    trait Public extends Secret
+
+    class File {
+      def read() = ???  // FIXME: cannot return 2nd-class value: @local[Public]
+      def write[T](@local[Public] obj: T) {}
+    }
+    val file = new File
+
+    def exposeSecret[U](
+      fn: ->*[Public, String, U]
+    ) = fn("password")
+
+    def testExpose() {
+      exposeSecret { secret =>
+        file.read          // ok
+        // file.write(secret) // error
+        () // fool-proof return
+      }
+    }
+
+    // This probably makes more sense, as secrets don't come out of thin air :)
+    def protectSecret[T, U](@local[Secret] obj: T)(
+      @local[Public] fn: `->*`[Secret, T, U]) = fn(obj)
+
+    def testProtect() {
+      @local[Secret] val outerSecret = "password"
+
+      // user code that attempting to store a secret
+      @local[Public] val leakChannel = new {
+        def leak(@local[Secret] secret: Any) {}
+      }
+
+      // leakChannel.leak(s)  // FIXME: should type-check, but compiler crashes
+
+      protectSecret("anotherPassword") { secret =>
+        file.read          // ok
+        // file.write(secret) // error
+        leakChannel // Note: this should fail, as we could call leak()
+                    //       Unfortunatly, putting @local[Secret] on fn
+                    //       would have the opposite effect; that is,
+                    //       no access to outer secrets would be possible
+                    // So, we see that hierarchy should be backward for reads,
+                    // but then, we would have the problem with writing.
+        outerSecret // FIXME: compiler phase bug? (free var: @local[>:Public])
+        // leakChannel.leak(secret)  // FIXME: fails becase of a wrong reason:
+                                  // value secret @local[Any] cannot be used
+                                  // as 1st class value
+                                  // @local[...SecretCannotLeak.Secret]
+                                     // OR crashes if Secret = Any
+        () // fool-proof return
+      }
+
+      // Another way of achieving the above (buggy) behavior
+      @local[Public] val sUnprotected = "semi-secret";
+      {  // but we can simply up-cast to pretect it against file write
+        @local[Secret] val sProtected = sUnprotected
+        // file.write(sProtected) // error
+      }
+    }
+  }
+}
